@@ -26,7 +26,7 @@ public with sharing class tvalueQuotePickerController {
     public class QuoteWrapper {
         @AuraEnabled public Id id;
         @AuraEnabled public Boolean isSelected;
-        @AuraEnabled public String name;
+        @AuraEnabled public String quoteOptionName;
         @AuraEnabled public String description;
         @AuraEnabled public Decimal financedAmount;
         @AuraEnabled public Decimal term;
@@ -41,7 +41,7 @@ public with sharing class tvalueQuotePickerController {
         public QuoteWrapper(Quote q) {
             this.isSelected = false;
             this.id = q.Id;
-            this.name = q.Name;
+            this.quoteOptionName = q.Name;
             this.description = q.Description;
             this.financedAmount = q.Total_Financed_Amount__c;
             this.term = q.Term__c;

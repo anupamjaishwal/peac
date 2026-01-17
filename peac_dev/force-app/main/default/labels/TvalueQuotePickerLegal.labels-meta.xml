@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>TvalueQuotePicker_LegalDisclaimer</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Legal disclaimer text for the Tvalue Quote Picker component.</shortDescription>
+        <value>This is placeholder legal language. The information provided in this table is for illustrative purposes only and does not constitute a binding offer. Rates, terms, and conditions are subject to change without notice and may vary based on creditworthiness, collateral, and other factors. All financing is subject to final credit approval.</value>
+    </labels>
+</CustomLabels>

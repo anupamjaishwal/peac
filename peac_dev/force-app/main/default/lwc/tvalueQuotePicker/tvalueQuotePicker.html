@@ -59,15 +59,12 @@
                     columns={columns}
                     selected-rows={selectedRows}
                     onrowselection={handleRowSelection}
-                    hide-checkbox-column="true"
-                    show-row-number-column="false"
-                    resize-column-disabled="false"
-                    suppress-bottom-bar="false">
+                    >
                 </lightning-datatable>
             </div>
 
             <!-- Footer Buttons -->
-            <div class="footer-section">
+            <!-- <div class="footer-section">
                 <button 
                     class="slds-button slds-button_neutral"
                     onclick={handleEmailQuotes}
@@ -82,6 +79,11 @@
                     <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
                     {label.USE_THIS_QUOTE_LABEL}
                 </button>
+            </div> -->
+
+            <!-- Legal Disclaimer -->
+            <div class="legal-section">
+                <p class="legal-text">{label.LEGAL_DISCLAIMER_LABEL}</p>
             </div>
         </template>
 

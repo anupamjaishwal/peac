@@ -1,4 +1,4 @@
-import { LightningElement, api, wire, track } from 'lwc';
+import { LightningElement, api, track } from 'lwc'; // Note: 'wire' is removed
 import getQuotes from '@salesforce/apex/tvalueQuotePickerController.getQuotes';
 import SELECT_LABEL from '@salesforce/label/c.TvalueQuotePicker_Select';
 import QUOTE_OPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_QuoteOption';
@@ -14,6 +14,7 @@ import NOTES_LABEL from '@salesforce/label/c.TvalueQuotePicker_Notes';
 import CREATED_LABEL from '@salesforce/label/c.TvalueQuotePicker_Created';
 import EMAIL_QUOTES_LABEL from '@salesforce/label/c.TvalueQuotePicker_EmailQuotes';
 import USE_THIS_QUOTE_LABEL from '@salesforce/label/c.TvalueQuotePicker_UseThisQuote';
+import LEGAL_DISCLAIMER_LABEL from '@salesforce/label/c.TvalueQuotePicker_LegalDisclaimer';
 
 export default class TvalueQuotePicker extends LightningElement {
     @api recordId;
@@ -37,26 +38,20 @@ export default class TvalueQuotePicker extends LightningElement {
         NOTES_LABEL,
         CREATED_LABEL,
         EMAIL_QUOTES_LABEL,
-        USE_THIS_QUOTE_LABEL
+        USE_THIS_QUOTE_LABEL,
+        LEGAL_DISCLAIMER_LABEL
     };
 
     connectedCallback() {
         this.initializeColumns();
+        this.loadQuotes(); // Call the imperative method
     }
 
     initializeColumns() {
         this.columns = [
             {
-                label: this.label.SELECT_LABEL,
-                type: 'boolean',
-                fieldName: 'isSelected',
-                sortable: false,
-                cellAttributes: { alignment: 'center' },
-                hideDefaultActions: true
-            },
-            {
                 label: this.label.QUOTE_OPTION_LABEL,
-                fieldName: 'quoteOption',
+                fieldName: 'quoteOptionName',
                 type: 'text',
                 sortable: true,
                 cellAttributes: { alignment: 'left' }
@@ -92,7 +87,7 @@ export default class TvalueQuotePicker extends LightningElement {
             {
                 label: this.label.ADVANCE_PAYMENTS_LABEL,
                 fieldName: 'advancePayments',
-                type: 'currency',
+                type: 'number',
                 sortable: true,
                 cellAttributes: { alignment: 'right' }
             },
@@ -134,29 +129,31 @@ export default class TvalueQuotePicker extends LightningElement {
         ];
     } 
 
-    @wire(getQuotes, { recordId: ' ' })
-    wiredQuotes({ error, data }) {
-        if (data) {
-            this.isLoading = false;
-            this.quotes = data;
-            this.selectedRows = [];
-            this.error = undefined;
-        } else if (error) {
-            this.isLoading = false;
-            this.error = error;
-            this.quotes = [];
-            this.selectedRows = [];
-        }
+    loadQuotes() {
+        this.isLoading = true;
+        // Call Apex imperatively
+        getQuotes({ recordId: this.recordId })
+            .then(result => {
+                console.log('Imperative call successful. Data:', result);
+                this.quotes = result;
+                this.error = undefined;
+            })
+            .catch(error => {
+                console.error('Imperative call failed. Error:', error);
+                this.error = error;
+                this.quotes = [];
+            })
+            .finally(() => {
+                this.isLoading = false;
+                this.selectedRows = [];
+            });
     }
 
     handleRowSelection(event) {
+        // Extracts the selected row details
         const selectedRows = event.detail.selectedRows;
+        // Maps the selected rows to just their IDs for easier processing
         this.selectedRows = selectedRows.map(row => row.id);
-        // Update isSelected field in quotes
-        this.quotes = this.quotes.map(quote => ({
-            ...quote,
-            isSelected: this.selectedRows.includes(quote.id)
-        }));
     }
 
     get hasQuotes() {

@@ -87,8 +87,10 @@
 }
 
 .actions-section.footer-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
     margin-top: 24px;
-    margin-bottom: 0;
     padding-top: 16px;
     border-top: 1px solid #e8eef7;
     flex-wrap: wrap;
@@ -103,6 +105,20 @@
 
 ::slotted(.action-btn) {
     transition: all 0.3s ease;
+}
+
+/* Legal Section */
+.legal-section {
+    margin-top: 24px;
+    padding-top: 16px;
+    border-top: 1px solid #e8eef7;
+}
+
+.legal-text {
+    font-size: 12px;
+    color: #666666;
+    font-style: italic;
+    line-height: 1.5;
 }
 
 /* Datatable Wrapper */
