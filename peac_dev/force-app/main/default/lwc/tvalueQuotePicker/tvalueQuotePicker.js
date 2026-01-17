@@ -132,7 +132,7 @@ export default class TvalueQuotePicker extends LightningElement {
                 cellAttributes: { alignment: 'center' }
             }
         ];
-    }
+    } 
 
     @wire(getQuotes, { recordId: ' ' })
     wiredQuotes({ error, data }) {
