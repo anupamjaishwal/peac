@@ -52,6 +52,34 @@ public with sharing class tvalueQuotePickerController {
             this.endOption = q.End_of_Term_Option__c;
             this.notes = q.Notes__c;
             this.createdDate = q.CreatedDate;
+            //this.quoteOption = q.Quote_Option__c;
+        }
+    }
+
+    @AuraEnabled
+    public static void sendEmail(String toAddress, String ccAddress, String subject, String body) {
+        if (String.isBlank(toAddress)) {
+            throw new AuraHandledException('To address cannot be blank.');
+        }
+
+        try {
+            Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+            mail.setToAddresses(new List<String>{ toAddress });
+            if (String.isNotBlank(ccAddress)) {
+                mail.setCcAddresses(new List<String>{ ccAddress });
+            }
+            mail.setSubject(subject);
+            mail.setPlainTextBody(body);
+            
+            // Set Org-Wide Email Address if available
+            List<OrgWideEmailAddress> owea = [SELECT Id FROM OrgWideEmailAddress WHERE Address = 'noreply@peacsolutions.com' LIMIT 1];
+            if (!owea.isEmpty()) {
+                mail.setOrgWideEmailAddressId(owea[0].Id);
+            }
+
+            Messaging.sendEmail(new List<Messaging.SingleEmailMessage>{ mail });
+        } catch (Exception e) {
+            throw new AuraHandledException('Email sending failed: ' + e.getMessage());
         }
     }
 }

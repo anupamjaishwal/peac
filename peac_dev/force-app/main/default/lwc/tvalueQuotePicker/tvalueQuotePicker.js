@@ -24,6 +24,7 @@ export default class TvalueQuotePicker extends LightningElement {
     @track error;
     @track isLoading = false;
     @track columns = [];
+    @track isEmailModalOpen = false;
 
     label = {
         SELECT_LABEL,
@@ -173,20 +174,16 @@ export default class TvalueQuotePicker extends LightningElement {
         return this.selectedRows.length;
     }
 
+    get selectedQuoteRecords() {
+        return this.quotes.filter(q => this.selectedRows.includes(q.id));
+    }
+
     handleEmailQuotes() {
         if (this.selectedRows.length === 0) {
             this.showToast('Error', 'You must select at least one quote to email.', 'error');
             return;
         }
-
-        this.dispatchEvent(new CustomEvent('emailquotes', {
-            detail: {
-                selectedQuoteIds: this.selectedRows,
-                quoteRecords: this.quotes.filter(q => this.selectedRows.includes(q.id))
-            },
-            bubbles: true,
-            composed: true
-        }));
+        this.isEmailModalOpen = true;
     }
 
     handleUseThisQuote() {
@@ -217,5 +214,9 @@ export default class TvalueQuotePicker extends LightningElement {
             variant: variant,
         });
         this.dispatchEvent(event);
+    }
+
+    handleCloseEmailModal() {
+        this.isEmailModalOpen = false;
     }
 }

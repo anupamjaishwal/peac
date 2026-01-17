@@ -1361,4 +1361,25 @@ Stack Trace: {3}</value>
         <shortDescription>Legal disclaimer text for the Tvalue Quote Picker component.</shortDescription>
         <value>This is placeholder legal language. The information provided in this table is for illustrative purposes only and does not constitute a binding offer. Rates, terms, and conditions are subject to change without notice and may vary based on creditworthiness, collateral, and other factors. All financing is subject to final credit approval.</value>
     </labels>
+    <labels>
+        <fullName>TvalueEmailSubject</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Default subject for quote emails.</shortDescription>
+        <value>Your Equipment Finance Quote Options</value>
+    </labels>
+    <labels>
+        <fullName>TvalueEmailSuccess</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Success message for sending quote email.</shortDescription>
+        <value>Email sent successfully!</value>
+    </labels>
+    <labels>
+        <fullName>TvalueEmailError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error message for sending quote email.</shortDescription>
+        <value>Failed to send email. Please try again.</value>
+    </labels>
 </CustomLabels>

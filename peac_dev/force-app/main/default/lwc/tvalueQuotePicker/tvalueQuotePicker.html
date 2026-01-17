@@ -92,4 +92,11 @@
             </div>
         </template>
     </div>
+
+    <template if:true={isEmailModalOpen}>
+        <c-tvalue-quote-email
+            selected-quotes={selectedQuoteRecords}
+            onclose={handleCloseEmailModal}>
+        </c-tvalue-quote-email>
+    </template>
 </template>
