@@ -1,4 +1,5 @@
 import { LightningElement, api, track } from 'lwc'; // Note: 'wire' is removed
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getQuotes from '@salesforce/apex/tvalueQuotePickerController.getQuotes';
 import SELECT_LABEL from '@salesforce/label/c.TvalueQuotePicker_Select';
 import QUOTE_OPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_QuoteOption';
@@ -173,28 +174,48 @@ export default class TvalueQuotePicker extends LightningElement {
     }
 
     handleEmailQuotes() {
-        if (this.hasSelection) {
-            this.dispatchEvent(new CustomEvent('emailquotes', {
-                detail: {
-                    selectedQuoteIds: this.selectedRows,
-                    quoteRecords: this.quotes.filter(q => this.selectedRows.includes(q.id))
-                },
-                bubbles: true,
-                composed: true
-            }));
+        if (this.selectedRows.length === 0) {
+            this.showToast('Error', 'You must select at least one quote to email.', 'error');
+            return;
         }
+
+        this.dispatchEvent(new CustomEvent('emailquotes', {
+            detail: {
+                selectedQuoteIds: this.selectedRows,
+                quoteRecords: this.quotes.filter(q => this.selectedRows.includes(q.id))
+            },
+            bubbles: true,
+            composed: true
+        }));
     }
 
     handleUseThisQuote() {
-        if (this.hasSelection) {
-            this.dispatchEvent(new CustomEvent('usethisquote', {
-                detail: {
-                    selectedQuoteIds: this.selectedRows,
-                    quoteRecords: this.quotes.filter(q => this.selectedRows.includes(q.id))
-                },
-                bubbles: true,
-                composed: true
-            }));
+        if (this.selectedRows.length === 0) {
+            this.showToast('Error', 'You must select a quote to proceed.', 'error');
+            return;
         }
+
+        if (this.selectedRows.length > 1) {
+            this.showToast('Error', 'You can only select one quote to use.', 'error');
+            return;
+        }
+
+        this.dispatchEvent(new CustomEvent('usethisquote', {
+            detail: {
+                selectedQuoteIds: this.selectedRows,
+                quoteRecords: this.quotes.filter(q => this.selectedRows.includes(q.id))
+            },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    showToast(title, message, variant) {
+        const event = new ShowToastEvent({
+            title: title,
+            message: message,
+            variant: variant,
+        });
+        this.dispatchEvent(event);
     }
 }
