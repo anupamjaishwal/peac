@@ -1,0 +1,44 @@
+<template>
+    <template if:true={hasFields}>
+       
+        <table class={tableCss}>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <template for:each={columnHeaders} for:item="header">
+                        <th key={header.seq} class="temporaryClass">
+                            {header.label}
+                        </th>
+                    </template>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={fields} for:item="field">
+                    <tr key={field.key} style={field.totals}>
+                            <td style="width:10%;"></td>
+                        <td class="customLabel">
+                            {field.label}
+                        </td>
+                        <template for:each={field.rows} for:item="row">
+                            <td key={row.QuoteSeq} class="temporaryClass">
+                                <template lwc:if={field.isLink}>
+                                    <a href="#" data-destination={field.destination} onclick={handleKeyClick}>{row.value}</a>
+                                </template>
+                                <template lwc:elseif={field.isCurrency}>
+                                    <lightning-formatted-number value={row.value} format-style="currency"></lightning-formatted-number>
+                                </template>
+                                <template lwc:elseif={field.isPlain}>
+                                    {row.value}
+                                </template>
+                            </td>
+                        </template>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+    <template if:false={hasFields}>
+        No data to display
+    </template>
+</template>

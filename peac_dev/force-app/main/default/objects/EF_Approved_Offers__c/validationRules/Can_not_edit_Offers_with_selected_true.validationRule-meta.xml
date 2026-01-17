@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Can_not_edit_Offers_with_selected_true</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( Is_Selected_Offer__c , ISCHANGED(Deferral_Payments_Custom__c) || ISCHANGED(Additanal_Comments__c) || ISCHANGED(Desired_Yield__c) || ISCHANGED(Max_Equipment_Cost__c) || ISCHANGED(Min_Equipment_Cost__c) || ISCHANGED(Opportunity__c) || ISCHANGED(Points_Custom__c) || ISCHANGED(Rate_Factor__c	) || ISCHANGED(Rate_Type__c) || ISCHANGED(Security_Deposit__c) || ISCHANGED(Term_in_Months__c) || ISCHANGED(Yield__c)  )</errorConditionFormula>
+    <errorMessage>Users can&apos;t edit EF offers without un-checking selected checkbox</errorMessage>
+</ValidationRule>

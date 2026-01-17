@@ -1,0 +1,97 @@
+<template>
+    <div class="quote-picker-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="header-title">
+                <h2>Quote Details</h2>
+            </div>
+            <div class="header-buttons">
+                <button 
+                    class="slds-button slds-button_neutral"
+                    onclick={handleEmailQuotes}
+                    disabled={notHasSelection}>
+                    <lightning-icon icon-name="utility:email" size="small"></lightning-icon>
+                    {label.EMAIL_QUOTES_LABEL}
+                </button>
+                <button 
+                    class="slds-button slds-button_brand"
+                    onclick={handleUseThisQuote}
+                    disabled={notHasSelection}>
+                    <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                    {label.USE_THIS_QUOTE_LABEL}
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Spinner -->
+        <template if:true={isLoading}>
+            <div class="loader-container">
+                <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Error Message -->
+        <template if:true={error}>
+            <div class="error-container">
+                <lightning-badge label="Error"></lightning-badge>
+                <p class="error-message">Unable to load quotes. Please try again later.</p>
+            </div>
+        </template>
+
+        <!-- No Data Message -->
+        <template if:true={hasQuotes}>
+            <!-- Selection Info -->
+            <div class="selection-info">
+                <template if:true={hasSelection}>
+                    <lightning-badge label={selectedCount}></lightning-badge>
+                    <span class="selection-text">Quote(s) selected</span>
+                </template>
+                <template if:false={hasSelection}>
+                    <span class="no-selection-text">No quotes selected</span>
+                </template>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-container">
+                <lightning-datatable
+                    key-field="id"
+                    data={quotes}
+                    columns={columns}
+                    selected-rows={selectedRows}
+                    onrowselection={handleRowSelection}
+                    hide-checkbox-column="true"
+                    show-row-number-column="false"
+                    resize-column-disabled="false"
+                    suppress-bottom-bar="false">
+                </lightning-datatable>
+            </div>
+
+            <!-- Footer Buttons -->
+            <div class="footer-section">
+                <button 
+                    class="slds-button slds-button_neutral"
+                    onclick={handleEmailQuotes}
+                    disabled={notHasSelection}>
+                    <lightning-icon icon-name="utility:email" size="small"></lightning-icon>
+                    {label.EMAIL_QUOTES_LABEL}
+                </button>
+                <button 
+                    class="slds-button slds-button_brand"
+                    onclick={handleUseThisQuote}
+                    disabled={notHasSelection}>
+                    <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                    {label.USE_THIS_QUOTE_LABEL}
+                </button>
+            </div>
+        </template>
+
+        <!-- Empty State -->
+        <template if:false={hasQuotes}>
+            <div class="empty-state">
+                <lightning-icon icon-name="utility:info" size="large"></lightning-icon>
+                <h3>No Quotes Available</h3>
+                <p>There are no quotes to display at this time.</p>
+            </div>
+        </template>
+    </div>
+</template>

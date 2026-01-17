@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Payee_Name__c</columns>
+    <columns>RECORDTYPE</columns>
+    <columns>Phone__c</columns>
+    <columns>Address1__c</columns>
+    <columns>City__c</columns>
+    <columns>State__c</columns>
+    <columns>Zip__c</columns>
+    <columns>SL_Vendor_ID__c</columns>
+    <columns>Payee_ID__c</columns>
+    <columns>LAST_UPDATE</columns>
+    <columns>Sent_to_Solomon__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Payee_Name__c</field>
+        <operation>contains</operation>
+        <value>RITCHIE</value>
+    </filters>
+    <label>All</label>
+</ListView>

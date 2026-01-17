@@ -1,0 +1,27 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <div class="slds-var-p-around_medium lgc-bg">
+            <lightning-combobox name="fromAddress" label="From" placeholder="Select Email Address"
+                value={fromAddress} options={fromAddresses} onchange={handleFromAddress} required></lightning-combobox>
+        </div>
+        <div class="slds-var-p-around_medium lgc-bg">
+            <lightning-record-edit-form object-api-name="Contract_Contact_Role__c">
+                <lightning-input-field name="contactId" variant="label-hidden" field-name="Contact__c" value={contactId} onchange={handleGetToAddress}></lightning-input-field>
+            </lightning-record-edit-form>
+            <lightning-input name="toAddress" type="email" label="To" value={toAddress} disabled required></lightning-input>
+            <lightning-combobox name="purchaseOption" label="Purchase Option" placeholder="Select Purchase Option"
+                value={selectedTemplate} options={purchaseOptions} onchange={handleTemplate} required></lightning-combobox>
+            <lightning-formatted-rich-text value={preview}></lightning-formatted-rich-text>
+            <lightning-input type="file" label="File" onchange={handleFile} 
+                required message-when-value-missing="Please select a file to attach"></lightning-input>
+            <template if:true={fileSelected}>
+                <p class="slds-text-align_center"><span class="slds-form-element__label">Selected File</span> {fileName}</p>
+            </template>
+        </div>
+        <div class="slds-var-p-around_medium lgc-bg">
+            <lightning-button label="Cancel" onclick={handleCancel} name="cancel"></lightning-button>
+            <lightning-button label="Attach and Send" onclick={handleSendEmail} variant="brand" name="schedule"></lightning-button>
+        </div>
+    </template>
+</template>

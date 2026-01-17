@@ -1,0 +1,43 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <lightning-layout>
+            <lightning-layout-item size="12" class="slds-text-align_center">
+                <lightning-record-edit-form
+                    id="recordViewForm"
+                    object-api-name="Contract_Attachment__c"
+                    onsubmit={handleProcessing}
+                    onerror={handleError}
+                    onsuccess={handleAfterSave}>
+                    <lightning-messages></lightning-messages>
+        
+                    <lightning-input-field field-name="Contract__c" value={contractId} disabled> </lightning-input-field>
+                    <c-sl-big-file-upload input-label="File" required message-when-value-missing="Please select a file to attach"
+                        onfinishedupload={handleFile} onsavedinsalesforce={afterUploadHelper}></c-sl-big-file-upload>
+                    <lightning-input-field field-name="Description__c"> </lightning-input-field>
+                    <lightning-input-field field-name="Type_Group__c"> </lightning-input-field>
+                    <lightning-input-field field-name="Type__c" required> </lightning-input-field>
+                    <lightning-input-field field-name="Status__c"></lightning-input-field>
+                    <lightning-input-field field-name="Name" value={fileName} class="slds-hide"></lightning-input-field>
+                    
+                    <lightning-datatable key-field="Id" data={contracts} columns={columns} onrowselection={handleSelectedContracts}></lightning-datatable>
+                    
+                    <template if:true={errorOccurred}>
+                        <p class="slds-has-error">
+                            <span class="slds-form-element__help">{errorMessage}</span>
+                        </p>
+                    </template>
+                    <div class="slds-var-p-around_medium">
+                        <template if:true={isSavingAttachment}>
+                            <p style="position: relative;height: 80px;">
+                                <lightning-spinner alternative-text="Saving Attachment..." size="small" variant="brand"></lightning-spinner>
+                            </p>
+                        </template>
+                        <lightning-button id="submit" type="submit" label="Attach File" variant="brand" disabled={isSavingAttachment}></lightning-button>
+                    </div>
+                </lightning-record-edit-form>
+            </lightning-layout-item>
+        </lightning-layout>
+        
+    </template>
+</template>

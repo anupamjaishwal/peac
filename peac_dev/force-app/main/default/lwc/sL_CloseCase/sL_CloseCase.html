@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title={title}>
+        <lightning-record-edit-form object-api-name="Case" record-id={recordId}
+            onload={handleOtherReason} onsuccess={handleSuccess}>
+            <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+            <template if:false={isLoading}>
+                <lightning-layout>
+                    <lightning-layout-item padding="around-medium" size="12">
+                            <lightning-output-field field-name="CaseNumber"></lightning-output-field>
+                            <lightning-input-field field-name="Reason" onchange={handleOtherReason} required></lightning-input-field>
+                            <lightning-input-field field-name="Closed_Reason__c" onchange={handleOtherReason} name="Closed_Reason__c" required></lightning-input-field>
+                            <template if:true={isOther}>
+                                <lightning-input-field field-name="Resolution_Notes__c" required={isOther}></lightning-input-field>
+                            </template>
+                            <lightning-input-field field-name="Status" disabled value="Closed"></lightning-input-field>
+                            <lightning-button type="button" label="Cancel" onclick={goToCallingRecord}
+                                class="slds-var-m-left_x-small"></lightning-button>
+                            <lightning-button class="slds-var-m-left_x-small"
+                                            type="submit"
+                                            label="Save" variant="brand" onclick={handleSubmit} disabled={isSaving}></lightning-button>
+                    </lightning-layout-item>
+                </lightning-layout>
+            </template>
+        </lightning-record-edit-form>
+    </lightning-card>
+</template>

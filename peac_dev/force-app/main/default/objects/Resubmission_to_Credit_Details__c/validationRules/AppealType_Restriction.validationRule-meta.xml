@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AppealType_Restriction</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(AND( ISPICKVAL(PRIORVALUE(Appeal_Type__c) , &apos;2nd&apos;)   , ISPICKVAL(Appeal_Type__c , &apos;1st&apos;)) , AND(OR(ISCHANGED( Appeal_Type__c  ),ISNEW()), ISPICKVAL(Appeal_Type__c , &apos;2nd&apos;), CONTAINS($UserRole.Name, &apos;Rep&apos;), NOT(OR($Profile.Name = &quot;Strategic Rep&quot;, $Profile.Id = &quot;00e610000011eX2AAI&quot;))))</errorConditionFormula>
+    <errorDisplayField>Appeal_Type__c</errorDisplayField>
+    <errorMessage>Please select only Appeal type 1st</errorMessage>
+</ValidationRule>

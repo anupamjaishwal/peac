@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Upsert_Logs__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>If true, all logs will be upserted, else new is inserted everytime</description>
+    <externalId>false</externalId>
+    <label>Upsert Logs</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

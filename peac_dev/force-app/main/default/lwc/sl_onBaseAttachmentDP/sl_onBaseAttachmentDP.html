@@ -1,0 +1,127 @@
+<template>
+  <lightning-card class="slds-text-align_center">
+    <span if:true={recordId} slot="title">OnBase Attachments</span>
+
+    <template if:true={isView}>
+      <lightning-button slot="actions" label="Upload Documents" variant="brand" onclick={handleGoToAdd}></lightning-button>
+    </template>
+
+    <template if:false={isView}>
+      <lightning-button if:true={recordId} slot="actions" label="Cancel" onclick={handleGoToView}></lightning-button>
+        <lightning-record-edit-form
+          object-api-name="Opportunity_Attachment__c"
+          onsubmit={handleSubmit}
+          onsuccess={handleSuccess}
+          onerror={handleError}>
+        <div class="slds-form slds-form_stacked">
+    <!-- <lightning-input-field
+      class="slds-size_1-of-1"
+      field-name="Dealer_Doc_Type__c"
+      value={docType}
+      required={recordId}
+      onchange={handleTypeChange}>
+    </lightning-input-field> -->
+
+    <div class="slds-form-element slds-form-element_stacked" style="margin-bottom: 0rem;">
+      <label class="slds-form-element__label" style="text-align: left; display: block; margin-bottom: 0.1rem;">
+        Document Type
+      </label>
+    <div class="slds-form-element__control" style="padding-top: 0rem; margin-top: -1rem;">
+        <lightning-combobox
+          name="Dealer_Doc_Type__c"
+          value={docType}
+          placeholder="--None--"
+          options={documentOptions}
+          required={recordId}
+          onchange={handleTypeChange}>
+        </lightning-combobox>
+      </div>
+    </div>
+
+
+
+    <template lwc:if={isDescriptionRequired}>
+      <lightning-input-field 
+        class="slds-size_1-of-1"
+        field-name="Description__c" 
+        required>
+      </lightning-input-field>
+    </template>
+
+    
+    <!-- <template lwc:if={fileSelected}>
+      <lightning-input-field 
+        class="slds-size_1-of-1"
+        field-name="Name" 
+        value={fileName} 
+        disabled>
+      </lightning-input-field>
+    </template> -->
+  <div class="slds-form-element slds-form-element_stacked">
+    <template lwc:if={fileSelected}>
+    <label class="slds-form-element__label" style="text-align: left; display: block; padding-top: 0.5rem">File Name</label>
+          <div class="slds-form-element__control" style="padding-top: 0rem; margin-top: -1rem;">
+            <lightning-input
+            type="text"
+            value={fileName}
+            disabled>
+          </lightning-input>
+      </div>
+    </template>
+  </div>
+
+  <!-- <div class="slds-size_1-of-1">
+      <c-sl-big-file-upload-d-p
+        input-label="File"
+        optional-file={isNotRecordPage}
+        custom-button-text="Select Files"
+        message-when-value-missing="Please select a file to attach"
+        onfinishedupload={handleFile}
+        onsavedinsalesforce={afterUploadHelper}>
+      </c-sl-big-file-upload-d-p>
+  </div> -->
+
+  <div class="slds-form-element slds-form-element_stacked">
+    <label class="slds-form-element__label" style="text-align: left; display: block;">File</label>
+    <div class="slds-form-element__control" style="padding-top: 0rem; margin-top: -0.3rem;">
+      <c-sl-big-file-upload-d-p
+        optional-file={isNotRecordPage}
+        custom-button-text="Select Files"
+        message-when-value-missing="Please select a file to attach"
+        onfinishedupload={handleFile}
+        onsavedinsalesforce={afterUploadHelper}>
+      </c-sl-big-file-upload-d-p>
+    </div>
+  </div>
+
+
+    <div class="slds-m-top_medium">
+      <lightning-button
+        class="slds-button_brand"
+        data-id="submitbutton"
+        type="submit"
+        name="save"
+        label="Save Files">
+      </lightning-button>
+    </div>
+  </div>
+
+      </lightning-record-edit-form>
+    </template>
+
+    <div slot="footer">
+      <template if:false={isInProgress}>
+        <lightning-datatable
+          key-field="Id"
+          data={rows}
+          columns={columns}
+          onrowaction={handleSelection}
+          hide-checkbox-column>
+        </lightning-datatable>
+        <p class="slds-text-align_center" if:false={rows.length}>
+          No attachments added yet
+        </p>
+      </template>
+    </div>
+  </lightning-card>
+</template>

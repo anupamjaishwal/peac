@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Agreed_to_Legal_Disclaimer__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Store Agreed to Legal Disclaimer from opportunity</description>
+    <externalId>false</externalId>
+    <label>Agreed to Legal Disclaimer</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

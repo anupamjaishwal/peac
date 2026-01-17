@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sale_Date_Future</fullName>
+    <active>true</active>
+    <errorConditionFormula>Sold__c  &gt; today()</errorConditionFormula>
+    <errorDisplayField>Sold__c</errorDisplayField>
+    <errorMessage>Equipment sale date can&apos;t be in future.</errorMessage>
+</ValidationRule>

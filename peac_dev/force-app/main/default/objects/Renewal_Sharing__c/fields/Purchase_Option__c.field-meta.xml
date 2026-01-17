@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Purchase_Option__c</fullName>
+    <externalId>false</externalId>
+    <label>Purchase Option</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>01 FMV</fullName>
+                <default>false</default>
+                <label>01 FMV</label>
+            </value>
+            <value>
+                <fullName>02 10% Purchase Option</fullName>
+                <default>false</default>
+                <label>02 10% Purchase Option</label>
+            </value>
+            <value>
+                <fullName>03 1.00 Out</fullName>
+                <default>false</default>
+                <label>03 1.00 Out</label>
+            </value>
+            <value>
+                <fullName>05 Put</fullName>
+                <default>false</default>
+                <label>05 Put</label>
+            </value>
+            <value>
+                <fullName>06 Assigned Residual</fullName>
+                <default>false</default>
+                <label>06 Assigned Residual</label>
+            </value>
+            <value>
+                <fullName>07 1st Right of Refusal</fullName>
+                <default>false</default>
+                <label>07 1st Right of Refusal</label>
+            </value>
+            <value>
+                <fullName>08 Customer Owned</fullName>
+                <default>false</default>
+                <label>08 Customer Owned</label>
+            </value>
+            <value>
+                <fullName>11 Fixed Purchase Option</fullName>
+                <default>false</default>
+                <label>11 Fixed Purchase Option</label>
+            </value>
+            <value>
+                <fullName>12 FMV-Used Equipment</fullName>
+                <default>false</default>
+                <label>12 FMV-Used Equipment</label>
+            </value>
+            <value>
+                <fullName>13 FMV-Muni</fullName>
+                <default>false</default>
+                <label>13 FMV-Muni</label>
+            </value>
+            <value>
+                <fullName>14 Operating Lease</fullName>
+                <default>false</default>
+                <label>14 Operating Lease</label>
+            </value>
+            <value>
+                <fullName>15 FMV No Renewal</fullName>
+                <default>false</default>
+                <label>15 FMV No Renewal</label>
+            </value>
+            <value>
+                <fullName>16 10% No Renewal</fullName>
+                <default>false</default>
+                <label>16 10% No Renewal</label>
+            </value>
+            <value>
+                <fullName>17 PUT No Renewal</fullName>
+                <default>false</default>
+                <label>17 PUT No Renewal</label>
+            </value>
+            <value>
+                <fullName>18 Assign Resid No Renewal</fullName>
+                <default>false</default>
+                <label>18 Assign Resid No Renewal</label>
+            </value>
+            <value>
+                <fullName>25 Guaranteed Residual</fullName>
+                <default>false</default>
+                <label>25 Guaranteed Residual</label>
+            </value>
+            <value>
+                <fullName>26 Rental - No Purchase Opti</fullName>
+                <default>false</default>
+                <label>26 Rental - No Purchase Opti</label>
+            </value>
+            <value>
+                <fullName>28 Inventory Finance SAC B/O</fullName>
+                <default>false</default>
+                <label>28 Inventory Finance SAC B/O</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

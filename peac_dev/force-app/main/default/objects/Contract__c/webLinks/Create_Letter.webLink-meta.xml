@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Create_Letter</fullName>
+    <availability>online</availability>
+    <description>/apex/loop__looplus?&amp;eid={!Contract__c.Id}&amp;accountId={!Contract__c.CustomerId__c}&amp;filter={!Contract__c.Lessor_Code__c}
+
+
+/apex/loop__looplus?&amp;eid={!Contract__c.Id}</description>
+    <displayType>button</displayType>
+    <encodingKey>UTF-8</encodingKey>
+    <height>600</height>
+    <linkType>url</linkType>
+    <masterLabel>Create Letter</masterLabel>
+    <openType>sidebar</openType>
+    <protected>false</protected>
+    <url>/apex/loop__looplus?&amp;eid={!Contract__c.Id}&amp;filter={!Contract__c.DocGen_Formula__c}</url>
+</WebLink>

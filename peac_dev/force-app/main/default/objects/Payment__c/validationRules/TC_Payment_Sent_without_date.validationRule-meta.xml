@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TC_Payment_Sent_without_date</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+   $Profile.Name != &quot;System Administrator&quot;, 
+   TEXT(Payment_Status__c) = &quot;Payment Sent&quot;,
+   ISCHANGED(Payment_Status__c),
+   !ISCHANGED(Date_Sent_to_External_System__c)
+)</errorConditionFormula>
+    <errorMessage>To move payment status to &quot;Payment Sent&quot;, the system must submit the payment to the external system and populate the date it was sent. Users may not set this status manually.</errorMessage>
+</ValidationRule>

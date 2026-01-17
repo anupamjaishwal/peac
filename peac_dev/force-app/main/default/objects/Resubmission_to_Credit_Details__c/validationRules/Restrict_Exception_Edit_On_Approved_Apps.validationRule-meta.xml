@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Restrict_Exception_Edit_On_Approved_Apps</fullName>
+    <active>true</active>
+    <description>Exceptions cannot be edited on approved application. When not  approved , only Credit users may edit this field.</description>
+    <errorConditionFormula>AND( 
+      NOT($Permission.Bypass_Validation),
+      ISCHANGED(Exception__c),
+      RecordType.Name = &apos;Loan&apos;,
+
+
+      OR(
+          CONTAINS(TEXT(Opportunity__r.Application_Status__c), &apos;Approved&apos;),
+        
+          AND( 
+              NOT(CONTAINS(TEXT(Opportunity__r.Application_Status__c),&apos;Approved&apos;)),
+              NOT(CONTAINS($Profile.Name, &apos;Credit&apos;))
+              ) 
+      )
+
+)</errorConditionFormula>
+    <errorMessage>Exceptions cannot be edited on approved application. When not  approved , only Credit users may edit this field.</errorMessage>
+</ValidationRule>

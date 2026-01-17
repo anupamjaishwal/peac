@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Backfilled_In_process_SUV</fullName>
+    <booleanFilter>1 AND 2 AND (3 OR 4 OR 5 OR 6)</booleanFilter>
+    <columns>Account__c</columns>
+    <columns>Dealer_Status__c</columns>
+    <columns>Assigned_To__c</columns>
+    <columns>Review_Date__c</columns>
+    <columns>Next_Scheduled_Review__c</columns>
+    <columns>Status__c</columns>
+    <columns>Review_Type__c</columns>
+    <columns>Actual_Vs_Projected_Loss__c</columns>
+    <columns>Risk_Adjusted_Return__c</columns>
+    <columns>Net_Investment__c</columns>
+    <columns>Date_Dealer_Approved__c</columns>
+    <columns>Total_Past_Due__c</columns>
+    <columns>Approval_Rate__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>notEqual</operation>
+        <value>Completed</value>
+    </filters>
+    <filters>
+        <field>Created_via_Backfill_Job__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <filters>
+        <field>Approval_Rate__c</field>
+        <operation>lessThan</operation>
+        <value>25</value>
+    </filters>
+    <filters>
+        <field>Total_Past_Due__c</field>
+        <operation>lessThan</operation>
+        <value>5</value>
+    </filters>
+    <filters>
+        <field>Actual_Vs_Projected_Loss__c</field>
+        <operation>greaterThan</operation>
+        <value>200</value>
+    </filters>
+    <filters>
+        <field>Risk_Adjusted_Return__c</field>
+        <operation>lessThan</operation>
+        <value>4</value>
+    </filters>
+    <label>Backfilled In-process SUV</label>
+</ListView>

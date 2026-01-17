@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>View_InvoiceSF__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+ISPICKVAL(Contract__r.Invoice_Format__c, &apos;ACH&apos;),
+NULL,
+HYPERLINK(&apos;/lightning/cmp/c__sL_ViewInvoicePdf?c__invoiceId=&apos; &amp; Id, &quot;View Invoice&quot;, &quot;_self&quot;)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>View Invoice</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

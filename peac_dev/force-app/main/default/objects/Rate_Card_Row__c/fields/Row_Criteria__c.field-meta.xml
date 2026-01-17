@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Row_Criteria__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <inlineHelpText>The set of conditions used to determine if the transaction meets the criteria of the row.</inlineHelpText>
+    <label>Row Criteria</label>
+    <referenceTo>TCRE__Rule_Config__c</referenceTo>
+    <relationshipLabel>Rate Card Rows</relationshipLabel>
+    <relationshipName>Rate_Card_Rows</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

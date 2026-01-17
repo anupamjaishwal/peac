@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Branch_Code__c</fullName>
+    <externalId>false</externalId>
+    <label>Branch Code</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>00001</fullName>
+                <default>false</default>
+                <label>NJ1 Retail</label>
+            </value>
+            <value>
+                <fullName>00002</fullName>
+                <default>false</default>
+                <label>Broker</label>
+            </value>
+            <value>
+                <fullName>00003</fullName>
+                <default>false</default>
+                <label>National Accounts</label>
+            </value>
+            <value>
+                <fullName>00004</fullName>
+                <default>false</default>
+                <label>Office Equip Group-OEG</label>
+            </value>
+            <value>
+                <fullName>00005</fullName>
+                <default>false</default>
+                <label>Healthcare Division</label>
+            </value>
+            <value>
+                <fullName>00006</fullName>
+                <default>false</default>
+                <label>Colorado Retail</label>
+            </value>
+            <value>
+                <fullName>00007</fullName>
+                <default>false</default>
+                <label>Georgia Retail</label>
+            </value>
+            <value>
+                <fullName>00008</fullName>
+                <default>false</default>
+                <label>Illinois Retail</label>
+            </value>
+            <value>
+                <fullName>00009</fullName>
+                <default>false</default>
+                <label>NJ2 Retail</label>
+            </value>
+            <value>
+                <fullName>00010</fullName>
+                <default>false</default>
+                <label>NJ1 - Nat&apos;l/Retail</label>
+            </value>
+            <value>
+                <fullName>00011</fullName>
+                <default>false</default>
+                <label>&gt;$50K Business Developmen</label>
+            </value>
+            <value>
+                <fullName>00012</fullName>
+                <default>false</default>
+                <label>SNAP (National Accounts)</label>
+            </value>
+            <value>
+                <fullName>00013</fullName>
+                <default>false</default>
+                <label>End User</label>
+            </value>
+            <value>
+                <fullName>00014</fullName>
+                <default>false</default>
+                <label>EU - Major Accounts</label>
+            </value>
+            <value>
+                <fullName>00015</fullName>
+                <default>false</default>
+                <label>Industrial Finance Group</label>
+            </value>
+            <value>
+                <fullName>00016</fullName>
+                <default>false</default>
+                <label>Major Accounts</label>
+            </value>
+            <value>
+                <fullName>00017</fullName>
+                <default>false</default>
+                <label>Franchise</label>
+            </value>
+            <value>
+                <fullName>00018</fullName>
+                <default>false</default>
+                <label>TFG-Transportation Financ</label>
+            </value>
+            <value>
+                <fullName>00019</fullName>
+                <default>false</default>
+                <label>Direct - End User</label>
+            </value>
+            <value>
+                <fullName>00020</fullName>
+                <default>false</default>
+                <label>IFP - Indirect Funding Pl</label>
+            </value>
+            <value>
+                <fullName>00025</fullName>
+                <default>false</default>
+                <label>HKF Horizon Keystone Fin</label>
+            </value>
+            <value>
+                <fullName>00026</fullName>
+                <default>false</default>
+                <label>Commercial Vehicle Group</label>
+            </value>
+            <value>
+                <fullName>00030</fullName>
+                <default>false</default>
+                <label>Union Bank</label>
+            </value>
+            <value>
+                <fullName>00035</fullName>
+                <default>false</default>
+                <label>Union Bank - Major Accts</label>
+            </value>
+            <value>
+                <fullName>00040</fullName>
+                <default>false</default>
+                <label>OEG/NATIONAL</label>
+            </value>
+            <value>
+                <fullName>00044</fullName>
+                <default>false</default>
+                <label>OEG - Major Accounts</label>
+            </value>
+            <value>
+                <fullName>00045</fullName>
+                <default>false</default>
+                <label>Capital Lending Group</label>
+            </value>
+            <value>
+                <fullName>00046</fullName>
+                <default>false</default>
+                <label>Wholesale</label>
+            </value>
+            <value>
+                <fullName>00050</fullName>
+                <default>false</default>
+                <label>Nat&apos;l Act.- Healthcare</label>
+            </value>
+            <value>
+                <fullName>00060</fullName>
+                <default>false</default>
+                <label>CO-Nat&apos;l/Retail</label>
+            </value>
+            <value>
+                <fullName>00070</fullName>
+                <default>false</default>
+                <label>GA-Nat&apos;l/Retail</label>
+            </value>
+            <value>
+                <fullName>00080</fullName>
+                <default>false</default>
+                <label>IL-Nat&apos;l/Retail</label>
+            </value>
+            <value>
+                <fullName>00090</fullName>
+                <default>false</default>
+                <label>NJ2 - Nat&apos;l/Retail</label>
+            </value>
+            <value>
+                <fullName>00100</fullName>
+                <default>false</default>
+                <label>Utah Retail</label>
+            </value>
+            <value>
+                <fullName>00110</fullName>
+                <default>false</default>
+                <label>Utah - Nat&apos;l/Retail</label>
+            </value>
+            <value>
+                <fullName>00118</fullName>
+                <default>false</default>
+                <label>TFG - Penske</label>
+            </value>
+            <value>
+                <fullName>00120</fullName>
+                <default>false</default>
+                <label>TFG - Structured</label>
+            </value>
+            <value>
+                <fullName>00200</fullName>
+                <default>false</default>
+                <label>NJ Retail</label>
+            </value>
+            <value>
+                <fullName>00201</fullName>
+                <default>false</default>
+                <label>NJ Retail - Structured</label>
+            </value>
+            <value>
+                <fullName>00210</fullName>
+                <default>false</default>
+                <label>NJ Nat&apos;l/ Retail</label>
+            </value>
+            <value>
+                <fullName>00220</fullName>
+                <default>false</default>
+                <label>BCAP Loans</label>
+            </value>
+            <value>
+                <fullName>00221</fullName>
+                <default>false</default>
+                <label>Small Business Loans</label>
+            </value>
+            <value>
+                <fullName>00300</fullName>
+                <default>false</default>
+                <label>Healthcare Div-Specialty</label>
+            </value>
+            <value>
+                <fullName>00027</fullName>
+                <default>false</default>
+                <label>OEG Non-Copier</label>
+            </value>
+            <value>
+                <fullName>00028</fullName>
+                <default>false</default>
+                <label>CT&amp;I Field</label>
+            </value>
+            <value>
+                <fullName>00031</fullName>
+                <default>false</default>
+                <label>Arboretum</label>
+            </value>
+            <value>
+                <fullName>00032</fullName>
+                <default>false</default>
+                <label>Arrow</label>
+            </value>
+            <value>
+                <fullName>00033</fullName>
+                <default>false</default>
+                <label>Lending Tree</label>
+            </value>
+            <value>
+                <fullName>not an actual value</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>not an actual value</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

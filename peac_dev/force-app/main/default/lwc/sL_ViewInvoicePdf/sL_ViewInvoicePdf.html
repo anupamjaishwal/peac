@@ -1,0 +1,13 @@
+<template>
+    <template lwc:if={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template lwc:else>
+        <lightning-layout>
+            <lightning-layout-item size="6">
+                <lightning-formatted-url value={contractUrl} tooltip={contractUrl} label="Go Back to Contract"></lightning-formatted-url>
+            </lightning-layout-item>
+            <lightning-layout-item size="6">
+                <lightning-formatted-url value={invoiceUrl} tooltip={invoiceUrl} label="View Invoice" target="_blank" ></lightning-formatted-url>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+</template>

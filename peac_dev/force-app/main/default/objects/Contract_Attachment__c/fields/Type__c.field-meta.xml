@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Document Type</label>
+    <required>true</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Type_Group__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>CL - Credit Bureau Reports</fullName>
+                <default>false</default>
+                <label>CL - Credit Bureau Reports</label>
+            </value>
+            <value>
+                <fullName>CL - Customer Correspondence</fullName>
+                <default>false</default>
+                <label>CL - Customer Correspondence</label>
+            </value>
+            <value>
+                <fullName>CL - Demand Letters</fullName>
+                <default>false</default>
+                <label>CL - Demand Letters</label>
+            </value>
+            <value>
+                <fullName>CL - Investigations</fullName>
+                <default>false</default>
+                <label>CL - Investigations</label>
+            </value>
+            <value>
+                <fullName>CL - Misc</fullName>
+                <default>false</default>
+                <label>CL - Misc</label>
+            </value>
+            <value>
+                <fullName>CS - Address Change</fullName>
+                <default>false</default>
+                <label>CS - Address Change</label>
+            </value>
+            <value>
+                <fullName>CS - Assumption / Restructure Documentation</fullName>
+                <default>false</default>
+                <label>CS - Assumption / Restructure Documentation</label>
+            </value>
+            <value>
+                <fullName>CS - Change Request</fullName>
+                <default>false</default>
+                <label>CS - Change Request</label>
+            </value>
+            <value>
+                <fullName>CS - EOT Form</fullName>
+                <default>false</default>
+                <label>CS - EOT Form</label>
+            </value>
+            <value>
+                <fullName>CS - Letters of Intent</fullName>
+                <default>false</default>
+                <label>CS - Letters of Intent</label>
+            </value>
+            <value>
+                <fullName>CS - Misc</fullName>
+                <default>false</default>
+                <label>CS - Misc</label>
+            </value>
+            <value>
+                <fullName>CS - Tax Exempt Certificates</fullName>
+                <default>false</default>
+                <label>CS - Tax Exempt Certificates</label>
+            </value>
+            <value>
+                <fullName>FS - ACH_Auto Debit Forms and Copy of Check</fullName>
+                <default>false</default>
+                <label>FS - ACH_Auto Debit Forms and Copy of Check</label>
+            </value>
+            <value>
+                <fullName>FS - Additional Stipulations</fullName>
+                <default>false</default>
+                <label>FS - Additional Stipulations</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Account Change Request</fullName>
+                <default>false</default>
+                <label>FS - Bank Account Change Request</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Apr</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Apr</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Aug</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Aug</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Dec</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Dec</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Feb</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Feb</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Jan</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Jan</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Jul</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Jul</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Jun</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Jun</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Mar</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Mar</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - May</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - May</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Nov</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Nov</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Oct</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Oct</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Sept</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Sept</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements MTD</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements MTD</label>
+            </value>
+            <value>
+                <fullName>FS - Blank Loan Documents</fullName>
+                <default>false</default>
+                <label>FS - Blank Loan Documents</label>
+            </value>
+            <value>
+                <fullName>FS - Booking Documentation</fullName>
+                <default>false</default>
+                <label>FS - Booking Documentation</label>
+            </value>
+            <value>
+                <fullName>FS - Booking Sheet</fullName>
+                <default>false</default>
+                <label>FS - Booking Sheet</label>
+            </value>
+            <value>
+                <fullName>FS - Certificate of Authentication</fullName>
+                <default>false</default>
+                <label>FS - Certificate of Authentication</label>
+            </value>
+            <value>
+                <fullName>FS - Clear Report</fullName>
+                <default>false</default>
+                <label>FS - Clear Report</label>
+            </value>
+            <value>
+                <fullName>FS - Commercial Reports</fullName>
+                <default>false</default>
+                <label>FS - Commercial Reports</label>
+            </value>
+            <value>
+                <fullName>FS - Competitor Payoff</fullName>
+                <default>false</default>
+                <label>FS - Competitor Payoff</label>
+            </value>
+            <value>
+                <fullName>FS - Complaint Response</fullName>
+                <default>false</default>
+                <label>FS - Complaint Response</label>
+            </value>
+            <value>
+                <fullName>FS - Credit Application</fullName>
+                <default>false</default>
+                <label>FS - Credit Application</label>
+            </value>
+            <value>
+                <fullName>FS - Customer Complaints</fullName>
+                <default>false</default>
+                <label>FS - Customer Complaints</label>
+            </value>
+            <value>
+                <fullName>FS - Customer Letter</fullName>
+                <default>false</default>
+                <label>FS - Customer Letter</label>
+            </value>
+            <value>
+                <fullName>FS - Did not Apply letter</fullName>
+                <default>false</default>
+                <label>FS - Did not Apply letter</label>
+            </value>
+            <value>
+                <fullName>FS - Drivers License</fullName>
+                <default>false</default>
+                <label>FS - Drivers License</label>
+            </value>
+            <value>
+                <fullName>FS - Email Correspondences</fullName>
+                <default>false</default>
+                <label>FS - Email Correspondences</label>
+            </value>
+            <value>
+                <fullName>FS - Existing Customer Information</fullName>
+                <default>false</default>
+                <label>FS - Existing Customer Information</label>
+            </value>
+            <value>
+                <fullName>FS - External</fullName>
+                <default>false</default>
+                <label>FS - External</label>
+            </value>
+            <value>
+                <fullName>FS - Financial Statements</fullName>
+                <default>false</default>
+                <label>FS - Financial Statements</label>
+            </value>
+            <value>
+                <fullName>FS - Google Maps Images</fullName>
+                <default>false</default>
+                <label>FS - Google Maps Images</label>
+            </value>
+            <value>
+                <fullName>FS - Internal</fullName>
+                <default>false</default>
+                <label>FS - Internal</label>
+            </value>
+            <value>
+                <fullName>FS - Landlord Reference</fullName>
+                <default>false</default>
+                <label>FS - Landlord Reference</label>
+            </value>
+            <value>
+                <fullName>FS - Lease Agreement</fullName>
+                <default>false</default>
+                <label>FS - Lease Agreement</label>
+            </value>
+            <value>
+                <fullName>FS - LexisNexis</fullName>
+                <default>false</default>
+                <label>FS - LexisNexis</label>
+            </value>
+            <value>
+                <fullName>FS - Loan Addendums</fullName>
+                <default>false</default>
+                <label>FS - Loan Addendums</label>
+            </value>
+            <value>
+                <fullName>FS - Loan Scorecard</fullName>
+                <default>false</default>
+                <label>FS - Loan Scorecard</label>
+            </value>
+            <value>
+                <fullName>FS - Marlin Letter</fullName>
+                <default>false</default>
+                <label>FS - Marlin Letter</label>
+            </value>
+            <value>
+                <fullName>FS - Misc</fullName>
+                <default>false</default>
+                <label>FS - Misc</label>
+            </value>
+            <value>
+                <fullName>FS - Misc Customer Correspondence</fullName>
+                <default>false</default>
+                <label>FS - Misc Customer Correspondence</label>
+            </value>
+            <value>
+                <fullName>FS - Mortage Statement</fullName>
+                <default>false</default>
+                <label>FS - Mortage Statement</label>
+            </value>
+            <value>
+                <fullName>FS - Offers</fullName>
+                <default>false</default>
+                <label>FS - Offers</label>
+            </value>
+            <value>
+                <fullName>FS - Payoff Agreement</fullName>
+                <default>false</default>
+                <label>FS - Payoff Agreement</label>
+            </value>
+            <value>
+                <fullName>FS - Personal</fullName>
+                <default>false</default>
+                <label>FS - Personal</label>
+            </value>
+            <value>
+                <fullName>FS - Personal CBR</fullName>
+                <default>false</default>
+                <label>FS - Personal CBR</label>
+            </value>
+            <value>
+                <fullName>FS - Reg B Letter</fullName>
+                <default>false</default>
+                <label>FS - Reg B Letter</label>
+            </value>
+            <value>
+                <fullName>FS - Signed Loan Agreement</fullName>
+                <default>false</default>
+                <label>FS - Signed Loan Agreement</label>
+            </value>
+            <value>
+                <fullName>FS - Site Inspection</fullName>
+                <default>false</default>
+                <label>FS - Site Inspection</label>
+            </value>
+            <value>
+                <fullName>FS - SOS/License Verification</fullName>
+                <default>false</default>
+                <label>FS - SOS/License Verification</label>
+            </value>
+            <value>
+                <fullName>FS - Tax Returns</fullName>
+                <default>false</default>
+                <label>FS - Tax Returns</label>
+            </value>
+            <value>
+                <fullName>FS - UCC Data</fullName>
+                <default>false</default>
+                <label>FS - UCC Data</label>
+            </value>
+            <value>
+                <fullName>FS - Verbal Verification</fullName>
+                <default>false</default>
+                <label>FS - Verbal Verification</label>
+            </value>
+            <value>
+                <fullName>FS - Voided Check</fullName>
+                <default>false</default>
+                <label>FS - Voided Check</label>
+            </value>
+            <value>
+                <fullName>FS - Welcome Call</fullName>
+                <default>false</default>
+                <label>FS - Welcome Call</label>
+            </value>
+            <value>
+                <fullName>FS- Submission Email</fullName>
+                <default>false</default>
+                <label>FS- Submission Email</label>
+            </value>
+            <value>
+                <fullName>IN - Claims</fullName>
+                <default>false</default>
+                <label>IN - Claims</label>
+            </value>
+            <value>
+                <fullName>IN - Misc</fullName>
+                <default>false</default>
+                <label>IN - Misc</label>
+            </value>
+            <value>
+                <fullName>IN - Proof of Insurance</fullName>
+                <default>false</default>
+                <label>IN - Proof of Insurance</label>
+            </value>
+            <value>
+                <fullName>Title</fullName>
+                <default>false</default>
+                <label>Title</label>
+            </value>
+            <value>
+                <fullName>LC - UCC filed copy</fullName>
+                <default>false</default>
+                <label>LC - UCC filed copy</label>
+            </value>
+            <value>
+                <fullName>LC - Vehicle Title</fullName>
+                <default>false</default>
+                <label>LC - Vehicle Title</label>
+            </value>
+            <value>
+                <fullName>LC - Booking Sheet Revised (Contract Adjustment Form)</fullName>
+                <default>false</default>
+                <label>LC - Booking Sheet Revised (Contract Adjustment Form)</label>
+            </value>
+            <value>
+                <fullName>LC - External</fullName>
+                <default>false</default>
+                <label>LC - External</label>
+            </value>
+            <value>
+                <fullName>LC - Internal</fullName>
+                <default>false</default>
+                <label>LC - Internal</label>
+            </value>
+            <value>
+                <fullName>LC - ACH/Auto Debit Forms &amp; Copy of Check</fullName>
+                <default>false</default>
+                <label>LC - ACH/Auto Debit Forms &amp; Copy of Check</label>
+            </value>
+            <value>
+                <fullName>LC - Migrated Contracts</fullName>
+                <default>false</default>
+                <label>LC - Migrated Contracts</label>
+            </value>
+            <value>
+                <fullName>AM - Reposession/Remarketing</fullName>
+                <default>false</default>
+                <label>AM - Repossession/Remarketing</label>
+            </value>
+            <value>
+                <fullName>AM - Remarketer Invoices</fullName>
+                <default>false</default>
+                <label>AM - Remarketer Invoices</label>
+            </value>
+            <value>
+                <fullName>AM - Dealer Repurchase Invoices</fullName>
+                <default>false</default>
+                <label>AM - Dealer Repurchase Invoices</label>
+            </value>
+            <value>
+                <fullName>AM - Return Authorization</fullName>
+                <default>false</default>
+                <label>AM - Return Authorization</label>
+            </value>
+            <value>
+                <fullName>LC - Booking Sheet Revised</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>LC - Booking Sheet Revised</label>
+            </value>
+        </valueSetDefinition>
+        <valueSettings>
+            <controllingFieldValue>Collections</controllingFieldValue>
+            <valueName>CL - Credit Bureau Reports</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Collections</controllingFieldValue>
+            <valueName>CL - Customer Correspondence</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Collections</controllingFieldValue>
+            <valueName>CL - Demand Letters</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Collections</controllingFieldValue>
+            <valueName>CL - Investigations</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Collections</controllingFieldValue>
+            <valueName>CL - Misc</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Customer Service</controllingFieldValue>
+            <valueName>CS - Address Change</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Customer Service</controllingFieldValue>
+            <valueName>CS - Assumption / Restructure Documentation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Customer Service</controllingFieldValue>
+            <valueName>CS - Change Request</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Customer Service</controllingFieldValue>
+            <valueName>CS - EOT Form</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Customer Service</controllingFieldValue>
+            <valueName>CS - Letters of Intent</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Customer Service</controllingFieldValue>
+            <valueName>CS - Misc</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Customer Service</controllingFieldValue>
+            <valueName>CS - Tax Exempt Certificates</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - ACH_Auto Debit Forms and Copy of Check</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Additional Stipulations</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Account Change Request</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Apr</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Aug</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Dec</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Feb</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Jan</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Jul</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Jun</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Mar</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - May</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Nov</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Oct</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements - Sept</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Bank Statements MTD</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Blank Loan Documents</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Booking Documentation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Booking Sheet</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Certificate of Authentication</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Clear Report</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Commercial Reports</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Competitor Payoff</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Complaint Response</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Credit Application</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Customer Complaints</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Customer Letter</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Did not Apply letter</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Drivers License</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Email Correspondences</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Existing Customer Information</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - External</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Financial Statements</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Google Maps Images</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Internal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Landlord Reference</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Lease Agreement</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - LexisNexis</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Loan Addendums</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Loan Scorecard</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Marlin Letter</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Misc</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Misc Customer Correspondence</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Mortage Statement</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Offers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Payoff Agreement</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Personal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Personal CBR</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Reg B Letter</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Signed Loan Agreement</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Site Inspection</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - SOS/License Verification</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Tax Returns</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - UCC Data</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Verbal Verification</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Voided Check</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS - Welcome Call</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Funding Stream</controllingFieldValue>
+            <valueName>FS- Submission Email</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Insurance</controllingFieldValue>
+            <valueName>IN - Claims</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Insurance</controllingFieldValue>
+            <valueName>IN - Misc</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Insurance</controllingFieldValue>
+            <valueName>IN - Proof of Insurance</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles</controllingFieldValue>
+            <valueName>Title</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lease Contract</controllingFieldValue>
+            <valueName>LC - UCC filed copy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lease Contract</controllingFieldValue>
+            <valueName>LC - Vehicle Title</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lease Contract</controllingFieldValue>
+            <valueName>LC - Booking Sheet Revised (Contract Adjustment Form)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lease Contract</controllingFieldValue>
+            <valueName>LC - External</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lease Contract</controllingFieldValue>
+            <valueName>LC - Internal</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lease Contract</controllingFieldValue>
+            <valueName>LC - ACH/Auto Debit Forms &amp; Copy of Check</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Lease Contract</controllingFieldValue>
+            <valueName>LC - Migrated Contracts</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Asset Management</controllingFieldValue>
+            <valueName>AM - Reposession/Remarketing</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Asset Management</controllingFieldValue>
+            <valueName>AM - Remarketer Invoices</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Asset Management</controllingFieldValue>
+            <valueName>AM - Dealer Repurchase Invoices</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Asset Management</controllingFieldValue>
+            <valueName>AM - Return Authorization</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

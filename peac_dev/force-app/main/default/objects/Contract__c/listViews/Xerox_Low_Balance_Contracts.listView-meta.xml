@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Xerox_Low_Balance_Contracts</fullName>
+    <columns>NAME</columns>
+    <columns>CCAN__c</columns>
+    <columns>Status__c</columns>
+    <columns>Net_Investment__c</columns>
+    <columns>Agent_Lock__c</columns>
+    <columns>OWNER.ALIAS</columns>
+    <columns>OWNER.FIRST_NAME</columns>
+    <columns>OWNER.LAST_NAME</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Contract__c.Lease</value>
+    </filters>
+    <filters>
+        <field>Lessor_Code__c</field>
+        <operation>equals</operation>
+        <value>101,102,111,211,471</value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Active,Renewal</value>
+    </filters>
+    <filters>
+        <field>Delinquency_Status_Code__c</field>
+        <operation>equals</operation>
+        <value>01,31,61,91</value>
+    </filters>
+    <filters>
+        <field>Net_Investment__c</field>
+        <operation>lessOrEqual</operation>
+        <value>5000</value>
+    </filters>
+    <filters>
+        <field>OWNER.ALIAS</field>
+        <operation>notEqual</operation>
+        <value>Xerox Low Balance,External Agencies</value>
+    </filters>
+    <label>Xerox LB Contracts Not Assigned</label>
+    <sharedTo>
+        <role>XBS_Collections_Manager</role>
+    </sharedTo>
+</ListView>

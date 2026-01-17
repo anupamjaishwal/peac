@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <isExposed>true</isExposed>
+    <description>SL OnBase Attachment Uploader LWC</description>
+    <masterLabel>SL OnBase Attachment Uploader</masterLabel>
+    <targets>
+      <target>lightning__FlowScreen</target>
+      <target>lightningCommunity__Page</target>
+      <target>lightningCommunity__Default</target>
+    </targets>
+    <targetConfigs>
+      <targetConfig targets="lightning__FlowScreen">
+        <property name="sendFileSelectedMessage" type="Boolean" label="Send File Selected Message" role="inputOnly"/>
+        <property name="fileSelected"   type="Boolean" label="Is File Selected"   role="outputOnly"/>
+        <property name="docType"        type="String" label="Document Type" />
+        <property name="opportunityId"  type="String" label="Opportunity ID"  role="inputOnly"/>
+        <property name="accountId"      type="String" label="Account ID"      role="inputOnly"/>
+        <!-- deprecated -->
+        <property name="fileName"      type="String" label="deprecated1"    />
+        <property name="isCompleted"      type="Boolean" label="deprecated2"      />
+        <property name="fileId"      type="String" label="deprecated3"      role="outputOnly"/>
+      </targetConfig>
+      <targetConfig targets="lightningCommunity__Default">
+        <property name="recordId" type="String" label="Record ID"
+          description="Set it to {!recordId}"/>
+      </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

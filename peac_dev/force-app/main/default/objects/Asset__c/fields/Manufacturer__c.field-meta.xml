@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Manufacturer__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>Store Manufacturer name from account where Type is M.</description>
+    <externalId>false</externalId>
+    <label>Manufacturer</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Dealer Account Type should be as Manufacturer</errorMessage>
+        <filterItems>
+            <field>Account.Type</field>
+            <operation>equals</operation>
+            <value>Manufacturer</value>
+        </filterItems>
+        <filterItems>
+            <field>Account.Dealer_Number__c</field>
+            <operation>notEqual</operation>
+            <value></value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>Account</referenceTo>
+    <relationshipLabel>Assets</relationshipLabel>
+    <relationshipName>Asset_Manufacturer</relationshipName>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

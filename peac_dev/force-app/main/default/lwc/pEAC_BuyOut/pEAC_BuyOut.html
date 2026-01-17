@@ -1,0 +1,138 @@
+<template>
+    <lightning-quick-action-panel header="Buyout Create a New Quote">
+        <template lwc:if={backEnabled}>
+             <lightning-button variant="brand-outline" label="Back" title="Back"
+                onclick={handleBack} class="slds-m-left_x-small"></lightning-button>
+            <c-p-e-a-c_-buy-out-options record-id={_recordId} is-partial-checked={isPartialChecked}></c-p-e-a-c_-buy-out-options>
+        </template>
+
+        <template lwc:if={firstScreen}>
+            <lightning-layout>
+                <lightning-layout-item size="6">
+            <lightning-record-view-form record-id={recordId} object-api-name="Contract__c">
+                <div class="slds-grid slds-text-title_caps">
+                    <div style="display: inline-flex; align-items: center;"
+                        class="slds-col slds-size_2-of-2 slds-list_horizontal">
+                        <span class="slds-form-element__label headerLabel">Contract No.:</span>
+                        <lightning-output-field field-name="Name" variant="label-hidden">
+                        </lightning-output-field>
+                    </div>
+                </div>
+                <div class="slds-grid slds-text-title_caps">
+                    <div style="display: inline-flex; align-items: center;"
+                        class="slds-col slds-size_2-of-2 slds-list_horizontal">
+                        <span class="slds-form-element__label headerLabel">Customer Name:</span>
+                        <lightning-output-field field-name="Customer__c" variant="label-hidden">
+                        </lightning-output-field>
+                    </div>
+                </div>
+            </lightning-record-view-form>
+                </lightning-layout-item>
+            </lightning-layout>
+            <div class="slds-grid slds-text-title_caps">
+            <lightning-input type="toggle" label="Email Buyout" checked={willSendExternalEmail} message-toggle-inactive="" message-toggle-active="" onchange={handleSendExternalEmailOn}></lightning-input>
+            <template lwc:if={willSendExternalEmail}>
+                <div class="slds-col slds-size_2-of-4">
+                    <lightning-input type="text" label="Send To:" lwc:ref="sendBuyoutEmail"
+                    message-when-pattern-mismatch={emailFormatError} variant="label-inline"
+                    field-level-help="If entering more than on email please separate the email addresses by a comma"
+                    value={emailAddresses}  onchange={handleEmailChange}
+                    pattern="^(([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}))([,]\s*)?)*$"></lightning-input><br />
+                </div>
+            </template>
+             </div>
+            <div class="slds-grid slds-text-title_caps"> 
+            <lightning-input type="toggle" label="Partial Buyout Enabled" name="isPartialBuyout" checked={isPartialOn} 
+                message-toggle-inactive="" message-toggle-active="" onchange={handlePartialBuyout} disabled={isNotPartialBuyout}></lightning-input>
+            </div>    
+            <hr />
+            <div class="slds-grid">
+                <div class="slds-col slds-size_2-of-3">
+                    <lightning-button variant="brand" label="Generate Buyout" title="Generate Buyout"
+                        onclick={handleGenerateBuyout} class="slds-m-left_x-small"></lightning-button>
+                    <lightning-button variant="brand" label="Buyout Options" title="Buyout Options"
+                        onclick={handleBuyoutOptions} class="slds-m-left_x-small" disabled={buyoutOptionDisable}></lightning-button>
+                </div>
+                <div class="slds-col slds-size_1-of-3">
+                    <div onkeyup={handleKeyUp}>
+                        <lightning-input name="enter-search" label="Search" type="search" placeholder="Search here.. for Buyout Name, Amount"
+                            variant="label-hidden" oncommit={handleClear}>
+                        </lightning-input>
+                    </div>
+                </div>
+            </div>
+            
+            <template lwc:if={showBuyOutTable}>
+                <!-- PAGINATION -->
+    <c-p-e-a-c_-pagination lwc:if={showPaginator} page-size={pageSize} total-records={totalRecords}
+        is-client-side-pagination="true" onpaginationchange={paginationChangeHandler}></c-p-e-a-c_-pagination>
+                <table style="margin-top: 15px;" class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Buyout Description</th>
+                          <!--  <th scope="col">Buyout Type</th> -->
+                            <th scope="col">Date Quoted</th>
+                            <th scope="col">Expiration Date</th>
+                            <th scope="col">Buyout Amount</th>
+                            <!--<th scope="col">Buyout Description</th>-->
+                            <th scope="col">Partial</th>
+                            <th scope="col">Print Partner Quote</th>
+                            <th scope="col">Print Customer Buyout Letter</th>
+                            <th scope="col">Return Authorization</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <template for:each={paginatedBuyoutList} for:item="buyOut">
+                            <tr key={buyOut.Id} style={buyOut.rowStyle}>
+                                <td>{buyOut.Name}</td>
+                               <!-- <td>{buyOut.Buyout_Type__c}</td> -->
+                                <td>
+                                    <lightning-formatted-date-time value={buyOut.Date_Quoted__c}>
+                                    </lightning-formatted-date-time>
+                                </td>
+                                <td>
+                                    <lightning-formatted-date-time value={buyOut.Expiration_Date__c}>
+                                    </lightning-formatted-date-time>
+                                </td>
+                                <td>
+                                    <lightning-formatted-number value={buyOut.Buyout_Amount__c} format-style="currency"
+                                        currency-code="USD"></lightning-formatted-number>
+                                </td>
+                               <!-- <td>{buyOut.Buyout_Description__c}</td> -->
+                                <td>
+                                <lightning-input type="checkbox"
+                                                checked={buyOut.Partial_Buyout__c}
+                                                disabled>
+                                </lightning-input>
+                                </td> 
+                                <td>
+                                    <lightning-button-icon icon-name="utility:download" data-id={buyOut.Id}
+                                        variant="border-filled" alternative-text="download" class="slds-m-left_xx-small"
+                                        title="download" onclick={handlePartnerPDFDownload}></lightning-button-icon>
+                                </td>
+                                <td>
+                                    <lightning-button-icon icon-name="utility:download" data-id={buyOut.Id}
+                                        variant="border-filled" alternative-text="download" class="slds-m-left_xx-small"
+                                        title="download" onclick={handlecustomerPDFDownload}></lightning-button-icon>
+                                </td>
+                                <td>
+                                    <template lwc:if={buyOut.isRAQuoteType}>
+                                        <lightning-button variant="brand" label="Request Return Authorization" title="Request Return Authorization"
+                                            onclick={returnAuthorizationRequest} data-quote-sequence={buyOut.Quote_Sequence__c} data-id={buyOut.Id} class="slds-m-left_x-small"></lightning-button>
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+                <p><i>{message}</i></p>
+            </template>
+        </template>
+        <template lwc:elseif={isPartialScreen}>
+            <c-sl-partial-buyout contract-id={recordId} is-dealer-portal="true" onloadinfo={handleIsPartial} onclose={handleBack} email-to={emailTo}></c-sl-partial-buyout>
+        </template>
+        <div lwc:if={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </div>
+    </lightning-quick-action-panel>
+</template>

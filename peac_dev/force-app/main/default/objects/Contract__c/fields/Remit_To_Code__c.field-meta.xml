@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Remit_To_Code__c</fullName>
+    <externalId>false</externalId>
+    <formula>Remit_To__r.Remit_To_Value__c</formula>
+    <label>Remit To Code</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

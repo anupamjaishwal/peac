@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ADR_Pre_Charge_Off_Contract</fullName>
+    <columns>NAME</columns>
+    <filterScope>Queue</filterScope>
+    <label>ADR Pre-Charge Off</label>
+    <queue>ADR_Pre_Charge_Off</queue>
+    <sharedTo>
+        <role>XBS_Collections_Manager</role>
+    </sharedTo>
+</ListView>

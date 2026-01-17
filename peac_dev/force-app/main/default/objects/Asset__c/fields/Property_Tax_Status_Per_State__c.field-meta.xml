@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Property_Tax_Status_Per_State__c</fullName>
+    <externalId>false</externalId>
+    <formula>CASE(TEXT(Equipment_Location_State__c),
+&apos;ALABAMA&apos;, &apos;11&apos;,
+&apos;ALASKA&apos;, &apos;11&apos;,
+&apos;ARIZONA&apos;, &apos;11&apos;,
+&apos;ARKANSAS&apos;, &apos;11&apos;,
+&apos;CALIFORNIA&apos;, &apos;12&apos;,
+&apos;COLORADO&apos;, &apos;11&apos;,
+&apos;CONNECTICUT&apos;, &apos;11&apos;,
+&apos;DELAWARE&apos;, &apos;10&apos;,
+&apos;DISTRICT OF COLUMBIA&apos;, &apos;11&apos;,
+&apos;FLORIDA&apos;, &apos;11&apos;,
+&apos;GEORGIA&apos;, &apos;11&apos;,
+&apos;HAWAII&apos;, &apos;10&apos;,
+&apos;IDAHO&apos;, &apos;11&apos;,
+&apos;ILLINOIS&apos;, &apos;10&apos;,
+&apos;INDIANA&apos;, &apos;11&apos;,
+&apos;IOWA&apos;, &apos;10&apos;,
+&apos;KANSAS&apos;, &apos;10&apos;,
+&apos;KENTUCKY&apos;, &apos;11&apos;,
+&apos;LOUISIANA&apos;, &apos;11&apos;,
+&apos;MAINE&apos;, &apos;11&apos;,
+&apos;MARYLAND&apos;, &apos;11&apos;,
+&apos;MASSACHUSETTS&apos;, &apos;10&apos;,
+&apos;MICHIGAN&apos;, &apos;11&apos;,
+&apos;MINNESOTA&apos;, &apos;10&apos;,
+&apos;MISSISSIPPI&apos;, &apos;11&apos;,
+&apos;MISSOURI&apos;, &apos;11&apos;,
+&apos;MONTANA&apos;, &apos;11&apos;,
+&apos;NEBRASKA&apos;, &apos;11&apos;,
+&apos;NEVADA&apos;, &apos;11&apos;,
+&apos;NEW HAMPSHIRE&apos;, &apos;10&apos;,
+&apos;NEW JERSEY&apos;, &apos;10&apos;,
+&apos;NEW MEXICO&apos;, &apos;11&apos;,
+&apos;NEW YORK&apos;, &apos;10&apos;,
+&apos;NORTH CAROLINA&apos;, &apos;11&apos;,
+&apos;NORTH DAKOTA&apos;, &apos;10&apos;,
+&apos;OKLAHOMA&apos;, &apos;11&apos;,
+&apos;OREGON&apos;, &apos;11&apos;,
+&apos;OHIO&apos;, &apos;10&apos;,
+&apos;PENNSYLVANIA&apos;, &apos;10&apos;,
+&apos;RHODE ISLAND&apos;, &apos;11&apos;,
+&apos;SOUTH CAROLINA&apos;, &apos;11&apos;,
+&apos;SOUTH DAKOTA&apos;, &apos;10&apos;,
+&apos;TENNESSEE&apos;, &apos;12&apos;,
+&apos;TEXAS&apos;, &apos;11&apos;,
+&apos;UTAH&apos;, &apos;11&apos;,
+&apos;VERMONT&apos;, &apos;11&apos;,
+&apos;VIRGINIA&apos;, &apos;11&apos;,
+&apos;WASHINGTON&apos;, &apos;11&apos;,
+&apos;WEST VIRGINIA&apos;, &apos;11&apos;,
+&apos;WISCONSIN&apos;, &apos;11&apos;,
+&apos;WYOMING&apos;, &apos;11&apos;,
+&apos;&apos;
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Property Tax Status Per State</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

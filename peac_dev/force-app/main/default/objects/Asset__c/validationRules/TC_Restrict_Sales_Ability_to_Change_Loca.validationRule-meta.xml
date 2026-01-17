@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TC_Restrict_Sales_Ability_to_Change_Loca</fullName>
+    <active>true</active>
+    <description>TC Restrict Sales Ability to Change Asset Location</description>
+    <errorConditionFormula>AND (
+   OR(
+      TEXT(Opportunity__r.Application_Status__c) == &apos;Automatically Approved&apos;
+      , TEXT(Opportunity__r.Application_Status__c) == &apos;Manually Approved&apos;)
+   , AND(
+      $UserRole.Name != &apos;CMS&apos;
+      , $UserRole.Name != &apos;System Admin&apos;
+      , $UserRole.Name != &apos;Booking&apos;
+      , !CONTAINS ($UserRole.Name,&apos;Credit&apos;)
+      , !CONTAINS($User.LastName,&apos;Process&apos;)
+      , !CONTAINS($UserRole.Name,&apos;CVP Analyst&apos;)
+, $Profile.Name !=&apos;CT&amp;I Dealer&apos;
+, $Profile.Name !=&apos;OEG Dealer&apos;
+   )
+   , OR (
+      ISCHANGED (End_User_Billing_Address__c)
+      , ISCHANGED (Equipment_Street__c)
+      , ISCHANGED (Equipment_Address_2__c)
+      , ISCHANGED (Equipment_City__c)
+      , ISCHANGED (Equipment_State__c)
+      , ISCHANGED (Equipment_Zip__c)
+   )
+)</errorConditionFormula>
+    <errorMessage>The following asset fields are not allowed to be modified while Application Status is Manually Approved’ or ‘Automatically Approved’: End User Business Address?, Equipment Street, Equipment Street 2, Equipment City, Equipment State, and Equipment Zip</errorMessage>
+</ValidationRule>

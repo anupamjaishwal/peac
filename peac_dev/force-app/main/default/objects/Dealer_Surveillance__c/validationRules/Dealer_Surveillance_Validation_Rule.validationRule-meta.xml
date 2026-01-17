@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Dealer_Surveillance_Validation_Rule</fullName>
+    <active>true</active>
+    <description>Dealer Surveillance Validation Rule</description>
+    <errorConditionFormula>AND(
+Completed_By_Auto_Process__c = False,
+ISCHANGED( Status__c),
+ISPICKVAL(Status__c,&apos;Completed&apos;),
+OR(
+ISBLANK(TEXT(Reputational_Search__c)),
+ISBLANK(TEXT(Credit_Profile_Update__c))
+)
+)</errorConditionFormula>
+    <errorMessage>&apos;Reputation Search’ and ‘Credit Profile Update’ fields in the SUV object mandatory when the status is completed</errorMessage>
+</ValidationRule>

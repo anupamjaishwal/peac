@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>In_process_SUV</fullName>
+    <columns>Account__c</columns>
+    <columns>Dealer_Status__c</columns>
+    <columns>Assigned_To__c</columns>
+    <columns>Review_Date__c</columns>
+    <columns>Next_Scheduled_Review__c</columns>
+    <columns>Status__c</columns>
+    <columns>Review_Type__c</columns>
+    <columns>Actual_Vs_Projected_Loss__c</columns>
+    <columns>Risk_Adjusted_Return__c</columns>
+    <columns>Net_Investment__c</columns>
+    <columns>Date_Dealer_Approved__c</columns>
+    <columns>Total_Past_Due__c</columns>
+    <columns>Approval_Rate__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>notEqual</operation>
+        <value>Completed</value>
+    </filters>
+    <label>In-process SUV</label>
+</ListView>

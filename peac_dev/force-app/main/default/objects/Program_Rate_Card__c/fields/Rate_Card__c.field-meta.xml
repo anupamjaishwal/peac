@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Rate_Card__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Rate Card</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Must select an Interest Rate or Factor card for Program Rate Cards.</errorMessage>
+        <filterItems>
+            <field>RateCard__c.Rate_Card_Type__c</field>
+            <operation>equals</operation>
+            <value>Interest Rate, Rate Factor</value>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>RateCard__c</referenceTo>
+    <relationshipLabel>Program Rate Cards</relationshipLabel>
+    <relationshipName>Program_Rate_Cards</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

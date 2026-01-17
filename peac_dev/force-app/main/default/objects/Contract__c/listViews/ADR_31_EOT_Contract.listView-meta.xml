@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ADR_31_EOT_Contract</fullName>
+    <columns>NAME</columns>
+    <filterScope>Queue</filterScope>
+    <label>ADR 31 EOT</label>
+    <queue>ADR_31_EOT</queue>
+    <sharedTo>
+        <role>XBS_Collections_Manager</role>
+    </sharedTo>
+</ListView>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Check_Referral_Date_Expiration</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+  ISPICKVAL( Referral_Decision__c, &quot;Approved&quot; ),
+  ISBLANK( Referral_Date_Expiration__c )
+)</errorConditionFormula>
+    <errorDisplayField>Referral_Date_Expiration__c</errorDisplayField>
+    <errorMessage>You must select an expiration date if the Referral Decision is &quot;Approved&quot;</errorMessage>
+</ValidationRule>

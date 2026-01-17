@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Adv_Rental_Must_Be_1_or_2_Mo_Payments</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(ISPICKVAL(Advanced_Rental__c,&apos;First Payment&apos;),
+ABS( Monthly_Payment__c -  Advanced_Rental_Amount__c ) &gt; 0.02,
+IF(ISPICKVAL(Advanced_Rental__c,&apos;First &amp; Last Payment&apos;),
+                ABS( 2*Monthly_Payment__c -  Advanced_Rental_Amount__c ) &gt; 0.02,
+                false
+    )
+)</errorConditionFormula>
+    <errorDisplayField>Advanced_Rental_Amount__c</errorDisplayField>
+    <errorMessage>Advance Rental must equal one (or two) monthly payment(s). Please enter a different amount.</errorMessage>
+</ValidationRule>

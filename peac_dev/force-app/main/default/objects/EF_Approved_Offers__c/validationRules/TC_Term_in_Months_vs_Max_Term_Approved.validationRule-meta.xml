@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TC_Term_in_Months_vs_Max_Term_Approved</fullName>
+    <active>true</active>
+    <errorConditionFormula>Term_in_Months__c &gt;  Opportunity__r.Max_Term_Approved__c &amp;&amp;  Is_Selected_Offer__c</errorConditionFormula>
+    <errorMessage>Term on EF Approved Offers can&apos;t exceed Opportunity Max Approved Term</errorMessage>
+</ValidationRule>

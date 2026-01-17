@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Competitor_Balance__c</fullName>
+    <externalId>false</externalId>
+    <label>Competitor Balance</label>
+    <summarizedField>Competitor__c.Balance__c</summarizedField>
+    <summaryForeignKey>Competitor__c.Financial__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

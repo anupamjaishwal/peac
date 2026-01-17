@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invoice_Format__c</fullName>
+    <externalId>false</externalId>
+    <label>Invoice Format</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ASSET</fullName>
+                <default>false</default>
+                <label>Asset Detail</label>
+            </value>
+            <value>
+                <fullName>STAND</fullName>
+                <default>false</default>
+                <label>Contract Invoicing</label>
+            </value>
+            <value>
+                <fullName>ACH</fullName>
+                <default>false</default>
+                <label>Non OSG ACH</label>
+            </value>
+            <value>
+                <fullName>ASST2</fullName>
+                <default>false</default>
+                <label>Asset Summary</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

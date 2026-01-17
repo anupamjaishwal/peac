@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bankrupt_Party__c</fullName>
+    <externalId>false</externalId>
+    <label>Bankrupt Party</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Corp</fullName>
+                <default>false</default>
+                <label>Corp</label>
+            </value>
+            <value>
+                <fullName>PG</fullName>
+                <default>false</default>
+                <label>PG</label>
+            </value>
+            <value>
+                <fullName>CG</fullName>
+                <default>false</default>
+                <label>CG</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

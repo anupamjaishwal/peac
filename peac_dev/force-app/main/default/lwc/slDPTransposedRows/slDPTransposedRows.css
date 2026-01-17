@@ -1,0 +1,6 @@
+.customLabel{
+    font-weight: var(--lwc-fontWeightBold,700);
+}
+.temporaryClass{
+    text-align: right;
+}

@@ -1,0 +1,43 @@
+<template>
+    <div class="slds-grid slds-gutters">
+        <div class="slds-col slds-size_2-of-3">
+            <div class="slds-tabs_card">
+                <div class="slds-page-header">
+                    <div class="slds-page-header__row">
+                        <div class="slds-page-header__col-title">
+                            <div class="slds-media">
+                                <div class="slds-media__figure">
+                                    <span class="slds-icon_container slds-icon-standard-opportunity">
+                                            <lightning-icon icon-name="standard:contact_list" alternative-text="Contact List" title="Contact List"></lightning-icon>
+                                    </span>
+                                </div>
+                                <div class="slds-media__body">
+                                    <div class="slds-page-header__name">
+                                        <div class="slds-page-header__name-title">
+                                            <h1>
+                                                <span class="slds-page-header__title slds-truncate" title="Recently Viewed">Personal Guarantors</span>
+                                            </h1>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <br/>
+
+            <lightning-card>
+                <template if:true={consData}>
+                    <lightning-datatable key-field="Id"
+                                            data={consData} 
+                                            columns={columns} 
+                                            onsave={handleSave}
+                                            draft-values={saveDraftValues} 
+                                            hide-checkbox-column 
+                                            show-row-number-column>
+                    </lightning-datatable>
+                </template>
+            </lightning-card>
+        </div>
+    </div>
+</template>

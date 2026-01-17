@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Test_Contract_Q_2_Contract</fullName>
+    <columns>NAME</columns>
+    <filterScope>Queue</filterScope>
+    <label>Test Contract Q 2</label>
+    <queue>Test_Contract_Q_2</queue>
+    <sharedTo>
+        <role>System_Admin</role>
+    </sharedTo>
+</ListView>

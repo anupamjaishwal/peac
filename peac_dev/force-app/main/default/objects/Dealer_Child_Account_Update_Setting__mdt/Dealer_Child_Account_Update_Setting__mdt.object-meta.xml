@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>For SAL-2852, this controls the batch size of dealer child account updates. This could be extended to other use cases.</description>
+    <label>Dealer Child Account Update Setting</label>
+    <pluralLabel>Dealer Child Account Update Settings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

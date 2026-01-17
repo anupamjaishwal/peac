@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Intent__c</fullName>
+    <externalId>false</externalId>
+    <label>Intent</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Keep</fullName>
+                <default>false</default>
+                <label>Keep</label>
+            </value>
+            <value>
+                <fullName>Return</fullName>
+                <default>false</default>
+                <label>Return</label>
+            </value>
+            <value>
+                <fullName>Continue Renewal Payments</fullName>
+                <default>false</default>
+                <label>Continue Renewal Payments</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

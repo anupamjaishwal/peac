@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Missing_Title_Packet_Documents__c</fullName>
+    <externalId>false</externalId>
+    <label>Missing Title Packet Documents</label>
+    <summaryFilterItems>
+        <field>DocumentStatus__c.Status__c</field>
+        <operation>notEqual</operation>
+        <value>Accepted</value>
+    </summaryFilterItems>
+    <summaryForeignKey>DocumentStatus__c.Contract_Asset__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

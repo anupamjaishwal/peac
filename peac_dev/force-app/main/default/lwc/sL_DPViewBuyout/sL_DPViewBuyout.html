@@ -1,0 +1,135 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <template if:true={isSummary}>
+            <lightning-layout multiple-rows="true">
+                
+                
+                <lightning-layout-item flexibility="auto" padding="around-small" size="12">
+                    <c-sl-json-table header={buyoutHeader} rows={buyouts} ongotomode={handleGoToDetail} ongotokey={handleGoToDetail}></c-sl-json-table>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+        <template if:true={isDetail}>
+            <lightning-layout multiple-rows="true" horizontal-align="space">
+                <lightning-layout-item size="12">
+                    <h2 class="slds-text-heading_medium slds-text-align_center">Buyout Details</h2>
+                </lightning-layout-item>
+                <lightning-layout-item size="2" padding="around-small" alignment-bump="right">
+                    <lightning-button label="Back" title="Back" onclick={handleGoToSummary} class="slds-var-m-left_x-small"></lightning-button>
+                </lightning-layout-item>
+                <lightning-layout-item size="12">
+                    <lightning-record-view-form record-id={recordId} object-api-name="Contract__c" density="comfy">
+                        <lightning-layout multiple-rows="true">
+                            <lightning-layout-item flexibility="auto" padding="around-small" size="12">
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Customer:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Customer__c" variant="label-hidden"> </lightning-output-field>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Contract:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Name" variant="label-hidden"></lightning-output-field>
+                                    </div>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item flexibility="auto" padding="around-small" size="5">
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Equipment:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Invoice_Description__c" variant="label-hidden"> </lightning-output-field>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Remaining Payments:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Payments_Remaining__c" variant="label-hidden"></lightning-output-field>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Term:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Contract_Term__c" variant="label-hidden"></lightning-output-field>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Lease Payment:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Payment_Amount__c" variant="label-hidden"></lightning-output-field>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Total Payment:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Current_Rental_Payment__c" variant="label-hidden"> </lightning-output-field>
+                                    </div>
+                                </div>
+                            </lightning-layout-item>
+                            <lightning-layout-item flexibility="auto" padding="around-small" size="5">
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Commencement Date:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Commencement_Date__c" variant="label-hidden"> </lightning-output-field>
+                                    </div>                                    
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Purchase Option:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-formatted-text value={purchaseOption} ></lightning-formatted-text>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Equipment Cost:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Gross_Equipment_Cost__c" variant="label-hidden"></lightning-output-field>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Quote Date:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-formatted-date-time year="numeric" month="numeric" day="numeric"
+                                            value={todaysDate}></lightning-formatted-date-time>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Next Payment Due Date:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Next_Payment_Date__c" variant="label-hidden"></lightning-output-field>
+                                    </div>
+                                </div>
+                                <div class="customOutputFieldContainer">
+                                    <span class="slds-form-element__label customLabel">Type:</span>
+                                    <div class="inlineOutputField">
+                                        <lightning-output-field field-name="Quote_Buyout__c" variant="label-hidden"> </lightning-output-field>
+                                    </div>
+                                </div>
+                            </lightning-layout-item>
+                        </lightning-layout>
+                    </lightning-record-view-form>
+                </lightning-layout-item>
+                <lightning-layout-item size="6">
+                    <div class="slds-float_right slds-p-right_small" >
+                        <lightning-button variant="brand" label="Return Authorization" title="Return Authorization" onclick={handleReturnAuthorization}></lightning-button>
+                    </div>
+                    <!--
+                    <div class="slds-float_right slds-p-right_small">
+                        <lightning-button variant="brand" label="Print Detailed Buyout" title="Print Detailed Buyout" onclick={handleDetailedPdf}></lightning-button>
+                    </div>
+                    <div class="slds-float_right slds-p-right_small" >
+                        <lightning-button variant="brand" label="Print Summary Buyout" title="Print Summary Buyout" onclick={handlePdf}></lightning-button>
+                    </div>
+                    -->
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small" size="12">
+                    <hr />
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small" size="12">
+                    <c-sl-d-p-transposed-rows fields={detailColumn} column-headers={quoteDescriptions}
+                         ongotokey={handleGoToSummary}></c-sl-d-p-transposed-rows>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+    </template>
+</template>

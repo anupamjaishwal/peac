@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subsidy_Info__c</fullName>
+    <externalId>false</externalId>
+    <label>Subsidy Info</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Panasonic -BTS</fullName>
+                <default>false</default>
+                <label>Panasonic -BTS</label>
+            </value>
+            <value>
+                <fullName>Panasonic-Camera</fullName>
+                <default>false</default>
+                <label>Panasonic-Camera</label>
+            </value>
+            <value>
+                <fullName>Panasonic - Projector</fullName>
+                <default>false</default>
+                <label>Panasonic - Projector</label>
+            </value>
+            <value>
+                <fullName>Panasonic ProVideo</fullName>
+                <default>false</default>
+                <label>Panasonic ProVideo</label>
+            </value>
+            <value>
+                <fullName>Snap On - John Bean</fullName>
+                <default>false</default>
+                <label>Snap On - John Bean</label>
+            </value>
+            <value>
+                <fullName>Snap On - Hoffmann</fullName>
+                <default>false</default>
+                <label>Snap On - Hoffmann</label>
+            </value>
+            <value>
+                <fullName>Wellbilt</fullName>
+                <default>false</default>
+                <label>Wellbilt</label>
+            </value>
+            <value>
+                <fullName>EiKi</fullName>
+                <default>false</default>
+                <label>EiKi</label>
+            </value>
+            <value>
+                <fullName>Leicha</fullName>
+                <default>false</default>
+                <label>Leicha</label>
+            </value>
+            <value>
+                <fullName>Biospace</fullName>
+                <default>false</default>
+                <label>Biospace</label>
+            </value>
+            <value>
+                <fullName>New Tek</fullName>
+                <default>false</default>
+                <label>New Tek</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,24 @@
+/* .slds-form-element__control{
+	padding-right: 50%;
+} */
+.slds-var-p-around_medium{
+    margin-right: 30%;
+}
+
+.form-wrapper {
+  /* max-width: 600px; */
+  margin: 0 auto;
+  padding: 1rem;
+  text-align: left;
+}
+
+.form-wrapper lightning-input-field,
+.form-wrapper c-sl-big-file-upload-d-p,
+.form-wrapper lightning-button {
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.slds-form-element__control {
+  padding-right: 0 !important;
+}

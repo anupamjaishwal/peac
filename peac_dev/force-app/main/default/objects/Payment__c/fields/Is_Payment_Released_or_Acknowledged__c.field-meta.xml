@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Payment_Released_or_Acknowledged__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+   TEXT(Payment_Status__c) = &quot;Payment Released&quot;
+   ||
+   TEXT(Payment_Status__c) = &quot;Payment Acknowledged&quot;
+   ||
+   TEXT(Payment_Status__c) = &quot;Payment Confirmed&quot;,
+   true,
+   false
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Is Payment Released or Acknowledged</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

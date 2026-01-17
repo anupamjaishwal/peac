@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Mock_Endpoint__c</fullName>
+    <defaultValue>&quot;http://www.mocky.io/v2/54fe5204862a3ae70ddc9617&quot;</defaultValue>
+    <description>Something like http://www.mocky.io/v2/54fe5204862a3ae70ddc9617 or http://requestb.in/</description>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>Something like http://www.mocky.io/v2/54fe5204862a3ae70ddc9617 or http://requestb.in/
+
+DO NOT FORGET TO ADD REMOTE SITE SETTINGS!</inlineHelpText>
+    <label>Mock Endpoint</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Url</type>
+</CustomField>

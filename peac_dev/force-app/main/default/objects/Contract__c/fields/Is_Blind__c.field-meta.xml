@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Is_Blind__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+  CASE(Lessor_Code__c, 
+        &quot;002&quot;, 1, 
+        &quot;004&quot;, 1,
+        &quot;006&quot;, 1,
+        &quot;402&quot;, 1,
+        &quot;404&quot;, 1, 
+        &quot;406&quot;, 1,
+        &quot;414&quot;, 1, 
+        &quot;422&quot;, 1,
+        &quot;424&quot;, 1,
+        &quot;102&quot;, 1,
+        &quot;104&quot;, 1,
+        0)
+     = 1, TRUE, FALSE)</formula>
+    <label>Is Blind</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

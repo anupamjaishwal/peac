@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Dealer_Doc_Type__c</fullName>
+    <description>DP-254</description>
+    <externalId>false</externalId>
+    <label>Document Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>LC - Assignment of Proceeds</fullName>
+                <default>false</default>
+                <label>Assignment of Proceeds</label>
+            </value>
+            <value>
+                <fullName>CR - Bank Statements</fullName>
+                <default>false</default>
+                <label>Bank Statements</label>
+            </value>
+            <value>
+                <fullName>CR - Credit Application</fullName>
+                <default>false</default>
+                <label>Credit Application</label>
+            </value>
+            <value>
+                <fullName>LC - Invoice</fullName>
+                <default>false</default>
+                <label>Invoice</label>
+            </value>
+            <value>
+                <fullName>CR - Invoice/Quote/Proposal</fullName>
+                <default>false</default>
+                <label>Invoice/Quote/Proposal</label>
+            </value>
+            <value>
+                <fullName>LC - Lease</fullName>
+                <default>false</default>
+                <label>Lease</label>
+            </value>
+            <value>
+                <fullName>LC - Misc</fullName>
+                <default>false</default>
+                <label>Misc</label>
+            </value>
+            <value>
+                <fullName>LC - Proof of Location</fullName>
+                <default>false</default>
+                <label>POL</label>
+            </value>
+            <value>
+                <fullName>LC - Tax Exempt Forms/Resale Certificate</fullName>
+                <default>false</default>
+                <label>Tax Exempt Certificate</label>
+            </value>
+            <value>
+                <fullName>Approval Letter</fullName>
+                <default>false</default>
+                <label>Approval Letter</label>
+            </value>
+            <value>
+                <fullName>FS - Approval Letter</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>FS - Approval Letter</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

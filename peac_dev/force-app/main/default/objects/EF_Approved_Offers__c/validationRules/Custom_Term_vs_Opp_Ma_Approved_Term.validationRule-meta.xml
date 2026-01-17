@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom_Term_vs_Opp_Ma_Approved_Term</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( 
+	RecordType.Name = &apos;Custom&apos;,
+	OR(
+	Term_in_Months__c &gt;  Opportunity__r.Max_Term_Approved__c
+	)
+)</errorConditionFormula>
+    <errorMessage>Term on custom EF Approved Offers can&apos;t exceed Opportunity Max Approved Term</errorMessage>
+</ValidationRule>

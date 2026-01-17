@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>FincAmt_Required_for_ready_to_send</fullName>
+    <active>false</active>
+    <errorConditionFormula>AND(
+   OR(
+      ISBLANK(  Amount_Financed__c  ),
+      Amount_Financed__c = 0
+   ),
+   RecordType.Name = &quot;Lease Payment&quot;, 
+   TEXT( Payment_Status__c ) = &quot;Ready to Send&quot;,
+   ISCHANGED(Payment_Status__c)
+ )</errorConditionFormula>
+    <errorMessage>Amount Financed is required to move to Ready to Send on a Lease Payment</errorMessage>
+</ValidationRule>

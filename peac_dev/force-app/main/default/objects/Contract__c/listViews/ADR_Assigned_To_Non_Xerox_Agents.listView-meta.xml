@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ADR_Assigned_To_Non_Xerox_Agents</fullName>
+    <columns>NAME</columns>
+    <columns>Customer__c</columns>
+    <columns>Status__c</columns>
+    <columns>Collection_Group__c</columns>
+    <columns>Delinquency_Status_Code__c</columns>
+    <columns>OWNER.FIRST_NAME</columns>
+    <columns>OWNER.LAST_NAME</columns>
+    <columns>Agent_Lock__c</columns>
+    <columns>Net_Investment__c</columns>
+    <columns>Account_Level_Collection_Agent__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>RECORDTYPE</field>
+        <operation>equals</operation>
+        <value>Contract__c.Lease</value>
+    </filters>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Active,Renewal</value>
+    </filters>
+    <filters>
+        <field>Lessor_Code__c</field>
+        <operation>equals</operation>
+        <value>101,102,471</value>
+    </filters>
+    <filters>
+        <field>OWNER.FIRST_NAME</field>
+        <operation>notEqual</operation>
+        <value>Andreene,Chevoy,Erisha,Jacqueline,Jodiann,Joni,Kamala,Karen,Kerika,Kyle,Ladania,Leroni,Mikilla,Mondise,Moya,Nickesha,Nicolette,Salesha,Sara,Sasha Kay,Sashkia,Shanece,Shefeno,Stacy,Trisharna</value>
+    </filters>
+    <filters>
+        <field>OWNER.ALIAS</field>
+        <operation>notEqual</operation>
+        <value>Xerox Low Balance,External Agencies,Bankruptcy</value>
+    </filters>
+    <filters>
+        <field>Delinquency_Status_Code__c</field>
+        <operation>notEqual</operation>
+        <value>00</value>
+    </filters>
+    <filters>
+        <field>Collection_Group__c</field>
+        <operation>notEqual</operation>
+        <value>Multiples</value>
+    </filters>
+    <label>ADR Assigned To Non Xerox Agents</label>
+    <sharedTo>
+        <role>Collections_Manager</role>
+        <role>VP_of_Collections</role>
+        <role>XBS_Collections_Manager</role>
+    </sharedTo>
+</ListView>

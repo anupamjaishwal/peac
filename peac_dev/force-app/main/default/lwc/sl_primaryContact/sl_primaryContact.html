@@ -1,0 +1,419 @@
+<template>
+    <template if:true={isEdit}>
+        <lightning-record-edit-form record-id={contactId} object-api-name="Contact"
+                onsuccess={handleSuccess} onsubmit ={handleSubmit}>
+            <lightning-messages>
+            </lightning-messages>
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                <lightning-input-field field-name="Name">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="5"></lightning-layout-item>
+                <lightning-layout-item size="4"></lightning-layout-item>
+            </lightning-layout><br/><br/>
+            <lightning-layout>
+                <div><u><strong>Phone Numbers</strong></u></div><br/><br/>
+            </lightning-layout>
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Phone">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Ext_1__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Phone1__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Phone1_Status__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Phone1_Updated__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="MobilePhone">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Ext_2__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Phone_2_Type__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Phone2_Status__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Phone2_Updated__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="OtherPhone">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Ext_3__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Phone_3_Type__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Phone3_Status__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Phone3_Updated__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="HomePhone">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="4">
+                    
+                </lightning-layout-item>
+                
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Home_Phone_Status__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Home_Phone_Updated__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Direct_Phone__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="4">
+                    
+                </lightning-layout-item>
+
+                <lightning-layout-item size="2">
+                    <lightning-input-field field-name="Direct_Phone_Status__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Direct_Phone_Updated__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Text_Opt_Out__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="3">
+                
+                </lightning-layout-item>
+                
+                <lightning-layout-item size="3">
+                    
+                </lightning-layout-item>
+            
+                <lightning-layout-item size="3">
+                    
+                </lightning-layout-item>
+            </lightning-layout>
+            <br/><br/>
+            <lightning-layout>
+                <div><u><strong>Email Addresses</strong></u></div>
+            </lightning-layout><br/><br/>
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Email">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Email_Status__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Email_Updated__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Alternate_Email_Optional__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Alternate_Email_Status__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="Alternate_Email_Updated__c">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+            </lightning-layout>
+
+            <lightning-layout>
+                <lightning-layout-item size="3">
+                    <lightning-input-field field-name="HasOptedOutOfEmail">
+                    </lightning-input-field>
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+                <lightning-layout-item size="3">
+                
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+                <lightning-layout-item size="3">
+                
+                </lightning-layout-item>
+                <lightning-layout-item size="1"></lightning-layout-item>
+            </lightning-layout>
+            
+            <lightning-layout>
+                <lightning-layout-item class="slds-float_right" size="10"></lightning-layout-item>
+                <lightning-layout-item class="slds-float_right" size="2">
+                    <lightning-button class="slds-m-top_small" variant="brand" type="submit" name="update" label="Save">
+                    </lightning-button>
+                    &nbsp;&nbsp;
+                    <lightning-button class="slds-m-top_small" variant="brand"  name="Cancel" label="Cancel" onclick={handleReset}>
+                    </lightning-button>
+                </lightning-layout-item>
+            </lightning-layout>
+            
+        </lightning-record-edit-form>
+    </template>
+    <template if:false={isEdit}>
+        <lightning-layout>
+            <lightning-layout-item class="slds-float_right" size="10"></lightning-layout-item>
+            <lightning-layout-item class="slds-float_right" size="2">
+                <lightning-button class="slds-m-top_small" variant="brand" onclick={handleEdit} name="Edit" label="Edit">
+                </lightning-button>
+            </lightning-layout-item>
+        </lightning-layout>
+    <lightning-record-view-form record-id={contactId} object-api-name="Contact">
+        <lightning-layout>
+            
+            <lightning-layout-item size="3">
+            <Strong><lightning-output-field field-name="Name">
+                </lightning-output-field></Strong>
+            </lightning-layout-item>
+            <lightning-layout-item size="5"></lightning-layout-item>
+            <lightning-layout-item size="4"></lightning-layout-item>
+        </lightning-layout><br/><br/>
+        <lightning-layout>
+            <div><u><strong>Phone Numbers</strong></u></div><br/>
+        </lightning-layout><br/><br/>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Phone">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Ext_1__c"></lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Phone1__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Phone1_Status__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Phone1_Updated__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+        
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="MobilePhone">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Ext_2__c"></lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Phone_2_Type__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Phone2_Status__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Phone2_Updated__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+        
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="OtherPhone">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Ext_3__c"></lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Phone_3_Type__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Phone3_Status__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Phone3_Updated__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+        
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="HomePhone">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="4">
+                
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Home_Phone_Status__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Home_Phone_Updated__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+        
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Direct_Phone__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="4">
+                
+            </lightning-layout-item>
+            <lightning-layout-item size="2">
+                <lightning-output-field field-name="Direct_Phone_Status__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Direct_Phone_Updated__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Text_Opt_Out__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+           
+            <lightning-layout-item size="3">
+               
+            </lightning-layout-item>
+            
+            <lightning-layout-item size="3">
+                
+            </lightning-layout-item>
+           
+            <lightning-layout-item size="3">
+                
+            </lightning-layout-item>
+        </lightning-layout>
+        <br/><br/>
+        <lightning-layout>
+            <div><u><strong>Email Addresses</strong></u></div>
+        </lightning-layout><br/><br/>
+        <lightning-layout>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Email">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Email_Status__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Email_Updated__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Alternate_Email_Optional__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Alternate_Email_Status__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="Alternate_Email_Updated__c">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+        </lightning-layout>
+
+        <lightning-layout>
+            <lightning-layout-item size="3">
+                <lightning-output-field field-name="HasOptedOutOfEmail">
+                </lightning-output-field>
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+            <lightning-layout-item size="3">
+               
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+            <lightning-layout-item size="3">
+               
+            </lightning-layout-item>
+            <lightning-layout-item size="1"></lightning-layout-item>
+        </lightning-layout>
+        
+    </lightning-record-view-form>
+    </template>
+</template>

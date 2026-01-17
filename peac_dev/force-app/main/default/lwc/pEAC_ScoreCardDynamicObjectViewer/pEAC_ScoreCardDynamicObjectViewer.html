@@ -1,0 +1,17 @@
+<template>
+    <lightning-card title="Score Card Details" icon-name="custom:custom63">
+        <template if:true={records}>
+            <div class="slds-grid slds-wrap">
+                <template for:each={records} for:item="field">
+                    <div key={field.key} class="slds-size_1-of-2 slds-p-around_small">
+                        <p><strong>{field.key}</strong>: {field.value}</p>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <p class="slds-text-color_error">{error}</p>
+        </template>
+    </lightning-card>
+</template>

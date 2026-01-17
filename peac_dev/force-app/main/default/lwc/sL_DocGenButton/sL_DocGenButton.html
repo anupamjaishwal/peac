@@ -1,0 +1,143 @@
+<template>
+    <lightning-card class="card">
+        <h2 slot = "title">
+            <strong>Document Generation</strong>
+        </h2>
+       
+        <template lwc:if={showTermsCondMessage}>
+            <div class="card">
+                <p>
+                    {TermsCondMessage}
+                </p><br/>   
+                <lightning-input class="slds-p-left_xx-medium" type="checkbox" label="Agree" onchange={TermsConditionChange}  ></lightning-input><br/>  <br/>  
+                <lightning-button style="float: right;" label="Accept & Proceed" title="Accept & Proceed" onclick={proceedtoDocumentGen} disabled={disabledAgree}></lightning-button>
+            </div>
+        </template>
+       
+        <template lwc:elseif={showErrorMessage}>
+            <div class="card">
+                <p class="error">
+                    You cannot Generate Documents for a Titled Vehicle. Please contact your PEAC representative for further assistance.
+                </p>
+            </div>
+        </template>
+        <template lwc:elseif={showStateMessage}>
+            <div class="card">
+                <p class="error">
+                    Please reach out to your PEAC contact to have documents generated.
+                </p>
+            </div>
+        </template>
+        <template lwc:elseif={showApprovedMessage}>
+            <div class="card">
+                <p class="error">
+                    Please make sure this application is approved before generating documents
+                </p>
+            </div>
+        </template>
+        <template lwc:elseif={showPendingCheckListMessage}>
+            <div class="card">
+                <p class="error">
+                    Please ensure you've provided all documentation requirements and contact your PEAC Contact if you have additional questions.
+                </p>
+            </div>
+        </template>
+        <template lwc:elseif={showAmountMessage}>
+            <div class="card">
+                <p class="error">
+                    Documents cannot be generated when the Amount field is blank
+                </p>
+            </div>
+        </template>
+        <template lwc:else>
+            <div class="card">
+                <p class="lbl">Send To: </p>
+                <div class="slds-grid">
+                    <div class="slds-col slds-size_3-of-4">
+                                <lightning-combobox
+                                name ="contactDisplay"
+                                label="Available Contacts"
+                                value={selectedContact}
+                                placeholder="Select Contact"
+                                options={dealerContacts}
+                                onchange={contactSelect}></lightning-combobox>
+                                
+                    </div>
+                    <div  class="slds-col slds-size_1-of-4 buttonContainer">
+                        <lightning-button onclick={newContactClick} label="New Contact">New Contact</lightning-button>
+                    </div>
+                </div>
+                <p class="lbl">Send Through: </p>
+                <lightning-combobox 
+                    name="DeliveryOptions" label="Delivery Options"
+                    value={value}
+                    placeholder="Select Delivery Option"
+                    options={options}
+                    onchange={handleChange}></lightning-combobox>
+                
+            </div>
+            <template lwc:if={showValidationMessage}>
+                <div class="card">
+                    <p class="error">
+                        Please select a delivery method.
+                    </p>
+                </div>
+            </template>
+            <template lwc:if={showContactMessage}>
+                <div class="card">
+                    <p class="error">
+                        Please select a contact.
+                    </p>
+                </div>
+            </template>
+
+            <div><br><hr>
+                <lightning-button type="button" label="Cancel" onclick={handleClose}
+                                class="slds-var-m-left_x-small"></lightning-button>
+                <lightning-button variant="brand" label="Generate Documents" onclick={handleClick} class="slds-m-left_x-small" disabled={generateBtnState}></lightning-button>
+            </div>
+            <div>
+
+            </div>
+        </template>        
+    </lightning-card>
+
+    <template lwc:if={spinState}>
+      <lightning-spinner alternative-text="Loading" size="xx-small"></lightning-spinner>
+    </template>
+
+    <template if:true={isModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Contact</h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-record-edit-form data-id="ContactForm" record-id={conRecId} object-api-name="Contact" onsubmit={handleContactSubmit} onsuccess={handleSuccess} onerror={handleerror}>
+                       <lightning-input-field field-name="Salutation"> </lightning-input-field>
+                        <lightning-input-field field-name="FirstName" required> </lightning-input-field>
+                        <lightning-input-field field-name="MiddleName"> </lightning-input-field>
+            <lightning-input-field field-name="LastName"> </lightning-input-field>
+            <lightning-input-field field-name="Suffix"> </lightning-input-field>
+            <lightning-input-field field-name="Email" required> </lightning-input-field>
+            <lightning-input-field field-name="Phone" required> </lightning-input-field>
+             <lightning-button type="submit"  name="submit" label="Save"></lightning-button>
+             <lightning-button onclick={closeModal} name="close" label="Cancel"></lightning-button>
+                    </lightning-record-edit-form>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+</template>

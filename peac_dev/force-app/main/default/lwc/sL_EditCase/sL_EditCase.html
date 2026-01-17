@@ -1,0 +1,90 @@
+<template>
+    <template if:false={isSaveAndClose}>
+        <lightning-record-edit-form object-api-name="Case" record-id={recordId}
+            onload={handleLoad} onsuccess={handleSuccess} onerror={handleError}>
+            <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+            <template if:false={isLoading}>
+                <lightning-card title={title}>
+                    <div class="slds-var-p-around_medium slds-scrollable_y" style={dynamicHeight}>
+                        <lightning-messages> </lightning-messages>
+                                <lightning-layout multiple-rows="true">
+                                    <lightning-layout-item size="6">
+                                        <lightning-output-field field-name="OwnerId"></lightning-output-field>
+                                        <lightning-output-field field-name="CaseNumber"></lightning-output-field>
+                                        <lightning-input-field field-name="AccountId"></lightning-input-field>
+                                        <lightning-input-field field-name="Contract_custom__c" value={contractId}></lightning-input-field>
+                                        <lightning-input-field field-name="ParentId"></lightning-input-field>
+                                        <lightning-input-field field-name="Web_Contracts__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Response_Due__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Initial_Response__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Escalated_Date_Time__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Closed_Reason__c"></lightning-input-field>
+                                        <lightning-output-field field-name="SLA_Status__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input-field field-name="ContactId"></lightning-input-field>
+                                        <lightning-output-field field-name="ContactPhone"></lightning-output-field>
+                                        <lightning-output-field field-name="ContactEmail"></lightning-output-field>
+                                        <lightning-output-field field-name="Parent_Case_Owner__c"></lightning-output-field>
+                                        <lightning-output-field field-name="Parent_Closed_Reason__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                        <h3 class="slds-section__title slds-theme_shade primaryPaletteBorder">
+                                            <span class="section-header-title slds-var-p-horizontal_small slds-truncate">Additional Information</span>
+                                        </h3>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input-field field-name="Status"></lightning-input-field>
+                                        <lightning-output-field field-name="Case_Source__c"></lightning-output-field>
+                                        <lightning-input-field field-name="Priority"></lightning-input-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-input-field field-name="Type"></lightning-input-field>
+                                        <lightning-input-field field-name="Reason"></lightning-input-field>
+                                        <lightning-input-field field-name="Secondary_Reasons__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Initial_Response__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Referred_to_Sales__c"></lightning-input-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                        <lightning-input-field field-name="Subject"></lightning-input-field>
+                                        <lightning-input-field field-name="Description"></lightning-input-field>
+                                        <lightning-input-field field-name="Comments"></lightning-input-field>
+                                        <lightning-input-field field-name="Resolution_Notes__c"></lightning-input-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-output-field field-name="CreatedDate"></lightning-output-field>
+                                        <lightning-input-field field-name="SuppliedEmail"></lightning-input-field>
+                                        <lightning-input-field field-name="SuppliedName"></lightning-input-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-output-field field-name="ClosedDate"></lightning-output-field>
+                                        <lightning-input-field field-name="SuppliedCompany"></lightning-input-field>
+                                        <lightning-input-field field-name="SuppliedPhone"></lightning-input-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                        <h3 class="slds-section__title slds-theme_shade primaryPaletteBorder">
+                                            <span class="section-header-title slds-var-p-horizontal_small slds-truncate">System Information</span>
+                                        </h3>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-output-field field-name="CreatedById"></lightning-output-field>
+                                        <lightning-input-field field-name="Origin"></lightning-input-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <lightning-output-field field-name="LastModifiedById"></lightning-output-field>
+                                    </lightning-layout-item>
+                                </lightning-layout>
+                    </div>
+                    <p slot="footer" if:false={isLoading}>
+                        <lightning-button type="button" label="Cancel" onclick={handleCancel}></lightning-button>
+                        <lightning-button type="submit" label="Save &amp; Close" class="slds-var-p-horizontal_small" onclick={handleSaveAndClose} disabled={isSaving}></lightning-button>
+                        <lightning-button type="submit" variant="brand" label="Save" onclick={handleJustSave} disabled={isSaving}></lightning-button>
+                    </p>
+                </lightning-card>
+            </template>
+        </lightning-record-edit-form>
+    </template>
+    <template if:true={isSaveAndClose}>
+        <c-s-l_-close-case record-id={recordId} is-from-save-and-close="true" onclose={handleCancel}></c-s-l_-close-case>
+    </template>
+</template>

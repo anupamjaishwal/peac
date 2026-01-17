@@ -1,0 +1,81 @@
+<template>
+    <template if:true={isSummary}>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item padding="around-small" size="6">
+                <lightning-record-view-form record-id={recordId} object-api-name="Contract__c">
+                    <div class="slds-box slds-theme_default">
+                        <lightning-output-field field-name="Name"> </lightning-output-field>
+                    </div>
+                </lightning-record-view-form>
+            </lightning-layout-item>
+            <lightning-layout-item padding="around-small" size="6">
+                <div class="page-section">
+                    <lightning-radio-group name="lrgFilter" label="Filter" options={filterOptions}
+                        value={selectedFilter} onchange={changeFilter} type="button"></lightning-radio-group>
+                </div>
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" padding="around-small" size="12">
+                <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+                <template if:false={isLoading}>
+                    <c-sl-json-table header={openItemHeader} rows={filtered}
+                        has-footer={hasFooter} total-column={totalColumn} total-label={totalLabel} total-value={totalValue}
+                        ongotomode={handleGoToWaiver} ongotokey={handleGoToDetail}></c-sl-json-table>
+                </template>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+    <template if:true={isWaiver}>
+        <lightning-layout multiple-rows="true" horizontal-align="center">
+            <lightning-layout-item size="12">
+                <h2 class="slds-text-heading_medium slds-text-align_center">Waive Item</h2>
+            </lightning-layout-item>
+            <lightning-layout-item padding="around-small" size="12">
+                <h4 class="slds-text-heading_small">Open Item Key: <a href="#" onclick={handleGoToSummary}>{currentOiKey}</a></h4>
+            </lightning-layout-item>
+            <lightning-layout-item alignment-bump="center" flexibility="auto" padding="around-small" size="10">
+                <lightning-input type="number" name="baseAmt" label="BaseAmt" value="0" formatter="currency" step="0.01"></lightning-input>
+                <lightning-input type="number" name="stTax" label="StTax" value="0" formatter="currency" step="0.01"></lightning-input>
+                <lightning-input type="number" name="cnTax" label="CnTax" value="0" formatter="currency" step="0.01"></lightning-input>
+                <lightning-input type="number" name="ciTax" label="CiTax" value="0" formatter="currency" step="0.01"></lightning-input>
+                <lightning-input type="number" name="tCnTax" label="TCnTax" value="0" formatter="currency" step="0.01"></lightning-input>
+                <lightning-input type="number" name="tCiTax" label="TCiTax" value="0" formatter="currency" step="0.01"></lightning-input>
+                <template if:true={isLoadingWaiver}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+                <template if:false={isLoadingWaiver}>
+                    <lightning-combobox name="adjCode" label="Waiver Type" placeholder="Select Waiver Type" options={waiverCodes} dropdown-alignment="auto" required></lightning-combobox>
+                </template>
+                <lightning-layout-item padding="around-medium" size="12">
+                    <template if:true={isSendingWaiver}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+                    <template if:false={isSendingWaiver}>
+                        <div class="slds-text-align_center">
+                            <lightning-button variant="brand" label="Send Waiver" title="Send Waiver" onclick={handleSendWaiver} class="slds-var-m-left_x-small"></lightning-button>
+                        </div>
+                    </template>
+                </lightning-layout-item>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+    <template if:true={isDetail}>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="12">
+                <h2 class="slds-text-heading_medium slds-text-align_center">Open Item Charges</h2>
+            </lightning-layout-item>
+            <lightning-layout-item size="4" padding="around-small" alignment-bump="right">
+                <h4 class="slds-text-heading_small">Open Item Key: <a href="#" onclick={handleGoToSummary}>{currentOiKey}</a></h4>
+            </lightning-layout-item>
+            <lightning-layout-item size="2" padding="around-small" alignment-bump="left">
+                <lightning-button label="Back" title="Back" onclick={handleGoToSummary} class="slds-var-m-left_x-small"></lightning-button>
+            </lightning-layout-item>
+            <template if:true={isLoadingDetail}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+            <template if:false={isLoadingDetail}>
+                <lightning-layout-item flexibility="auto" padding="around-small" size="10">
+                    <c-sl-json-table header={chargesHeader} rows={charges} ongotokey={handleExpandCharge}></c-sl-json-table>
+                </lightning-layout-item>
+                <template if:true={isExpanded}>
+                    <lightning-layout-item flexibility="auto" padding="around-small" size="10" alignment-bump="left">
+                        <c-sl-json-table header={paymentsHeader} rows={payments} ongotokey={handleCollapseCharge}></c-sl-json-table>
+                    </lightning-layout-item>
+                </template>
+            </template>
+        </lightning-layout>
+    </template>
+</template>

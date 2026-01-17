@@ -1,0 +1,11 @@
+.custom-container{
+	color : black;
+}
+.errormsg{
+    color: red;
+    font-weight: bold;
+}
+.successmsg{
+    color: green;
+    font-weight: bold;
+}

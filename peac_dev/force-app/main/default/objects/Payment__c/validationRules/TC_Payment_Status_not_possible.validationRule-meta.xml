@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TC_Payment_Status_not_possible</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+   $Profile.Name != &quot;System Administrator&quot;,
+   $User.LastName != &quot;Informatica&quot;,
+   OR(
+      TEXT(Payment_Status__c) = &quot;Payment Acknowledged&quot;,
+      TEXT(Payment_Status__c) = &quot;Payment Released&quot;,
+      TEXT(Payment_Status__c) = &quot;Payment Confirmed&quot;
+   )
+)</errorConditionFormula>
+    <errorMessage>To change the status to Payment Released or Payment Acknowledged you must have system admin access. Please contact your administrator.</errorMessage>
+</ValidationRule>

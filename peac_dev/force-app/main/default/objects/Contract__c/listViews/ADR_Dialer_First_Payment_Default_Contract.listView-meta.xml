@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ADR_Dialer_First_Payment_Default_Contract</fullName>
+    <columns>NAME</columns>
+    <filterScope>Queue</filterScope>
+    <label>ADR Dialer First Payment Default</label>
+    <queue>ADR_Dialer_First_Payment_Default</queue>
+    <sharedTo>
+        <role>XBS_Collections_Manager</role>
+    </sharedTo>
+</ListView>

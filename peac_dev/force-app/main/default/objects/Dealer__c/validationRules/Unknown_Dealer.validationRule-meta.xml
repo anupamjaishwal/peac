@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Unknown_Dealer</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(AND(Dealer__r.Name = &apos;Unknown Dealer- End User&apos;, NOT(CONTAINS(Opportunity__r.RecordType.Name,&apos;Express&apos;))),AND(NOT(CONTAINS(Opportunity__r.RecordType.Name,&apos;HKF&apos;)), Dealer__r.Name = &apos;Unknown Dealer-HKF&apos;), AND(NOT(CONTAINS(Opportunity__r.RecordType.Name,&apos;Program&apos;)), OR(Dealer__r.Name = &apos;Unknown Dealer - Franchise&apos;,Dealer__r.Name = &apos;Unknown Dealer-SNAP&apos;)))</errorConditionFormula>
+    <errorMessage>Unknown dealers can only be attached to applicable ORTs (Express, HKF &amp; Program)
+i.	Express ORT
+1.	Unknown Dealer-End User
+ii.	HKF ORT
+1.	Unknown Dealer-HKF
+iii.	Program ORT
+1.	Unknown Dealer-Franchise
+2.	Unknown Dealer-SNAP</errorMessage>
+</ValidationRule>

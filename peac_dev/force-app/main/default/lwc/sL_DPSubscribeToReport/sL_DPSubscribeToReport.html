@@ -1,0 +1,55 @@
+<template>
+  <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+  <template if:false={isLoading}>
+      <template lwc:if={isModalOpen}>
+          <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+              <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                  <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleClose}>
+                    <lightning-icon icon-name="utility:close"
+                      alternative-text="close"
+                      variant="inverse"
+                      size="small" >
+                    </lightning-icon>
+                    <span class="slds-assistive-text">Close</span>
+                  </button>
+                  <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Report Subscriptions</h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-layout multiple-rows="true"> 
+                      <lightning-layout-item size="12">
+                          <lightning-card>
+                              <!-- <lightning-button label="Cancel" slot="actions" onclick={handleClose}></lightning-button> -->
+                              <lightning-button label="Save" variant="brand" slot="actions" onclick={handleSave}></lightning-button>
+                              <p class="slds-var-p-horizontal_small">
+                                  <lightning-combobox name="report" label="Report"
+                                      value={targetReport} options={reports} onchange={handleTargetReport} required></lightning-combobox>
+                              </p>
+                              <p slot="footer">
+                                  <lightning-dual-listbox name="subscribers" label="Select Users"
+                                      source-label="Available" selected-label="Subscribed" field-level-help="Select desired subscribers"
+                                      options={allUsers} value={subscribers} onchange={handleSubsChange} disabled={isReportEmpty}></lightning-dual-listbox>
+                              </p>
+                          </lightning-card>
+                      </lightning-layout-item>
+    
+                      
+                    </lightning-layout>
+    
+                  
+                </div>
+              </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+      </template>
+      <template lwc:else>
+          <div class="slds-text-align_right">
+              <lightning-button label="Subscribe / Unsubscribe" onclick={handleOpen}></lightning-button>
+          </div>
+      </template>
+      
+      
+  </template>
+</template>

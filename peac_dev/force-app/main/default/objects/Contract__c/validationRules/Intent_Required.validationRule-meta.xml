@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Intent_Required</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISBLANK(TEXT(Intent__c)), 
+				NOT(ISBLANK(Letter_of_intent_received__c)),
+				NOT(CONTAINS($Profile.Name, &quot;Admin&quot;))
+			)</errorConditionFormula>
+    <errorDisplayField>Intent__c</errorDisplayField>
+    <errorMessage>Intent field required when Letter of Intent Received field is populated</errorMessage>
+</ValidationRule>

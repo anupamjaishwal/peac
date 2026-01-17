@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Dialer_Report__c</fullName>
+    <externalId>false</externalId>
+    <formula>AND(NOT(Remove_from_Dialer__c),
+       NOT(Payment_Arrangement__c),
+       RecordType.Name = &apos;Lease&apos;,
+       OR(ISBLANK(Hold_from_Dialer_Until__c), Hold_from_Dialer_Until__c &lt;= TODAY() ),
+       ISBLANK(RA_Issued__c) )</formula>
+    <label>Dialer Report</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

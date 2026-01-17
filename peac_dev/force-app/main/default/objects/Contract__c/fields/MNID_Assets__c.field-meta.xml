@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MNID_Assets__c</fullName>
+    <externalId>false</externalId>
+    <label>MN/ID Assets</label>
+    <summaryFilterItems>
+        <field>Contract_Asset__c.Asset_State__c</field>
+        <operation>equals</operation>
+        <value>ID, MN</value>
+    </summaryFilterItems>
+    <summaryForeignKey>Contract_Asset__c.Contract__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Other_Vehicle_Make</fullName>
+    <active>true</active>
+    <errorConditionFormula>((TEXT(Vehicle_Make__c) == &apos;Other&apos; &amp;&amp; ISBLANK(Other_Vehicle_Make__c )) &amp;&amp; NOT(CONTAINS($User.Username, &quot;userbhoomi&quot;)) &amp;&amp;
+NOT(CONTAINS($User.LastName, &quot;portal&quot;))) || 
+(TEXT(Vehicle_Make__c) != &apos;Other&apos; &amp;&amp; NOT(ISBLANK(Other_Vehicle_Make__c )) &amp;&amp; NOT(CONTAINS($User.Username, &quot;userbhoomi&quot;)) &amp;&amp;
+NOT(CONTAINS($User.LastName, &quot;portal&quot;)))</errorConditionFormula>
+    <errorMessage>Other Vehicle Make should be filled when Vehicle  Make is Other</errorMessage>
+</ValidationRule>

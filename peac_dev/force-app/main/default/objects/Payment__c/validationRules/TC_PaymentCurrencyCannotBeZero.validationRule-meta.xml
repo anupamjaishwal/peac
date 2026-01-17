@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TC_PaymentCurrencyCannotBeZero</fullName>
+    <active>true</active>
+    <errorConditionFormula>Amount_Financed__c == 0 || Less_Advance_Funding__c == 0 || Less_Advance_Rentals__c == 0 || Less_Delivery_Guarantee__c == 0 || Less_Delivery_Guarantee_Fee__c == 0 || Less_Discount__c == 0 || Less_Doc_Fee_Amount__c == 0 || Less_Fee_for_Existing_Account__c == 0 || Less_Origination_Fee__c == 0 || Less_Payoffs_Total__c == 0 || Less_Points_Pool__c == 0 || Less_Security_Deposit__c == 0 || Less_Titling_Fee__c == 0 || Less_UPS_Charge__c == 0 || Less_Wire_Fee__c == 0 || Loan_Amount__c == 0 || Payment_Total__c == 0 || Plus_Additional_Doc_Fee_to_Third_Party__c == 0 || Plus_Commission__c == 0 || Plus_Points__c == 0 || Plus_Subsidy__c == 0</errorConditionFormula>
+    <errorMessage>Currency fields on Payment cannot be 0, currency fields can be empty</errorMessage>
+</ValidationRule>

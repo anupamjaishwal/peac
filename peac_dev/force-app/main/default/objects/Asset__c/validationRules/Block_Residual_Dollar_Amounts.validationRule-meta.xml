@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Block_Residual_Dollar_Amounts</fullName>
+    <active>false</active>
+    <description>Block residual dollar amounts from being entered on all opportunities with customer owned purchase options.</description>
+    <errorConditionFormula>!Opportunity__r.Loan_Record_Type__c &amp;&amp;
+ISPICKVAL(Opportunity__r.Purchase_Options__c, &apos;Customer Owned&apos;) &amp;&amp;
+(Residual_Amount__c &gt; 0) &amp;&amp;
+(ISCHANGED(Residual_Amount__c)||ISNEW())</errorConditionFormula>
+    <errorDisplayField>Residual_Amount__c</errorDisplayField>
+    <errorMessage>Customer Owned purchase options must not have residual</errorMessage>
+</ValidationRule>

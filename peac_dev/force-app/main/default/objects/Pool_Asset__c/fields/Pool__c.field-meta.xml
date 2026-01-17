@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pool__c</fullName>
+    <externalId>false</externalId>
+    <label>Pool</label>
+    <referenceTo>Pool__c</referenceTo>
+    <relationshipLabel>Pool Assets</relationshipLabel>
+    <relationshipName>Pool_Assets</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>false</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

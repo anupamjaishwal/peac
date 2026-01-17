@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IL_Integration_Log_Search</fullName>
+    <columns>NAME</columns>
+    <columns>Integration_Name__c</columns>
+    <columns>Error_Message__c</columns>
+    <columns>Contract__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>LAST_UPDATE</columns>
+    <columns>Account__c</columns>
+    <columns>Insurance__c</columns>
+    <columns>Request_Text__c</columns>
+    <columns>ResponseText__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>CREATED_DATE</field>
+        <operation>greaterOrEqual</operation>
+        <value>1/8/2025 12:00 AM</value>
+    </filters>
+    <filters>
+        <field>CREATED_DATE</field>
+        <operation>lessOrEqual</operation>
+        <value>1/8/2025 12:33 PM</value>
+    </filters>
+    <label>IL Integration Log Search</label>
+    <sharedTo>
+        <role>System_Admin</role>
+    </sharedTo>
+</ListView>

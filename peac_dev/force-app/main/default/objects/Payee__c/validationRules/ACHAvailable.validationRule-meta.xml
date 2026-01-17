@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ACHAvailable</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ACH_Available__c == true,
+(OR(LEN(ACH_Bank_Transit__c) == 0,LEN(ACH_Account_Number__c) == 0)  ))</errorConditionFormula>
+    <errorDisplayField>ACH_Available__c</errorDisplayField>
+    <errorMessage>ACH Available requires valid entries in ACH/Bank Transit and ACH Account #</errorMessage>
+</ValidationRule>

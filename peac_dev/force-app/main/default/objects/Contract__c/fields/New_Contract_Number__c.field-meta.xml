@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>New_Contract_Number__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description>yes, it&apos;s a lookup to itself, but it is not a hierarchy one.</description>
+    <externalId>false</externalId>
+    <label>New Contract Number</label>
+    <referenceTo>Contract__c</referenceTo>
+    <relationshipLabel>Contracts (New Contract Number)</relationshipLabel>
+    <relationshipName>Contracts</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Lookup</type>
+</CustomField>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Document Type</label>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>CS - Master Lease</fullName>
+                <default>false</default>
+                <label>CS - Master Lease</label>
+            </value>
+            <value>
+                <fullName>IF-Internal</fullName>
+                <default>false</default>
+                <label>IF-Internal</label>
+            </value>
+            <value>
+                <fullName>IF-External</fullName>
+                <default>false</default>
+                <label>IF-External</label>
+            </value>
+            <value>
+                <fullName>IF-ACH/Auto Debit Forms &amp; Copy Of Check</fullName>
+                <default>false</default>
+                <label>IF-ACH/Auto Debit Forms &amp; Copy Of Check</label>
+            </value>
+            <value>
+                <fullName>IF-Misc</fullName>
+                <default>false</default>
+                <label>IF-Misc</label>
+            </value>
+            <value>
+                <fullName>IF-Credit Bureaus</fullName>
+                <default>false</default>
+                <label>IF-Credit Bureaus</label>
+            </value>
+            <value>
+                <fullName>IF-Credit Application</fullName>
+                <default>false</default>
+                <label>IF-Credit Application</label>
+            </value>
+            <value>
+                <fullName>IF-Proof Of Insurance</fullName>
+                <default>false</default>
+                <label>IF-Proof Of Insurance</label>
+            </value>
+            <value>
+                <fullName>IF-Additional Stipulations</fullName>
+                <default>false</default>
+                <label>IF-Additional Stipulations</label>
+            </value>
+            <value>
+                <fullName>IF-Bank Account Change Reques</fullName>
+                <default>false</default>
+                <label>IF-Bank Account Change Request</label>
+            </value>
+            <value>
+                <fullName>IF-Bank Statements</fullName>
+                <default>false</default>
+                <label>IF-Bank Statements</label>
+            </value>
+            <value>
+                <fullName>IF-Booking Sheet</fullName>
+                <default>false</default>
+                <label>IF-Booking Sheet</label>
+            </value>
+            <value>
+                <fullName>IF-Financial Statements</fullName>
+                <default>false</default>
+                <label>IF-Financial Statements</label>
+            </value>
+            <value>
+                <fullName>IF-Email Credit/Sales/Booking</fullName>
+                <default>false</default>
+                <label>IF-Email Credit/Sales/Booking</label>
+            </value>
+            <value>
+                <fullName>IF-Invoice</fullName>
+                <default>false</default>
+                <label>IF-Invoice</label>
+            </value>
+            <value>
+                <fullName>IF-UCC Filed Copy</fullName>
+                <default>false</default>
+                <label>IF-UCC Filed Copy</label>
+            </value>
+            <value>
+                <fullName>IF-Guarantor- Corp or PG</fullName>
+                <default>false</default>
+                <label>IF-Guarantor- Corp or PG</label>
+            </value>
+            <value>
+                <fullName>IF-Purchase Order</fullName>
+                <default>false</default>
+                <label>IF-Purchase Order</label>
+            </value>
+            <value>
+                <fullName>IF-MSRP-Equipment Details</fullName>
+                <default>false</default>
+                <label>IF-MSRP-Equipment Details</label>
+            </value>
+            <value>
+                <fullName>IF-SOS/License Verification</fullName>
+                <default>false</default>
+                <label>IF-SOS/License Verification</label>
+            </value>
+            <value>
+                <fullName>IF-Tax Returns</fullName>
+                <default>false</default>
+                <label>IF-Tax Returns</label>
+            </value>
+            <value>
+                <fullName>IF-Addendum- Terms</fullName>
+                <default>false</default>
+                <label>IF-Addendum- Terms</label>
+            </value>
+            <value>
+                <fullName>IF-Addendum Location</fullName>
+                <default>false</default>
+                <label>IF-Addendum Location</label>
+            </value>
+            <value>
+                <fullName>IF-Master Inventory Finance Agreement</fullName>
+                <default>false</default>
+                <label>IF-Master Inventory Finance Agreement</label>
+            </value>
+            <value>
+                <fullName>IF-Takedown Inventory Finance Agreement</fullName>
+                <default>false</default>
+                <label>IF-Takedown Inventory Finance Agreement</label>
+            </value>
+            <value>
+                <fullName>IF-Certificate Of Authentication</fullName>
+                <default>false</default>
+                <label>IF-Certificate Of Authentication</label>
+            </value>
+            <value>
+                <fullName>IF-Customer Correspondence</fullName>
+                <default>false</default>
+                <label>IF-Customer Correspondence</label>
+            </value>
+            <value>
+                <fullName>IF-Inventory Finance Scorecard</fullName>
+                <default>false</default>
+                <label>IF-Inventory Finance Scorecard</label>
+            </value>
+            <value>
+                <fullName>IF-Reg B Letter</fullName>
+                <default>false</default>
+                <label>IF-Reg B Letter</label>
+            </value>
+            <value>
+                <fullName>IF-Booking Documentation</fullName>
+                <default>false</default>
+                <label>IF-Booking Documentation</label>
+            </value>
+            <value>
+                <fullName>IF-Credit Comments/CAS Form</fullName>
+                <default>false</default>
+                <label>IF-Credit Comments/CAS Form</label>
+            </value>
+            <value>
+                <fullName>IF-Credit Decision</fullName>
+                <default>false</default>
+                <label>IF-Credit Decision</label>
+            </value>
+            <value>
+                <fullName>IF-Certificate Of Receipt</fullName>
+                <default>false</default>
+                <label>IF-Certificate Of Receipt</label>
+            </value>
+            <value>
+                <fullName>IF-Repossession/Remarketing</fullName>
+                <default>false</default>
+                <label>IF-Repossession/Remarketing</label>
+            </value>
+            <value>
+                <fullName>IF-Assumption/Restructure Documentation</fullName>
+                <default>false</default>
+                <label>IF-Assumption/Restructure Documentation</label>
+            </value>
+            <value>
+                <fullName>IF-Appeal Request</fullName>
+                <default>false</default>
+                <label>IF-Appeal Request</label>
+            </value>
+            <value>
+                <fullName>IF-Borrower Acceptance Of Terms Letter</fullName>
+                <default>false</default>
+                <label>IF-Borrower Acceptance Of Terms Letter</label>
+            </value>
+            <value>
+                <fullName>IF-Demand Letters</fullName>
+                <default>false</default>
+                <label>IF-Demand Letters</label>
+            </value>
+            <value>
+                <fullName>IF-Assignment Of Invoice</fullName>
+                <default>false</default>
+                <label>IF-Assignment Of Invoice</label>
+            </value>
+            <value>
+                <fullName>IF-Bill Of Sale</fullName>
+                <default>false</default>
+                <label>IF-Bill Of Sale</label>
+            </value>
+            <value>
+                <fullName>IF-Offers</fullName>
+                <default>false</default>
+                <label>IF-Offers</label>
+            </value>
+            <value>
+                <fullName>IF-Invoice/Quote/Proposal</fullName>
+                <default>false</default>
+                <label>IF-Invoice/Quote/Proposal</label>
+            </value>
+            <value>
+                <fullName>IF-LexisNexis</fullName>
+                <default>false</default>
+                <label>IF-LexisNexis</label>
+            </value>
+            <value>
+                <fullName>IF-Audit Reports</fullName>
+                <default>false</default>
+                <label>IF-Audit Reports</label>
+            </value>
+            <value>
+                <fullName>IF-Manufacturer Agreements</fullName>
+                <default>false</default>
+                <label>IF-Manufacturer Agreements</label>
+            </value>
+            <value>
+                <fullName>IF-Buyout/Satisfaction Of Loan Documents</fullName>
+                <default>false</default>
+                <label>IF-Buyout/Satisfaction Of Loan Documents</label>
+            </value>
+            <value>
+                <fullName>IF-Collection Correspondence</fullName>
+                <default>false</default>
+                <label>IF-Collection Correspondence</label>
+            </value>
+            <value>
+                <fullName>IF-Litigation</fullName>
+                <default>false</default>
+                <label>IF-Litigation</label>
+            </value>
+            <value>
+                <fullName>IF-Bankruptcy</fullName>
+                <default>false</default>
+                <label>IF-Bankruptcy</label>
+            </value>
+            <value>
+                <fullName>IF-Insurance Doc</fullName>
+                <default>false</default>
+                <label>IF-Insurance Doc</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

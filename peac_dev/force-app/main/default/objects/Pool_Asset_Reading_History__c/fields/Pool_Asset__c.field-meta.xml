@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pool_Asset__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description>Lookup field with Pool Asset. DP-1116</description>
+    <externalId>false</externalId>
+    <label>Pool Asset</label>
+    <referenceTo>Pool_Asset__c</referenceTo>
+    <relationshipLabel>Pool Asset Reading Histories</relationshipLabel>
+    <relationshipName>Pool_Asset_Reading_History</relationshipName>
+    <required>true</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

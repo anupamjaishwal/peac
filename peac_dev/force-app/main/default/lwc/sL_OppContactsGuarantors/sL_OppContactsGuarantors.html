@@ -1,0 +1,86 @@
+<template>
+    <lightning-card title={cardTitle}>
+        <template lwc:if={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+        <template lwc:else>
+            <template lwc:if={isList}>
+<!-- <p class="blueFont">Contact Information (Optional)</p> -->
+                <lightning-button label="New Contact" variant="brand" slot="actions" onclick={handleGoToDetail}></lightning-button>
+                <lightning-datatable key-field="contactId" data={rows} columns={columns} hide-checkbox-column onrowaction={handleRowAction}></lightning-datatable>
+                <p slot="footer" class="slds-text-align_right">
+                    <lightning-button class="slds-var-m-left_x-small" label="Back" variant="brand" onclick={handleGoBack}></lightning-button>
+                    <lightning-button class="slds-var-m-left_x-small" label="Next" variant="brand" onclick={handleGoNext}></lightning-button>
+                </p>
+            </template>
+            <template lwc:elseif={isDetail}>
+                <template lwc:if={isFormLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+                <lightning-record-edit-form object-api-name="Contact" record-id={contactId}
+                onload={handleContactLoad} onsubmit={handleSubmit} onsuccess={handleContactSuccess}>
+                
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item padding="around-small" size="12">
+                            <lightning-input type="checkbox" label="Is this contact a Guarantor?" name="isGuarantor"
+                                checked={isPG} onchange={handleIsPG} disabled={isFormLoading}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" size="6">
+                            <lightning-input-field field-name="FirstName" value={currentContact.FirstName} onchange={handleFirstName} variant="stacked" required></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" size="6">
+                            <lightning-input-field field-name="LastName" value={currentContact.LastName} onchange={handleLastName} variant="stacked" required></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item lwc:if={isPG} padding="around-small" size="6">
+                            <lightning-input-field field-name="SSN__c" value={currentContact.SSN__c} onchange={handleSsn} variant="stacked" required></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" size="6">
+                            <lightning-input-field field-name="Email" value={currentContact.Email} onchange={handleEmail} variant="stacked" required></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" size="6">
+                            <lightning-input-field field-name="Title" value={currentContact.Title} onchange={handleTitle} variant="stacked"></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" size="6">
+                            <lightning-input-field field-name="Phone" value={currentContact.Phone} onchange={handlePhone} variant="stacked" required={isPhoneRequired}></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-medium" size="12">
+                            <lightning-accordion allow-multiple-sections-open active-section-name="Address">
+                                <lightning-accordion-section name="Address" label="Contact Address Information">
+                                        <lightning-input type="checkbox" label="Check if contact address is different than Lessee" name="isAddressDifferent"
+                                            checked={isAddressDifferent} onchange={handleDifferent} disabled={isFormLoading}></lightning-input>
+                                    <div class={addressVisible}>
+                                        <!-- <lightning-input-address address-label="Home Address" country-label="Home Country" street-label="Home Street"
+                                            city-label="Home City" province-label="Home State/Province Code" postal-code-label="Home Zip/Postal Code" 
+                                            onchange={handleAddress} variant="stacked" required street={otherStreet} city={otherCity} province={otherStateCode} 
+                                            postal-code={otherPostalCode} country={otherCountryCode}></lightning-input-address> -->
+                                        <lightning-input-field field-name="OtherAddress" onchange={handleAddress} variant="stacked" required={isAddressDifferent}
+                                            street={otherStreet} city={otherCity} province={otherStateCode} postal-code={otherPostalCode}
+                                            country={otherCountryCode} disabled={isFormLoading}></lightning-input-field>
+                                    </div>
+                                    <template lwc:if={isPG}>
+                                    <lightning-input type="checkbox" label="Check if Mailing address is different than Home Address" name="isMailingDifferent"
+                                            checked={isMailingDifferent} onchange={handleMailingDifferent} disabled={isFormLoading}></lightning-input>
+                                    </template>
+                                    <div class={mailingVisible}>
+                                        <lightning-input-field field-name="MailingAddress" onchange={handleMailingAddress} variant="stacked" required={isMailingDifferent}
+                                            ></lightning-input-field>
+                                            <!-- <lightning-input-field field-name="MailingAddress" onchange={handleMailingAddress} variant="stacked" required
+                                            street={mailingStreet} city={mailingCity} province={mailingStateCode} postal-code={mailingPostalCode}
+                                            country={mailingCountryCode} lwc:ref="mailingAddress"></lightning-input-field> -->
+                                    </div>
+                                </lightning-accordion-section>
+                            </lightning-accordion>
+                            <lightning-input lwc:if={isPG} type="checkbox" label="By clicking submit, I agree I have permission to submit this application." 
+                                name="isOkToPullCredit" lwc:ref="isOkToPullCredit" checked={isOkToPullCredit} onchange={handleIsOkToPullCredit} disabled={isFormLoading} required></lightning-input>
+                            
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-small" size="12" class="slds-text-align_center">
+                            <lightning-button type="button" label="Cancel" onclick={handleGoToList}
+                                                            class="slds-var-m-left_x-small" disabled={isFormLoading}></lightning-button>
+                            <lightning-button class="slds-var-m-left_x-small"
+                                                type="submit"
+                                                label="Save" variant="brand" disabled={isFormLoading}></lightning-button>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    
+            </lightning-record-edit-form>
+            </template>
+        </template>
+    </lightning-card>
+</template>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TC_PortfolioReviewCannotHaveReviewDate</fullName>
+    <active>true</active>
+    <errorConditionFormula>TEXT(Review_Type__c) = &apos;Portfolio Threshold&apos; &amp;&amp;  (Review_Date__c != null || (TEXT(Recommended_Next_Review__c) != null &amp;&amp; TEXT(Recommended_Next_Review__c) !=  &apos;Not Applicable&apos;))</errorConditionFormula>
+    <errorDisplayField>Next_Scheduled_Review__c</errorDisplayField>
+    <errorMessage>Portfolio Threshold cannot have a next scheduled review date</errorMessage>
+</ValidationRule>

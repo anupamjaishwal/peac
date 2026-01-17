@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WireBank</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(Wire_Available__c== true, 
+(OR(LEN(Wire_ID__c) &lt;&gt; 9, 
+!ISNUMBER(Wire_ID__c),
+MOD((VALUE(MID(Wire_ID__c,1,1)) * 3) + 
+(VALUE(MID(Wire_ID__c,2,1)) * 7) + 
+(VALUE(MID(Wire_ID__c,3,1))) + 
+(VALUE(MID(Wire_ID__c,4,1)) * 3) + 
+(VALUE(MID(Wire_ID__c,5,1)) * 7) + 
+(VALUE(MID(Wire_ID__c,6,1))) + 
+(VALUE(MID(Wire_ID__c,7,1)) * 3) + 
+(VALUE(MID(Wire_ID__c,8,1)) * 7) + 
+(VALUE(MID(Wire_ID__c,9,1))),10) &lt;&gt; 0 )
+
+))</errorConditionFormula>
+    <errorDisplayField>Wire_ID__c</errorDisplayField>
+    <errorMessage>The Wire/Bank Transit is invalid based upon ABA rules.</errorMessage>
+</ValidationRule>

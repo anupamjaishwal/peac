@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invalid_QB_for_Renewal_Status_A</fullName>
+    <active>false</active>
+    <description>when Renewal status is A, Quote Buyout must be &quot;Payoff to Return, No Additional Renewals&quot;</description>
+    <errorConditionFormula>ISCHANGED(Quote_Buyout_Types__c) &amp;&amp; !ISBLANK(Quote_Buyout_Types__c) &amp;&amp; ISPICKVAL(Renewal_Status__c, &apos;A&apos;) 
+&amp;&amp; (!INCLUDES(Quote_Buyout_Types__c, &apos;37&apos;) 
+|| (INCLUDES(Quote_Buyout_Types__c, &apos;1&apos;) || INCLUDES(Quote_Buyout_Types__c, &apos;6&apos;) || INCLUDES(Quote_Buyout_Types__c, &apos;21&apos;) || INCLUDES(Quote_Buyout_Types__c, &apos;22&apos;) || INCLUDES(Quote_Buyout_Types__c, &apos;20&apos;)
+))</errorConditionFormula>
+    <errorMessage>When Renewal Status is Active, Quote Buyout must be &quot;Payoff to Return, No Additional Renewals&quot; please remove any other option and try again.</errorMessage>
+</ValidationRule>

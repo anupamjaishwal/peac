@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Other_Manufacturer_is_Required</fullName>
+    <active>true</active>
+    <description>Other Manufacturer is required if Manufacturer is selected as Other.(SAL-4968)</description>
+    <errorConditionFormula>Manufacturer__r.Name = &apos;Other&apos; &amp;&amp;  ISBLANK(Other_Manufacturer__c)</errorConditionFormula>
+    <errorDisplayField>Other_Manufacturer__c</errorDisplayField>
+    <errorMessage>Other Manufacturer is mandatory.</errorMessage>
+</ValidationRule>

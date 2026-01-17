@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Blank_SP_Partner_Location</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISBLANK(SP_Partner_Location__c),  ISPICKVAL(File_Upload__c, &apos;Condition&apos;))</errorConditionFormula>
+    <errorDisplayField>SP_Partner_Location__c</errorDisplayField>
+    <errorMessage>SP Partner Location can’t be empty when uploading a Condition file</errorMessage>
+</ValidationRule>

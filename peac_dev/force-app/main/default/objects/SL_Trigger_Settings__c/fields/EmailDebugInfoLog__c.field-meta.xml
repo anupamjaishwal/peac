@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EmailDebugInfoLog__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Email DebugInfo Log to DebugInfo Recipient Email(s)</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Email DebugInfo Log to DebugInfo Recipient Email(s)</inlineHelpText>
+    <label>Email DebugInfo Log</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

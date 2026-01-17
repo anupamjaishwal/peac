@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Enforce_PG_Number_For_Loan_Opportunities</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+  ISBLANK(TEXT(PG_Number__c)),
+NOT(
+    OR(
+      $Profile.Name = &quot;User MarlinDocusign&quot;,
+      $Profile.Name = &quot;GDS&quot;,
+    $Profile.Name = &quot;DataAdmin&quot;
+    )
+  ),
+  Opportunity__r.Loan_Record_Type__c = TRUE
+)</errorConditionFormula>
+    <errorDisplayField>PG_Number__c</errorDisplayField>
+    <errorMessage>Please enter PG number ( Identify if this is PG1 or PG2 or PG3 or PG4, if you have already PG&apos;s for this app)</errorMessage>
+</ValidationRule>

@@ -1,0 +1,6 @@
+.blueFont{
+    color: #7A8EA3;
+}
+:host {
+    /* --slds-c-input-text-color: #7A8EA3; just colors the text inside the input, not the label */
+}

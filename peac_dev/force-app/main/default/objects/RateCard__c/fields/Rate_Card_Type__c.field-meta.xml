@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Rate_Card_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Rate Card Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Interest Rate</fullName>
+                <default>false</default>
+                <label>Interest Rate</label>
+            </value>
+            <value>
+                <fullName>Rate Factor</fullName>
+                <default>false</default>
+                <label>Rate Factor</label>
+            </value>
+            <value>
+                <fullName>Residual</fullName>
+                <default>false</default>
+                <label>Residual</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Method_Required_for_ready_to_send</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+   ISBLANK(TEXT(Payment_Method__c)),
+   TEXT( Payment_Status__c ) = &quot;Ready to Send&quot;,
+   ISCHANGED(Payment_Status__c)
+ )</errorConditionFormula>
+    <errorMessage>Payment Method is required to move to Ready to Send.</errorMessage>
+</ValidationRule>

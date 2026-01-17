@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contact_Full_Address__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF ($Setup.Marlin_Configuration__c.Beneficial_Owner_Home_Address_Required__c
+   , Contact__r.OtherStreet + &apos;, &apos; + Contact__r.OtherCity + &apos;, &apos; + TEXT (Contact__r.OtherStateCode) + &apos;, &apos; + Contact__r.OtherPostalCode
+   , IF (!ISBLANK (Contact__r.OtherStreet)
+      ,Contact__r.OtherStreet + &apos;, &apos; + Contact__r.OtherCity + &apos;, &apos; + TEXT (Contact__r.OtherStateCode) + &apos;, &apos; + Contact__r.OtherPostalCode
+      ,Contact__r.MailingStreet + &apos;, &apos; + Contact__r.MailingCity + &apos;, &apos; + TEXT (Contact__r.MailingStateCode) + &apos;, &apos; + Contact__r.MailingPostalCode)
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Contact Full Address</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

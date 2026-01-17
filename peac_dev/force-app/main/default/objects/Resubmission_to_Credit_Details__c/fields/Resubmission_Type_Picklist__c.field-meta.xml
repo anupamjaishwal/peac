@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Resubmission_Type_Picklist__c</fullName>
+    <externalId>false</externalId>
+    <label>Resubmission Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Appeal Approval – Conditions</fullName>
+                <default>false</default>
+                <label>Appeal Approval – Conditions</label>
+            </value>
+            <value>
+                <fullName>Appeal Approval – Program</fullName>
+                <default>false</default>
+                <label>Appeal Approval – Program</label>
+            </value>
+            <value>
+                <fullName>Appeal – Incorrect Information Pulled</fullName>
+                <default>false</default>
+                <label>Appeal – Incorrect Information Pulled</label>
+            </value>
+            <value>
+                <fullName>Change Request – Terms</fullName>
+                <default>false</default>
+                <label>Change Request – Terms</label>
+            </value>
+            <value>
+                <fullName>Change Request – Equipment Cost</fullName>
+                <default>false</default>
+                <label>Change Request – Equipment Cost</label>
+            </value>
+            <value>
+                <fullName>Clear Stip(s)</fullName>
+                <default>false</default>
+                <label>Clear Stip(s)</label>
+            </value>
+            <value>
+                <fullName>Waive Stip(s)</fullName>
+                <default>false</default>
+                <label>Waive Stip(s)</label>
+            </value>
+            <value>
+                <fullName>Appeal Decision</fullName>
+                <default>false</default>
+                <label>Appeal Decision</label>
+            </value>
+            <value>
+                <fullName>More Info</fullName>
+                <default>false</default>
+                <label>More Info</label>
+            </value>
+            <value>
+                <fullName>Fraud Resubmission</fullName>
+                <default>false</default>
+                <label>Fraud Resubmission</label>
+            </value>
+            <value>
+                <fullName>Change Ownership Information</fullName>
+                <default>false</default>
+                <label>Change Ownership Information</label>
+            </value>
+            <value>
+                <fullName>Change Business Location</fullName>
+                <default>false</default>
+                <label>Change Business Location</label>
+            </value>
+            <value>
+                <fullName>Time in Business</fullName>
+                <default>false</default>
+                <label>Time in Business</label>
+            </value>
+            <value>
+                <fullName>Competitor Balance</fullName>
+                <default>false</default>
+                <label>Competitor Balance</label>
+            </value>
+            <value>
+                <fullName>Incorrect Industry</fullName>
+                <default>false</default>
+                <label>Incorrect Industry</label>
+            </value>
+            <value>
+                <fullName>Appeal - Term</fullName>
+                <default>false</default>
+                <label>Appeal - Term</label>
+            </value>
+            <value>
+                <fullName>Appeal - Amount</fullName>
+                <default>false</default>
+                <label>Appeal - Amount</label>
+            </value>
+            <value>
+                <fullName>Appeal - Waive Stip(s)</fullName>
+                <default>false</default>
+                <label>Appeal - Waive Stip(s)</label>
+            </value>
+            <value>
+                <fullName>Appeal - Industry Exception</fullName>
+                <default>false</default>
+                <label>Appeal - Industry Exception</label>
+            </value>
+            <value>
+                <fullName>Fraud - Clear Stip(s)</fullName>
+                <default>false</default>
+                <label>Fraud - Clear Stip(s)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

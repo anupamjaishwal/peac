@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>KillSwitch__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>KillSwitch for Application</description>
+    <externalId>false</externalId>
+    <inlineHelpText>Warning: All logic will be turned off if enabled!</inlineHelpText>
+    <label>KillSwitch</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

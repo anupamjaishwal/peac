@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Verify_Equipment_Address</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+$Setup.ORE__c.Bypass__c =False,
+!CONTAINS($User.LastName,&apos;Bhoomi&apos;),
+End_User_Billing_Address__c==false, ISBLANK(Equipment_City__c),ISBLANK(TEXT(Equipment_State__c)) ,  ISBLANK(Equipment_Street__c) , ISBLANK(Equipment_Zip__c), !CONTAINS($User.LastName,&apos;Process&apos;))</errorConditionFormula>
+    <errorMessage>Make sure either one of those Equipment Location or Alternate Address sections are filled</errorMessage>
+</ValidationRule>

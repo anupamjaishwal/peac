@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IL_Upfront_Tax_Code__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+
+  OR(
+    TEXT(Upfront_Tax_Code__c) = &quot;050&quot;,
+    TEXT(Upfront_Tax_Code__c) = &quot;036&quot;,
+    TEXT(Upfront_Tax_Code__c) = &quot;031&quot;
+  ),
+
+  null,
+  
+  TEXT(Upfront_Tax_Code__c)
+
+)</formula>
+    <inlineHelpText>The value held in this field is the Upfront Tax Code that will be sent to Infolease. When the tax code is 050, 031 or 036, the value passed to Infolease is null.</inlineHelpText>
+    <label>IL Upfront Tax Code</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

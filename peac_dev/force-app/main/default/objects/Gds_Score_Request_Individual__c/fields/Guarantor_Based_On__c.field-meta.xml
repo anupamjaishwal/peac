@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Guarantor_Based_On__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Guarantor Based On</label>
+    <referenceTo>Guarantor__c</referenceTo>
+    <relationshipLabel>Gds Score Request Individuals</relationshipLabel>
+    <relationshipName>Gds_Score_Request_Individuals</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

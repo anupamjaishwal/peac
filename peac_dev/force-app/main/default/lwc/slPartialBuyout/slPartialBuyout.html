@@ -1,0 +1,28 @@
+<template>
+    <template lwc:if={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template lwc:else>
+        <lightning-card title={cardTitle}>
+            <template lwc:if={isDealerPortal}>
+                <lightning-button variant="brand-outline" label="Back" title="Back"
+                        onclick={handleBack} class="slds-m-left_x-small"></lightning-button>
+                
+            </template>
+            <template lwc:else>
+                <lightning-input type="toggle" label="Partial Buyout" name="isPartialBuyout" checked={isPartialBuyout} disabled  message-toggle-inactive="not available"></lightning-input>
+            </template>
+            <template lwc:if={isPartialBuyout}>
+                <lightning-datatable key-field="Id" data={allCAssets} columns={columns} onrowselection={handleSelection}></lightning-datatable>
+            </template>
+            <div slot="footer" class="slds-text-align_right">
+               <!-- <template lwc:if={errorMessage}>
+                    <p class="slds-has-error slds-text-align_center">
+                        <span class="slds-form-element__help">{errorMessage}</span>
+                    </p>
+                </template> -->
+                <template lwc:if={isDealerPortal}>
+                    <lightning-button label="Generate Buyout" variant="brand" onclick={handleCreateBuyouts}></lightning-button>
+                </template>
+            </div>
+        </lightning-card>
+    </template>
+</template>

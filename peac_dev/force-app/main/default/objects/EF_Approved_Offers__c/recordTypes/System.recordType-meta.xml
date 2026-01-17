@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>System</fullName>
+    <active>true</active>
+    <description>System Generated Offer</description>
+    <label>System</label>
+    <picklistValues>
+        <picklist>Advanced_Rental__c</picklist>
+        <values>
+            <fullName>First %26 Last Payment</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>First Payment</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Offer_Selected__c</picklist>
+        <values>
+            <fullName>Not Selected</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Selected</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

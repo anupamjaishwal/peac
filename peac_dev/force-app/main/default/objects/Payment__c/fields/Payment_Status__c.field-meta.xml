@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payment_Status__c</fullName>
+    <externalId>false</externalId>
+    <label>Payment Status</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Draft</fullName>
+                <default>true</default>
+                <label>Draft</label>
+            </value>
+            <value>
+                <fullName>Ready to Send</fullName>
+                <default>false</default>
+                <label>Ready to Send</label>
+            </value>
+            <value>
+                <fullName>Payment Sent</fullName>
+                <default>false</default>
+                <label>Payment Sent</label>
+            </value>
+            <value>
+                <fullName>Payment Confirmed</fullName>
+                <default>false</default>
+                <label>Payment Acknowledged</label>
+            </value>
+            <value>
+                <fullName>Payment Released</fullName>
+                <default>false</default>
+                <label>Payment Released</label>
+            </value>
+            <value>
+                <fullName>Void/Cancelled</fullName>
+                <default>false</default>
+                <label>Void/Cancelled</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

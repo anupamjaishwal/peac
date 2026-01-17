@@ -1,0 +1,44 @@
+<template>
+        <lightning-card title={title}>
+            <lightning-button label="Save" variant="brand" slot="actions" onclick={handleSave} disabled={isNotEditing}></lightning-button>
+            <p class="slds-var-p-horizontal_small">
+                <lightning-record-edit-form object-api-name="Remarketer_Matrix_Obj__c"
+                    onload={handleOtherReason} onsuccess={handleSuccess}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item padding="around-medium" size="6">
+                            <lightning-input-field field-name="Equipment_Type__c" lwc:ref="type" value={type} onchange={handleType} required></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-medium" size="6">
+                            <lightning-input-field field-name="Equipment_Subtype__c" lwc:ref="subType" value={subType} onchange={handleSubType} required></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-medium" size="6">
+                            <lightning-input-field field-name="State__c"  lwc:ref="state" value={state} onchange={handleState} required></lightning-input-field>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-medium" size="6">
+                            <lightning-combobox label="Return Warehouse Code" name="Return_Warehouse_Code__c" lwc:ref="wareHouse" value={wareHouse}
+                                    options={warehouseCodes} onchange={handleWarehouse} variant="label-inline" required=""></lightning-combobox>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </lightning-record-edit-form>
+            </p>
+            <p slot="footer">
+                <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+                <template if:false={isLoading}>
+                    <lightning-layout multiple-rows="true">
+                        <lightning-layout-item padding="around-medium" size="6">
+                            <template lwc:if={changedCounties}>
+                                <!-- <lightning-record-picker label="Available Counties" variant="label-hidden" placeholder="Search Counties..." object-api-name="County__c"
+                                    filter={filter} onchange={handleAddCounty}></lightning-record-picker> -->
+                                <lightning-combobox label="Available Counties"  name="Counties" 
+                                    options={stateCounties} onchange={handleAddCounty}></lightning-combobox>
+                            </template>
+                        </lightning-layout-item>
+                        <lightning-layout-item padding="around-medium" size="6">
+                            <label>Selected Counties</label>
+                            <lightning-pill-container items={counties} onitemremove={handleCountyRemoval}></lightning-pill-container>
+                        </lightning-layout-item>
+                </lightning-layout>
+                </template>
+            </p>
+        </lightning-card>
+</template>

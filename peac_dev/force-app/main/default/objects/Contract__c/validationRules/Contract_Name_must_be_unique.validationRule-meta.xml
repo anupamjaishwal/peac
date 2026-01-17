@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contract_Name_must_be_unique</fullName>
+    <active>true</active>
+    <description>Requires that all Contract Names are unique. updated to fire only if creating a new Contract, VLOOKUP will always return true even if there is no duplicates because its scope is to find the requested value, and on an update the Name already exists.</description>
+    <errorConditionFormula>ISNEW() &amp;&amp;NOT(ISBLANK(Name)) &amp;&amp; Name = VLOOKUP($ObjectType.Contract__c.Fields.Name, $ObjectType.Contract__c.Fields.Name, Name)</errorConditionFormula>
+    <errorMessage>This contract name is already in use, please use another name.</errorMessage>
+</ValidationRule>

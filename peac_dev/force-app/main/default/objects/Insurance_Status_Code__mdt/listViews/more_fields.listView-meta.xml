@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>more_fields</fullName>
+    <columns>MasterLabel</columns>
+    <columns>DeveloperName</columns>
+    <columns>Infolease_9_Code__c</columns>
+    <columns>Picklist_Value__c</columns>
+    <columns>Infolease_10_Code__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>more fields</label>
+</ListView>

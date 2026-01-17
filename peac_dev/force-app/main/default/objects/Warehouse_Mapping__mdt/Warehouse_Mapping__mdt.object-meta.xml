@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>for the Recommended Warehouse work in SL-111</description>
+    <label>Warehouse Mapping</label>
+    <pluralLabel>Warehouse Mappings</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

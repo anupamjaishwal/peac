@@ -1,0 +1,15 @@
+<template>
+    <div>
+        <lightning-datatable
+                key-field="Id"
+                data={data}
+                columns={columns}
+                show-row-number-column="true"
+                onrowaction={callRowAction}
+                hide-checkbox-column>
+        </lightning-datatable>
+    </div>
+    <template if:true={empty}>
+        <div class="slds-align_absolute-center" style="height:5rem">No upload files were found.</div>
+      </template>
+</template>

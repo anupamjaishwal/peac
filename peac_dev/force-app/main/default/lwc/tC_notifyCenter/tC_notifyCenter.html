@@ -1,0 +1,93 @@
+<template>
+  <lightning-card title="Receive notifications for application's submitted">
+    <div>
+    </div>
+    <div class="slds-grid slds-no-flex slds-var-p-bottom_large">
+      <div class="slds-size_1-of-4">
+      </div>
+      <div class="slds-size_1-of-4">
+        <label>Submitted</label>
+        <lightning-input data-id="submit" type="toggle" class="toggleClr" checked={accountRec.Submitted__c} onchange={changeToggle}></lightning-input>
+        <br />
+        <label>More Info</label>
+        <lightning-input data-id="moreinfo" type="toggle" checked={accountRec.More_Info__c} onchange={changeToggle}></lightning-input>
+        <br />
+        <label>Approved</label>
+        <lightning-input data-id="approved" type="toggle" checked={accountRec.Approved__c} onchange={changeToggle}></lightning-input>
+        <br />
+      </div>
+      <div class="slds-size_1-of-4">
+        <label>Declined</label>
+        <lightning-input data-id="declined" type="toggle" class="toggleClr" checked={accountRec.Declined__c} onchange={changeToggle}></lightning-input>
+        <br />
+        <label>Docs Out</label>
+        <lightning-input data-id="docsout" type="toggle" onchange={changeToggle} checked={accountRec.Docs_Out__c}></lightning-input>
+        <br />
+        <label>Docs Out w/ Contracts</label>
+        <lightning-input data-id="docsoutcontr" type="toggle" onchange={changeToggle} checked={accountRec.Docs_Out_Contracts__c}></lightning-input>
+        <br />
+      </div>
+      <div class="slds-size_1-of-4">
+        <label>Docs In</label>
+        <lightning-input data-id="docsin" type="toggle" class="toggleClr" checked={accountRec.Docs_In__c} onchange={changeToggle}></lightning-input>
+        <br />
+        <label>In Funding </label>
+        <lightning-input data-id="funding" type="toggle" checked={accountRec.In_Funding__c} onchange={changeToggle}></lightning-input>
+        <br />
+        <label>Funded</label>
+        <lightning-input data-id="finded" type="toggle" checked={accountRec.Funded__c} onchange={changeToggle}></lightning-input>
+        <br />
+      </div>
+    </div>
+    <!-- <lightning-datatable hide-checkbox-column="true"
+            key-field="Id"
+            data={data}
+            columns={columns}>-->
+    <div class="slds-grid slds-no-flex">
+      <div class="slds-size_1-of-4"></div>
+      <div class="slds-size_3-of-4">
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+          <thead>
+            <tr class="slds-line-height_reset">
+              <th class="" scope="col" style="width: 33%;">
+                <div class="slds-truncate" title="Contact Name">Contact Name</div>
+              </th>
+              <th class="" scope="col" style="width: 33%;">
+                <div class="slds-truncate" title="Email">Email</div>
+              </th>
+              <th class="" scope="col" style="width: 20%;">
+                <div class="slds-truncate" title="Role">Role</div>
+              </th>
+              <th class="" scope="col">
+                <div class="slds-truncate" title="Equipment Finance">Equipment Finance</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <template for:each={data} for:item="contact">
+              <tr class="slds-hint-parent" key={contact.Id}>
+                <td data-label="Contact Name">
+                  <div class="slds-truncate" title={contact.ConName}>{contact.ConName}</div>
+                </td>
+                <td data-label="Email">
+                  <div class="slds-truncate" title={contact.ConEmail}>{contact.ConEmail}</div>
+                </td>
+                <td data-label="Role">
+                  <div class="slds-truncate" title={contact.Role}>{contact.Role}</div>
+                </td>
+                <td data-label="Equipment Finance">
+                  <div class="slds-truncate">
+                    <lightning-input data-id={contact.Id} type="toggle" class="toggleClr" checked={contact.ReceiveAllNotifications} onchange={changeNotifyToggle}></lightning-input>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div slot="footer" class="slds-clearfix slds-text-align_center">
+      <lightning-button label="Save" title="Save" onclick={saveAccountrec}></lightning-button>
+    </div>
+  </lightning-card>
+</template>

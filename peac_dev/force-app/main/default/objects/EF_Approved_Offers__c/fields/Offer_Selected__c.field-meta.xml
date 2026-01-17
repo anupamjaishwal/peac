@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Offer_Selected__c</fullName>
+    <externalId>false</externalId>
+    <label>Selected Status</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Not Selected</fullName>
+                <default>false</default>
+                <label>Not Selected</label>
+            </value>
+            <value>
+                <fullName>Selected</fullName>
+                <default>false</default>
+                <label>Selected</label>
+            </value>
+            <value>
+                <fullName>Pending Exception Approval</fullName>
+                <default>false</default>
+                <label>Pending Exception Approval</label>
+            </value>
+            <value>
+                <fullName>Exception Approved</fullName>
+                <default>false</default>
+                <label>Exception Approved (Selected)</label>
+            </value>
+            <value>
+                <fullName>Exception Rejected</fullName>
+                <default>false</default>
+                <label>Exception Rejected</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

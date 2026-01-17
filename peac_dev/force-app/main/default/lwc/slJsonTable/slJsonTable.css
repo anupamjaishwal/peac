@@ -1,0 +1,12 @@
+.disabled-link{
+    color: #999999;
+}
+tfoot td{
+    border-top: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(229, 229, 229));
+}
+.total-label{
+    font-weight: var(--lwc-fontWeightBold,700);
+}
+th div.customWrap{
+    white-space:pre-wrap;
+}

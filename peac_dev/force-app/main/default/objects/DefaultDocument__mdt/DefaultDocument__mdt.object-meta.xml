@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This Custom Metadata defines what Document Statuses should be created on the initial insert of an Opportunity or Case</description>
+    <label>DefaultDocument</label>
+    <pluralLabel>DefaultDocuments</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

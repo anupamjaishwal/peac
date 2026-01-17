@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lease_Compact_View</fullName>
+    <fields>Name</fields>
+    <fields>Customer__c</fields>
+    <fields>CCAN__c</fields>
+    <fields>Commencement_Date__c</fields>
+    <fields>Term_Date__c</fields>
+    <fields>Contract_Balance_Remaining__c</fields>
+    <fields>Payments_Remaining__c</fields>
+    <fields>Account_Level_Collection_Group__c</fields>
+    <fields>AcctLvl_Highest_Delinquency_Contract__c</fields>
+    <label>Lease Compact View</label>
+</CompactLayout>

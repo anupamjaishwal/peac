@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Developed by Harsh@Silverline for SL-769 - contains the Automatic follow-up info of different Call Outcomes for different Departments.</description>
+    <label>Message Code Config</label>
+    <pluralLabel>Message Code Configs</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

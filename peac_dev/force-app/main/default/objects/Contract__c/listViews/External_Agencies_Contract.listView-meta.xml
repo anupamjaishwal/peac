@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>External_Agencies_Contract</fullName>
+    <columns>NAME</columns>
+    <columns>Customer__c</columns>
+    <columns>Status__c</columns>
+    <columns>External_Collection_Agency__c</columns>
+    <columns>Contract_Balance_Remaining__c</columns>
+    <columns>Disposed_Date__c</columns>
+    <columns>Recovery_Current_Balance__c</columns>
+    <columns>Recovery_Last_Payment_Date__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>External_Collection_Agency__c</field>
+        <operation>equals</operation>
+        <value>ARS,Monarch,Schuerger,Lyon Credit Services</value>
+    </filters>
+    <label>External Agencies</label>
+    <sharedTo>
+        <role>Collections_Manager</role>
+        <role>Collections_Supervisor</role>
+        <role>System_Admin</role>
+        <role>VP_of_Collections</role>
+    </sharedTo>
+</ListView>

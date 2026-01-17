@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Complaint_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Complaint Type</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Muni</fullName>
+                <default>false</default>
+                <label>Muni</label>
+            </value>
+            <value>
+                <fullName>CCP</fullName>
+                <default>false</default>
+                <label>CCP</label>
+            </value>
+            <value>
+                <fullName>Outside Counsel</fullName>
+                <default>false</default>
+                <label>Outside Counsel</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

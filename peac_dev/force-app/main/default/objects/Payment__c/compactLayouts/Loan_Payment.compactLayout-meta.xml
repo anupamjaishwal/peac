@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Loan_Payment</fullName>
+    <fields>Payee__c</fields>
+    <fields>Loan_Amount__c</fields>
+    <fields>Disbursement_Amount__c</fields>
+    <fields>Payment_Status__c</fields>
+    <fields>Payment_Method__c</fields>
+    <fields>Invoice_Number__c</fields>
+    <label>Loan Payment</label>
+</CompactLayout>

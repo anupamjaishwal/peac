@@ -1,0 +1,59 @@
+<template>
+    <template lwc:if={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template lwc:else>
+      <div class="slds-hidden">{operation}</div>
+        <template lwc:if={isSendToOnBaseOperation}>
+          <lightning-card  title="Send to OnBase">
+            <lightning-button label="Go Back" slot="actions" onclick={handleCancel}></lightning-button>
+            <lightning-button label="Send to OnBase" variant="brand" slot="actions" onclick={sendToOnBase}></lightning-button>
+            <!-- <p class="slds-var-p-horizontal_small slds-text-align_center">{sendOnBaseMessage}</p> -->
+        </lightning-card>
+        </template>
+        
+        <template lwc:else>
+          <lightning-card class="slds-text-align_center">
+            <span slot="title">OnBase Attachments</span>
+            <lightning-layout>
+                <lightning-layout-item size="12" class="slds-text-align_center">
+                    <lightning-record-edit-form
+                        id="recordViewForm"
+                        object-api-name="OnBase_Attachment__c"
+                        onsubmit={handleProcessing}
+                        onerror={handleError}
+                        onsuccess={handleAfterSave}>
+                        <lightning-messages></lightning-messages>
+            
+                        <c-sl-big-file-upload input-label="File" required message-when-value-missing="Please select a file to attach"
+                            is-without-helper onfinishedupload={handleFile} onsavedinsalesforce={afterUploadHelper}></c-sl-big-file-upload>
+                        <lightning-input-field field-name="Description__c"> </lightning-input-field>
+                        <lightning-input-field field-name="Type__c" required> </lightning-input-field>
+                        <template lwc:if={showStatusField}>
+                            <lightning-input-field field-name="Status__c"></lightning-input-field>
+                        </template>
+                        <lightning-input-field field-name="Name" value={fileName} class="slds-hide"></lightning-input-field>
+                        
+                        <!--
+                        <lightning-datatable key-field="Id" data={contracts} columns={columns} onrowselection={handleSelectedContracts}></lightning-datatable>
+                        
+                        <template if:true={errorOccurred}>
+                            <p class="slds-has-error">
+                                <span class="slds-form-element__help">{errorMessage}</span>
+                            </p>
+                        </template>
+                        -->
+                        <div class="slds-var-p-around_medium">
+                            <template if:true={isSavingAttachment}>
+                                <p style="position: relative;height: 80px;">
+                                    <lightning-spinner alternative-text="Saving Attachment..." size="small" variant="brand"></lightning-spinner>
+                                </p>
+                            </template>
+                            <lightning-button id="submit" type="submit" label="Attach File" variant="brand" disabled={isSavingAttachment}></lightning-button>
+                            <lightning-button type="button" label="Cancel" variant="brand" disabled={isSavingAttachment} onclick={handleCancel} class="slds-m-left_x-small"></lightning-button>
+                        </div>
+                    </lightning-record-edit-form>
+                </lightning-layout-item>
+            </lightning-layout>
+          </lightning-card>
+        </template>
+    </template>
+</template>

@@ -1,0 +1,146 @@
+<template>
+    <!-- No title on the card; we render the grey header via SLDS section -->
+    <lightning-card variant="Narrow">
+        <div class="slds-p-horizontal_small">
+            <!-- Collapsible section with controlled header styling -->
+            <div class={sectionClass}>
+                <h3 class="slds-section__title">
+                    <button
+                        class="slds-button slds-section__title-action"
+                        aria-controls="approval-content"
+                        aria-expanded={isOpen}
+                        onclick={toggleSection}
+                    >
+                        <!-- Chevron icon switches based on open/closed state -->
+                        <lightning-icon
+                            icon-name={chevronIcon}
+                            size="x-small"
+                            class="slds-button__icon slds-button__icon_left"
+                            alternative-text="Toggle section"
+                        ></lightning-icon>
+                        <span>{sectionLabel}</span>
+                    </button>
+                </h3>
+
+                <!-- Section body -->
+                <div id="approval-content" class="slds-section__content">
+                    <!-- Body actions -->
+                    <div class="slds-grid slds-wrap slds-m-bottom_small">
+                        <div class="slds-col slds-grow"></div>
+                        <div class="slds-col">
+                            <template if:false={isEditing}>
+                                <lightning-button
+                                    variant="brand-outline"
+                                    label="Edit"
+                                    onclick={handleEdit}
+                                ></lightning-button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <div class="slds-form slds-form_compact">
+                        <div class="slds-grid slds-wrap slds-gutters">
+
+                            <!-- LEFT: Approved_Offer__c (always read-only, custom labels) -->
+                            <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                                <div class="slds-form slds-form_horizontal">
+                                    <template if:true={offerId}>
+                                        <div class="slds-form-element slds-m-bottom_small">
+                                            <label class="slds-form-element__label">WCL Max Approval</label>
+                                            <lightning-helptext content="Max Amount Approved by Credit"></lightning-helptext>   
+                                            <div class="slds-form-element__control">
+                                                <div class="slds-form-element__static">
+                                                    <lightning-formatted-number
+                                                        value={offerAmount}
+                                                        style="currency"
+                                                        currency-code={currencyCode}
+                                                    ></lightning-formatted-number>
+                                                </div>
+                                            </div>
+                                    </div>
+                                    <div class="slds-form-element slds-m-bottom_small">
+                                        <label class="slds-form-element__label">WCL Max Term Approved</label>
+                                        <lightning-helptext content="Max Term Approved by credit related to Max Amount" ></lightning-helptext>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{term}</div>
+                                        </div>
+                                    </div>
+                                    <div class="slds-form-element slds-m-bottom_small">
+                                        <label class="slds-form-element__label">WCL Payment Frequency</label>
+                                        <lightning-helptext content="Payment Frequency of Approved Offer"></lightning-helptext>
+                                        <div class="slds-form-element__control">
+                                            <div class="slds-form-element__static">{approvedFrequency}</div>
+                                        </div>
+                                    </div>
+                                </template>
+                                </div>
+                                <template if:false={offerId}>
+                                    <div class="slds-text-color_weak slds-m-vertical_small">
+                                        No approved offer found for this Opportunity.
+                                    </div>
+                                </template>
+                            </div>
+
+                            <!-- RIGHT: VIEW (strictly stacked) -->
+                            <template if:false={isEditing}>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 right-col">
+                                    <lightning-record-view-form
+                                        record-id={recordId}
+                                        object-api-name={objectApiName}
+                                    >
+                                        <!-- IMPORTANT: do NOT wrap base fields with extra .slds-form-element -->
+                                        <div class="right-stack">
+                                            <lightning-output-field field-name="Waived_Stipulations__c"></lightning-output-field>
+                                            <lightning-output-field field-name="Stipulations__c"></lightning-output-field>
+                                            <lightning-output-field field-name="UD_ADD_REQUIREMENTS__c"></lightning-output-field>
+                                            <lightning-output-field field-name="Docs_Out_Dollar__c"></lightning-output-field>
+                                        </div>
+                                    </lightning-record-view-form>
+                                </div>
+                            </template>
+
+                            <!-- RIGHT: EDIT (strictly stacked) -->
+                            <template if:true={isEditing}>
+                                <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2 right-col">
+                                    <lightning-record-edit-form
+                                        record-id={recordId}
+                                        object-api-name={objectApiName}
+                                        onsubmit={handleSubmit}
+                                        onsuccess={handleSuccess}
+                                        onerror={handleError}
+                                    >
+                                        <div class="right-stack">
+                                            <lightning-input-field field-name="Waived_Stipulations__c"></lightning-input-field>
+                                            <lightning-input-field field-name="Stipulations__c"></lightning-input-field> 
+                                            <lightning-input-field field-name="UD_ADD_REQUIREMENTS__c" ></lightning-input-field> 
+                                            <lightning-input-field field-name="Docs_Out_Dollar__c" ></lightning-input-field>                                         
+                                            <!-- Actions -->
+                                            <div class="slds-m-top_small slds-grid slds-grid_align-end slds-gutters">
+                                                <div class="slds-col">
+                                                    <lightning-button
+                                                        variant="neutral"
+                                                        label="Cancel"
+                                                        onclick={handleCancel}
+                                                    ></lightning-button>
+                                                </div>
+                                                <div class="slds-col">
+                                                    <lightning-button
+                                                        type="submit"
+                                                        variant="brand"
+                                                        label="Save"
+                                                    ></lightning-button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </lightning-record-edit-form>
+                                </div>
+                            </template>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /SLDS section -->
+        </div>
+    </lightning-card>
+</template>

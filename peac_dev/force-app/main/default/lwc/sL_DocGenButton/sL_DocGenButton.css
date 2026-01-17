@@ -1,0 +1,14 @@
+.card {
+padding: 10px;
+}
+.lbl{
+    font-weight: bold;
+}
+.error{
+    color: red;
+    font-weight: bold;
+}
+.buttonContainer{
+    padding: 10px;
+    padding-top: 20px;
+}

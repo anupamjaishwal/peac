@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Tax_ID_type__c</fullName>
+    <externalId>false</externalId>
+    <inlineHelpText>If 1099 checked, please select EIN (Employer Identification Number) or SSN (Social Security Number) type of entry for Tax ID Nbr.</inlineHelpText>
+    <label>Tax ID type</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>EIN</fullName>
+                <default>false</default>
+                <label>EIN</label>
+            </value>
+            <value>
+                <fullName>SSN</fullName>
+                <default>false</default>
+                <label>SSN</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

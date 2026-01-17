@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>XBS_Dialer_First_Payment_Default_Contract</fullName>
+    <columns>NAME</columns>
+    <filterScope>Queue</filterScope>
+    <label>XBS Dialer First Payment Default</label>
+    <queue>XBS_Dialer_First_Payment_Default</queue>
+    <sharedTo>
+        <role>Collections_Manager</role>
+        <role>XBS_Collections_Manager</role>
+    </sharedTo>
+</ListView>

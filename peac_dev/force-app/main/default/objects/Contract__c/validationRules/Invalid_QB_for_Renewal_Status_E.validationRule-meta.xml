@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invalid_QB_for_Renewal_Status_E</fullName>
+    <active>false</active>
+    <description>this checks that the right quote Buyouts are selected when Renewal Status is E, or Contract Status is Active , or Status is not disposed.</description>
+    <errorConditionFormula>ISCHANGED(Quote_Buyout_Types__c) &amp;&amp; !ISBLANK(Quote_Buyout_Types__c)
+&amp;&amp; (
+(!ISPICKVAL(Status__c, &apos;Disposed&apos;) &amp;&amp; !ISPICKVAL(Status__c, &apos;Disposed - Charged Off&apos;) &amp;&amp; !ISPICKVAL(Renewal_Status__c, &apos;A&apos;)) || ISPICKVAL(Renewal_Status__c, &apos;E&apos;)
+) &amp;&amp; (INCLUDES(Quote_Buyout_Types__c, &apos;37&apos;)
+|| (!INCLUDES(Quote_Buyout_Types__c, &apos;1&apos;) &amp;&amp; !INCLUDES(Quote_Buyout_Types__c, &apos;6&apos;) &amp;&amp; !INCLUDES(Quote_Buyout_Types__c, &apos;21&apos;) &amp;&amp; !INCLUDES(Quote_Buyout_Types__c, &apos;22&apos;) &amp;&amp; !INCLUDES(Quote_Buyout_Types__c, &apos;20&apos;)
+))</errorConditionFormula>
+    <errorMessage>For current Status and Renewal Status the valid Quote Buyout options are:
+Full Residual,
+Payoff to Return - Entered with 1 Renewal,
+Net Investment with Fees,
+Trade-Up no Equip Return,
+Trade-Up to Return.
+Please remove any other option and try again.</errorMessage>
+</ValidationRule>

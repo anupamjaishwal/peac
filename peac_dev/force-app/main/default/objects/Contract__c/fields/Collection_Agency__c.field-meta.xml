@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Collection_Agency__c</fullName>
+    <externalId>false</externalId>
+    <formula>NOT(ISPICKVAL(External_Collection_Agency__c, &apos;&apos;))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Collection Agency</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

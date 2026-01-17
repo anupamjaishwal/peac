@@ -1,0 +1,60 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <lightning-layout multiple-rows="true">
+            <template if:true={isCreate}>
+                <lightning-layout-item size="12">
+                    <c-s-l_-view-buyout record-id={recordId}></c-s-l_-view-buyout>
+                </lightning-layout-item>
+                <lightning-layout-item size="2" padding="around-small" alignment-bump="right">
+                    <lightning-button label="Create Quote Buyout(s)" title="Create Quote Buyout(s)" onclick={handleStartQuote} class="slds-var-m-left_x-small"></lightning-button>
+                </lightning-layout-item>
+                <lightning-layout-item size="2" padding="around-small" alignment-bump="left">
+                    <lightning-button variant="brand" label="Refresh Buyouts" title="Refresh Buyouts" onclick={handleRefresh} class="slds-var-m-left_x-small"></lightning-button>
+                </lightning-layout-item>
+                <template if:true={isStarted}>
+                    <lightning-layout-item size="12">
+                        <h2 class="slds-text-heading_medium slds-text-align_center">Create Buyout</h2>
+                    </lightning-layout-item>
+                    <lightning-layout-item size="12">
+                        <div class="slds-box slds-theme_default">
+                            <lightning-record-view-form record-id={recordId} object-api-name="Contract__c">
+                                <lightning-messages></lightning-messages>
+                                <lightning-output-field field-name="Name"> </lightning-output-field>
+                                <lightning-output-field field-name="Status__c"> </lightning-output-field>
+                                <lightning-output-field field-name="Renewal_Status__c"> </lightning-output-field>
+                            </lightning-record-view-form>
+                            <lightning-dual-listbox name="customBuyoutTypes" label="Quote Buyout Type(s)"
+                                source-label="Available" selected-label="Chosen"
+                                field-level-help="Select the Quote Buyout Type(s)" value={visibleBuyouts}
+                                options={filteredQBs} onchange={handleChangeQB}></lightning-dual-listbox>
+                            <c-sl-partial-buyout contract-id={recordId} onloadinfo={handleIsPartial} onselectcassets={handleSelectCAssets}></c-sl-partial-buyout>
+                            <template lwc:if={isSubmitting}><lightning-spinner alternative-text="Creating Buyouts"></lightning-spinner></template>
+                            <template lwc:else>
+                                <p class="slds-text-align_right">
+                                    <lightning-button class="slds-var-m-around_small" variant="brand" name="createBuyout"
+                                        label="Create Buyout(s)" onclick={handleSaveQB}></lightning-button>
+                                    <lightning-button class="slds-var-m-around_small" name="viewSchedule"
+                                        label="View Scheduled Buyouts" onclick={handleViewSchedule}></lightning-button>
+                                    <lightning-button class="slds-var-m-around_small" name="sendDelayed"
+                                        label="Send (Delayed)" onclick={handleSendDelayed}></lightning-button>
+                                </p>
+                            </template>
+                        </div>
+                    </lightning-layout-item>
+                    
+                </template>
+            </template>
+            <template if:true={isSend}>
+                <lightning-layout-item size="12">
+                    <c-sl-delayed-email record-id={recordId} oncancelsend={handleCancelSend}></c-sl-delayed-email>
+                </lightning-layout-item>
+            </template>
+            <template if:true={isViewSchedule}>
+                <lightning-layout-item size="12">
+                    <c-sl-view-scheduled-q-b record-id={recordId} onclosesquedule={handleCancelSend}></c-sl-view-scheduled-q-b>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </template>
+</template>

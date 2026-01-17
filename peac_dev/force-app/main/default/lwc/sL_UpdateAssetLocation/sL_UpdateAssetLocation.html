@@ -1,0 +1,37 @@
+<template>
+    <lightning-card title={title}>
+        <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+        <template if:false={isLoading}>
+            <lightning-layout>
+                <lightning-layout-item padding="around-medium" size="12">
+                    <lightning-record-edit-form object-api-name="Contract_Asset__c" record-id={recordId} onsubmit={handleBeforeSave} onsuccess={handleSuccess}>
+                        <lightning-input-field field-name="Asset_Address_1__c" value={address1} onchange={handleAddress1} name="Asset_Address_1__c" required></lightning-input-field>
+                        <lightning-input-field field-name="Asset_Address_2__c" value={address2} onchange={handleAddress2} name="Asset_Address_2__c"></lightning-input-field>
+                        <lightning-input-field field-name="Asset_Zip_Code__c" value={zip} onchange={handleZip} name="Asset_Zip_Code__c" required></lightning-input-field>
+                        <lightning-input-field field-name="Asset_Location_Effective_Date__c" value={effectiveDate} onchange={handleEffectiveDate} name="Asset_Location_Effective_Date__c" required></lightning-input-field>
+                        <div class="slds-var-p-around_medium slds-text-align_center">
+                            <template if:false={isInfoReceived}>
+                                <lightning-button type="button" label="Cancel" onclick={handleClose}
+                                class="slds-var-m-left_x-small"></lightning-button>
+                            </template>
+                            <lightning-button type="button" label="Send Location Update" onclick={handleSendZip}
+                                class="slds-var-m-left_x-small" variant="brand"></lightning-button>
+                        </div>
+                        <template if:true={isInfoReceived}>
+                            <lightning-combobox label="County" options={countyOptions} value={selectedCounty} onchange={handleCounty} variant="label-inline"></lightning-combobox>
+                            <lightning-combobox label="City" options={cityOptions} value={selectedCity} onchange={handleCity} variant="label-inline" name="receivedCity" required></lightning-combobox>
+                            <lightning-input-field field-name="Asset_County__c" value={countyName} name="Asset_County__c" disabled style="display:none;"></lightning-input-field>
+                            <lightning-input-field field-name="Asset_City__c" value={cityName} name="Asset_City__c" disabled style="display:none;"></lightning-input-field>
+                            <div class="slds-var-p-around_medium slds-text-align_center">
+                                <lightning-button type="button" label="Cancel" onclick={handleClose}
+                                class="slds-var-m-left_x-small"></lightning-button>
+                                <lightning-button class="slds-var-m-left_x-small"
+                                        type="submit" label="Save Location Info" variant="brand"></lightning-button>
+                            </div>
+                        </template>
+                    </lightning-record-edit-form>  
+                </lightning-layout-item>
+            </lightning-layout> 
+        </template>
+    </lightning-card>
+</template>

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contact_Required_Fields</fullName>
+    <active>false</active>
+    <description>SAL-1914 - First Name, Last Name, full address, SSN, Email should be required on the contact record to add as PG</description>
+    <errorConditionFormula>ISPICKVAL(Type__c, &apos;Personal Guarantor&apos;)
+&amp;&amp; NOT(ISBLANK( Opportunity__r.Application__c ))
+&amp;&amp; NOT(ISBLANK( Contact__c ))
+&amp;&amp; NOT(CONTAINS($User.Username, &apos;userbhoomi@marlincapitalsolutions.com&apos;))
+&amp;&amp; NOT(CONTAINS($User.Username, &apos;marlinloansps@hcl.com&apos;))
+&amp;&amp; NOT(CONTAINS($User.Username, &apos;Automated&apos;))
+
+&amp;&amp;(
+ ISBLANK( Contact__r.FirstName )
+ || ISBLANK( Contact__r.LastName )
+ || ISBLANK( SSN__c )
+ || ISBLANK( Email__c )
+ || 
+  IF(Opportunity__r.Loan_Record_Type__c,
+      ISBLANK( Home_Street__c )
+   || ISBLANK( Home_City__c )
+   || ISBLANK( Home_State__c )
+   || ISBLANK( Home_Postal_Code__c )
+  ,
+      ISBLANK( Mailing_Street__c )
+   || ISBLANK( Mailing_City__c )
+   || ISBLANK( Mailing_State__c )
+   || ISBLANK( Mailing_ZipCode__c )
+  )
+ 
+)</errorConditionFormula>
+    <errorDisplayField>Contact__c</errorDisplayField>
+    <errorMessage>First Name, Last Name, full address, SSN, Email are required on the contact record to add as PG.</errorMessage>
+</ValidationRule>

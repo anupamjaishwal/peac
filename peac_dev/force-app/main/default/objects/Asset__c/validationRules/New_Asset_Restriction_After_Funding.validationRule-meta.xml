@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>New_Asset_Restriction_After_Funding</fullName>
+    <active>false</active>
+    <description>System stops creating a new asset in or post funding stage</description>
+    <errorConditionFormula>(ISPICKVAL(Opportunity__r.StageName, &apos;Funding&apos;) || ISPICKVAL(Opportunity__r.StageName, &apos;Booking&apos;) || ISPICKVAL(Opportunity__r.StageName, &apos;Funded/Booked&apos;)) &amp;&amp;    NOT(CONTAINS($Profile.Name, &apos;Admin&apos;)) &amp;&amp; isNew()</errorConditionFormula>
+    <errorMessage>Users are not allowed to create new asset at this stage.</errorMessage>
+</ValidationRule>

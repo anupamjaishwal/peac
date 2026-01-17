@@ -1,0 +1,68 @@
+<template>
+    <template if:true={hasRows}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+                <tr><th if:true={rowsSelection}></th>
+                    <template for:each={header} for:item="columnHead">
+                        <th key={columnHead.name} class="" scope="col">
+                            <div class="slds-truncate customWrap" title={columnHead.label}>{columnHead.label}</div>
+                        </th>
+                    </template>
+                </tr>
+            </thead>
+            <tbody>
+                <template for:each={rows} for:item="row">
+                    <template if:true={row.showIt}>
+                        <tr key={row.index}>
+                             <td if:true={rowsSelection}>
+                                        <lightning-input key={row.index} type="checkbox" data-destination={row.destination} onchange={handleRowSelection}></lightning-input>
+                             </td>  
+                            <template for:each={row.fieldsArray} for:item="f">
+                                <td key={f.key}>
+                                    <template if:true={f.isWaiver}>
+                                        <template if:true={row.isWaiverEnabled}>
+                                            <a href="#" data-destination={row.destination} data-mode="waiver" onclick={handleGoToOther}>{f.value}</a>
+                                        </template>
+                                        <template if:false={row.isWaiverEnabled}>
+                                            <span class="disabled-link">{f.value}</span>
+                                        </template>
+                                        
+                                    </template>
+                                    <template if:true={f.isLink}>
+                                        <a href="#" data-destination={row.destination} onclick={handleKeyClick}>{f.value}</a>
+                                    </template>
+                                    <template if:true={f.isCheck}>
+                                        <lightning-input type="checkbox" checked={f.isChecked} disabled></lightning-input>
+                                    </template>
+                                    <template if:true={f.isCurrency}>
+                                        <lightning-formatted-number value={f.value} format-style="currency"></lightning-formatted-number>
+                                    </template>
+                                    <template if:true={f.isPlain}>
+                                        {f.value}
+                                    </template>
+                                </td>
+                            </template>
+                        </tr>
+                    </template>
+                    
+                </template>
+            </tbody>
+            <template if:true={hasFooter}>
+                <tfoot>
+                    <tr>
+                        <td class="total-label slds-text-align_right" colspan={totalColumnIsAfter}>
+                            {totalLabel}
+                        </td>
+                        <td>
+                            <lightning-formatted-number value={totalValue} format-style="currency"></lightning-formatted-number>
+                        </td>
+                    </tr>
+                </tfoot>
+            </template>
+            
+        </table>
+    </template>
+    <template if:false={hasRows}>
+        No data to display.
+    </template>
+</template>

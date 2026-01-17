@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Disbursement_Amount__c</fullName>
+    <externalId>false</externalId>
+    <formula>Loan_Amount__c +  Plus_Commission__c -  Less_Origination_Fee__c - Less_Payoffs_Total__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Loan Amount + Commission - Payoffs - Orig Fee</inlineHelpText>
+    <label>Disbursement Amount</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

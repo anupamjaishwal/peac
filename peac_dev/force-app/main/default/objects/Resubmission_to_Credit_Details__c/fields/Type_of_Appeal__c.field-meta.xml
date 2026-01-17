@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type_of_Appeal__c</fullName>
+    <externalId>false</externalId>
+    <label>Type of Appeal</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Appeal Decision</fullName>
+                <default>false</default>
+                <label>Appeal Decision</label>
+            </value>
+            <value>
+                <fullName>Appeal Program</fullName>
+                <default>false</default>
+                <label>Appeal Program</label>
+            </value>
+            <value>
+                <fullName>Appeal Terms/Conditions</fullName>
+                <default>false</default>
+                <label>Appeal Terms/Conditions</label>
+            </value>
+            <value>
+                <fullName>Bank Data Exception</fullName>
+                <default>false</default>
+                <label>Bank Data Exception</label>
+            </value>
+            <value>
+                <fullName>Doc Exception</fullName>
+                <default>false</default>
+                <label>Doc Exception</label>
+            </value>
+            <value>
+                <fullName>Line Increase</fullName>
+                <default>false</default>
+                <label>Line Increase</label>
+            </value>
+            <value>
+                <fullName>Term Increase</fullName>
+                <default>false</default>
+                <label>Term Increase</label>
+            </value>
+            <value>
+                <fullName>Evaluate Auto Decline</fullName>
+                <default>false</default>
+                <label>Evaluate Auto Decline</label>
+            </value>
+            <value>
+                <fullName>Evaluate Manual Decline</fullName>
+                <default>false</default>
+                <label>Evaluate Manual Decline</label>
+            </value>
+            <value>
+                <fullName>Payment Frequency</fullName>
+                <default>false</default>
+                <label>Payment Frequency</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Funding Doc Review</fullName>
+                <default>false</default>
+                <label>Funding Doc Review</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

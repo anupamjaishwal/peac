@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Appeal_Information_Provided__c</fullName>
+    <externalId>false</externalId>
+    <label>Appeal Information Provided</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Additional Bank Reference</fullName>
+                <default>false</default>
+                <label>Additional Bank Reference</label>
+            </value>
+            <value>
+                <fullName>Additional Business Info/CCG</fullName>
+                <default>false</default>
+                <label>Additional Business Info/CCG</label>
+            </value>
+            <value>
+                <fullName>Additional Equipment Info</fullName>
+                <default>false</default>
+                <label>Additional Equipment Info</label>
+            </value>
+            <value>
+                <fullName>Additional Principal/Ownership Info</fullName>
+                <default>false</default>
+                <label>Additional Principal/Ownership Info</label>
+            </value>
+            <value>
+                <fullName>Additional Vendor/Broker Info</fullName>
+                <default>false</default>
+                <label>Additional Vendor/Broker Info</label>
+            </value>
+            <value>
+                <fullName>Financial Statements</fullName>
+                <default>false</default>
+                <label>Financial Statements</label>
+            </value>
+            <value>
+                <fullName>Original Credit Data</fullName>
+                <default>false</default>
+                <label>Original Credit Data</label>
+            </value>
+            <value>
+                <fullName>Scored Incorrectly</fullName>
+                <default>false</default>
+                <label>Scored Incorrectly</label>
+            </value>
+            <value>
+                <fullName>Corrected Business Information</fullName>
+                <default>false</default>
+                <label>Corrected Business Information</label>
+            </value>
+            <value>
+                <fullName>Additional Ownership Information</fullName>
+                <default>false</default>
+                <label>Additional Ownership Information</label>
+            </value>
+            <value>
+                <fullName>Additional Bank Information</fullName>
+                <default>false</default>
+                <label>Additional Bank Information</label>
+            </value>
+            <value>
+                <fullName>Location Information</fullName>
+                <default>false</default>
+                <label>Location Information</label>
+            </value>
+            <value>
+                <fullName>Industry Information</fullName>
+                <default>false</default>
+                <label>Industry Information</label>
+            </value>
+            <value>
+                <fullName>Competitor Balance Information</fullName>
+                <default>false</default>
+                <label>Competitor Balance Information</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>8</visibleLines>
+</CustomField>

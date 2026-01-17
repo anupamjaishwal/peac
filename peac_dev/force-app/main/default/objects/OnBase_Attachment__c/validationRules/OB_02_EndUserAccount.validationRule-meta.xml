@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OB_02_EndUserAccount</fullName>
+    <active>true</active>
+    <description>prevents a record from being added with a document type other than “CS - Master Lease” to a record when the related Account is an End User account</description>
+    <errorConditionFormula>AND(
+    CONTAINS(Account__r.RecordType.DeveloperName, &quot;End_User&quot; ),
+    NOT(ISPICKVAL(Type__c,&quot;CS - Master Lease&quot;))
+)</errorConditionFormula>
+    <errorMessage>Cannot add a document type other than “CS - Master Lease” to a record when the related Account is an End User account.-OB_02</errorMessage>
+</ValidationRule>

@@ -1,0 +1,17 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <div class="slds-var-p-around_medium">
+            <!-- <template for:each={scheduledQBs} for:item="scheduleQB">
+                <p key={scheduleQB.Id}>
+                    {scheduleQB.CronJobDetail.Name}
+                </p>
+
+            </template> -->
+            <c-sl-json-table header={scheduledQBHeader} rows={scheduledQBs} ongotokey={handleCancelEmail} ongotomode={handleViewEmail}></c-sl-json-table>
+        </div>
+        <div class="slds-var-p-around_medium">
+            <lightning-button label="Close" onclick={handleClose} name="close"></lightning-button>
+        </div>
+    </template>
+</template>

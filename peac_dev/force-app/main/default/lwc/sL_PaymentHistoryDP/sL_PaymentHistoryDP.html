@@ -1,0 +1,60 @@
+<template>
+    <template if:true={isSummary}>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item padding="around-small" size="3">
+                <lightning-record-view-form record-id={recordId} object-api-name="Contract__c" onload={handleLoad}>
+                    <div class="slds-box slds-theme_default">
+                        <lightning-output-field field-name="Name"></lightning-output-field>
+                    </div>
+                </lightning-record-view-form>
+            </lightning-layout-item>
+            <lightning-layout-item size="2" padding="around-small" alignment-bump="left">
+                <lightning-button variant="brand" label="Export to Excel" title="Primary action" onclick={exportToExcel} class="slds-m-left_x-small slds-float--right"></lightning-button>
+
+                <!-- <lightning-button variant="brand" label="Open Cherwell" title="Open Cherwell" onclick={handleGoToCherwell} class="slds-var-m-left_x-small"></lightning-button> -->
+            </lightning-layout-item>
+            <lightning-layout-item flexibility="auto" padding="around-small" size="12" class="slds-scrollable_x">
+                <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+                <template if:false={isLoading}>
+                    <c-sl-json-table header={paymentHeader} rows={payments} ongotokey={hangleGoToDetail}></c-sl-json-table>
+                </template>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+    <template if:true={isDetail}>
+        <lightning-layout multiple-rows="true" horizontal-align="space">
+            <lightning-layout-item size="12">
+                <h2 class="slds-text-heading_medium slds-text-align_center">Payment Detail</h2>
+            </lightning-layout-item>
+            <lightning-layout-item size="3" padding="around-small" alignment-bump="left">
+                <lightning-button label="Back" title="Back" onclick={handleGoToSummary} class="slds-var-m-left_x-small"></lightning-button>
+                <!-- <lightning-button variant="brand" label="Open Cherwell" title="Open Cherwell" onclick={handleGoToCherwell} class="slds-var-m-left_x-small"></lightning-button> -->
+            </lightning-layout-item>
+            <!--
+            <lightning-layout-item size="6">
+                <h4 class="slds-text-heading_small">Payment Key: <a href="#" onclick={handleGoToSummary}>{currentPymtKey}</a></h4>
+            </lightning-layout-item>
+            -->
+            <template if:true={isLoadingDetail}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+            <template if:false={isLoadingDetail}>
+                <lightning-layout-item size="12">
+                    <lightning-layout horizontal-align="space">
+
+                        <lightning-layout-item flexibility="auto" padding="around-small" size="6">
+                            <c-sl-transposed-row fields={leftColumn} ongotokey={handleGoToSummary}></c-sl-transposed-row>
+                        </lightning-layout-item>
+                        <lightning-layout-item flexibility="auto" padding="around-small" size="6"  class="slds-scrollable_x">
+                            <c-sl-transposed-row fields={rightColumn}></c-sl-transposed-row>
+                        </lightning-layout-item>
+                        
+                    </lightning-layout>
+
+                </lightning-layout-item>
+                
+                <lightning-layout-item flexibility="auto" padding="around-small" size="12" class="slds-scrollable_x">
+                    <c-sl-json-table header={miscChargesHeader} rows={miscCharges}></c-sl-json-table>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </template>
+</template>

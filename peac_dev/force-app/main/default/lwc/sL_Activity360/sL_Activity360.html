@@ -1,0 +1,17 @@
+<template>
+    <lightning-card  title="Customer Activity">
+        <p class="slds-var-p-horizontal_small">
+            <lightning-datatable column-widths-mode="auto" wrap-text-max-lines="10"
+                    key-field="id"
+                    columns={columns}
+                    data={data}
+                    hide-checkbox-column
+                    default-sort-direction={defaultSortDirection}
+                    sorted-direction={sortDirection}
+                    sorted-by={sortedBy}
+                    onsort={handleSort}>
+            </lightning-datatable>
+        </p>
+    </lightning-card>
+    
+</template>

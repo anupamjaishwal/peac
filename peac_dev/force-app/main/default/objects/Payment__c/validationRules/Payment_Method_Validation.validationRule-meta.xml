@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payment_Method_Validation</fullName>
+    <active>true</active>
+    <errorConditionFormula>OR(
+   AND(
+      !ISBLANK(Payee__c),
+      Payee__r.ACH_Available__c = FALSE,
+      TEXT(Payment_Method__c) = &quot;ACH&quot;
+   ),
+   AND(
+      !ISBLANK(Payee__c),
+      Payee__r.Wire_Available__c = FALSE,
+      TEXT(Payment_Method__c) = &quot;Wire&quot;
+   )
+)</errorConditionFormula>
+    <errorDisplayField>Payment_Method__c</errorDisplayField>
+    <errorMessage>The payment method selected is not eligible for this Payee.</errorMessage>
+</ValidationRule>

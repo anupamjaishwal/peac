@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Asset</fullName>
+    <fields>Name</fields>
+    <fields>Cost__c</fields>
+    <fields>Equipment_Location_City__c</fields>
+    <fields>Equipment_Location_County__c</fields>
+    <fields>Equipment_Location_State__c</fields>
+    <label>Asset</label>
+</CompactLayout>

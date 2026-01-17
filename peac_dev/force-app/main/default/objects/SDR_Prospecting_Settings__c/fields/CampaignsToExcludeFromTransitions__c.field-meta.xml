@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CampaignsToExcludeFromTransitions__c</fullName>
+    <defaultValue>&quot;Digital&quot;</defaultValue>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>This should be any campaign names that should be excluded from removal when a campaign member transitions into a new campaign. If multiple values are needed, be sure to have commas between each (no spaces between the commas)</inlineHelpText>
+    <label>Campaigns To Exclude From Transitions</label>
+    <length>255</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

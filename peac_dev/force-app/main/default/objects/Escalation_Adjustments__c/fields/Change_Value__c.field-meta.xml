@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Change_Value__c</fullName>
+    <description>In case of Method = percentage, Change = Percentage of Current Rate
+In case of Method = Fixed, Change = Adjustment Value
+Refer to the use case attached for calculation
+Number field with 5 decimals</description>
+    <externalId>false</externalId>
+    <label>Change Value</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>5</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

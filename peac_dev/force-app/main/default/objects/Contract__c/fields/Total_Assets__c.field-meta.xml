@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Assets__c</fullName>
+    <description>Store all assets count-SL-2454</description>
+    <externalId>false</externalId>
+    <label>Total Assets</label>
+    <summaryForeignKey>Contract_Asset__c.Contract__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

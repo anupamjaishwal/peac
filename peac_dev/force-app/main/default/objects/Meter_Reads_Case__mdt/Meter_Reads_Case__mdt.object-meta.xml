@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>This custom metadata is used to store the information about meter reads case creation on dynamic UI(LWC)</description>
+    <label>Meter Reads Case</label>
+    <pluralLabel>Meter Reads Cases</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

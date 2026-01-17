@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Advanced_Rental_Amount_Required</fullName>
+    <active>true</active>
+    <description>If Advance Rental is selected, Advance Rental Amount is required</description>
+    <errorConditionFormula>(ISBLANK(Advanced_Rental_Amount__c) || Advanced_Rental_Amount__c=0 )
+&amp;&amp;	NOT(ISBLANK(TEXT(Advanced_Rental__c )))</errorConditionFormula>
+    <errorDisplayField>Advanced_Rental_Amount__c</errorDisplayField>
+    <errorMessage>Advanced Rental Amount is required when advanced rental is selected</errorMessage>
+</ValidationRule>

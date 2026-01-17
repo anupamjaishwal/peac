@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Edit the fields depends on the stage</description>
+    <label>OpportunityFieldsValidation</label>
+    <pluralLabel>OpportunityFieldsValidation</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

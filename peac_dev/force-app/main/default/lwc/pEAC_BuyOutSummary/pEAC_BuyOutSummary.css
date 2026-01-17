@@ -1,0 +1,46 @@
+.this{
+	line-height: 10px;
+	margin-top:20px;
+}
+
+.fontcolor{
+	color:#3E3E3C;
+	padding-block: inherit;
+}
+lightning-output-field.slds-form-element.slds-form-element_horizontal {
+	padding:0px;
+}
+
+hr{
+	display: block;
+    height: 1px;
+    border: 0;
+    border-top: 1px solid #938d8d;
+    margin: 1em 0;
+    padding: 0;
+}
+.customLabel{
+	font-weight: bold;
+}
+.headerLabel{
+	font-weight: bold;
+	font-size: 15px;
+}
+.overlay {
+  position: fixed; /* Positioning and size */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(128,128,128,0.5); /* color */
+  display: none; /* making it hidden by default */
+}
+.modal {
+  position: fixed; /* positioning in center of page */
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%,-50%);
+  height: 400px; /* size */
+  width: 600px;
+  background-color: white; /* background color */
+}

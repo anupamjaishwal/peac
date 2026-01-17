@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>User_Change_Name</fullName>
+    <active>true</active>
+    <description>To prevent the user from changing contract names SL-2817</description>
+    <errorConditionFormula>NOT($Permission.Bypass_Validation) &amp;&amp;(ISCHANGED(Name)&amp;&amp; NOT(CONTAINS($User.Username, &quot;sfinformatica&quot;)))</errorConditionFormula>
+    <errorMessage>Only Admins and System can make changes to the name</errorMessage>
+</ValidationRule>

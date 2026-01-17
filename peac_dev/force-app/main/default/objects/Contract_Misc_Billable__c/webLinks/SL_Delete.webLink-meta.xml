@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SL_Delete</fullName>
+    <availability>online</availability>
+    <description>to send the request first through BridgeWare and then with the success response do the deletion</description>
+    <displayType>button</displayType>
+    <linkType>page</linkType>
+    <masterLabel>Delete</masterLabel>
+    <openType>replace</openType>
+    <page>SL_DeleteContractMiscBillable</page>
+    <protected>false</protected>
+</WebLink>

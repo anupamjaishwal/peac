@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sum_Bank_Statement_Count__c</fullName>
+    <externalId>false</externalId>
+    <label>Sum Bank Statement Count</label>
+    <summarizedField>Financial_Bank_Information__c.Bank_Statement_Count__c</summarizedField>
+    <summaryForeignKey>Financial_Bank_Information__c.Financial__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

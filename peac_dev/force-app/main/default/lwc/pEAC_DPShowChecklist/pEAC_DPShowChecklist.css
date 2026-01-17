@@ -1,0 +1,29 @@
+.slds-file-selector__text {
+  color: #ffffff;
+  display: none;
+}
+.td-fixed-width {
+  width: 10rem;
+}
+
+.removeDropZone {
+  color: #ffffff;
+  --lwc-borderWidthThin: 0px;
+}
+.slds-file-selector__text .slds-medium-show{
+  display: none !important;
+}
+
+.slds-file-selector__dropzone .slds-file-selector__text{
+  display: none;
+}
+
+.slds-file-selector__dropzone .slds-file-selector__button{
+  font-size: 0;
+}
+
+.slds-file-selector__dropzone .slds-file-selector__button:after{
+  content: 'New Exam';
+  font-size: .8125rem;
+  color: rgba(27, 82, 151, 1.0);
+}

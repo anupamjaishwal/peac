@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsXBS__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(
+  OR(
+    Lessor_Code__c = &quot;111&quot;,
+    Lessor_Code__c = &quot;113&quot;,
+    Lessor_Code__c = &quot;211&quot;,
+    Lessor_Code__c = &quot;213&quot;
+    ), 
+  TRUE,
+  FALSE
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Is XBS?</label>
+    <trackHistory>false</trackHistory>
+    <type>Checkbox</type>
+</CustomField>

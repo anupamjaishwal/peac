@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IL_tax_rules</fullName>
+    <columns>NAME</columns>
+    <columns>Description__c</columns>
+    <columns>Tax_Basis_Field__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>State__c</field>
+        <operation>equals</operation>
+        <value>Illinois</value>
+    </filters>
+    <label>IL tax rules</label>
+    <sharedTo>
+        <role>System_Admin</role>
+    </sharedTo>
+</ListView>

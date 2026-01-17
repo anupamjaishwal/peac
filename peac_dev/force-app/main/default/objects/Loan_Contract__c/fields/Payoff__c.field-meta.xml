@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payoff__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <inlineHelpText>Related Payoff record if this Loan Contract was selected as a Payoff contract.</inlineHelpText>
+    <label>Payoff</label>
+    <referenceTo>Payoff__c</referenceTo>
+    <relationshipLabel>Loan Contracts</relationshipLabel>
+    <relationshipName>Loan_Contracts</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

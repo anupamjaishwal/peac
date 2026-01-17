@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invalid_Save_At_account_Level</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( Save_at_Account_Level__c , Titled_Vehicles__c )</errorConditionFormula>
+    <errorMessage>Titled Insurance cannot be saved at account level</errorMessage>
+</ValidationRule>

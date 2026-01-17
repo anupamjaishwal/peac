@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Remit_To_Code__c</fullName>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Remit To Code</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>0001</fullName>
+                <default>false</default>
+                <label>0001 - Marlin Leasing Corp.</label>
+            </value>
+            <value>
+                <fullName>0098</fullName>
+                <default>false</default>
+                <label>0098 - American Capital Financial Svc</label>
+            </value>
+            <value>
+                <fullName>0575</fullName>
+                <default>false</default>
+                <label>0575 - NDS Leasing</label>
+            </value>
+            <value>
+                <fullName>2001</fullName>
+                <default>false</default>
+                <label>2001 - Marlin Leasing Corp</label>
+            </value>
+            <value>
+                <fullName>9004</fullName>
+                <default>false</default>
+                <label>9004 - Security of Los Angeles</label>
+            </value>
+            <value>
+                <fullName>9010</fullName>
+                <default>false</default>
+                <label>9010 - Microshare Technology Finance</label>
+            </value>
+            <value>
+                <fullName>9075</fullName>
+                <default>false</default>
+                <label>9075 - NDS LEASING</label>
+            </value>
+            <value>
+                <fullName>9082</fullName>
+                <default>false</default>
+                <label>9082 - Crumbacher Business Systems</label>
+            </value>
+            <value>
+                <fullName>9100</fullName>
+                <default>false</default>
+                <label>9100 - Digital Copier Associates, Inc</label>
+            </value>
+            <value>
+                <fullName>6002</fullName>
+                <default>false</default>
+                <label>6002 - MN ID Lease Services</label>
+            </value>
+            <value>
+                <fullName>0101</fullName>
+                <default>false</default>
+                <label>0101 - Xerox Financial Services</label>
+            </value>
+            <value>
+                <fullName>0102</fullName>
+                <default>false</default>
+                <label>0102 - MN ID Xerox Financial Services</label>
+            </value>
+            <value>
+                <fullName>9000</fullName>
+                <default>false</default>
+                <label>9000 - MN ID Marlin Leasing Corporation</label>
+            </value>
+            <value>
+                <fullName>9001</fullName>
+                <default>false</default>
+                <label>9001 - Marlin Leasing Corporation</label>
+            </value>
+            <value>
+                <fullName>2406</fullName>
+                <default>false</default>
+                <label>2406 - 360 Document Solutions</label>
+            </value>
+            <value>
+                <fullName>8089</fullName>
+                <default>false</default>
+                <label>8089 - MN ID Edwards Business Systems</label>
+            </value>
+            <value>
+                <fullName>8090</fullName>
+                <default>false</default>
+                <label>8090 - MN ID Virginia Business Systems</label>
+            </value>
+            <value>
+                <fullName>8091</fullName>
+                <default>false</default>
+                <label>8091 - MN ID Kelley Connect Co.</label>
+            </value>
+            <value>
+                <fullName>8092</fullName>
+                <default>false</default>
+                <label>8092 - MN ID UBEO, LLC</label>
+            </value>
+            <value>
+                <fullName>8093</fullName>
+                <default>false</default>
+                <label>8093 - MN ID C.D.S. Office Technology</label>
+            </value>
+            <value>
+                <fullName>8097</fullName>
+                <default>false</default>
+                <label>8097 - MN ID Pacific Office Automation</label>
+            </value>
+            <value>
+                <fullName>8094</fullName>
+                <default>false</default>
+                <label>8094 - MN ID Xeikon America, Inc.</label>
+            </value>
+            <value>
+                <fullName>8095</fullName>
+                <default>false</default>
+                <label>8095 - MN ID Atlanta Office Technologies</label>
+            </value>
+            <value>
+                <fullName>9089</fullName>
+                <default>false</default>
+                <label>9089 - Edwards Business Systems</label>
+            </value>
+            <value>
+                <fullName>9090</fullName>
+                <default>false</default>
+                <label>9090 - Virginia Business Systems</label>
+            </value>
+            <value>
+                <fullName>9091</fullName>
+                <default>false</default>
+                <label>9091 - Kelley Connect Co.</label>
+            </value>
+            <value>
+                <fullName>9092</fullName>
+                <default>false</default>
+                <label>9092 - UBEO, LLC</label>
+            </value>
+            <value>
+                <fullName>9093</fullName>
+                <default>false</default>
+                <label>9093 - C.D.S. Office Technology</label>
+            </value>
+            <value>
+                <fullName>2403</fullName>
+                <default>false</default>
+                <label>2403 - Pacific Office Automation</label>
+            </value>
+            <value>
+                <fullName>9094</fullName>
+                <default>false</default>
+                <label>9094 - Xeikon America, Inc.</label>
+            </value>
+            <value>
+                <fullName>9095</fullName>
+                <default>false</default>
+                <label>9095 - Atlanta Office Technologies</label>
+            </value>
+            <value>
+                <fullName>0089</fullName>
+                <default>false</default>
+                <label>0089 - MN ID Barlop Inc</label>
+            </value>
+            <value>
+                <fullName>0090</fullName>
+                <default>false</default>
+                <label>0090 - MN ID Crumbacher Business Systems</label>
+            </value>
+            <value>
+                <fullName>0091</fullName>
+                <default>false</default>
+                <label>0091 - MN ID Honeywell</label>
+            </value>
+            <value>
+                <fullName>0092</fullName>
+                <default>false</default>
+                <label>0092 - MN ID Sissiness Office Systems</label>
+            </value>
+            <value>
+                <fullName>0093</fullName>
+                <default>false</default>
+                <label>0093 - MN ID 360 Document Solutions</label>
+            </value>
+            <value>
+                <fullName>0094</fullName>
+                <default>false</default>
+                <label>0094 - MN ID American Capital Financial Svc</label>
+            </value>
+            <value>
+                <fullName>0095</fullName>
+                <default>false</default>
+                <label>0095 - MN ID Aqua Pure</label>
+            </value>
+            <value>
+                <fullName>0096</fullName>
+                <default>false</default>
+                <label>0096 - MN ID Atlas Reproduction</label>
+            </value>
+            <value>
+                <fullName>0097</fullName>
+                <default>false</default>
+                <label>0097 - MN ID Business World Inc</label>
+            </value>
+            <value>
+                <fullName>0099</fullName>
+                <default>false</default>
+                <label>0099 - MN ID CDS Lease Payment Services</label>
+            </value>
+            <value>
+                <fullName>0104</fullName>
+                <default>false</default>
+                <label>0104 - MN ID Cell Business Equipment</label>
+            </value>
+            <value>
+                <fullName>0105</fullName>
+                <default>false</default>
+                <label>0105 - MN ID Digital Copier Associates, Inc</label>
+            </value>
+            <value>
+                <fullName>0106</fullName>
+                <default>false</default>
+                <label>0106 - MN ID Document Solutions Inc</label>
+            </value>
+            <value>
+                <fullName>0107</fullName>
+                <default>false</default>
+                <label>0107 - MN ID DOS Leasing</label>
+            </value>
+            <value>
+                <fullName>0108</fullName>
+                <default>false</default>
+                <label>0108 - MN ID DRP Water Solutions</label>
+            </value>
+            <value>
+                <fullName>0109</fullName>
+                <default>false</default>
+                <label>0109 - MN ID Elite Imaging Systems</label>
+            </value>
+            <value>
+                <fullName>0110</fullName>
+                <default>false</default>
+                <label>0110 - MN ID FTG Financial Serv</label>
+            </value>
+            <value>
+                <fullName>0111</fullName>
+                <default>false</default>
+                <label>0111 - MN ID Function 4 LLC</label>
+            </value>
+            <value>
+                <fullName>0112</fullName>
+                <default>false</default>
+                <label>0112 - MN ID Image 2000</label>
+            </value>
+            <value>
+                <fullName>0113</fullName>
+                <default>false</default>
+                <label>0113 - MN ID J&amp;M Exectutive Leasing</label>
+            </value>
+            <value>
+                <fullName>0114</fullName>
+                <default>false</default>
+                <label>0114 - MN ID Managed Business Solutions</label>
+            </value>
+            <value>
+                <fullName>0115</fullName>
+                <default>false</default>
+                <label>0115 - MN ID Marco Technologies</label>
+            </value>
+            <value>
+                <fullName>0116</fullName>
+                <default>false</default>
+                <label>0116 - MN ID NDS LEASING</label>
+            </value>
+            <value>
+                <fullName>0117</fullName>
+                <default>false</default>
+                <label>0117 - MN ID Nobel Biocare</label>
+            </value>
+            <value>
+                <fullName>0118</fullName>
+                <default>false</default>
+                <label>0118 - MN ID Office Source</label>
+            </value>
+            <value>
+                <fullName>0119</fullName>
+                <default>false</default>
+                <label>0119 - MN ID Office1</label>
+            </value>
+            <value>
+                <fullName>0120</fullName>
+                <default>false</default>
+                <label>0120 - MN ID OneDoc Managed Solutions</label>
+            </value>
+            <value>
+                <fullName>0121</fullName>
+                <default>false</default>
+                <label>0121 - MN ID Pacific Office Automation</label>
+            </value>
+            <value>
+                <fullName>0122</fullName>
+                <default>false</default>
+                <label>0122 - MN ID PopSmart Technology Leasing</label>
+            </value>
+            <value>
+                <fullName>0123</fullName>
+                <default>false</default>
+                <label>0123 - MN ID Provident Capital Group Inc</label>
+            </value>
+            <value>
+                <fullName>0124</fullName>
+                <default>false</default>
+                <label>0124 - MN ID Pure Water Concepts</label>
+            </value>
+            <value>
+                <fullName>0125</fullName>
+                <default>false</default>
+                <label>0125 - MN ID Security of Los Angeles</label>
+            </value>
+            <value>
+                <fullName>0126</fullName>
+                <default>false</default>
+                <label>0126 - MN ID Valley Office Equipment</label>
+            </value>
+            <value>
+                <fullName>0127</fullName>
+                <default>false</default>
+                <label>0127 - MN ID VisualEdgeIT</label>
+            </value>
+            <value>
+                <fullName>0128</fullName>
+                <default>false</default>
+                <label>0128 - MN ID XESI</label>
+            </value>
+            <value>
+                <fullName>0061</fullName>
+                <default>false</default>
+                <label>0061 - Barlop Inc</label>
+            </value>
+            <value>
+                <fullName>1056</fullName>
+                <default>false</default>
+                <label>1056 - Honeywell</label>
+            </value>
+            <value>
+                <fullName>0076</fullName>
+                <default>false</default>
+                <label>0076 - Sissiness Office Systems</label>
+            </value>
+            <value>
+                <fullName>0020</fullName>
+                <default>false</default>
+                <label>0020 - Aqua Pure</label>
+            </value>
+            <value>
+                <fullName>2407</fullName>
+                <default>false</default>
+                <label>2407 - Atlas Reproduction</label>
+            </value>
+            <value>
+                <fullName>5400</fullName>
+                <default>false</default>
+                <label>5400 - Business World Inc</label>
+            </value>
+            <value>
+                <fullName>2413</fullName>
+                <default>false</default>
+                <label>2413 - CDS Lease Payment Services</label>
+            </value>
+            <value>
+                <fullName>5232</fullName>
+                <default>false</default>
+                <label>5232 - Cell Business Equipment</label>
+            </value>
+            <value>
+                <fullName>5401</fullName>
+                <default>false</default>
+                <label>5401 - Document Solutions Inc</label>
+            </value>
+            <value>
+                <fullName>2411</fullName>
+                <default>false</default>
+                <label>2411 - DOS Leasing</label>
+            </value>
+            <value>
+                <fullName>2401</fullName>
+                <default>false</default>
+                <label>2401 - DRP Water Solutions</label>
+            </value>
+            <value>
+                <fullName>5231</fullName>
+                <default>false</default>
+                <label>5231 - Elite Imaging Systems</label>
+            </value>
+            <value>
+                <fullName>2405</fullName>
+                <default>false</default>
+                <label>2405 - FTG Financial Serv</label>
+            </value>
+            <value>
+                <fullName>3214</fullName>
+                <default>false</default>
+                <label>3214 - Function 4 LLC</label>
+            </value>
+            <value>
+                <fullName>1590</fullName>
+                <default>false</default>
+                <label>1590 - Image 2000</label>
+            </value>
+            <value>
+                <fullName>2586</fullName>
+                <default>false</default>
+                <label>2586 - J&amp;M Exectutive Leasing</label>
+            </value>
+            <value>
+                <fullName>2404</fullName>
+                <default>false</default>
+                <label>2404 - Managed Business Solutions</label>
+            </value>
+            <value>
+                <fullName>5100</fullName>
+                <default>false</default>
+                <label>5100 - Marco Technologies</label>
+            </value>
+            <value>
+                <fullName>0103</fullName>
+                <default>false</default>
+                <label>0103 - Nobel Biocare</label>
+            </value>
+            <value>
+                <fullName>2412</fullName>
+                <default>false</default>
+                <label>2412 - Office Source</label>
+            </value>
+            <value>
+                <fullName>2409</fullName>
+                <default>false</default>
+                <label>2409 - Office1</label>
+            </value>
+            <value>
+                <fullName>2408</fullName>
+                <default>false</default>
+                <label>2408 - OneDoc Managed Solutions</label>
+            </value>
+            <value>
+                <fullName>4102</fullName>
+                <default>false</default>
+                <label>4102 - PopSmart Technology Leasing</label>
+            </value>
+            <value>
+                <fullName>9022</fullName>
+                <default>false</default>
+                <label>9022 - Provident Capital Group Inc</label>
+            </value>
+            <value>
+                <fullName>2300</fullName>
+                <default>false</default>
+                <label>2300 - Pure Water Concepts</label>
+            </value>
+            <value>
+                <fullName>3256</fullName>
+                <default>false</default>
+                <label>3256 - Valley Office Equipment</label>
+            </value>
+            <value>
+                <fullName>5101</fullName>
+                <default>false</default>
+                <label>5101 - VisualEdgeIT</label>
+            </value>
+            <value>
+                <fullName>2410</fullName>
+                <default>false</default>
+                <label>2410 - XESI</label>
+            </value>
+            <value>
+                <fullName>6001</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>6001 - MN ID Marlin Leasing Corporation</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

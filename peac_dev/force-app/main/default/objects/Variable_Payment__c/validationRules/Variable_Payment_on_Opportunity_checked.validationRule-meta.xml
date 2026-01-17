@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Variable_Payment_on_Opportunity_checked</fullName>
+    <active>false</active>
+    <description>validation rule to check if variable payment filed on parent is checked before creating a new record.</description>
+    <errorConditionFormula>AND(Opportunity__r.Variable_Payment__c = False, ISNEW())</errorConditionFormula>
+    <errorMessage>The variable field of parent Opportunity has to be checked to create a new Variable Payment child record.</errorMessage>
+</ValidationRule>

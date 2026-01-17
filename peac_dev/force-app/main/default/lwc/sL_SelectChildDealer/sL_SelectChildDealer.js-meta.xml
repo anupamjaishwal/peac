@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>SL Select Child Dealer</masterLabel>
+    <description>SL Select Child Dealer lwc</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Page</target>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen" category="isItRequired">
+            <property name="currentContactId" type="String" role="inputOnly" />
+            <property name="dealerAccountId" type="String" role="outputOnly" />
+            <property name="dealerUserId" type="String" role="outputOnly" />
+            <property name="dealerUserFirstName" type="String" role="outputOnly" />
+            <property name="dealerUserLastName" type="String" role="outputOnly" />
+            <property name="isComingSecondTime" type="String" role="inputOnly" />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

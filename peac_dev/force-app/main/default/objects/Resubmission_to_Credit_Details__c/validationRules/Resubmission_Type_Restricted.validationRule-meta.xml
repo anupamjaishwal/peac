@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Resubmission_Type_Restricted</fullName>
+    <active>true</active>
+    <description>Resubmission Type must be &apos;Appeal Decision&apos; if App Status is &apos;Rejected&apos;
+Resubmission Type must be &apos;More Info&apos; is App Status is &apos;More Info&apos; or &apos;Returned to Submitter&apos;</description>
+    <errorConditionFormula>ISNEW() &amp;&amp; RecordType.Name == &apos;Lease&apos; &amp;&amp; 
+OR(
+	AND(
+		ISPICKVAL(Opportunity__r.Application_Status__c, &apos;Rejected&apos;),
+		NOT(ISPICKVAL( Resubmission_Type_Picklist__c, &apos;Appeal Decision&apos;))
+		),
+	AND(
+		ISPICKVAL(Opportunity__r.Application_Status__c, &apos;More Info&apos;), 
+		NOT(ISPICKVAL( Resubmission_Type_Picklist__c, &apos;More Info&apos;)),
+                NOT(ISPICKVAL( Opportunity__r.Opportunity_Status__c , &apos;Fraud More Info Requested&apos;)) 
+		),
+	AND(
+		ISPICKVAL(Opportunity__r.Application_Status__c,&apos;Auto More Info&apos;), 
+		NOT(ISPICKVAL( Resubmission_Type_Picklist__c, &apos;More Info&apos;))
+		)
+)</errorConditionFormula>
+    <errorMessage>Resubmission Type must be &apos;Appeal Decision&apos; if App Status is &apos;Rejected&apos;
+Resubmission Type must be &apos;More Info&apos; is App Status is &apos;More Info&apos; or &apos;Returned to Submitter&apos;</errorMessage>
+</ValidationRule>

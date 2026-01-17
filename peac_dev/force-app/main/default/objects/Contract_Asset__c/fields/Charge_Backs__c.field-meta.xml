@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Charge_Backs__c</fullName>
+    <externalId>false</externalId>
+    <label>Charge Backs</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>MultiselectPicklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Adf</fullName>
+                <default>false</default>
+                <label>Adf</label>
+            </value>
+            <value>
+                <fullName>Back Panel</fullName>
+                <default>false</default>
+                <label>Back Panel</label>
+            </value>
+            <value>
+                <fullName>Top Panel</fullName>
+                <default>false</default>
+                <label>Top Panel</label>
+            </value>
+            <value>
+                <fullName>Platen Cover</fullName>
+                <default>false</default>
+                <label>Platen Cover</label>
+            </value>
+            <value>
+                <fullName>Right Side Panel</fullName>
+                <default>false</default>
+                <label>Right Side Panel</label>
+            </value>
+            <value>
+                <fullName>Hard Drive</fullName>
+                <default>false</default>
+                <label>Hard Drive</label>
+            </value>
+            <value>
+                <fullName>Printer Board</fullName>
+                <default>false</default>
+                <label>Printer Board</label>
+            </value>
+            <value>
+                <fullName>Network / Printer Board</fullName>
+                <default>false</default>
+                <label>Network / Printer Board</label>
+            </value>
+            <value>
+                <fullName>Network Board</fullName>
+                <default>false</default>
+                <label>Network Board</label>
+            </value>
+            <value>
+                <fullName>Fax Board</fullName>
+                <default>false</default>
+                <label>Fax Board</label>
+            </value>
+            <value>
+                <fullName>Sorter Repair</fullName>
+                <default>false</default>
+                <label>Sorter Repair</label>
+            </value>
+            <value>
+                <fullName>Missing Meter</fullName>
+                <default>false</default>
+                <label>Missing Meter</label>
+            </value>
+            <value>
+                <fullName>Miscellaneous Error Codes</fullName>
+                <default>false</default>
+                <label>Miscellaneous Error Codes</label>
+            </value>
+            <value>
+                <fullName>Left Side Panel</fullName>
+                <default>false</default>
+                <label>Left Side Panel</label>
+            </value>
+            <value>
+                <fullName>Toner Spill (if repairable)</fullName>
+                <default>false</default>
+                <label>Toner Spill (if repairable)</label>
+            </value>
+            <value>
+                <fullName>Radf/Adf Repair</fullName>
+                <default>false</default>
+                <label>Radf/Adf Repair</label>
+            </value>
+            <value>
+                <fullName>Meter Discrepancy</fullName>
+                <default>false</default>
+                <label>Meter Discrepancy</label>
+            </value>
+            <value>
+                <fullName>Finisher  Repair</fullName>
+                <default>false</default>
+                <label>Finisher  Repair</label>
+            </value>
+            <value>
+                <fullName>Toner Spill (if not)</fullName>
+                <default>false</default>
+                <label>Toner Spill (if not)</label>
+            </value>
+            <value>
+                <fullName>No Image</fullName>
+                <default>false</default>
+                <label>No Image</label>
+            </value>
+            <value>
+                <fullName>Black Image</fullName>
+                <default>false</default>
+                <label>Black Image</label>
+            </value>
+            <value>
+                <fullName>Jams In Machine</fullName>
+                <default>false</default>
+                <label>Jams In Machine</label>
+            </value>
+            <value>
+                <fullName>Jams  In Feeder</fullName>
+                <default>false</default>
+                <label>Jams  In Feeder</label>
+            </value>
+            <value>
+                <fullName>No Toner</fullName>
+                <default>false</default>
+                <label>No Toner</label>
+            </value>
+            <value>
+                <fullName>Right Door</fullName>
+                <default>false</default>
+                <label>Right Door</label>
+            </value>
+            <value>
+                <fullName>Clamshell Supports</fullName>
+                <default>false</default>
+                <label>Clamshell Supports</label>
+            </value>
+            <value>
+                <fullName>Defective Circuit Board</fullName>
+                <default>false</default>
+                <label>Defective Circuit Board</label>
+            </value>
+            <value>
+                <fullName>No Power</fullName>
+                <default>false</default>
+                <label>No Power</label>
+            </value>
+            <value>
+                <fullName>Receiving Tray</fullName>
+                <default>false</default>
+                <label>Receiving Tray</label>
+            </value>
+            <value>
+                <fullName>Cassettes</fullName>
+                <default>false</default>
+                <label>Cassettes</label>
+            </value>
+            <value>
+                <fullName>Bypass Tray</fullName>
+                <default>false</default>
+                <label>Bypass Tray</label>
+            </value>
+            <value>
+                <fullName>Drum</fullName>
+                <default>false</default>
+                <label>Drum</label>
+            </value>
+            <value>
+                <fullName>Exit Tray</fullName>
+                <default>false</default>
+                <label>Exit Tray</label>
+            </value>
+            <value>
+                <fullName>Feeder Tray</fullName>
+                <default>false</default>
+                <label>Feeder Tray</label>
+            </value>
+            <value>
+                <fullName>Interlock</fullName>
+                <default>false</default>
+                <label>Interlock</label>
+            </value>
+            <value>
+                <fullName>Key Counter Control Unit</fullName>
+                <default>false</default>
+                <label>Key Counter Control Unit</label>
+            </value>
+            <value>
+                <fullName>LCT/PFU</fullName>
+                <default>false</default>
+                <label>LCT/PFU</label>
+            </value>
+            <value>
+                <fullName>Platen/Glass</fullName>
+                <default>false</default>
+                <label>Platen/Glass</label>
+            </value>
+            <value>
+                <fullName>Stand/Cabinet</fullName>
+                <default>false</default>
+                <label>Stand/Cabinet</label>
+            </value>
+            <value>
+                <fullName>LCT Panel</fullName>
+                <default>false</default>
+                <label>LCT Panel</label>
+            </value>
+            <value>
+                <fullName>Sorter Guide</fullName>
+                <default>false</default>
+                <label>Sorter Guide</label>
+            </value>
+            <value>
+                <fullName>Finsher Bin&apos;</fullName>
+                <default>false</default>
+                <label>Finsher Bin&apos;</label>
+            </value>
+            <value>
+                <fullName>Left Door</fullName>
+                <default>false</default>
+                <label>Left Door</label>
+            </value>
+            <value>
+                <fullName>Radf</fullName>
+                <default>false</default>
+                <label>Radf</label>
+            </value>
+            <value>
+                <fullName>Control Panel</fullName>
+                <default>false</default>
+                <label>Control Panel</label>
+            </value>
+            <value>
+                <fullName>Front Door Panel</fullName>
+                <default>false</default>
+                <label>Front Door Panel</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+    <visibleLines>4</visibleLines>
+</CustomField>

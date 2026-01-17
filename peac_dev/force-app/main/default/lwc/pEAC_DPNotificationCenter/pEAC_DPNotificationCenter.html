@@ -1,0 +1,129 @@
+<template>
+    <lightning-card title="Receive notifications for application's submitted">
+      <div>
+      </div>
+      <div class="slds-grid slds-no-flex slds-var-p-bottom_large">
+        <div class="slds-size_1-of-4">
+        </div>
+        <div class="slds-size_1-of-4">
+          <label>Submitted</label>
+          <lightning-input data-id="submit" type="toggle" class="toggleClr" checked={accountRec.Submitted__c} onchange={changeToggle}></lightning-input>
+          <br />
+          <label>More Info</label>
+          <lightning-input data-id="moreinfo" type="toggle" checked={accountRec.More_Info__c} onchange={changeToggle}></lightning-input>
+          <br />
+          <label>Approved</label>
+          <lightning-input data-id="approved" type="toggle" checked={accountRec.Approved__c} onchange={changeToggle}></lightning-input>
+          <br />
+        </div>
+        <div class="slds-size_1-of-4">
+          <label>Docs Out</label>
+          <lightning-input data-id="docsout" type="toggle" onchange={changeToggle} checked={accountRec.Docs_Out__c}></lightning-input>
+          <br />
+          <label>Docs Out w/ Contracts</label>
+          <lightning-input data-id="docsoutcontr" type="toggle" onchange={changeToggle} checked={accountRec.Docs_Out_Contracts__c}></lightning-input>
+          <br />
+          <label>Docs In</label>
+          <lightning-input data-id="docsin" type="toggle" class="toggleClr" checked={accountRec.Docs_In__c} onchange={changeToggle}></lightning-input>
+          <br />
+        </div>
+        <div class="slds-size_1-of-4">
+          <label>In Funding </label>
+          <lightning-input data-id="funding" type="toggle" checked={accountRec.In_Funding__c} onchange={changeToggle}></lightning-input>
+          <br />
+          <label>Funded</label>
+          <lightning-input data-id="finded" type="toggle" checked={accountRec.Funded__c} onchange={changeToggle}></lightning-input>
+          <br />
+        </div>
+      </div>
+      <!-- <lightning-datatable hide-checkbox-column="true"
+              key-field="Id"
+              data={data}
+              columns={columns}>-->
+      <div class="slds-grid slds-no-flex">
+        <div class="slds-size_1-of-4"></div>
+        <div class="slds-size_3-of-4">
+          <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+            <thead>
+              <tr class="slds-line-height_reset">
+                <th>
+                </th>
+                <th class="" scope="col" style="width: 33%;">
+                  <div class="slds-truncate" title="Contact Name">Contact Name</div>
+                </th>
+                <th class="" scope="col" style="width: 33%;">
+                  <div class="slds-truncate" title="Email">Email</div>
+                </th>
+                <th class="" scope="col" style="width: 20%;">
+                  <div class="slds-truncate" title="Role">Role</div>
+                </th>
+                <th class="" scope="col">
+                  <div class="slds-truncate" title="Equipment Finance">Equipment Finance</div>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <template for:each={data} for:item="contact">
+                <tr class="slds-hint-parent" key={contact.Id}>
+                  <td>
+                    <lightning-button-icon icon-name="utility:edit" data-id={contact.ConId} data-roleid={contact.Id} data-role={contact.Role} onclick={handleEdit} alternative-text="Edit Contact" class="slds-m-left_xx-small" title="Edit Contact"></lightning-button-icon>
+                  </td>
+                  <td data-label="Contact Name">
+                    
+                    <div class="slds-truncate" title={contact.ConName}>{contact.ConName}</div>
+                  </td>
+                  <td data-label="Email">
+                    <div class="slds-truncate" title={contact.ConEmail}>{contact.ConEmail}</div>
+                  </td>
+                  <td data-label="Role">
+                    <div class="slds-truncate" title={contact.Role}>{contact.Role}</div>
+                  </td>
+                  <td data-label="Equipment Finance">
+                    <div class="slds-truncate">
+                      <lightning-input data-id={contact.Id} type="toggle" class="toggleClr" checked={contact.ReceiveAllNotifications} onchange={changeNotifyToggle}></lightning-input>
+                    </div>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div slot="footer" class="slds-clearfix slds-text-align_center">
+        <lightning-button label="Save" title="Save" onclick={saveAccountrec}></lightning-button>
+      </div>
+    </lightning-card>
+<template if:true={openEditContact}>
+     <section role="dialog" aria-modal="true" class="slds-modal slds-fade-in-open">
+    <div class="slds-modal__container">
+        <header class="slds-modal__header">
+            <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse jest-modal-close"
+            title="Close" onclick={handleClose}><lightning-icon icon-name="utility:close" alternative-text="close"
+            variant="inverse" size="small"></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+            </button>
+            <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Edit contact details</h2>
+        </header>
+        <div class="slds-modal__content slds-is-relative slds-p-around_medium">
+            <lightning-record-edit-form record-id={editRecId} object-api-name="Contact" onsuccess={handleClose} onsubmit={handleSubmit}>
+            <template for:each={editfields} for:item="field">
+                <lightning-input-field key={field} field-name={field}></lightning-input-field>
+            </template>
+            <lightning-combobox
+            name="Role"
+            label="Role"
+            value={roleValue}
+            placeholder="Select Progress"
+            options={roleoptions}
+            onchange={handleChange} ></lightning-combobox>
+            <div class="slds-m-top_medium">
+                <lightning-button variant="brand" type="submit" name="save" label="Save"></lightning-button>
+            </div>
+        </lightning-record-edit-form>
+        </div>
+       
+    </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+</template>
+  </template>

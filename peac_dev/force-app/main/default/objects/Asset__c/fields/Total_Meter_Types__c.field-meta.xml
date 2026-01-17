@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Meter_Types__c</fullName>
+    <description>if zero the CPC should be false in Opportunity</description>
+    <externalId>false</externalId>
+    <label>Total Meter Types</label>
+    <summaryForeignKey>Meter_Type__c.Asset__c</summaryForeignKey>
+    <summaryOperation>count</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Summary</type>
+</CustomField>

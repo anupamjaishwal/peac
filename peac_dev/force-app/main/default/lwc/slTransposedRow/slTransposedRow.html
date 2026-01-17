@@ -1,0 +1,29 @@
+<template>
+    <template if:true={hasFields}>
+        <table class="slds-table slds-table_cell-buffer slds-table_bordered transposed">
+            <tbody>
+                <template for:each={fields} for:item="field">
+                    <tr key={field.key}>
+                        <td>
+                            {field.label}
+                        </td>
+                        <td class="slds-cell-wrap">
+                            <template if:true={field.isLink}>
+                                <a href="#" data-destination={field.destination} onclick={handleKeyClick}>{field.value}</a>
+                            </template>
+                            <template if:true={field.isCurrency}>
+                                <lightning-formatted-number value={field.value} format-style="currency"></lightning-formatted-number>
+                            </template>
+                            <template if:true={field.isPlain}>
+                                {field.value}
+                            </template>
+                        </td>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </template>
+    <template if:false={hasFields}>
+        No data to display
+    </template>
+</template>

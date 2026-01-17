@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Equipment_Sub_Category__c</fullName>
+    <externalId>false</externalId>
+    <label>Equipment Sub-Category</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <controllingField>Equipment_Code__c</controllingField>
+        <restricted>true</restricted>
+        <valueSetName>Equipment_Sub_Category</valueSetName>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Aluminum Ramps</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Artwork</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Bailer</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Broker</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Bull Dozer</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Carpet Cutting Machine</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Commerce &amp; Indus (Gen)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Dry Cleaning</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Electonic Testing</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Excavator</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <controllingFieldValue>Fitness</controllingFieldValue>
+            <valueName>Fitness</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Generator</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Key Trak</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Landscaping</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Lawn Mowers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Legal Transcription</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Light Therapy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Machine Tool</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Maintenance &amp; Repairs</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Material Handling</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Mattresses</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Other C&amp;I</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Other Landscaping</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Packaging Equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Pipe Bender</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Pressure Washers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Safes</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Salon Equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Satellite Dishes</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Scales</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Scissor Lifts</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Scuba</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Skid Steer</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Snow Plow</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Storage Containers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Surge Suppressors</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Surveying</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Tanning Beds</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Tanning Booths</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Taxidermy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Televisions</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Time Clocks</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Trade Show Booths</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Travel Time</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Trenching Equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>TV Glider Kit</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Vending</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Welding</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Woodworking</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commerce &amp; Indus (Gen)</controllingFieldValue>
+            <valueName>Zambonies</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Commercial Cleaning</controllingFieldValue>
+            <valueName>Commercial Cleaning</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Energy Management</controllingFieldValue>
+            <valueName>Energy Management</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>VOIP</controllingFieldValue>
+            <valueName>VOIP</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Sign - Customized</controllingFieldValue>
+            <valueName>Sign - Customized</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Signs - Non Customized</controllingFieldValue>
+            <valueName>Signs - Non Customized</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>2 Way Radios</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>Titled V-Agriculture</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>Titled V-Commercial</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>Titled V-Construction</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>Titled V-Dump Trucks</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>Titled Vehicles (General)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>Titled V-Harvesting</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>Titled-V Logging</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled Vehicles (General)</controllingFieldValue>
+            <valueName>Titled V-Other</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Printing</controllingFieldValue>
+            <controllingFieldValue>Office Equipment(General)</controllingFieldValue>
+            <valueName>Printing</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical Lasers</controllingFieldValue>
+            <valueName>Medical Lasers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>HVAC</controllingFieldValue>
+            <valueName>Boiler</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>HVAC</controllingFieldValue>
+            <valueName>Furnace</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>HVAC</controllingFieldValue>
+            <valueName>HVAC</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Musical Instruments</controllingFieldValue>
+            <valueName>Musical Instruments</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Construction (General)</controllingFieldValue>
+            <valueName>Construction (General)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Construction (General)</controllingFieldValue>
+            <valueName>Other Construction</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Intangible</controllingFieldValue>
+            <valueName>Consulting/Training</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Intangible</controllingFieldValue>
+            <valueName>Delivery-Ship &amp; Handling</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Intangible</controllingFieldValue>
+            <valueName>Future Services</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Intangible</controllingFieldValue>
+            <valueName>Installation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Intangible</controllingFieldValue>
+            <valueName>Intangible</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Intangible</controllingFieldValue>
+            <valueName>Removal of Equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Intangible</controllingFieldValue>
+            <valueName>Support</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Intangible</controllingFieldValue>
+            <valueName>Warrant, Protection Plan</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Copiers</controllingFieldValue>
+            <valueName>Coin Operated Copiers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Copiers</controllingFieldValue>
+            <valueName>Copiers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Copiers</controllingFieldValue>
+            <valueName>Copier - Used</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Fork Lift</controllingFieldValue>
+            <valueName>Fork Lift</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Fork Lift</controllingFieldValue>
+            <valueName>Used Fork Lift</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Titled V-Trailers</controllingFieldValue>
+            <valueName>Titled V-Trailers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Beverage Dispensing Syste</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Dishmachines</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Espresso Machines</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Fryer</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Hood System</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Ice Cream Machines</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Ice Machines</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Other Restaurant</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Range/Oven</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Refrigeration Cases</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Restaurant (General)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Walk In Coolers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Water Coolers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restaurant (General)</controllingFieldValue>
+            <valueName>Water Filtration</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restricted Assets (Gen)</controllingFieldValue>
+            <valueName>Restricted Assets (Gen)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restricted Assets (Gen)</controllingFieldValue>
+            <valueName>Verifone</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Restricted Assets (Gen)</controllingFieldValue>
+            <valueName>Verifone - Software only</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Office Equipment(General)</controllingFieldValue>
+            <valueName>Fax</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Office Equipment(General)</controllingFieldValue>
+            <valueName>Mailing</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Office Equipment(General)</controllingFieldValue>
+            <valueName>Office Equipment(General)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Office Equipment(General)</controllingFieldValue>
+            <valueName>Other Office Equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Telecom (General)</controllingFieldValue>
+            <valueName>Message On-Hold System</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Telecom (General)</controllingFieldValue>
+            <valueName>Other Telecommuncations</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Telecom (General)</controllingFieldValue>
+            <valueName>Paging</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Telecom (General)</controllingFieldValue>
+            <valueName>Pay Phones</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Telecom (General)</controllingFieldValue>
+            <valueName>Predictive Dialers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Telecom (General)</controllingFieldValue>
+            <valueName>Telecom (General)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Telecom (General)</controllingFieldValue>
+            <valueName>Telephone-non internet</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Telecom (General)</controllingFieldValue>
+            <valueName>Voice Mail System</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Air Compressors</controllingFieldValue>
+            <valueName>Air Compressors</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Office Furniture</controllingFieldValue>
+            <valueName>Church Fixtures</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Office Furniture</controllingFieldValue>
+            <valueName>Office Furniture</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Photography (General)</controllingFieldValue>
+            <valueName>Non-Digital Cameras</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Photography (General)</controllingFieldValue>
+            <valueName>Non Digital Photo Process</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Photography (General)</controllingFieldValue>
+            <valueName>Other Photography Equip</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Photography (General)</controllingFieldValue>
+            <valueName>Photography (General)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Photography (General)</controllingFieldValue>
+            <valueName>Photo Processing</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Software (Gen)</controllingFieldValue>
+            <valueName>Annual Subscriptions</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Software (Gen)</controllingFieldValue>
+            <valueName>Computer Software</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Software (Gen)</controllingFieldValue>
+            <valueName>Data Conversion</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Software (Gen)</controllingFieldValue>
+            <valueName>Practice Management Softw</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Software (Gen)</controllingFieldValue>
+            <valueName>Programming</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Software (Gen)</controllingFieldValue>
+            <valueName>SAP Software</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Software (Gen)</controllingFieldValue>
+            <valueName>Software Development</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Software (Gen)</controllingFieldValue>
+            <valueName>Web Hosting/Dev/Provider</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Security Systems (general)</controllingFieldValue>
+            <valueName>Burglar Alarm</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Security Systems (general)</controllingFieldValue>
+            <valueName>Fire Suppression</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Security Systems (general)</controllingFieldValue>
+            <valueName>Other Security</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Security Systems (general)</controllingFieldValue>
+            <valueName>Security Access</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Security Systems (general)</controllingFieldValue>
+            <valueName>Security Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Security Systems (general)</controllingFieldValue>
+            <valueName>Security Systems(General)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>ATM</controllingFieldValue>
+            <valueName>ATM</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Playground</controllingFieldValue>
+            <valueName>Playground</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>A/V (General)</controllingFieldValue>
+            <valueName>Camcorders</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>A/V (General)</controllingFieldValue>
+            <valueName>Dictation</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>A/V (General)</controllingFieldValue>
+            <valueName>Digital Cameras</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>A/V (General)</controllingFieldValue>
+            <valueName>LCD Projector</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>A/V (General)</controllingFieldValue>
+            <valueName>Sound Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>POS/Point of Sale</controllingFieldValue>
+            <valueName>Check Cashing Machines</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>POS/Point of Sale</controllingFieldValue>
+            <valueName>Credit Card Terminals</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>POS/Point of Sale</controllingFieldValue>
+            <valueName>POS/Point of Sale</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>POS/Point of Sale</controllingFieldValue>
+            <valueName>POS Systems -- Medical</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Cosmetic Therapy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Dental Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Exam/Patient Room Devices</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Examination Devices</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Healthcare Computer Hardw</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Healthcare Computer Softw</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Healthcare Diagnostic(Gen</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Healthcare InfoSystems (G</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Healthcare Office Furnitu</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Healthcare Surgical (Gen)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Healthcare Telephone Syst</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Healthcare Therapy (Gen)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Imaging Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Laboratory Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Medical</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Medical Transcription</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Medical Transcription Sys</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Microdermabrasion Units</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Optomerty Equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Other Healthcare Diagnost</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Other Healthcare Infosyst</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Other Healthcare Surgical</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Other Healthcare Therapy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Pediatric Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Physical Therapy</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Radiology Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Respiratory Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Surgical Accessories</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Medical (General)</controllingFieldValue>
+            <valueName>Veterinary Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Auto Lifts</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Automotive (General)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Automotive Diagnostic Mac</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Car Wash Plumbing</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Emmissions Testing Equipm</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Frame Machine</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Other Auto Equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Paint Booth</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Paint Sprayers</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Tire Balancer</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Tire Changer</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Automotive (General)</controllingFieldValue>
+            <valueName>Waste Oil Heater</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Hardware(Gen)</controllingFieldValue>
+            <valueName>Computer Hard/Soft (Gen)</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Hardware(Gen)</controllingFieldValue>
+            <valueName>Computer Hardware</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Hardware(Gen)</controllingFieldValue>
+            <valueName>Computer Laptops</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Hardware(Gen)</controllingFieldValue>
+            <valueName>Computer Peripherals</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Hardware(Gen)</controllingFieldValue>
+            <valueName>Computers with Monitors</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Computer Hardware(Gen)</controllingFieldValue>
+            <valueName>Other Computer Equipment</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Leasehold Improvements</controllingFieldValue>
+            <valueName>Leasehold Improvements</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>Dental Implant Systems</controllingFieldValue>
+            <valueName>Dental Implant Systems</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>GPS Unit</controllingFieldValue>
+            <valueName>GPS Unit</valueName>
+        </valueSettings>
+        <valueSettings>
+            <controllingFieldValue>CCTV Security System</controllingFieldValue>
+            <valueName>CCTV Security System</valueName>
+        </valueSettings>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,52 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <lightning-layout>
+            <lightning-layout-item size="12" class="slds-text-align_center">
+                <lightning-record-edit-form
+                    id="recordViewForm"
+                    object-api-name="Opportunity_Attachment__c"
+                    onsubmit={handleProcessing}
+                    onerror={handleError}
+                    onsuccess={handleAfterSave}>
+                    <lightning-messages></lightning-messages>
+        
+                    <lightning-input-field field-name="Opportunity__c" value={opportunityId} disabled> </lightning-input-field>
+                    <c-sl-big-file-upload input-label="File" required message-when-value-missing="Please select a file to attach"
+                        onfinishedupload={handleFile} onsavedinsalesforce={afterUploadHelper}></c-sl-big-file-upload>
+                    <div class="slds-form-element slds-form-element_horizontal">
+                        <label class="slds-form-element__label" for="horizontal-input-id-01">Document Type</label>
+                        <div class="slds-form-element__control">
+                            <lightning-combobox
+                            name="Document Type"                    
+                            value={value}
+                            placeholder="Select Document Type"
+                            options={docTypeOptions}
+                            dropdown-alignment="auto"
+                            onchange={handleDocTypeChange} required>
+                            </lightning-combobox>       
+                        </div>
+                    </div>
+                    <lightning-input-field field-name="Description__c"> </lightning-input-field>
+                    <lightning-input-field field-name="Name" value={fileName} class="slds-hide"></lightning-input-field>
+                       
+                    
+                    <template if:true={errorOccurred}>
+                        <p class="slds-has-error">
+                            <span class="slds-form-element__help">{errorMessage}</span>
+                        </p>
+                    </template>
+                    <div class="slds-var-p-around_medium">
+                        <template if:true={isSavingAttachment}>
+                            <p style="position: relative;height: 80px;">
+                                <lightning-spinner alternative-text="Saving Attachment..." size="small" variant="brand"></lightning-spinner>
+                            </p>
+                        </template>
+                        <lightning-button id="submit" type="submit" label="Attach File" variant="brand" disabled={isSavingAttachment}></lightning-button>
+                    </div>
+                </lightning-record-edit-form>
+            </lightning-layout-item>
+        </lightning-layout>
+        
+    </template>
+</template>

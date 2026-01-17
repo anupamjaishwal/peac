@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Collection_Group__c</fullName>
+    <externalId>false</externalId>
+    <label>Collection Group</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>31 EOT</fullName>
+                <default>false</default>
+                <label>31 EOT</label>
+            </value>
+            <value>
+                <fullName>31 First Payment Default</fullName>
+                <default>false</default>
+                <label>31 First Payment Default</label>
+            </value>
+            <value>
+                <fullName>31 High Balance</fullName>
+                <default>false</default>
+                <label>31 High Balance</label>
+            </value>
+            <value>
+                <fullName>31 Regular</fullName>
+                <default>false</default>
+                <label>31 Regular</label>
+            </value>
+            <value>
+                <fullName>31 Syndication</fullName>
+                <default>false</default>
+                <label>31 Syndication</label>
+            </value>
+            <value>
+                <fullName>31 Varadero</fullName>
+                <default>false</default>
+                <label>31 Varadero</label>
+            </value>
+            <value>
+                <fullName>61</fullName>
+                <default>false</default>
+                <label>61</label>
+            </value>
+            <value>
+                <fullName>61 EOT</fullName>
+                <default>false</default>
+                <label>61 EOT</label>
+            </value>
+            <value>
+                <fullName>61 Syndication</fullName>
+                <default>false</default>
+                <label>61 Syndication</label>
+            </value>
+            <value>
+                <fullName>91</fullName>
+                <default>false</default>
+                <label>91</label>
+            </value>
+            <value>
+                <fullName>91 Syndication</fullName>
+                <default>false</default>
+                <label>91 Syndication</label>
+            </value>
+            <value>
+                <fullName>91+ EOT</fullName>
+                <default>false</default>
+                <label>91+ EOT</label>
+            </value>
+            <value>
+                <fullName>Agency Closed</fullName>
+                <default>false</default>
+                <label>Agency Closed</label>
+            </value>
+            <value>
+                <fullName>Bankruptcy</fullName>
+                <default>false</default>
+                <label>Bankruptcy</label>
+            </value>
+            <value>
+                <fullName>Bankruptcy Closed</fullName>
+                <default>false</default>
+                <label>Bankruptcy Closed</label>
+            </value>
+            <value>
+                <fullName>Dead Contracts</fullName>
+                <default>false</default>
+                <label>Dead Contracts</label>
+            </value>
+            <value>
+                <fullName>Dialer Do Not Call</fullName>
+                <default>false</default>
+                <label>Dialer Do Not Call</label>
+            </value>
+            <value>
+                <fullName>Dialer First Payment Default</fullName>
+                <default>false</default>
+                <label>Dialer First Payment Default</label>
+            </value>
+            <value>
+                <fullName>Dialer Regular</fullName>
+                <default>false</default>
+                <label>Dialer Regular</label>
+            </value>
+            <value>
+                <fullName>Dialer Special</fullName>
+                <default>false</default>
+                <label>Dialer Special</label>
+            </value>
+            <value>
+                <fullName>Dialer TCF</fullName>
+                <default>false</default>
+                <label>Dialer TCF</label>
+            </value>
+            <value>
+                <fullName>Dialer Team Assigned</fullName>
+                <default>false</default>
+                <label>Dialer Team Assigned</label>
+            </value>
+            <value>
+                <fullName>External Agencies</fullName>
+                <default>false</default>
+                <label>External Agencies</label>
+            </value>
+            <value>
+                <fullName>Litigation</fullName>
+                <default>false</default>
+                <label>Litigation</label>
+            </value>
+            <value>
+                <fullName>Multiples</fullName>
+                <default>false</default>
+                <label>Multiples</label>
+            </value>
+            <value>
+                <fullName>Pending Equipment Return</fullName>
+                <default>false</default>
+                <label>Pending Equipment Return</label>
+            </value>
+            <value>
+                <fullName>Pending Repo</fullName>
+                <default>false</default>
+                <label>Pending Repo</label>
+            </value>
+            <value>
+                <fullName>Placed With Attorney</fullName>
+                <default>false</default>
+                <label>Placed With Attorney</label>
+            </value>
+            <value>
+                <fullName>Pre-Charge Off</fullName>
+                <default>false</default>
+                <label>Pre-Charge Off</label>
+            </value>
+            <value>
+                <fullName>Recovery Agents</fullName>
+                <default>false</default>
+                <label>Recovery Agents</label>
+            </value>
+            <value>
+                <fullName>Recovery Closed</fullName>
+                <default>false</default>
+                <label>Recovery Closed</label>
+            </value>
+            <value>
+                <fullName>Repo Completed Unpaid Balance</fullName>
+                <default>false</default>
+                <label>Repo Completed Unpaid Balance</label>
+            </value>
+            <value>
+                <fullName>Repo Remarketers</fullName>
+                <default>false</default>
+                <label>Repo Remarketers</label>
+            </value>
+            <value>
+                <fullName>Staumann</fullName>
+                <default>false</default>
+                <label>Staumann</label>
+            </value>
+            <value>
+                <fullName>Titled Vehicles</fullName>
+                <default>false</default>
+                <label>Titled Vehicles</label>
+            </value>
+            <value>
+                <fullName>Working Capital Delinquency</fullName>
+                <default>false</default>
+                <label>Working Capital Delinquency</label>
+            </value>
+            <value>
+                <fullName>XBS Dialer First Payment Default</fullName>
+                <default>false</default>
+                <label>XBS Dialer First Payment Default</label>
+            </value>
+            <value>
+                <fullName>XBS Dialer Regular</fullName>
+                <default>false</default>
+                <label>XBS Dialer Regular</label>
+            </value>
+            <value>
+                <fullName>XBS Pre-Charge Off</fullName>
+                <default>false</default>
+                <label>XBS Pre-Charge Off</label>
+            </value>
+            <value>
+                <fullName>XBS 31 First Payment Default</fullName>
+                <default>false</default>
+                <label>XBS 31 First Payment Default</label>
+            </value>
+            <value>
+                <fullName>XBS 31 Regular</fullName>
+                <default>false</default>
+                <label>XBS 31 Regular</label>
+            </value>
+            <value>
+                <fullName>XBS 91</fullName>
+                <default>false</default>
+                <label>XBS 91</label>
+            </value>
+            <value>
+                <fullName>XBS 61 EOT</fullName>
+                <default>false</default>
+                <label>XBS 61 EOT</label>
+            </value>
+            <value>
+                <fullName>XBS 61</fullName>
+                <default>false</default>
+                <label>XBS 61</label>
+            </value>
+            <value>
+                <fullName>XBS 31 EOT</fullName>
+                <default>false</default>
+                <label>XBS 31 EOT</label>
+            </value>
+            <value>
+                <fullName>XBS 91+ EOT</fullName>
+                <default>false</default>
+                <label>XBS 91+ EOT</label>
+            </value>
+            <value>
+                <fullName>ADR Dialer Regular</fullName>
+                <default>false</default>
+                <label>ADR Dialer Regular</label>
+            </value>
+            <value>
+                <fullName>ADR Dialer First Payment Default</fullName>
+                <default>false</default>
+                <label>ADR Dialer First Payment Default</label>
+            </value>
+            <value>
+                <fullName>ADR 31 Regular</fullName>
+                <default>false</default>
+                <label>ADR 31 Regular</label>
+            </value>
+            <value>
+                <fullName>ADR 31 First Payment Default</fullName>
+                <default>false</default>
+                <label>ADR 31 First Payment Default</label>
+            </value>
+            <value>
+                <fullName>ADR 31 EOT</fullName>
+                <default>false</default>
+                <label>ADR 31 EOT</label>
+            </value>
+            <value>
+                <fullName>ADR 61</fullName>
+                <default>false</default>
+                <label>ADR 61</label>
+            </value>
+            <value>
+                <fullName>ADR 61 EOT</fullName>
+                <default>false</default>
+                <label>ADR 61 EOT</label>
+            </value>
+            <value>
+                <fullName>ADR 91</fullName>
+                <default>false</default>
+                <label>ADR 91</label>
+            </value>
+            <value>
+                <fullName>ADR 91+ EOT</fullName>
+                <default>false</default>
+                <label>ADR 91+ EOT</label>
+            </value>
+            <value>
+                <fullName>ADR Pre-Charge Off</fullName>
+                <default>false</default>
+                <label>ADR Pre-Charge Off</label>
+            </value>
+            <value>
+                <fullName>121 Regular</fullName>
+                <default>false</default>
+                <label>121 Regular</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

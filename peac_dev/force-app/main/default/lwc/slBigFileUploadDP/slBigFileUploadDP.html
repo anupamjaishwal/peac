@@ -1,0 +1,21 @@
+<template>
+    <lightning-card>
+        <template if:true={isSavingAttachment}>
+            <p style="position: relative;height: 80px;">
+                <lightning-spinner alternative-text="Saving Attachment..." size="small" variant="brand"></lightning-spinner>
+            </p>
+        </template>
+        <template if:false={isSavingAttachment}>
+            <lightning-input style="text-align: left; display: block; margin-top: -1.5rem;" type="file" label={inputLabel} onchange={handleFile} 
+                required={requiredFile} message-when-value-missing={messageWhenValueMissing}></lightning-input>
+            <template if:true={fileSelected}>
+                <!-- <p class="slds-var-p-around_medium"><span class="slds-form-element__label">Selected File</span> {fileName}</p> -->
+            </template>
+        </template>
+        <template if:false={isWithoutHelper}>
+            <div class="slds-hide">
+                <iframe src="/apex/SL_UploadHelper"></iframe>
+            </div>
+        </template>
+    </lightning-card>
+</template>

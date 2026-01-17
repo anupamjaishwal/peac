@@ -1,0 +1,13 @@
+<template>
+    <div class="slds-grid slds-gutters"><lightning-combobox
+        class="slds-m-left_x-small slds-float--right"
+        label="Select a dealer"
+        data-id="accountValue"
+        value={selectedAccount}
+        options={accounts}
+        onchange={handleAccountChange}></lightning-combobox></div>
+        <div if:false={isLoading}>
+            <c-sl_-meter-data-view-uploads dealer-number={selectedAccount} request-type="MISC">
+            </c-sl_-meter-data-view-uploads><br></br>
+        </div>
+</template>

@@ -1,0 +1,45 @@
+<template>
+  <!-- <lightning-layout>
+    <lightning-layout-item size="12" class="slds-text-align_center">
+    </lightning-layout-item>
+  </lightning-layout> -->
+  <lightning-card class="slds-text-align_center">
+    <span if:true={recordId} slot="title">OnBase Attachments</span>
+    <template if:true={isView}>
+      <lightning-button slot="actions" label="Upload Documents" variant="brand" onclick={handleGoToAdd}></lightning-button>
+    </template>
+    <template if:false={isView}>
+      <lightning-button if:true={recordId} slot="actions" label="Cancel" onclick={handleGoToView}></lightning-button>
+      <lightning-record-edit-form
+        object-api-name="Opportunity_Attachment__c"
+        onsubmit={handleSubmit}
+        onsuccess={handleSuccess}
+        onerror={handleError}>
+        <lightning-input-field field-name="Name" value={fileName} disabled></lightning-input-field>
+        <lightning-input-field field-name="Account__c" value={accountId} disabled></lightning-input-field>
+        <lightning-input-field field-name="Opportunity__c" value={opportunityId} disabled></lightning-input-field>
+        <lightning-input-field field-name="Dealer_Doc_Type__c" value={docType} required={recordId} onchange={handleTypeChange}></lightning-input-field>
+        <template lwc:if={isDescriptionRequired}>
+          <lightning-input-field field-name="Description__c" required></lightning-input-field>
+        </template>
+        <c-sl-big-file-upload 
+            input-label="File" 
+            optional-file={isNotRecordPage}
+            message-when-value-missing="Please select a file to attach"
+            onfinishedupload={handleFile} 
+            onsavedinsalesforce={afterUploadHelper}></c-sl-big-file-upload>
+        <lightning-button icon-name="utility:add" type="submit" name="save" label="Add Document"></lightning-button>
+    </lightning-record-edit-form>
+    </template>
+    
+    <div slot="footer">
+      <template if:false={isInProgress}>
+        <lightning-datatable key-field="Id" data={rows} columns={columns} onrowaction={handleSelection} hide-checkbox-column></lightning-datatable>
+        <p class="slds-text-align_center" if:false={rows.length}>
+            No attachments added yet
+        </p>
+      </template>
+    </div>
+  </lightning-card>
+      
+</template>

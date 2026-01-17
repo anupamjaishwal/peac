@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invoice_Format_ILVersion</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ISPICKVAL(Infolease_Environment__c,&apos;9&apos;) ,ISCHANGED(Invoice_Format__c))</errorConditionFormula>
+    <errorDisplayField>Invoice_Format__c</errorDisplayField>
+    <errorMessage>This field only exists in IL10, so it can not be updated in IL9</errorMessage>
+</ValidationRule>

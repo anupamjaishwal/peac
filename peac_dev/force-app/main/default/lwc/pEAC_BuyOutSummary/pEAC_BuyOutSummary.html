@@ -1,0 +1,171 @@
+<template>
+  <div class="buyoutsummarycls">
+    <lightning-layout></lightning-layout>
+    <template if:true={isLoading}>
+      <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <template if:false={isLoading}>
+      <lightning-layout-item size="12"></lightning-layout-item>
+      <br />
+      <template if:true={isgetquote}>
+        <lightning-layout multiple-rows="true" horizontal-align="space">
+          <lightning-layout-item size="12">
+            <h2 class="slds-text-heading_medium slds-text-align_center">View Buyout Summary</h2>
+          </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-float_right slds-p-right_small">
+          <lightning-button variant="brand" label="Customer Buyout Letter" title="Customer Buyout Letter" onclick={openBuyout}></lightning-button>
+        </div>
+        <div class="slds-float_right slds-p-right_small" lwc:if={tradeReturnTotal}>
+          <lightning-button variant="brand" label="Create Tradeup (Return) Application" title="Create Tradeup (Return) Application" onclick={createTradeupReturn}></lightning-button>
+        </div>
+        <div class="slds-float_right slds-p-right_small">
+          <lightning-button variant="brand" label="Create Tradeup (Keep) Application" title="Create Tradeup (Keep) Application" onclick={createTradeupKeep}></lightning-button>
+        </div>
+        <br />
+        <br />
+        <!--<hr> -->
+        <lightning-record-view-form record-id={recordId} object-api-name="Contract__c">
+          <div class="slds-grid fontcolor">
+            <div class="slds-col slds-size_2-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label headerLabel">Customer:</span>
+              <lightning-output-field field-name="Customer__c" variant="label-hidden" style="margin-top:7px;"></lightning-output-field>
+            </div>
+          </div>
+          <div class="slds-grid fontcolor">
+            <div class="slds-col slds-size_2-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label headerLabel">Contract:</span>
+              <lightning-output-field field-name="Name" variant="label-hidden" style="margin-top:7px;"></lightning-output-field>
+            </div>
+          </div>
+        </lightning-record-view-form>
+        <br />
+        <lightning-record-view-form record-id={recordId} object-api-name="Contract__c">
+          <!--div class="slds-grid fontcolor"-->
+          <div class=" slds-grid fontcolor slds-col slds-size_2-of-2 slds-list_horizontal">
+            <div class="slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Equipment:</span>
+              <lightning-output-field field-name="Invoice_Description__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Commencement Date:</span>
+              <lightning-output-field field-name="Commencement_Date__c" variant="label-hidden" format="mm/dd/yyyy" style="margin-top:3px;"></lightning-output-field>
+            </div>
+          </div>
+          <div class="slds-grid fontcolor slds-col slds-size_2-of-2 slds-list_horizontal">
+            <div class="slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Remaining Payments:</span>
+              <lightning-output-field field-name="Payments_Remaining__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Purchase Option:</span>
+              <lightning-formatted-text value={purchaseOption} style="margin-top:3px;"></lightning-formatted-text>
+              <!--lightning-output-field field-name="Opportunity__r.Purchase_Option__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field-->
+            </div>
+          </div>
+          <div class="slds-grid fontcolor slds-col slds-size_2-of-2 slds-list_horizontal">
+            <div class=" slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Term:</span>
+              <lightning-output-field field-name="Contract_Term__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Equipment Cost:</span>
+              <lightning-output-field field-name="Gross_Equipment_Cost__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field>
+            </div>
+          </div>
+          <div class="slds-grid fontcolor slds-col slds-size_2-of-2 slds-list_horizontal">
+            <div class=" slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Lease Payment:</span>
+              <lightning-output-field field-name="Payment_Amount__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Quote Date:</span>
+              <lightning-formatted-date-time year="numeric" month="numeric" day="numeric" value={todaysDate} style="margin-top:3px;"></lightning-formatted-date-time>
+            </div>
+          </div>
+          <div class="slds-grid fontcolor slds-col slds-size_2-of-2 slds-list_horizontal">
+            <div class=" slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Total Payment:</span>
+              <lightning-output-field field-name="Current_Rental_Payment__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Next Payment Due Date:</span>
+              <lightning-output-field field-name="Next_Payment_Date__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field>
+            </div>
+          </div>
+          <div class="slds-grid fontcolor slds-col slds-size_2-of-2 slds-list_horizontal">
+            <div class=" slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel"></span>
+              <lightning-output-field></lightning-output-field>
+            </div>
+            <div class="slds-col slds-size_1-of-2 slds-list_horizontal">
+              <span class="slds-form-element__label customLabel">Type:</span>
+              <lightning-output-field field-name="Quote_Buyout__c" variant="label-hidden" style="margin-top:3px;"></lightning-output-field>
+            </div>
+          </div>
+          <!--/div-->
+        </lightning-record-view-form>
+        <hr>
+        <lightning-layout multiple-rows="true" horizontal-align="space">
+          <lightning-layout-item size="6"></lightning-layout-item>
+          <lightning-layout-item padding="around-small" size="12"></lightning-layout-item>
+          <lightning-layout-item padding="around-small" size="12">
+            <c-sl-d-p-transposed-rows fields={detailColumn} column-headers={quoteDescriptions} ongotokey={handleGoToSummary} table-css="slds-table slds-table_cell-buffer"></c-sl-d-p-transposed-rows>
+          </lightning-layout-item>
+        </lightning-layout>
+        <div class="slds-float_right slds-p-right_small">
+          <div class="slds-col slds-text-align_right">
+            <lightning-button variant="brand" label="Excel" title="Excel" class="slds-m-right_medium" onclick={excelCustBuyout}></lightning-button>
+            <lightning-button variant="brand" label="Email" title="Email" class="slds-m-right_medium" onclick={EmailCustBuyout}></lightning-button>
+            <lightning-button variant="brand" label="Print" title="Print" class="slds-m-right_medium" onclick={PrintCustBuyout}></lightning-button>
+          </div>
+        </div>
+      </template>
+    </template>
+  </div>
+  <br />
+  <br />
+  <hr>
+  <!--<section if:true={openApplication} role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+    <div class="slds-modal__container">
+      <header class="slds-modal__header">
+        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse jest-modal-close" title="Close" onclick={handleClose}>
+          <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+          <span class="slds-assistive-text">Close</span>
+        </button>
+        
+        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{popupHeaderMessage}</h2>
+      </header>
+      <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+        <lightning-flow if:true={openApplication} flow-api-name='Account_Create_Application_Dealer_Portal' flow-input-variables={inputVariables} onstatuschange={handleStatusChange} flo></lightning-flow>
+      </div>
+    </div>
+  </section>-->
+  
+<template if:true={openApplication}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleClose}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">Close</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{popupHeaderMessage}</h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-flow if:true={openApplication} flow-api-name='Account_Create_Application_Dealer_Portal' flow-input-variables={inputVariables} onstatuschange={handleStatusChange} flo></lightning-flow>
+                </div>
+                <!-- Modal/Popup Box LWC footer starts here -->
+                
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+</template>

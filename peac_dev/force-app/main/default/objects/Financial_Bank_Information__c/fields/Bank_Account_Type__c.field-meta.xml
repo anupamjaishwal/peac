@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Bank_Account_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Bank Account Type</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Checking</fullName>
+                <default>false</default>
+                <label>Checking</label>
+            </value>
+            <value>
+                <fullName>Savings</fullName>
+                <default>false</default>
+                <label>Savings</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>CREDITCARD</fullName>
+                <default>false</default>
+                <label>CREDITCARD</label>
+            </value>
+            <value>
+                <fullName>UNKNOWN</fullName>
+                <default>false</default>
+                <label>UNKNOWN</label>
+            </value>
+            <value>
+                <fullName>SWEEP</fullName>
+                <default>false</default>
+                <label>SWEEP</label>
+            </value>
+            <value>
+                <fullName>IOLTA</fullName>
+                <default>false</default>
+                <label>IOLTA</label>
+            </value>
+            <value>
+                <fullName>RESERVE</fullName>
+                <default>false</default>
+                <label>RESERVE</label>
+            </value>
+            <value>
+                <fullName>CASHMANAGEMENT</fullName>
+                <default>false</default>
+                <label>CASHMANAGEMENT</label>
+            </value>
+            <value>
+                <fullName>CASH MANAGEMENT</fullName>
+                <default>false</default>
+                <label>CASH MANAGEMENT</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

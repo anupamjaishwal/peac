@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Personal</fullName>
+    <active>true</active>
+    <compactLayoutAssignment>Guarantor</compactLayoutAssignment>
+    <label>Personal</label>
+    <picklistValues>
+        <picklist>PG_Number__c</picklist>
+        <values>
+            <fullName>PG1</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PG2</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PG3</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>PG4</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>RP_PRIN_GUAR_CODE__c</picklist>
+        <values>
+            <fullName>Guarantor</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Principal</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type__c</picklist>
+        <values>
+            <fullName>Personal Guarantor</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+</RecordType>

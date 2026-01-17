@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Total_Asset_Residual_Amount__c</fullName>
+    <description>The sum of the residual values for all assets for the contract.
+
+SL-1969</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The sum of the residual values for all assets for the contract</inlineHelpText>
+    <label>Total Asset Residual Amount</label>
+    <summarizedField>Contract_Asset__c.Residual_Amount__c</summarizedField>
+    <summaryForeignKey>Contract_Asset__c.Contract__c</summaryForeignKey>
+    <summaryOperation>sum</summaryOperation>
+    <trackHistory>false</trackHistory>
+    <type>Summary</type>
+</CustomField>

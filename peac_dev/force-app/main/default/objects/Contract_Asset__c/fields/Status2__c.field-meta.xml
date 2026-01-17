@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Status2__c</fullName>
+    <externalId>false</externalId>
+    <label>Asset Status</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Accessory</fullName>
+                <default>false</default>
+                <label>Accessory</label>
+            </value>
+            <value>
+                <fullName>Buyout to Keep</fullName>
+                <default>false</default>
+                <label>Buyout to Keep</label>
+            </value>
+            <value>
+                <fullName>Deleted</fullName>
+                <default>false</default>
+                <label>Deleted</label>
+            </value>
+            <value>
+                <fullName>Disposed</fullName>
+                <default>false</default>
+                <label>Disposed</label>
+            </value>
+            <value>
+                <fullName>Disposed - Customer</fullName>
+                <default>false</default>
+                <label>Disposed - Customer</label>
+            </value>
+            <value>
+                <fullName>DLR Repurchase</fullName>
+                <default>false</default>
+                <label>DLR Repurchase</label>
+            </value>
+            <value>
+                <fullName>Duplicate</fullName>
+                <default>false</default>
+                <label>Duplicate</label>
+            </value>
+            <value>
+                <fullName>Equipment Received</fullName>
+                <default>false</default>
+                <label>Equipment Received</label>
+            </value>
+            <value>
+                <fullName>In Transit</fullName>
+                <default>false</default>
+                <label>In Transit</label>
+            </value>
+            <value>
+                <fullName>Non-Serialized Asset</fullName>
+                <default>false</default>
+                <label>Non-Serialized Asset</label>
+            </value>
+            <value>
+                <fullName>Non-Xerox Owned</fullName>
+                <default>false</default>
+                <label>Non-Xerox Owned</label>
+            </value>
+            <value>
+                <fullName>On Contract</fullName>
+                <default>false</default>
+                <label>On Contract</label>
+            </value>
+            <value>
+                <fullName>Pending Return</fullName>
+                <default>false</default>
+                <label>Pending Return</label>
+            </value>
+            <value>
+                <fullName>Proceeds Received</fullName>
+                <default>false</default>
+                <label>Proceeds Received</label>
+            </value>
+            <value>
+                <fullName>Recycled</fullName>
+                <default>false</default>
+                <label>Recycled</label>
+            </value>
+            <value>
+                <fullName>Repossession Requested</fullName>
+                <default>false</default>
+                <label>Repossession Requested</label>
+            </value>
+            <value>
+                <fullName>Sold</fullName>
+                <default>false</default>
+                <label>Sold</label>
+            </value>
+            <value>
+                <fullName>Received</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Received</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

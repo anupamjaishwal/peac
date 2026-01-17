@@ -1,0 +1,46 @@
+<!-- <template>
+    <lightning-layout class="slds-m-top_x-small">
+        <article class="slds-card lightning-card">
+            <div class="slds-card__header slds-grid slds-theme_shade">
+                <header class="slds-media slds-media_center slds-has-flexi-truncate ">
+                    <div class="slds-media__figure">
+                        <lightning-icon icon-name="standard:note" size="small"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                        <h2 class="slds-card__header-title">
+                            <a class="slds-card__header-link" onclick={handleGotoRelatedList}>Other Contracts</a>
+                        </h2>
+                        </div>
+                </header>
+            </div>
+
+            <template if:true={hasRecords}>
+                <div class="slds-p-around_small">
+                    <lightning-spinner alternative-text="Loading..." variant="brand" if:true={loading}></lightning-spinner>
+                    <lightning-datatable class="related-list"
+                                        onrowaction={handleRowAction}
+                                        columns={columns}
+                                        data={contractList}
+                                        key-field="Id"
+                                        hide-checkbox-column="true"
+                                        resize-column-disabled="true">
+                    </lightning-datatable>   
+                </div>                          
+            </template>
+        </article>
+    </lightning-layout>
+</template> -->
+<template>
+    <lightning-card title="Other Contracts" icon-name="standard:article">
+        <div class="slds-m-around_medium">
+            <template if:true={contractList}>
+                <lightning-datatable class="related-list" data={contractList} columns={columns} key-field="Id" hide-checkbox-column="true"
+                resize-column-disabled="true">
+                </lightning-datatable>
+            </template>
+            <template if:true={error}>
+                {error}
+            </template>
+        </div>
+    </lightning-card>
+</template>

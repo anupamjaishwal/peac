@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ThirdParty_Compact</fullName>
+    <fields>ThirdParty_Source__c</fields>
+    <fields>ThirdParty_Duns__c</fields>
+    <fields>Name</fields>
+    <label>ThirdParty Compact</label>
+</CompactLayout>

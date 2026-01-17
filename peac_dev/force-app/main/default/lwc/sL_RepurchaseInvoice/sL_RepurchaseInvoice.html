@@ -1,0 +1,76 @@
+<template>
+    <lightning-quick-action-panel header="Repurchase Invoices" onclose={handleClose}>
+
+        <template lwc:if={contractAssetScreen}>
+            <div class="slds-p-around_medium">
+                <lightning-datatable
+                        data-id="assetsTable"
+                        key-field="Id"
+                        data={contractAssets}
+                        onsave={onSaveAction} 
+                        draft-values={draftValues}
+                        columns={columns}>
+                </lightning-datatable><br></br>
+                <div class="slds-align_absolute-center">
+                    <div class="slds-m-top_small slds-m-bottom_medium">
+                        <lightning-button variant="destructive" label="Cancel" title="Cancel" onclick={closeQuickAction} class="slds-m-left_x-small"></lightning-button>
+                        <lightning-button variant="brand" label="Continue" title="Continue" onclick={saveInvoiceAssetsAction} class="slds-m-left_x-small"></lightning-button>
+                    </div>
+                </div>
+            </div><br></br>
+        </template>
+
+
+        <template lwc:if={invoiceDetailsScreen}>
+            <lightning-card  title="">
+                <div class="slds-align_absolute-center" style="height:2rem">
+                    <div class="slds-text-heading_medium">Invoice details</div>
+                </div>
+                <p class="slds-p-horizontal_small"><b>Customer: </b>{invoiceObject.Customer}</p>
+                <p class="slds-p-horizontal_small"><b>Dealer Name: </b>{invoiceObject.Dealer}</p>
+                <p class="slds-p-horizontal_small"><b>Contract: </b>{invoiceObject.ContractNumber}</p>
+                <p class="slds-p-horizontal_small"><b>Total: </b>{invoiceObject.Amount}</p>
+
+            <div class="slds-m-top_medium slds-m-bottom_x-large">          
+
+                <div class="slds-align_absolute-center" style="height:2rem">
+                    <div class="slds-text-heading_medium">Invoice assets</div>
+                </div>
+                <lightning-datatable
+                data-id="invoiceAssetsTable"
+                key-field="Id"
+                data={invoiceAssetsData}
+                onsave={onSaveAction} 
+                draft-values={draftValues}
+                columns={invoiceAssetsTableColumns}
+                show-row-number-column="true"
+                hide-checkbox-column>
+                </lightning-datatable>
+            </div>
+
+                <div class="slds-m-top_medium slds-m-bottom_x-large">          
+                    <div class="slds-p-around_medium lgc-bg">
+                        <lightning-input data-id="checkboxACH" type="checkbox" label="With Payment Authorization"> </lightning-input>
+                    </div>
+                </div>
+                <div class="slds-m-top_medium slds-m-bottom_x-large">          
+                    <div class="slds-p-around_medium lgc-bg">
+                        <lightning-input  data-id="emails" type="email" label="Additional email addresses: " multiple></lightning-input>
+                    </div>
+                </div>
+
+                <div class="slds-align_absolute-center" style="height:2rem">
+                    <lightning-button variant="brand" label="Generate Dealer Repurchase Invoice" title="Generate Dealer Repurchase Invoice" onclick={generateInvoiceDocument} disabled={generateInvoiceDocumentDisabled} class="slds-m-left_x-small"></lightning-button>
+                </div>
+
+
+
+                
+            </lightning-card>
+        </template>
+
+
+
+    </lightning-quick-action-panel>
+
+</template>

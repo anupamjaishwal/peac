@@ -1,0 +1,22 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <lightning-card>
+            <lightning-button label="Cancel" slot="actions" onclick={handleStopEditing} disabled={isNotEditing}></lightning-button>
+            <lightning-button label="Save" variant="brand" slot="actions" onclick={handleSave} disabled={isNotEditing}></lightning-button>
+            <p class="slds-var-p-horizontal_small">
+                <lightning-input type="text" label="Role" value={userRole} read-only></lightning-input>
+                <lightning-combobox name="object" label="Object"
+                    value={targetObject} options={objects} readonly></lightning-combobox>
+                <lightning-combobox name="queue" label="Queue" placeholder="Select the Queue"
+                    value={targetQueue} options={queues} onchange={handleQueueChange} disabled={isEditing}></lightning-combobox>
+            </p>
+            <p slot="footer">
+                <lightning-button label="Get Members" disabled={isNoQueue} onclick={handleGetMembers}></lightning-button>
+                <lightning-dual-listbox name="members" label="Select Users"
+                    source-label="Available" selected-label="Selected" field-level-help="Select members for the Queue"
+                    options={allUsers} value={members} onchange={handleMembersChange}></lightning-dual-listbox>
+            </p>
+        </lightning-card>
+    </template>
+</template>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MLC_Exposure__c</fullName>
+    <description>Store Lease Exposure from account</description>
+    <externalId>false</externalId>
+    <label>MLC Exposure</label>
+    <precision>9</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

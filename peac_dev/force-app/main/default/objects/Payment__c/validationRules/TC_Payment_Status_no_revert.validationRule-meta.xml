@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TC_Payment_Status_no_revert</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+   $Profile.Name != &quot;System Administrator&quot;,
+   !ISBLANK(Date_Sent_to_External_System__c), 
+   ISCHANGED(Payment_Status__c),
+   AND(
+      TEXT(Payment_Status__c) != &quot;Payment Sent&quot;,
+      TEXT(Payment_Status__c) != &quot;Payment Acknowledged&quot;,
+      TEXT(Payment_Status__c) != &quot;Payment Released&quot;,
+      TEXT(Payment_Status__c) != &quot;Payment Confirmed&quot;,
+      TEXT(Payment_Status__c) != &quot;Void/Cancelled&quot;
+   )
+)</errorConditionFormula>
+    <errorMessage>The payment has already been sent to the external system. You cannot change the payment back to a previous status. Please contact your administrator.</errorMessage>
+</ValidationRule>

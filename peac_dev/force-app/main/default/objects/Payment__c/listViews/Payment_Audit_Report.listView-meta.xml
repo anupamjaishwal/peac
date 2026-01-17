@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Payment_Audit_Report</fullName>
+    <columns>NAME</columns>
+    <columns>Payee_Name__c</columns>
+    <columns>Payment_Status__c</columns>
+    <columns>External_Payment_ID__c</columns>
+    <columns>Date_Sent_to_External_System__c</columns>
+    <columns>External_Payment_Batch__c</columns>
+    <columns>CREATED_DATE</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Payment_Status__c</field>
+        <operation>equals</operation>
+        <value>Payment Sent</value>
+    </filters>
+    <filters>
+        <field>External_Payment_ID__c</field>
+        <operation>equals</operation>
+    </filters>
+    <label>Payment Audit Report</label>
+</ListView>

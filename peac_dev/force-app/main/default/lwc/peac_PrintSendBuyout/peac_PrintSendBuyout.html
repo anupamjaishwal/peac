@@ -1,0 +1,82 @@
+<template>
+    <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+        class="slds-modal slds-fade-in-open">
+        <div class="slds-modal__container">
+            <div class="slds-modal__header">
+                <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate" tabindex="-1">Print/Send Buyout</h1>
+            </div>
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <table style="margin-top: 15px;" class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col" style="width:10px;"></th>
+                            <th scope="col">PDF Name</th>
+                            <th scope="col">View</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td scope="col" style="width:10px;">
+                                <lightning-input type="checkbox" data-pdfname="Summary PDF" variant="label-hidden"
+                                    name="input1" onchange={handleSummaryPDFSelect}></lightning-input>
+                            </td>
+                            <td scope="col">Summary PDF</td>
+                            <td scope="col">
+                                <lightning-button-icon icon-name="utility:preview" variant="brand"
+                                    alternative-text="preview" onclick={handlePdf}>
+                                </lightning-button-icon>
+                            </td>
+
+                        </tr>
+                        <tr>
+                            <td scope="col" style="width:10px;">
+                                <lightning-input type="checkbox" data-pdfname="Detailed PDF" variant="label-hidden"
+                                    name="input2" onchange={handleDetailPDFSelect}></lightning-input>
+                            </td>
+                            <td scope="col">Detailed PDF</td>
+                            <td scope="col">
+                                <lightning-button-icon icon-name="utility:preview" variant="brand"
+                                    alternative-text="preview" onclick={handleDetailedPdf}>
+                                </lightning-button-icon>
+                            </td>
+
+                        </tr>
+                        <tr if:true={showCustomerLetter}>
+                            <td scope="col" style="width:10px;">
+                                <lightning-input type="checkbox" data-pdfname="Customer PDF" variant="label-hidden"
+                                    name="input2" onchange={handleCustomerPDFSelect}></lightning-input>
+                            </td>
+                            <td scope="col">Customer PDF</td>
+                            <td scope="col">
+                                <lightning-button-icon icon-name="utility:preview" variant="brand"
+                                    alternative-text="preview" onclick={handleCustomerPdf}>
+                                </lightning-button-icon>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+                </table>
+                <lightning-input style="margin-top:1%;" lwc:ref="sendBuyoutEmail" lwc:if={showEmailField} type="email"
+                    field-level-help="If entering more than on email please separate the email addresses by a comma"
+                    label="Email Addresses" value={emailList} placeholder="ceo@example.com, cto@example.com" multiple required
+                    onchange={handleEmail}></lightning-input>
+                <lightning-combobox lwc:if={showEmailField} name="emailTemplates" label="Email Templates"
+                    value={emailTemplateId} placeholder="Select Email Template" options={emailTemplates} required
+                    onchange={handleEmailTemplateChange}>
+                </lightning-combobox>
+
+            </div>
+            <div class="slds-modal__footer">
+                <lightning-button label="Cancel" title="Cancel" onclick={handleClosePopup} class="slds-m-left_x-small">
+                </lightning-button>
+                <lightning-button label="Send Email" title="Send Email" disabled={enableSendButton} variant="brand"
+                    onclick={handleSendEmail} class="slds-m-left_x-small"></lightning-button>
+            </div>
+        </div>
+     <div if:true={isLoading} >
+        <lightning-spinner alternative-text="Loading" size="xx-small"></lightning-spinner>
+    </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+</template>

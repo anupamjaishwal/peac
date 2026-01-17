@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Upfront_Tax_Basis__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(!ISBLANK(IL_Upfront_Tax_Code__c),
+ IF(TEXT(Upfront_Tax_Method__c) = &quot;GRM&quot;,
+  IF(Rental_Amount_Override__c &lt;= 0, 
+   Rental_Amount_fml__c, Rental_Amount_Override__c),
+         List_Price__c
+   ),
+   null
+)</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <inlineHelpText>Contains Asset Rental Amount as Infolease Tax Basis if Tax Method is GRM, else tax basis is list price.</inlineHelpText>
+    <label>Upfront Tax Basis</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

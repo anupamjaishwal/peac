@@ -1,0 +1,28 @@
+<template>
+    <template if:true={showspinner}>
+        <lightning-spinner alternative-text={label.loadingMessage}></lightning-spinner>
+    </template>
+    <div class="slds-var-m-top_medium">
+        <a href={staticResourceURL} target="_blank" class="slds-button slds-button_brand">Download a sample CSV file.</a>
+    </div>
+    <br/>
+    <lightning-card>
+
+        
+        <div class="file-uploader">
+        
+            <lightning-input label="" accept=".csv" name="file uploader" onchange={handleFilesChange} type="file" multiple="false "></lightning-input>
+            
+            <div class="error-message">{fileName}</div>
+            <div class="slds-var-m-top_medium">
+                <template if:true={isTrue}>
+                    <lightning-button class="upload-button" label={UploadFile} onclick={handleSave} variant="brand" ></lightning-button>
+                </template>
+                
+            </div>
+        </div>
+        
+    </lightning-card>
+    
+    
+</template>

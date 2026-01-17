@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WireAvailable</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(Wire_Available__c== true, 
+(OR(LEN(Wire_ID__c) == 0,LEN(Wire_Account_Number__c) == 0) ))</errorConditionFormula>
+    <errorDisplayField>Wire_Available__c</errorDisplayField>
+    <errorMessage>Wire Available requires valid entries in Wire/Bank Transit and Wire Account #</errorMessage>
+</ValidationRule>

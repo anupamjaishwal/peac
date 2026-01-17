@@ -1,0 +1,178 @@
+<template>
+  <!-- Top Button Row -->
+  <div class="slds-grid slds-gutters slds-align_absolute-center slds-grid_align-center slds-grid_vertical-align-center">
+
+    <!-- Left Column -->
+    <div class="slds-col slds-size_1-of-3">
+          <div class="slds-col slds-size_2-of-3">
+      <lightning-combobox
+        label="Select a dealer"
+        data-id="accountValue"
+        value={selectedAccount}
+        options={accounts}
+        onchange={handleAccountChange}>
+      </lightning-combobox>
+    </div>
+
+          </div>
+
+
+
+    <!-- Center Column -->
+    <div class="slds-col slds-size_1-of-3 slds-grid slds-grid_align-center" style="padding-top: 0.75rem;">
+      <div style="padding-top: 0.75rem;">
+        <lightning-button
+        data-id="uploadResultsButton"
+        variant="brand"
+        label="View Upload Results"
+        title="Primary action"
+        onclick={showModalBox}>
+      </lightning-button>
+      </div>
+      
+    </div>
+
+<!-- Right Column -->
+<div class="slds-col slds-size_1-of-3 slds-grid slds-grid_align-end" style="padding:1rem;" >
+  <div style="border:1px solid black;">
+    <!-- 🆕 Add text above the buttons -->
+    <div class="slds-text-align_center" style="padding-top: 1rem;">
+      <p class="slds-text-body_regular slds-m-bottom_small slds-grid_align-center"><strong style="font-weight: bold; font-size: 18px;">Bulk Meter Upload Process</strong></p>
+    </div>
+
+    <div class="slds-col slds-float_left" style="padding-top: 2rem;padding-left: 2rem;">
+      <lightning-button
+        variant="brand"
+        label="Export to Excel"
+        title="Export"
+        onclick={exportToCSV}
+        class="slds-m-right_small">
+      </lightning-button>
+    </div>
+
+    <div class="slds-col slds-float_right" style="padding-top: 2rem; padding-right: 0.1rem;">
+      <lightning-button
+        variant="brand"
+        label="Upload Reads in Bulk"
+        title="Upload"
+        onclick={uploadFileButton}>
+      </lightning-button>
+      <div class="slds-m-top_x-small">
+        <input type="file"
+          data-id="uploadFileInput"
+          accept=".csv"
+          onchange={handleFileUpload} />
+      </div><br></br>
+    </div>
+  </div>
+</div>
+  </div>
+
+  <br></br>  <br></br>
+
+
+  <!-- Paginator -->
+  <c-sl_datatable-paginator
+    records={assets}
+    total-records={dataSize}
+    page-size-options={paginatorLimit}
+    onpaginatorchange={handlePaginatorChange}>
+  </c-sl_datatable-paginator>
+
+  <!-- Save/Cancel Buttons Row -->
+  <div class="slds-grid slds-gutters slds-align_absolute-center slds-grid_align-center">
+    <div class="slds-col slds-size_1-of-3"></div>
+    <div class="slds-col slds-size_1-of-3 slds-grid slds-grid_align-center">
+      <div class="slds-grid slds-gutters slds-m-around_medium">
+        <div class="slds-col">
+          <lightning-button
+            variant="brand"
+            label="Cancel"
+            title="Cancel action"
+            onclick={handleCancel}>
+          </lightning-button>
+        </div>
+        <div class="slds-col">
+          <lightning-button
+            variant="brand"
+            label="Save Reads Entered Below"
+            title="Save action"
+            onclick={handleSaveMeterReads}>
+          </lightning-button>
+        </div>
+      </div>
+    </div>
+    <div class="slds-col slds-size_1-of-3"></div>
+  </div>
+
+  <!-- Main Table -->
+  <c-sl_-custom-data-table-type
+    data-name="assetTable"
+    key-field="recordKey"
+    data={recordsToDisplay}
+    columns={COLUMNS}
+    draftvalueschange={handleDraftChange}
+    draft-values={draftValues}
+    onsave={onSaveAction}
+    oncancel={onCancelAction}
+    errors={dataErrors}
+    sorted-by={sortBy}
+    sorted-direction={sortDirection}
+    onsort={doSorting}
+    show-row-number-column="true"
+    hide-checkbox-column
+    oncellchange={handleCellChange}
+    suppress-bottom-bar="true">
+  </c-sl_-custom-data-table-type>
+
+  <!-- Empty State Message -->
+  <template if:true={empty}>
+    <div class="slds-align_absolute-center" style="height:5rem">
+      No meter readings are currently due
+    </div>
+  </template>
+
+  <!-- Locked Records Table -->
+  <template if:true={lockedRecordsExist}>
+    <br></br><br></br>
+    <div>
+      <div class="slds-align_absolute-center slds-text-heading_large" style="height:5rem">
+        <h1>Meter Reads in progress</h1>
+      </div>
+      <lightning-datatable
+        data-id="lockedTable"
+        key-field="id"
+        data={lockedRows}
+        columns={lockedColumns}
+        show-row-number-column="true"
+        hide-checkbox-column>
+      </lightning-datatable>
+    </div>
+    <br></br>
+  </template>
+
+  <!-- Modal -->
+  <template if:true={isShowModal}>
+    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <!-- Header -->
+        <header class="slds-modal__header">
+          <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideModalBox}>
+            <lightning-icon icon-name="utility:close" alternative-text="close" variant="inverse" size="small"></lightning-icon>
+            <span class="slds-assistive-text">Close</span>
+          </button>
+          <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">View Upload Results</h2>
+        </header>
+        <!-- Body -->
+        <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+          <lightning-layout-item size="12">
+            <div class="slds-grid slds-gutters">
+              <c-sl_-meter-data-view-uploads dealer-number={selectedAccount} request-type="DealerPortal"></c-sl_-meter-data-view-uploads>
+            </div>
+          </lightning-layout-item>
+        </div>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+</template>

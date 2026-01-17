@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Equip_Cost_Wo_Tax_grter_Sum_Amt_Finance</fullName>
+    <active>true</active>
+    <description>If Opportunity.Equipment_Cost_w_o_Tax__c &lt; Sum of Amount Financed when Lease RT Payment is edited or created, throw error message.</description>
+    <errorConditionFormula>TEXT(Payment_Status__c) &lt;&gt; &apos;Void/Cancelled&apos; &amp;&amp;
+ (RecordType.DeveloperName = &apos;Lease_Payment&apos; &amp;&amp; 
+(
+(
+ISNEW() &amp;&amp;
+(Opportunity__r.Equipment_Cost_w_o_Tax__c &lt;  Opportunity__r.Sum_of_Amount_Financed__c +  Amount_Financed__c)
+) ||
+(Opportunity__r.Equipment_Cost_w_o_Tax__c &lt;  Opportunity__r.Sum_of_Amount_Financed__c)
+)
+
+
+
+)</errorConditionFormula>
+    <errorMessage>Total Amount Financed on Payments cannot be greater than Opportunity Equipment cost w/o tax.</errorMessage>
+</ValidationRule>

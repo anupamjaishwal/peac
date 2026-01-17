@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Invoice_Less_Funding_Amounts__c</fullName>
+    <externalId>false</externalId>
+    <formula>Less_Advance_Funding__c  +  Less_Advance_Rentals__c + Less_Delivery_Guarantee__c + Less_Delivery_Guarantee_Fee__c + Less_Discount__c + Less_Doc_Fee_Amount__c + Less_Fee_for_Existing_Account__c + Less_Origination_Fee__c +  Less_Points__c + Less_Points_Pool__c + Less_Security_Deposit__c + Less_Titling_Fee__c + Less_UPS_Charge__c + Less_Wire_Fee__c</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Invoice Less Funding Amounts</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

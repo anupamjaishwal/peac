@@ -1,0 +1,26 @@
+<template>
+    <lightning-card title={cardTitle}>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="12" class="slds-var-p-horizontal_small">
+                <label for="searchBox" class="blueFont">
+                    Search Dunn &amp; Bradstreet using a name or address, or search by customer number (CCAN) if opportunity is for an existing customer
+                </label>
+                <lightning-input type="search" name="searchBox" onchange={handleSearchTerm} required></lightning-input>
+            </lightning-layout-item>
+            <lightning-layout-item size="12" class="slds-var-p-around_medium">
+                <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+                <template if:false={isLoading}>
+                    <p class="blueFont">Search Results</p>
+                    <lightning-datatable key-field="displaySequence" data={rows} columns={columns} hide-checkbox-column onrowaction={handleSearchAccount}></lightning-datatable>
+                </template>
+                <p class="slds-text-align_center blueFont" if:false={rows.length}>
+                    {noDataReason}
+                </p>
+                <p class="blueFont">If you don&apos;t see the Company you are looking for in the above results, click on Create New Customer.</p>
+            </lightning-layout-item>
+        </lightning-layout>
+        <!-- <p slot="footer">
+            {result}
+        </p> -->
+    </lightning-card>
+</template>

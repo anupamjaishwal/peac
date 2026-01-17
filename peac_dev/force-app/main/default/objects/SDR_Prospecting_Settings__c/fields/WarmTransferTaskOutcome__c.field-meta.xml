@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>WarmTransferTaskOutcome__c</fullName>
+    <defaultValue>&quot;Contact with Decision Maker - Warm Transfer&quot;</defaultValue>
+    <encryptionScheme>None</encryptionScheme>
+    <externalId>false</externalId>
+    <inlineHelpText>This is the task outcome of a task that has been warm transferred</inlineHelpText>
+    <label>Warm Transfer Task Outcome</label>
+    <length>50</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

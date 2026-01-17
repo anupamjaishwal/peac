@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Upgrade_to_Return_No_Discount__c</fullName>
+    <description>DP-796</description>
+    <externalId>false</externalId>
+    <formula>Opportunity__r.Dealer_Account__r.Upgrade_to_Return_No_Discount__c</formula>
+    <label>Upgrade to Return No Discount</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

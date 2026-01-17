@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Facility_Code__c</fullName>
+    <externalId>false</externalId>
+    <label>Facility Code</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>true</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>2.99</fullName>
+                <default>false</default>
+                <label>VARADERO</label>
+            </value>
+            <value>
+                <fullName>2.01</fullName>
+                <default>false</default>
+                <label>Wells Syndication</label>
+            </value>
+            <value>
+                <fullName>2.02</fullName>
+                <default>false</default>
+                <label>US Bank Syndication</label>
+            </value>
+            <value>
+                <fullName>2.03</fullName>
+                <default>false</default>
+                <label>CIT Syndication</label>
+            </value>
+            <value>
+                <fullName>2.04</fullName>
+                <default>false</default>
+                <label>Unifi (Perfect Pay)</label>
+            </value>
+            <value>
+                <fullName>2.05</fullName>
+                <default>false</default>
+                <label>Bank of West</label>
+            </value>
+            <value>
+                <fullName>2.06</fullName>
+                <default>false</default>
+                <label>Unifi (Reg Pay)</label>
+            </value>
+            <value>
+                <fullName>2.24</fullName>
+                <default>false</default>
+                <label>Crestmark</label>
+            </value>
+            <value>
+                <fullName>2.25</fullName>
+                <default>false</default>
+                <label>Hitachi Capital</label>
+            </value>
+            <value>
+                <fullName>2.26</fullName>
+                <default>false</default>
+                <label>BB&amp;T</label>
+            </value>
+            <value>
+                <fullName>2.27</fullName>
+                <default>false</default>
+                <label>TCF Bank</label>
+            </value>
+            <value>
+                <fullName>9.00</fullName>
+                <default>false</default>
+                <label>Ineligible-Pending Review</label>
+            </value>
+            <value>
+                <fullName>9.01</fullName>
+                <default>false</default>
+                <label>Ineligible-Do Not Pledge</label>
+            </value>
+            <value>
+                <fullName>9.02</fullName>
+                <default>false</default>
+                <label>Restructure</label>
+            </value>
+            <value>
+                <fullName>9.03</fullName>
+                <default>false</default>
+                <label>Sec Rejected-Lease Alter</label>
+            </value>
+            <value>
+                <fullName>9.04</fullName>
+                <default>false</default>
+                <label>Sec-Need origs from bank</label>
+            </value>
+            <value>
+                <fullName>9.05</fullName>
+                <default>false</default>
+                <label>Ineligible-No Lease Doc</label>
+            </value>
+            <value>
+                <fullName>9.06</fullName>
+                <default>false</default>
+                <label>INELIGIBLE STL/NEED D &amp; A</label>
+            </value>
+            <value>
+                <fullName>9.07</fullName>
+                <default>false</default>
+                <label>QUESTIONABLE TERMS</label>
+            </value>
+            <value>
+                <fullName>9.09</fullName>
+                <default>false</default>
+                <label>SALES REC&apos;D ORIG-MIA</label>
+            </value>
+            <value>
+                <fullName>9.10</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-NEED ORIG LSE</label>
+            </value>
+            <value>
+                <fullName>9.11</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-NEED D &amp; A</label>
+            </value>
+            <value>
+                <fullName>9.12</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-NEED ADDENDUM</label>
+            </value>
+            <value>
+                <fullName>9.13</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-NEED ASSIGN</label>
+            </value>
+            <value>
+                <fullName>9.14</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-RET ORIG/SIGN</label>
+            </value>
+            <value>
+                <fullName>9.15</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-PROG PAYT BKED</label>
+            </value>
+            <value>
+                <fullName>9.16</fullName>
+                <default>false</default>
+                <label>BOOKING ERROR</label>
+            </value>
+            <value>
+                <fullName>9.17</fullName>
+                <default>false</default>
+                <label>BANK EXCEPTION</label>
+            </value>
+            <value>
+                <fullName>9.18</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-NEED SIGNATURE</label>
+            </value>
+            <value>
+                <fullName>9.19</fullName>
+                <default>false</default>
+                <label>BOOKED NOT PAID</label>
+            </value>
+            <value>
+                <fullName>9.20</fullName>
+                <default>false</default>
+                <label>BOOKING SHEET ERROR</label>
+            </value>
+            <value>
+                <fullName>9.21</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-NEED SCH A</label>
+            </value>
+            <value>
+                <fullName>9.22</fullName>
+                <default>false</default>
+                <label>NEED ADDENDUM-PAYT</label>
+            </value>
+            <value>
+                <fullName>9.23</fullName>
+                <default>false</default>
+                <label>NEED ADDENDUM-TERM</label>
+            </value>
+            <value>
+                <fullName>9.24</fullName>
+                <default>false</default>
+                <label>NEED ADDENDUM-NAME</label>
+            </value>
+            <value>
+                <fullName>9.25</fullName>
+                <default>false</default>
+                <label>NEED ADDENDUM-SEC DEPOSIT</label>
+            </value>
+            <value>
+                <fullName>9.26</fullName>
+                <default>false</default>
+                <label>MISSING FILE</label>
+            </value>
+            <value>
+                <fullName>9.27</fullName>
+                <default>false</default>
+                <label>DEAD DEAL-NO DOCS AVAIL</label>
+            </value>
+            <value>
+                <fullName>9.28</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-NEED ORIG SIGN</label>
+            </value>
+            <value>
+                <fullName>9.29</fullName>
+                <default>false</default>
+                <label>Prog Pmt Default</label>
+            </value>
+            <value>
+                <fullName>9.30</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-NEED INVOICE</label>
+            </value>
+            <value>
+                <fullName>9.31</fullName>
+                <default>false</default>
+                <label>NEED LSE PAGE 2</label>
+            </value>
+            <value>
+                <fullName>9.32</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-EARLY BUYOUT</label>
+            </value>
+            <value>
+                <fullName>9.33</fullName>
+                <default>false</default>
+                <label>Funded from Fax Original</label>
+            </value>
+            <value>
+                <fullName>9.35</fullName>
+                <default>false</default>
+                <label>MONTH END-BOOK DON&apos;T FUND</label>
+            </value>
+            <value>
+                <fullName>9.36</fullName>
+                <default>false</default>
+                <label>INELIGIBLE-OUTSTANDING TI</label>
+            </value>
+            <value>
+                <fullName>9.37</fullName>
+                <default>false</default>
+                <label>Need Original POA</label>
+            </value>
+            <value>
+                <fullName>9.38</fullName>
+                <default>false</default>
+                <label>Funding Exception-CredOps</label>
+            </value>
+            <value>
+                <fullName>9.40</fullName>
+                <default>false</default>
+                <label>NEED SIGNED REST&apos;R ADDNDM</label>
+            </value>
+            <value>
+                <fullName>9.41</fullName>
+                <default>false</default>
+                <label>UCC Renewals Needed</label>
+            </value>
+            <value>
+                <fullName>2.98</fullName>
+                <default>false</default>
+                <label>CVG Syndication</label>
+            </value>
+            <value>
+                <fullName>2.30</fullName>
+                <default>false</default>
+                <label>North Mill 2.30</label>
+            </value>
+            <value>
+                <fullName>2.31</fullName>
+                <default>false</default>
+                <label>North Mill 2.31</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Services_compact_layout</fullName>
+    <fields>Name</fields>
+    <fields>Asset_Number__c</fields>
+    <fields>Serial_Number__c</fields>
+    <label>Services compact layout</label>
+</CompactLayout>

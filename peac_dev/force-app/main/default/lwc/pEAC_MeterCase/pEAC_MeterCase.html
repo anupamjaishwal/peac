@@ -1,0 +1,64 @@
+<template>
+    <div class="slds-float_left slds-p-right_small">
+        <div class="slds-col slds-text-align_right">
+          <lightning-button variant="brand" label={label.createCase} title={label.createCase} class="slds-m-left_medium" onclick={displayModal}></lightning-button>
+        </div>
+    </div>
+     
+    <template if:true={showspinner}>
+        <lightning-spinner alternative-text={label.loadingMessage}></lightning-spinner>
+    </template>
+    <template if:true={showModal}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title={label.closeModal} onclick={closeModal}>
+                        <lightning-icon icon-name="utility:close"
+                            alternative-text="close"
+                            variant="inverse"
+                            size="small" ></lightning-icon>
+                        <span class="slds-assistive-text">{label.closeModal}</span>
+                    </button>
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">{label.headerMessage}</h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <lightning-select
+                        name="Select"
+                        label={label.reasonType}
+                        value={reasonSelected}
+                        options={reasonPickList}
+                        onchange={handleChange}
+                        required ></lightning-select>
+                        {error}
+                    <template if:true={showForm}>
+                        <lightning-record-edit-form
+                        object-api-name=Case
+                        onsubmit={handleSubmit}
+                        onsuccess={handleSucess}
+                        >
+                    <lightning-output-field field-name={statusField}></lightning-output-field>
+                    <lightning-input-field field-name={description} value={descriptionDeatis}> </lightning-input-field>
+    
+    <div class="slds-var-m-top_medium">
+        <template if:true={showForm}>
+            <lightning-button variant="brand" type="submit" label={label.savebButton}>
+            </lightning-button>
+        </template>
+        
+    </div>
+</lightning-record-edit-form>
+                    </template>
+                    
+                </div>
+                
+                
+            </div>
+        </section>
+	<div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+	
+<br/>
+</template>

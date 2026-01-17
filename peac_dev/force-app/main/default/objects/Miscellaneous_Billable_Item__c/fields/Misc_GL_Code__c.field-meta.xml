@@ -1,0 +1,1246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Misc_GL_Code__c</fullName>
+    <externalId>false</externalId>
+    <label>Misc GL Code</label>
+    <required>true</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>0000 - NOT ON FILE</fullName>
+                <default>false</default>
+                <label>0000 - NOT ON FILE</label>
+            </value>
+            <value>
+                <fullName>0001 - Interim Rent</fullName>
+                <default>false</default>
+                <label>0001 - Interim Rent</label>
+            </value>
+            <value>
+                <fullName>0002 - Upfront Tax</fullName>
+                <default>false</default>
+                <label>0002 - Upfront Tax</label>
+            </value>
+            <value>
+                <fullName>0003 - OneTime Documentation Fee</fullName>
+                <default>false</default>
+                <label>0003 - OneTime Documentation Fee</label>
+            </value>
+            <value>
+                <fullName>0004 - Ending Deposit</fullName>
+                <default>false</default>
+                <label>0004 - Ending Deposit</label>
+            </value>
+            <value>
+                <fullName>0005 - Security Deposit</fullName>
+                <default>false</default>
+                <label>0005 - Security Deposit</label>
+            </value>
+            <value>
+                <fullName>0006 - Rental on Disposed Accts</fullName>
+                <default>false</default>
+                <label>0006 - Rental on Disposed Accts</label>
+            </value>
+            <value>
+                <fullName>0007 - 90-day same as cash disc.</fullName>
+                <default>false</default>
+                <label>0007 - 90-day same as cash disc.</label>
+            </value>
+            <value>
+                <fullName>0008 - CLOSING FEE</fullName>
+                <default>false</default>
+                <label>0008 - CLOSING FEE</label>
+            </value>
+            <value>
+                <fullName>0009 - Returned Check Fee</fullName>
+                <default>false</default>
+                <label>0009 - Returned Check Fee</label>
+            </value>
+            <value>
+                <fullName>0010 - COLLECTION / REPO FEE</fullName>
+                <default>false</default>
+                <label>0010 - COLLECTION / REPO FEE</label>
+            </value>
+            <value>
+                <fullName>0011 - Insurance Fee</fullName>
+                <default>false</default>
+                <label>0011 - Insurance Fee</label>
+            </value>
+            <value>
+                <fullName>0012 - Legal Fee</fullName>
+                <default>false</default>
+                <label>0012 - Legal Fee</label>
+            </value>
+            <value>
+                <fullName>0013 - Loss Reserve</fullName>
+                <default>false</default>
+                <label>0013 - Loss Reserve</label>
+            </value>
+            <value>
+                <fullName>0014 - Funding Difference</fullName>
+                <default>false</default>
+                <label>0014 - Funding Difference</label>
+            </value>
+            <value>
+                <fullName>0015 - Recovery</fullName>
+                <default>false</default>
+                <label>0015 - Recovery</label>
+            </value>
+            <value>
+                <fullName>0016 - Equipment Sale</fullName>
+                <default>false</default>
+                <label>0016 - Equipment Sale</label>
+            </value>
+            <value>
+                <fullName>0017 - Service Contract</fullName>
+                <default>false</default>
+                <label>0017 - Service Contract</label>
+            </value>
+            <value>
+                <fullName>0018 - Property Tax</fullName>
+                <default>false</default>
+                <label>0018 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>0019 - Fla Doc Stamp Tax</fullName>
+                <default>false</default>
+                <label>0019 - Fla Doc Stamp Tax</label>
+            </value>
+            <value>
+                <fullName>0020 - Renewal Rentals</fullName>
+                <default>false</default>
+                <label>0020 - Renewal Rentals</label>
+            </value>
+            <value>
+                <fullName>0021 - Sec Deposit Refund</fullName>
+                <default>false</default>
+                <label>0021 - Sec Deposit Refund</label>
+            </value>
+            <value>
+                <fullName>0022 - Residual Due Vendor</fullName>
+                <default>false</default>
+                <label>0022 - Residual Due Vendor</label>
+            </value>
+            <value>
+                <fullName>0023 - Insurance Misc</fullName>
+                <default>false</default>
+                <label>0023 - Insurance Misc</label>
+            </value>
+            <value>
+                <fullName>0024 - Hasselblad</fullName>
+                <default>false</default>
+                <label>0024 - Hasselblad</label>
+            </value>
+            <value>
+                <fullName>0025 - Inventory Equipment Sale</fullName>
+                <default>false</default>
+                <label>0025 - Inventory Equipment Sale</label>
+            </value>
+            <value>
+                <fullName>0026 - Payment after Disposition</fullName>
+                <default>false</default>
+                <label>0026 - Payment after Disposition</label>
+            </value>
+            <value>
+                <fullName>0027 - Damage/Return Fee</fullName>
+                <default>false</default>
+                <label>0027 - Damage/Return Fee</label>
+            </value>
+            <value>
+                <fullName>0028 - End of Term Recovery</fullName>
+                <default>false</default>
+                <label>0028 - End of Term Recovery</label>
+            </value>
+            <value>
+                <fullName>0029 - Restructure Fee</fullName>
+                <default>false</default>
+                <label>0029 - Restructure Fee</label>
+            </value>
+            <value>
+                <fullName>0030 - CPC Overage Charge</fullName>
+                <default>false</default>
+                <label>0030 - CPC Overage Charge</label>
+            </value>
+            <value>
+                <fullName>0031 - Marketing Expense-Vendor</fullName>
+                <default>false</default>
+                <label>0031 - Marketing Expense-Vendor</label>
+            </value>
+            <value>
+                <fullName>0032 - 10% Purchase Option</fullName>
+                <default>false</default>
+                <label>0032 - 10% Purchase Option</label>
+            </value>
+            <value>
+                <fullName>0033 - Postage Meter Fees</fullName>
+                <default>false</default>
+                <label>0033 - Postage Meter Fees</label>
+            </value>
+            <value>
+                <fullName>0034 - TN State Sales Surtax</fullName>
+                <default>false</default>
+                <label>0034 - TN State Sales Surtax</label>
+            </value>
+            <value>
+                <fullName>0035 - TN Local Sales Tax</fullName>
+                <default>false</default>
+                <label>0035 - TN Local Sales Tax</label>
+            </value>
+            <value>
+                <fullName>0036 - Property Tax Credits</fullName>
+                <default>false</default>
+                <label>0036 - Property Tax Credits</label>
+            </value>
+            <value>
+                <fullName>0037 - Chicago Use Tax</fullName>
+                <default>false</default>
+                <label>0037 - Chicago Use Tax</label>
+            </value>
+            <value>
+                <fullName>0038 - Audit - Sales Tax Audit</fullName>
+                <default>false</default>
+                <label>0038 - Audit - Sales Tax Audit</label>
+            </value>
+            <value>
+                <fullName>0039 - PA Sales Tax - Late Fees</fullName>
+                <default>false</default>
+                <label>0039 - PA Sales Tax - Late Fees</label>
+            </value>
+            <value>
+                <fullName>0040 - Progress Payment Fees</fullName>
+                <default>false</default>
+                <label>0040 - Progress Payment Fees</label>
+            </value>
+            <value>
+                <fullName>0041 - E-Waste Disposal Fee</fullName>
+                <default>false</default>
+                <label>0041 - E-Waste Disposal Fee</label>
+            </value>
+            <value>
+                <fullName>0042 - UPS SHIPPING FEE</fullName>
+                <default>false</default>
+                <label>0042 - UPS SHIPPING FEE</label>
+            </value>
+            <value>
+                <fullName>0043 - Postage Meter Reimburseme</fullName>
+                <default>false</default>
+                <label>0043 - Postage Meter Reimburseme</label>
+            </value>
+            <value>
+                <fullName>0044 - Recovery BCAP</fullName>
+                <default>false</default>
+                <label>0044 - Recovery BCAP</label>
+            </value>
+            <value>
+                <fullName>0045 - Put Purchase Option</fullName>
+                <default>false</default>
+                <label>0045 - Put Purchase Option</label>
+            </value>
+            <value>
+                <fullName>0048 - Indirect Subsidy</fullName>
+                <default>false</default>
+                <label>0048 - Indirect Subsidy</label>
+            </value>
+            <value>
+                <fullName>0050 - Misc. Bank Deposits</fullName>
+                <default>false</default>
+                <label>0050 - Misc. Bank Deposits</label>
+            </value>
+            <value>
+                <fullName>0060 - Unapplied Suspense Refund</fullName>
+                <default>false</default>
+                <label>0060 - Unapplied Suspense Refund</label>
+            </value>
+            <value>
+                <fullName>0061 - Unapp Suspense GL Entry</fullName>
+                <default>false</default>
+                <label>0061 - Unapp Suspense GL Entry</label>
+            </value>
+            <value>
+                <fullName>0065 - Medical Consumable</fullName>
+                <default>false</default>
+                <label>0065 - Medical Consumable</label>
+            </value>
+            <value>
+                <fullName>0066 - Medical Service Fee</fullName>
+                <default>false</default>
+                <label>0066 - Medical Service Fee</label>
+            </value>
+            <value>
+                <fullName>0070 - Title Vehicle Ins Premium</fullName>
+                <default>false</default>
+                <label>0070 - Title Vehicle Ins Premium</label>
+            </value>
+            <value>
+                <fullName>0075 - Title Vehicle Tax &amp; Misc</fullName>
+                <default>false</default>
+                <label>0075 - Title Vehicle Tax &amp; Misc</label>
+            </value>
+            <value>
+                <fullName>0077 - Insurance Fee Non Owned</fullName>
+                <default>false</default>
+                <label>0077 - Insurance Fee Non Owned</label>
+            </value>
+            <value>
+                <fullName>0080 - Proceeds-TFG Inventory</fullName>
+                <default>false</default>
+                <label>0080 - Proceeds-TFG Inventory</label>
+            </value>
+            <value>
+                <fullName>0083 - Shared Doc Fee Dealer</fullName>
+                <default>false</default>
+                <label>0083 - Shared Doc Fee Dealer</label>
+            </value>
+            <value>
+                <fullName>0085 - Supply Freight Fee</fullName>
+                <default>false</default>
+                <label>0085 - Supply Freight Fee</label>
+            </value>
+            <value>
+                <fullName>0090 - Convenience Fee</fullName>
+                <default>false</default>
+                <label>0090 - Convenience Fee</label>
+            </value>
+            <value>
+                <fullName>0091 - Amortization Schedule Fee</fullName>
+                <default>false</default>
+                <label>0091 - Amortization Schedule Fee</label>
+            </value>
+            <value>
+                <fullName>0092 - Servicing Fee</fullName>
+                <default>false</default>
+                <label>0092 - Servicing Fee</label>
+            </value>
+            <value>
+                <fullName>0093 - BCAP Early Term Fee</fullName>
+                <default>false</default>
+                <label>0093 - BCAP Early Term Fee</label>
+            </value>
+            <value>
+                <fullName>0096 - Cook County Use Tax</fullName>
+                <default>false</default>
+                <label>0096 - Cook County Use Tax</label>
+            </value>
+            <value>
+                <fullName>0097 - NY Sales Tax True-Up</fullName>
+                <default>false</default>
+                <label>0097 - NY Sales Tax True-Up</label>
+            </value>
+            <value>
+                <fullName>0607 - Prop Tax Recon 0607active</fullName>
+                <default>false</default>
+                <label>0607 - Prop Tax Recon 0607active</label>
+            </value>
+            <value>
+                <fullName>0608 - Prop Tax Recon 08active</fullName>
+                <default>false</default>
+                <label>0608 - Prop Tax Recon 08active</label>
+            </value>
+            <value>
+                <fullName>0609 - Prop Tax Recon 09 Active</fullName>
+                <default>false</default>
+                <label>0609 - Prop Tax Recon 09 Active</label>
+            </value>
+            <value>
+                <fullName>0610 - Prop Tax Recon 10 Active</fullName>
+                <default>false</default>
+                <label>0610 - Prop Tax Recon 10 Active</label>
+            </value>
+            <value>
+                <fullName>0611 - Prop Tax Recon 11 Active</fullName>
+                <default>false</default>
+                <label>0611 - Prop Tax Recon 11 Active</label>
+            </value>
+            <value>
+                <fullName>0612 - Prop Tax Recon 12 Active</fullName>
+                <default>false</default>
+                <label>0612 - Prop Tax Recon 12 Active</label>
+            </value>
+            <value>
+                <fullName>0613 - Prop Tax Recon 13 Active</fullName>
+                <default>false</default>
+                <label>0613 - Prop Tax Recon 13 Active</label>
+            </value>
+            <value>
+                <fullName>0614 - Prop Tax Recon 14 Active</fullName>
+                <default>false</default>
+                <label>0614 - Prop Tax Recon 14 Active</label>
+            </value>
+            <value>
+                <fullName>0615 - Prop Tax Recon 15 Active</fullName>
+                <default>false</default>
+                <label>0615 - Prop Tax Recon 15 Active</label>
+            </value>
+            <value>
+                <fullName>0616 - Prop Tax Recon 16 Active</fullName>
+                <default>false</default>
+                <label>0616 - Prop Tax Recon 16 Active</label>
+            </value>
+            <value>
+                <fullName>0617 - Prop Tax Recon 17 Active</fullName>
+                <default>false</default>
+                <label>0617 - Prop Tax Recon 17 Active</label>
+            </value>
+            <value>
+                <fullName>0618 - Property Tax 2018</fullName>
+                <default>false</default>
+                <label>0618 - Property Tax 2018</label>
+            </value>
+            <value>
+                <fullName>1011 - Unifi Insurance</fullName>
+                <default>false</default>
+                <label>1011 - Unifi Insurance</label>
+            </value>
+            <value>
+                <fullName>1038 - Denver Rebill 07 -09</fullName>
+                <default>false</default>
+                <label>1038 - Denver Rebill 07 -09</label>
+            </value>
+            <value>
+                <fullName>1039 - Colorado True Up</fullName>
+                <default>false</default>
+                <label>1039 - Colorado True Up</label>
+            </value>
+            <value>
+                <fullName>1050 - Late Fees Other</fullName>
+                <default>false</default>
+                <label>1050 - Late Fees Other</label>
+            </value>
+            <value>
+                <fullName>1225 - IDC - Unearned</fullName>
+                <default>false</default>
+                <label>1225 - IDC - Unearned</label>
+            </value>
+            <value>
+                <fullName>1226 - Broker Fees</fullName>
+                <default>false</default>
+                <label>1226 - Broker Fees</label>
+            </value>
+            <value>
+                <fullName>1227 - IDC - Oper Exp. Unearned</fullName>
+                <default>false</default>
+                <label>1227 - IDC - Oper Exp. Unearned</label>
+            </value>
+            <value>
+                <fullName>1229 - Broker Fees Unearned</fullName>
+                <default>false</default>
+                <label>1229 - Broker Fees Unearned</label>
+            </value>
+            <value>
+                <fullName>1234 - Interim Rent - Unearned</fullName>
+                <default>false</default>
+                <label>1234 - Interim Rent - Unearned</label>
+            </value>
+            <value>
+                <fullName>1352 - Broker Fees BCAP Unearned</fullName>
+                <default>false</default>
+                <label>1352 - Broker Fees BCAP Unearned</label>
+            </value>
+            <value>
+                <fullName>1353 - Broker Fees - BCAP Trans</fullName>
+                <default>false</default>
+                <label>1353 - Broker Fees - BCAP Trans</label>
+            </value>
+            <value>
+                <fullName>1495 - Doc Fees - Unearned</fullName>
+                <default>false</default>
+                <label>1495 - Doc Fees - Unearned</label>
+            </value>
+            <value>
+                <fullName>1600 - Orig Fee BCAP Trans</fullName>
+                <default>false</default>
+                <label>1600 - Orig Fee BCAP Trans</label>
+            </value>
+            <value>
+                <fullName>1610 - Prop Tax Recon 10 Disp</fullName>
+                <default>false</default>
+                <label>1610 - Prop Tax Recon 10 Disp</label>
+            </value>
+            <value>
+                <fullName>1611 - Prop Tax Recon 11 Disp</fullName>
+                <default>false</default>
+                <label>1611 - Prop Tax Recon 11 Disp</label>
+            </value>
+            <value>
+                <fullName>1612 - Prop Tax Recon 12 Disp</fullName>
+                <default>false</default>
+                <label>1612 - Prop Tax Recon 12 Disp</label>
+            </value>
+            <value>
+                <fullName>1613 - Prop Tax Recon 13 Disp</fullName>
+                <default>false</default>
+                <label>1613 - Prop Tax Recon 13 Disp</label>
+            </value>
+            <value>
+                <fullName>1614 - Prop Tax recon 14 Disp</fullName>
+                <default>false</default>
+                <label>1614 - Prop Tax recon 14 Disp</label>
+            </value>
+            <value>
+                <fullName>1615 - Prop Tax recon 15 Disp</fullName>
+                <default>false</default>
+                <label>1615 - Prop Tax recon 15 Disp</label>
+            </value>
+            <value>
+                <fullName>1616 - Prop Tax Recon 16 Disp</fullName>
+                <default>false</default>
+                <label>1616 - Prop Tax Recon 16 Disp</label>
+            </value>
+            <value>
+                <fullName>1617 - Prop Tax Recon 0607 disp</fullName>
+                <default>false</default>
+                <label>1617 - Prop Tax Recon 0607 disp</label>
+            </value>
+            <value>
+                <fullName>1618 - Prop Tax Recon 08disp</fullName>
+                <default>false</default>
+                <label>1618 - Prop Tax Recon 08disp</label>
+            </value>
+            <value>
+                <fullName>1619 - Prop Tax Recon 09 Disp</fullName>
+                <default>false</default>
+                <label>1619 - Prop Tax Recon 09 Disp</label>
+            </value>
+            <value>
+                <fullName>1717 - Prop Tax Recon 17 Disp</fullName>
+                <default>false</default>
+                <label>1717 - Prop Tax Recon 17 Disp</label>
+            </value>
+            <value>
+                <fullName>1950 - ACH Debit Clearing</fullName>
+                <default>false</default>
+                <label>1950 - ACH Debit Clearing</label>
+            </value>
+            <value>
+                <fullName>2000 - Property Tax</fullName>
+                <default>false</default>
+                <label>2000 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2001 - Property Tax</fullName>
+                <default>false</default>
+                <label>2001 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2002 - Property Tax</fullName>
+                <default>false</default>
+                <label>2002 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2003 - Property Tax</fullName>
+                <default>false</default>
+                <label>2003 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2004 - Property Tax</fullName>
+                <default>false</default>
+                <label>2004 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2005 - Property Tax</fullName>
+                <default>false</default>
+                <label>2005 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2006 - Property Tax</fullName>
+                <default>false</default>
+                <label>2006 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2007 - Property Tax</fullName>
+                <default>false</default>
+                <label>2007 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2008 - Property Tax</fullName>
+                <default>false</default>
+                <label>2008 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2009 - Property Tax</fullName>
+                <default>false</default>
+                <label>2009 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2010 - Property Tax</fullName>
+                <default>false</default>
+                <label>2010 - Property Tax</label>
+            </value>
+            <value>
+                <fullName>2011 - Property Tax 2011</fullName>
+                <default>false</default>
+                <label>2011 - Property Tax 2011</label>
+            </value>
+            <value>
+                <fullName>2012 - Property Tax 2012</fullName>
+                <default>false</default>
+                <label>2012 - Property Tax 2012</label>
+            </value>
+            <value>
+                <fullName>2013 - Property Tax 2013</fullName>
+                <default>false</default>
+                <label>2013 - Property Tax 2013</label>
+            </value>
+            <value>
+                <fullName>2014 - Property Tax 2014</fullName>
+                <default>false</default>
+                <label>2014 - Property Tax 2014</label>
+            </value>
+            <value>
+                <fullName>2015 - Property Tax 2015</fullName>
+                <default>false</default>
+                <label>2015 - Property Tax 2015</label>
+            </value>
+            <value>
+                <fullName>2016 - Property Tax 2016</fullName>
+                <default>false</default>
+                <label>2016 - Property Tax 2016</label>
+            </value>
+            <value>
+                <fullName>2017 - Property Tax 2017</fullName>
+                <default>false</default>
+                <label>2017 - Property Tax 2017</label>
+            </value>
+            <value>
+                <fullName>2018 - Property Tax 2018</fullName>
+                <default>false</default>
+                <label>2018 - Property Tax 2018</label>
+            </value>
+            <value>
+                <fullName>3000 - PEQ Net Fund CM</fullName>
+                <default>false</default>
+                <label>3000 - PEQ Net Fund CM</label>
+            </value>
+            <value>
+                <fullName>3005 - Property Tax Credits 0607</fullName>
+                <default>false</default>
+                <label>3005 - Property Tax Credits 0607</label>
+            </value>
+            <value>
+                <fullName>3008 - Property Tax Credits 08</fullName>
+                <default>false</default>
+                <label>3008 - Property Tax Credits 08</label>
+            </value>
+            <value>
+                <fullName>3009 - Property Tax Credits 09</fullName>
+                <default>false</default>
+                <label>3009 - Property Tax Credits 09</label>
+            </value>
+            <value>
+                <fullName>3010 - Property Tax Credits 2010</fullName>
+                <default>false</default>
+                <label>3010 - Property Tax Credits 2010</label>
+            </value>
+            <value>
+                <fullName>3011 - Property Tax Credits 2011</fullName>
+                <default>false</default>
+                <label>3011 - Property Tax Credits 2011</label>
+            </value>
+            <value>
+                <fullName>3012 - Property Tax Credits 2012</fullName>
+                <default>false</default>
+                <label>3012 - Property Tax Credits 2012</label>
+            </value>
+            <value>
+                <fullName>3013 - Property Tax Credits 2013</fullName>
+                <default>false</default>
+                <label>3013 - Property Tax Credits 2013</label>
+            </value>
+            <value>
+                <fullName>3014 - Property Tax Credits 2014</fullName>
+                <default>false</default>
+                <label>3014 - Property Tax Credits 2014</label>
+            </value>
+            <value>
+                <fullName>3015 - Property Tax Credits 2015</fullName>
+                <default>false</default>
+                <label>3015 - Property Tax Credits 2015</label>
+            </value>
+            <value>
+                <fullName>3016 - Property Tax Credits 2016</fullName>
+                <default>false</default>
+                <label>3016 - Property Tax Credits 2016</label>
+            </value>
+            <value>
+                <fullName>3020 - Restructure/Equipmnt Cost</fullName>
+                <default>false</default>
+                <label>3020 - Restructure/Equipmnt Cost</label>
+            </value>
+            <value>
+                <fullName>3022 - Credit Memo Bad Debt Leas</fullName>
+                <default>false</default>
+                <label>3022 - Credit Memo Bad Debt Leas</label>
+            </value>
+            <value>
+                <fullName>3025 - Insur. Claim Credit Memo</fullName>
+                <default>false</default>
+                <label>3025 - Insur. Claim Credit Memo</label>
+            </value>
+            <value>
+                <fullName>3026 - Credit Memo-TFG Inventory</fullName>
+                <default>false</default>
+                <label>3026 - Credit Memo-TFG Inventory</label>
+            </value>
+            <value>
+                <fullName>3030 - Credit Memo Gain/Loss</fullName>
+                <default>false</default>
+                <label>3030 - Credit Memo Gain/Loss</label>
+            </value>
+            <value>
+                <fullName>3031 - Credit Memo Renewal Pymts</fullName>
+                <default>false</default>
+                <label>3031 - Credit Memo Renewal Pymts</label>
+            </value>
+            <value>
+                <fullName>3032 - Credit Memo EOT GAIN/LOSS</fullName>
+                <default>false</default>
+                <label>3032 - Credit Memo EOT GAIN/LOSS</label>
+            </value>
+            <value>
+                <fullName>3035 - Credit Memo Sales Tax</fullName>
+                <default>false</default>
+                <label>3035 - Credit Memo Sales Tax</label>
+            </value>
+            <value>
+                <fullName>3040 - Credit Memo Insur. Prem</fullName>
+                <default>false</default>
+                <label>3040 - Credit Memo Insur. Prem</label>
+            </value>
+            <value>
+                <fullName>3045 - Credit Memo Misc</fullName>
+                <default>false</default>
+                <label>3045 - Credit Memo Misc</label>
+            </value>
+            <value>
+                <fullName>3046 - P&amp;G Loss Pool</fullName>
+                <default>false</default>
+                <label>3046 - P&amp;G Loss Pool</label>
+            </value>
+            <value>
+                <fullName>3050 - NSF Off Unapplied</fullName>
+                <default>false</default>
+                <label>3050 - NSF Off Unapplied</label>
+            </value>
+            <value>
+                <fullName>3055 - Credit Memo MPL Fee</fullName>
+                <default>false</default>
+                <label>3055 - Credit Memo MPL Fee</label>
+            </value>
+            <value>
+                <fullName>3060 - CR memo Sec Deposit Refnd</fullName>
+                <default>false</default>
+                <label>3060 - CR memo Sec Deposit Refnd</label>
+            </value>
+            <value>
+                <fullName>3065 - CR memo Resid due Vendor</fullName>
+                <default>false</default>
+                <label>3065 - CR memo Resid due Vendor</label>
+            </value>
+            <value>
+                <fullName>3095 - CR Memo Cancel Deliv Guar</fullName>
+                <default>false</default>
+                <label>3095 - CR Memo Cancel Deliv Guar</label>
+            </value>
+            <value>
+                <fullName>3099 - Cancel Deal Credit Memo</fullName>
+                <default>false</default>
+                <label>3099 - Cancel Deal Credit Memo</label>
+            </value>
+            <value>
+                <fullName>3500 - Credit-Mem -BCAP Orig Fee</fullName>
+                <default>false</default>
+                <label>3500 - Credit-Mem -BCAP Orig Fee</label>
+            </value>
+            <value>
+                <fullName>3510 - Credit Memo BCAP Restruct</fullName>
+                <default>false</default>
+                <label>3510 - Credit Memo BCAP Restruct</label>
+            </value>
+            <value>
+                <fullName>3804 - Credit Memo PPT 2004</fullName>
+                <default>false</default>
+                <label>3804 - Credit Memo PPT 2004</label>
+            </value>
+            <value>
+                <fullName>3805 - Credit Memo PPT 2005</fullName>
+                <default>false</default>
+                <label>3805 - Credit Memo PPT 2005</label>
+            </value>
+            <value>
+                <fullName>3806 - Credit Memo PPT 2006</fullName>
+                <default>false</default>
+                <label>3806 - Credit Memo PPT 2006</label>
+            </value>
+            <value>
+                <fullName>3807 - Credit Memo PPT 2007</fullName>
+                <default>false</default>
+                <label>3807 - Credit Memo PPT 2007</label>
+            </value>
+            <value>
+                <fullName>3808 - Credit Memo PPT 2008</fullName>
+                <default>false</default>
+                <label>3808 - Credit Memo PPT 2008</label>
+            </value>
+            <value>
+                <fullName>4027 - Orig Fee - BCAP Earned</fullName>
+                <default>false</default>
+                <label>4027 - Orig Fee - BCAP Earned</label>
+            </value>
+            <value>
+                <fullName>4041 - Orig Fee BCAP - Disposed</fullName>
+                <default>false</default>
+                <label>4041 - Orig Fee BCAP - Disposed</label>
+            </value>
+            <value>
+                <fullName>5005 - Interim Rent - Income</fullName>
+                <default>false</default>
+                <label>5005 - Interim Rent - Income</label>
+            </value>
+            <value>
+                <fullName>5007 - Interim Rent - Disp.</fullName>
+                <default>false</default>
+                <label>5007 - Interim Rent - Disp.</label>
+            </value>
+            <value>
+                <fullName>5011 - Broker Fees OP Lease Tran</fullName>
+                <default>false</default>
+                <label>5011 - Broker Fees OP Lease Tran</label>
+            </value>
+            <value>
+                <fullName>5020 - Interim Rent OP Lease Tra</fullName>
+                <default>false</default>
+                <label>5020 - Interim Rent OP Lease Tra</label>
+            </value>
+            <value>
+                <fullName>5055 - IDC Sal BCAP Trans</fullName>
+                <default>false</default>
+                <label>5055 - IDC Sal BCAP Trans</label>
+            </value>
+            <value>
+                <fullName>5056 - IDC Oper - BCAP Trans</fullName>
+                <default>false</default>
+                <label>5056 - IDC Oper - BCAP Trans</label>
+            </value>
+            <value>
+                <fullName>5057 - IDC Sal OP Lease - Trans</fullName>
+                <default>false</default>
+                <label>5057 - IDC Sal OP Lease - Trans</label>
+            </value>
+            <value>
+                <fullName>5058 - IDS Oper OP Lease - Trans</fullName>
+                <default>false</default>
+                <label>5058 - IDS Oper OP Lease - Trans</label>
+            </value>
+            <value>
+                <fullName>5060 - Doc Fee OP Lease Trans</fullName>
+                <default>false</default>
+                <label>5060 - Doc Fee OP Lease Trans</label>
+            </value>
+            <value>
+                <fullName>5110 - Interim Rent</fullName>
+                <default>false</default>
+                <label>5110 - Interim Rent</label>
+            </value>
+            <value>
+                <fullName>5120 - Doc Fees</fullName>
+                <default>false</default>
+                <label>5120 - Doc Fees</label>
+            </value>
+            <value>
+                <fullName>5195 - IDC Sal BCAP Earned</fullName>
+                <default>false</default>
+                <label>5195 - IDC Sal BCAP Earned</label>
+            </value>
+            <value>
+                <fullName>5196 - IDC Sal - BCAP Disposed</fullName>
+                <default>false</default>
+                <label>5196 - IDC Sal - BCAP Disposed</label>
+            </value>
+            <value>
+                <fullName>5200 - IDC Oper - BCAP Earned</fullName>
+                <default>false</default>
+                <label>5200 - IDC Oper - BCAP Earned</label>
+            </value>
+            <value>
+                <fullName>5201 - IDC Oper BCAP Disposed</fullName>
+                <default>false</default>
+                <label>5201 - IDC Oper BCAP Disposed</label>
+            </value>
+            <value>
+                <fullName>5205 - Orig Fee - BCAP Unearned</fullName>
+                <default>false</default>
+                <label>5205 - Orig Fee - BCAP Unearned</label>
+            </value>
+            <value>
+                <fullName>5211 - Doc Fee OP Lease Dispo</fullName>
+                <default>false</default>
+                <label>5211 - Doc Fee OP Lease Dispo</label>
+            </value>
+            <value>
+                <fullName>5212 - Doc Fee OP Lease - Earned</fullName>
+                <default>false</default>
+                <label>5212 - Doc Fee OP Lease - Earned</label>
+            </value>
+            <value>
+                <fullName>5225 - IDC Sal - BCAP Unearned</fullName>
+                <default>false</default>
+                <label>5225 - IDC Sal - BCAP Unearned</label>
+            </value>
+            <value>
+                <fullName>5230 - IDC Oper - BCAP Unearned</fullName>
+                <default>false</default>
+                <label>5230 - IDC Oper - BCAP Unearned</label>
+            </value>
+            <value>
+                <fullName>5300 - Broker Fee OP Lease Unear</fullName>
+                <default>false</default>
+                <label>5300 - Broker Fee OP Lease Unear</label>
+            </value>
+            <value>
+                <fullName>5310 - IDC Sal OP Lease - Unearn</fullName>
+                <default>false</default>
+                <label>5310 - IDC Sal OP Lease - Unearn</label>
+            </value>
+            <value>
+                <fullName>5311 - IDC Oper OP Lease Unearn</fullName>
+                <default>false</default>
+                <label>5311 - IDC Oper OP Lease Unearn</label>
+            </value>
+            <value>
+                <fullName>5320 - Doc Fee OP Lease Unearned</fullName>
+                <default>false</default>
+                <label>5320 - Doc Fee OP Lease Unearned</label>
+            </value>
+            <value>
+                <fullName>5325 - Interim Rent OP Lease Une</fullName>
+                <default>false</default>
+                <label>5325 - Interim Rent OP Lease Une</label>
+            </value>
+            <value>
+                <fullName>5335 - Doc Fees - Earned</fullName>
+                <default>false</default>
+                <label>5335 - Doc Fees - Earned</label>
+            </value>
+            <value>
+                <fullName>5349 - Broker Fees OP Lease Disp</fullName>
+                <default>false</default>
+                <label>5349 - Broker Fees OP Lease Disp</label>
+            </value>
+            <value>
+                <fullName>5350 - Broker Fees OP Lease Earn</fullName>
+                <default>false</default>
+                <label>5350 - Broker Fees OP Lease Earn</label>
+            </value>
+            <value>
+                <fullName>5359 - IDC Sal OP Lease - Dispo</fullName>
+                <default>false</default>
+                <label>5359 - IDC Sal OP Lease - Dispo</label>
+            </value>
+            <value>
+                <fullName>5360 - IDC Sal OP Lease - Earned</fullName>
+                <default>false</default>
+                <label>5360 - IDC Sal OP Lease - Earned</label>
+            </value>
+            <value>
+                <fullName>5361 - IDC Oper OP Lease - Earne</fullName>
+                <default>false</default>
+                <label>5361 - IDC Oper OP Lease - Earne</label>
+            </value>
+            <value>
+                <fullName>5362 - IDC Oper OP Lease Dispo</fullName>
+                <default>false</default>
+                <label>5362 - IDC Oper OP Lease Dispo</label>
+            </value>
+            <value>
+                <fullName>5370 - Fran Loan Salary Trans</fullName>
+                <default>false</default>
+                <label>5370 - Fran Loan Salary Trans</label>
+            </value>
+            <value>
+                <fullName>5371 - Fran Loan Salary Unearned</fullName>
+                <default>false</default>
+                <label>5371 - Fran Loan Salary Unearned</label>
+            </value>
+            <value>
+                <fullName>5372 - Fran Loan Salary Earned</fullName>
+                <default>false</default>
+                <label>5372 - Fran Loan Salary Earned</label>
+            </value>
+            <value>
+                <fullName>5373 - Fran Loan Salary Rebate</fullName>
+                <default>false</default>
+                <label>5373 - Fran Loan Salary Rebate</label>
+            </value>
+            <value>
+                <fullName>5375 - Fran Loan Oper Trans</fullName>
+                <default>false</default>
+                <label>5375 - Fran Loan Oper Trans</label>
+            </value>
+            <value>
+                <fullName>5376 - Fran Loan Oper Unearned</fullName>
+                <default>false</default>
+                <label>5376 - Fran Loan Oper Unearned</label>
+            </value>
+            <value>
+                <fullName>5377 - Fran Loan Oper Earned</fullName>
+                <default>false</default>
+                <label>5377 - Fran Loan Oper Earned</label>
+            </value>
+            <value>
+                <fullName>5378 - Fran Loan Oper Rebate</fullName>
+                <default>false</default>
+                <label>5378 - Fran Loan Oper Rebate</label>
+            </value>
+            <value>
+                <fullName>5380 - Fran Loan Doc Trans</fullName>
+                <default>false</default>
+                <label>5380 - Fran Loan Doc Trans</label>
+            </value>
+            <value>
+                <fullName>5381 - Fran Loan Doc Unearned</fullName>
+                <default>false</default>
+                <label>5381 - Fran Loan Doc Unearned</label>
+            </value>
+            <value>
+                <fullName>5382 - Fran Loan Doc Earned</fullName>
+                <default>false</default>
+                <label>5382 - Fran Loan Doc Earned</label>
+            </value>
+            <value>
+                <fullName>5383 - Fran Loan Doc Rebate</fullName>
+                <default>false</default>
+                <label>5383 - Fran Loan Doc Rebate</label>
+            </value>
+            <value>
+                <fullName>5385 - Fran Loan Broker Fee Tran</fullName>
+                <default>false</default>
+                <label>5385 - Fran Loan Broker Fee Tran</label>
+            </value>
+            <value>
+                <fullName>5386 - Fran Loan Broker Unearned</fullName>
+                <default>false</default>
+                <label>5386 - Fran Loan Broker Unearned</label>
+            </value>
+            <value>
+                <fullName>5387 - Fran Loan Broker Earned</fullName>
+                <default>false</default>
+                <label>5387 - Fran Loan Broker Earned</label>
+            </value>
+            <value>
+                <fullName>5388 - Fran Loan Broker Rebate</fullName>
+                <default>false</default>
+                <label>5388 - Fran Loan Broker Rebate</label>
+            </value>
+            <value>
+                <fullName>5400 - IDC</fullName>
+                <default>false</default>
+                <label>5400 - IDC</label>
+            </value>
+            <value>
+                <fullName>5403 - IDC - Dispositions</fullName>
+                <default>false</default>
+                <label>5403 - IDC - Dispositions</label>
+            </value>
+            <value>
+                <fullName>5404 - Broker Fees - Disposition</fullName>
+                <default>false</default>
+                <label>5404 - Broker Fees - Disposition</label>
+            </value>
+            <value>
+                <fullName>5405 - Doc Fees - Disposition</fullName>
+                <default>false</default>
+                <label>5405 - Doc Fees - Disposition</label>
+            </value>
+            <value>
+                <fullName>5406 - IDC - Oper. Expenses</fullName>
+                <default>false</default>
+                <label>5406 - IDC - Oper. Expenses</label>
+            </value>
+            <value>
+                <fullName>5407 - IDC Oper.Exp. Disposition</fullName>
+                <default>false</default>
+                <label>5407 - IDC Oper.Exp. Disposition</label>
+            </value>
+            <value>
+                <fullName>5410 - IDC - Earned</fullName>
+                <default>false</default>
+                <label>5410 - IDC - Earned</label>
+            </value>
+            <value>
+                <fullName>5411 - Broker Fees - Earned</fullName>
+                <default>false</default>
+                <label>5411 - Broker Fees - Earned</label>
+            </value>
+            <value>
+                <fullName>5412 - IDC - Oper.Exp Earned</fullName>
+                <default>false</default>
+                <label>5412 - IDC - Oper.Exp Earned</label>
+            </value>
+            <value>
+                <fullName>5442 - Broker Fees - BCAP DISP</fullName>
+                <default>false</default>
+                <label>5442 - Broker Fees - BCAP DISP</label>
+            </value>
+            <value>
+                <fullName>5520 - Broker Fees - BCAP Earned</fullName>
+                <default>false</default>
+                <label>5520 - Broker Fees - BCAP Earned</label>
+            </value>
+            <value>
+                <fullName>5550 - Interim Rent Op Lease Ear</fullName>
+                <default>false</default>
+                <label>5550 - Interim Rent Op Lease Ear</label>
+            </value>
+            <value>
+                <fullName>5551 - Interim Rent OP Lease Dis</fullName>
+                <default>false</default>
+                <label>5551 - Interim Rent OP Lease Dis</label>
+            </value>
+            <value>
+                <fullName>5700 - Ins Prem 12 Mo Cont Trans</fullName>
+                <default>false</default>
+                <label>5700 - Ins Prem 12 Mo Cont Trans</label>
+            </value>
+            <value>
+                <fullName>5701 - Ins Prem 12 Mo Unearned</fullName>
+                <default>false</default>
+                <label>5701 - Ins Prem 12 Mo Unearned</label>
+            </value>
+            <value>
+                <fullName>5702 - Ins Prem 12 Mo Earned</fullName>
+                <default>false</default>
+                <label>5702 - Ins Prem 12 Mo Earned</label>
+            </value>
+            <value>
+                <fullName>5703 - Ins Prem 12 Mo Rebate</fullName>
+                <default>false</default>
+                <label>5703 - Ins Prem 12 Mo Rebate</label>
+            </value>
+            <value>
+                <fullName>5710 - Ins Fee 12 Mo Trans</fullName>
+                <default>false</default>
+                <label>5710 - Ins Fee 12 Mo Trans</label>
+            </value>
+            <value>
+                <fullName>5711 - Ins Fee 12 Mo Unearned</fullName>
+                <default>false</default>
+                <label>5711 - Ins Fee 12 Mo Unearned</label>
+            </value>
+            <value>
+                <fullName>5712 - Ins Fee 12 Mo Earned</fullName>
+                <default>false</default>
+                <label>5712 - Ins Fee 12 Mo Earned</label>
+            </value>
+            <value>
+                <fullName>5713 - Ins Fee 12 Mo Rebate</fullName>
+                <default>false</default>
+                <label>5713 - Ins Fee 12 Mo Rebate</label>
+            </value>
+            <value>
+                <fullName>5720 - Ins. Prem Non-Owned trans</fullName>
+                <default>false</default>
+                <label>5720 - Ins. Prem Non-Owned trans</label>
+            </value>
+            <value>
+                <fullName>5721 - Ins Prem Non-Owned Unearn</fullName>
+                <default>false</default>
+                <label>5721 - Ins Prem Non-Owned Unearn</label>
+            </value>
+            <value>
+                <fullName>5722 - Ins Prem Non-Owned Earned</fullName>
+                <default>false</default>
+                <label>5722 - Ins Prem Non-Owned Earned</label>
+            </value>
+            <value>
+                <fullName>5723 - Ins Prem Non-Owned Rebate</fullName>
+                <default>false</default>
+                <label>5723 - Ins Prem Non-Owned Rebate</label>
+            </value>
+            <value>
+                <fullName>5725 - Serv Cost LPurchase Trans</fullName>
+                <default>false</default>
+                <label>5725 - Serv Cost LPurchase Trans</label>
+            </value>
+            <value>
+                <fullName>5726 - Serv Cost LPur Unearned</fullName>
+                <default>false</default>
+                <label>5726 - Serv Cost LPur Unearned</label>
+            </value>
+            <value>
+                <fullName>5727 - Serv Cost LPur Earned</fullName>
+                <default>false</default>
+                <label>5727 - Serv Cost LPur Earned</label>
+            </value>
+            <value>
+                <fullName>5728 - Serv Cost LPur Rebate</fullName>
+                <default>false</default>
+                <label>5728 - Serv Cost LPur Rebate</label>
+            </value>
+            <value>
+                <fullName>5730 - Ins Fee Non-Owned Trans</fullName>
+                <default>false</default>
+                <label>5730 - Ins Fee Non-Owned Trans</label>
+            </value>
+            <value>
+                <fullName>5731 - Ins Fee Non-Owned Unearn</fullName>
+                <default>false</default>
+                <label>5731 - Ins Fee Non-Owned Unearn</label>
+            </value>
+            <value>
+                <fullName>5732 - Ins Fee Non-Owned Earned</fullName>
+                <default>false</default>
+                <label>5732 - Ins Fee Non-Owned Earned</label>
+            </value>
+            <value>
+                <fullName>5733 - Ins Fee Non-Owned Rebate</fullName>
+                <default>false</default>
+                <label>5733 - Ins Fee Non-Owned Rebate</label>
+            </value>
+            <value>
+                <fullName>5750 - Servicing Asset Trans</fullName>
+                <default>false</default>
+                <label>5750 - Servicing Asset Trans</label>
+            </value>
+            <value>
+                <fullName>5751 - Servicing Asset Unearned</fullName>
+                <default>false</default>
+                <label>5751 - Servicing Asset Unearned</label>
+            </value>
+            <value>
+                <fullName>5752 - Servicing Asset Earned</fullName>
+                <default>false</default>
+                <label>5752 - Servicing Asset Earned</label>
+            </value>
+            <value>
+                <fullName>5753 - Servicing Asset Rebate</fullName>
+                <default>false</default>
+                <label>5753 - Servicing Asset Rebate</label>
+            </value>
+            <value>
+                <fullName>5755 - Unearned Serv Rev Trans</fullName>
+                <default>false</default>
+                <label>5755 - Unearned Serv Rev Trans</label>
+            </value>
+            <value>
+                <fullName>5756 - Unearned Serv Rev Unearne</fullName>
+                <default>false</default>
+                <label>5756 - Unearned Serv Rev Unearne</label>
+            </value>
+            <value>
+                <fullName>5757 - Unearned Serv Rev Earned</fullName>
+                <default>false</default>
+                <label>5757 - Unearned Serv Rev Earned</label>
+            </value>
+            <value>
+                <fullName>5758 - Unearned Serv Rebate</fullName>
+                <default>false</default>
+                <label>5758 - Unearned Serv Rebate</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

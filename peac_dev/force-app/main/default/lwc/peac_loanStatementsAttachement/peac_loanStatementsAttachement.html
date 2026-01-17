@@ -1,0 +1,45 @@
+<template>
+    <lightning-card class="slds-text-align_center" if:false={isView}>
+      <template if:false={isView}>
+        <lightning-record-edit-form
+          object-api-name="Opportunity_Attachment__c"
+          onsubmit={handleSubmit}
+          onsuccess={handleSuccess}
+          onerror={handleError}>
+          <lightning-input-field field-name="Doc_Type__c" required ></lightning-input-field>
+          <lightning-input-field field-name="Description__c"  ></lightning-input-field>
+          
+          <template lwc:if={fileSelected}>
+            <lightning-input-field field-name="Name" value={fileName} disabled></lightning-input-field>
+          </template>
+          <c-sl-big-file-upload-d-p 
+              input-label="File" 
+              optional-file={isNotRecordPage}
+              custom-button-text="Select Files"
+              message-when-value-missing="Please select a file to attach"
+              onfinishedupload={handleFile} 
+              onsavedinsalesforce={afterUploadHelper} class="slds-form-element__control"></c-sl-big-file-upload-d-p>
+          <lightning-button data-id="submitbutton" type="submit" style="padding-left:1px;margin-right: 23%;" name="save" label="Save Files"></lightning-button>
+      </lightning-record-edit-form>
+      </template>
+      <br/>
+      <!--<div slot="footer">-->
+        <template if:false={isInProgress}>
+          <lightning-datatable key-field="Id" data={rows} columns={columns} onrowaction={handleSelection} hide-checkbox-column></lightning-datatable>
+          <p class="slds-text-align_center" if:false={rows.length}>
+              No attachments added yet
+          </p>
+        </template>
+     <!--</div>-->
+        
+    </lightning-card>
+    <template if:true={isView}>
+          <lightning-datatable key-field="Id" data={rows} columns={newcolumns} hide-checkbox-column></lightning-datatable>
+          <br/>
+          <p class="slds-text-align_center" if:false={rows.length}>
+              No attachments added yet
+          </p>
+        </template>
+        <br/>
+        
+  </template>

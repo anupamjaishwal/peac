@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NT_Portfolio_Threshold_Review_Date</fullName>
+    <active>true</active>
+    <description>Criteria:
+
+Review Type = ‘Portfolio Threshold’
+
+Next Scheduled Review Date != NULL</description>
+    <errorConditionFormula>AND( ISPICKVAL( Review_Type__c , &apos;Portfolio Threshold&apos;),
+NOT(ISBLANK(Next_Scheduled_Review__c)))</errorConditionFormula>
+    <errorDisplayField>Next_Scheduled_Review__c</errorDisplayField>
+    <errorMessage>Next Scheduled Reviews are not applicable to Portfolio Review</errorMessage>
+</ValidationRule>

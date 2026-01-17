@@ -1,0 +1,62 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+
+    <template if:true={isContractRecord}>
+        <div class="slds-text-heading_large">
+            {label.CSMISCLabelName}
+        </div>
+    </template>
+
+    <template if:true={isStart}>
+        <lightning-layout multiple-rows="true" horizontal-align="center">
+            <lightning-layout-item padding="around-medium" size="12">
+                <template if:false={isLoadingFiles}>
+                    <div class="slds-text-align_center">
+                        <lightning-button variant="brand" label="View OnBase Files" title="View OnBase Files"
+                            onclick={handleCallOnBase} class="slds-var-m-left_x-small"></lightning-button>
+                    </div>
+                </template>
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+    <template if:false={isStart}>
+        <template if:true={isViewFew}>
+            <lightning-card>
+                <c-sl-json-table header={header} rows={onBaseFiles} ongotokey={handleOpenFile}></c-sl-json-table>
+                <p slot="footer">
+                    <a href="#" onclick={handleViewAll}>View All</a>
+                </p>
+            </lightning-card>
+        </template>
+
+        <template if:true={isViewAll}>
+            <section role="dialog" tabindex="-1" class="slds-modal slds-fade-in-open slds-modal_large"
+                aria-labelledby="modal-heading-01" aria-modal="true">
+                <div class="slds-modal__container">
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" onclick={handleViewFew}>
+                    <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                        <use xlink:href="/_slds/icons/utility-sprite/svg/symbols.svg#close"></use>
+                    </svg>
+                    <label class="slds-assistive-text">Close</label>
+                    </button>
+                    <div class="slds-modal__header">
+                        <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">OnBase Documents</h1>
+                    </div>
+                    <div class="slds-modal__content slds-var-p-around_medium slds-scrollable" id="modal-content-id-1">
+                        <c-sl-json-table header={header} rows={onBaseFiles} ongotokey={handleOpenFile}>
+                        </c-sl-json-table>
+                    </div>
+                    <div class="slds-modal__footer slds-text-align_center">
+                        <a href="#" onclick={handleViewFew}>View Less</a>
+                    </div>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+
+
+        </template>
+    </template>
+
+</template>

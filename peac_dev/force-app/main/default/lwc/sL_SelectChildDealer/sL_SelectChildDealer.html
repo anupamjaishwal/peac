@@ -1,0 +1,18 @@
+<template>
+    <template lwc:if={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template lwc:else>
+        <lightning-card title={cardTitle}>
+            <lightning-layout multiple-rows="false">
+                <lightning-layout-item size="6" class="slds-var-p-horizontal_small">
+                    <lightning-combobox name="account" label="Dealer Account" value={dealerAccountId} 
+                        options={childAccounts} onchange={handleChildAccount} required={canAdvocate}></lightning-combobox>
+                        
+                </lightning-layout-item>
+                <lightning-layout-item size="6" class="slds-var-p-horizontal_small">
+                    <lightning-combobox name="dealerUser" label="Dealer User" value={userId} 
+                        options={dealerUsers} onchange={handleDealerUser} disabled={isAccountEmpty} required={canAdvocate}></lightning-combobox>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-card>
+    </template>
+</template>

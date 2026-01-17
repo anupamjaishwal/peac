@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Disable_Standard_Asset_Generation__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>When this checkbox is checked, a standard asset is not created for each custom asset object. The standard assets are being created for the CSC UCC Filing Integration</description>
+    <externalId>false</externalId>
+    <inlineHelpText>When this checkbox is checked, a standard asset is not created for each custom asset object. The standard assets are being created for the CSC UCC Filing Integration</inlineHelpText>
+    <label>Disable Standard Asset Generation</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

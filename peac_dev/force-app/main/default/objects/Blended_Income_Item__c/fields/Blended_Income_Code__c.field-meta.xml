@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Blended_Income_Code__c</fullName>
+    <externalId>false</externalId>
+    <label>Blended Income Code</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>0001</fullName>
+                <default>false</default>
+                <label>IDC - Salaries</label>
+            </value>
+            <value>
+                <fullName>0002</fullName>
+                <default>false</default>
+                <label>IDC - Operating Expenses</label>
+            </value>
+            <value>
+                <fullName>0003</fullName>
+                <default>false</default>
+                <label>Broker Fees</label>
+            </value>
+            <value>
+                <fullName>0004</fullName>
+                <default>false</default>
+                <label>Doc Fees</label>
+            </value>
+            <value>
+                <fullName>0005</fullName>
+                <default>false</default>
+                <label>Interim Rent</label>
+            </value>
+            <value>
+                <fullName>0006</fullName>
+                <default>false</default>
+                <label>IDC Sal - BCAP</label>
+            </value>
+            <value>
+                <fullName>0007</fullName>
+                <default>false</default>
+                <label>IDC -Oper BCAP</label>
+            </value>
+            <value>
+                <fullName>0008</fullName>
+                <default>false</default>
+                <label>Orig Fee - BCAP</label>
+            </value>
+            <value>
+                <fullName>0009</fullName>
+                <default>false</default>
+                <label>BCAP Broker Fees</label>
+            </value>
+            <value>
+                <fullName>0015</fullName>
+                <default>false</default>
+                <label>IDS Sal OP Lease</label>
+            </value>
+            <value>
+                <fullName>0016</fullName>
+                <default>false</default>
+                <label>IDC Oper OP Lease</label>
+            </value>
+            <value>
+                <fullName>0017</fullName>
+                <default>false</default>
+                <label>Broker Fees - Op Lease</label>
+            </value>
+            <value>
+                <fullName>0018</fullName>
+                <default>false</default>
+                <label>Doc Fees - OP Lease</label>
+            </value>
+            <value>
+                <fullName>0019</fullName>
+                <default>false</default>
+                <label>Interim Rent - OP Lease</label>
+            </value>
+            <value>
+                <fullName>0025</fullName>
+                <default>false</default>
+                <label>Servicing Cost LPurchase</label>
+            </value>
+            <value>
+                <fullName>0026</fullName>
+                <default>false</default>
+                <label>Fran Loan Broker Fees</label>
+            </value>
+            <value>
+                <fullName>0027</fullName>
+                <default>false</default>
+                <label>Fran Loan DEF SAL</label>
+            </value>
+            <value>
+                <fullName>0028</fullName>
+                <default>false</default>
+                <label>Fran Loan DEF Oper</label>
+            </value>
+            <value>
+                <fullName>0029</fullName>
+                <default>false</default>
+                <label>Fran Loan Doc Fee</label>
+            </value>
+            <value>
+                <fullName>0030</fullName>
+                <default>false</default>
+                <label>Ins Prem 12 Mo Continued</label>
+            </value>
+            <value>
+                <fullName>0031</fullName>
+                <default>false</default>
+                <label>Ins Fee 12 Mo Continued</label>
+            </value>
+            <value>
+                <fullName>0032</fullName>
+                <default>false</default>
+                <label>Ins Prem Non-Owned</label>
+            </value>
+            <value>
+                <fullName>0033</fullName>
+                <default>false</default>
+                <label>Ins Fee Non-Owned</label>
+            </value>
+            <value>
+                <fullName>0050</fullName>
+                <default>false</default>
+                <label>Servicing Asset Synd</label>
+            </value>
+            <value>
+                <fullName>0051</fullName>
+                <default>false</default>
+                <label>Unearned Serv Rev Synd.</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

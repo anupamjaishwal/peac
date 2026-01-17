@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>OB_01_DealerAccount</fullName>
+    <active>true</active>
+    <description>prevents a record without an IF document type to be added when the Related Account is a dealer account</description>
+    <errorConditionFormula>AND(
+     CONTAINS(Account__r.RecordType.DeveloperName, &quot;Dealer&quot; ),
+     NOT(CONTAINS(TEXT(Type__c),&quot;IF-&quot;))
+)</errorConditionFormula>
+    <errorMessage>Cannot add a record without an IF document type when Related Account is a dealer account- OB_01</errorMessage>
+</ValidationRule>

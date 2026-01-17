@@ -1,0 +1,29 @@
+<template>
+    <div class="slds-col modal-header slds-modal__header">
+        <h2 class="title slds-text-heading_medium">Fraud Render Decision</h2>
+    </div>
+    <template if:true={userData.data}>
+        <template if:false={isPermissible}>
+            <div class="slds-align_absolute-center" style="height:5rem">
+                <p>You do not have permission to click this button</p>
+            </div>
+        </template>
+        <template if:true={isPermissible}>
+            <lightning-record-edit-form object-api-name="Opportunity" record-id={recordId} onsubmit={handleSubmit}>
+                <lightning-messages></lightning-messages>
+                <div class="slds-var-m-around_xx-large">
+                    <lightning-input-field field-name="Fraud_Review_Status__c" value="" onchange={handleChange} disabled={showSpinner}></lightning-input-field>
+                </div>
+                <div class="slds-var-m-top_large slds-grid slds-grid_align-center">
+                    <lightning-button class="slds-var-m-top_small" variant="brand" type="submit" name="continue" label="Continue" disabled={showSpinner}></lightning-button>
+                </div>
+                <div if:true={showSpinner} class="slds-var-m-top_large slds-grid slds-grid_align-center">
+                    <lightning-spinner></lightning-spinner>
+                </div>
+            </lightning-record-edit-form>
+        </template>
+    </template>
+    <template if:true={userData.error}>
+        {userData.error}
+    </template>
+</template>

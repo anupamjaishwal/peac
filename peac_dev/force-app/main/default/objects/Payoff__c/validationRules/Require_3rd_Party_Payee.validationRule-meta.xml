@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Require_3rd_Party_Payee</fullName>
+    <active>true</active>
+    <description>SAL-4831</description>
+    <errorConditionFormula>AND(
+RecordType.DeveloperName = &quot;Trade_Up_Contract_Lease&quot;,
+Third_Party__c = true, 
+ISBLANK(TEXT((Third_Party_Payee__c))
+  )
+)</errorConditionFormula>
+    <errorDisplayField>Third_Party_Payee__c</errorDisplayField>
+    <errorMessage>3rd Party Payee is required.</errorMessage>
+</ValidationRule>

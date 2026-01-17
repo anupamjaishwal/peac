@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>allWarehouses</fullName>
+    <columns>MasterLabel</columns>
+    <columns>DeveloperName</columns>
+    <columns>Warehouse__c</columns>
+    <columns>Location__c</columns>
+    <columns>Territory__c</columns>
+    <columns>Residual_Amount__c</columns>
+    <columns>NamespacePrefix</columns>
+    <filterScope>Everything</filterScope>
+    <label>allWarehouses</label>
+</ListView>

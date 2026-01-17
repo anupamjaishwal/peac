@@ -1,0 +1,33 @@
+<template>
+    <lightning-card title="Receive notifications for application's submitted">
+        <div class="slds-grid slds-no-flex slds-p-bottom_large">
+            <div class="slds-size_1-of-5"></div>
+            <div class="slds-size_1-of-5">
+                <label>Submitted</label>
+                <lightning-input data-id="toggle2" type="toggle" class="toggleClr" checked={accountRec.Submitted__c} disabled="true"></lightning-input> <br/>
+                <label>More Info</label>
+                <lightning-input  data-id="toggle1" type="toggle" checked={accountRec.More_Info__c} disabled="true" ></lightning-input> <br/>
+                <label>Approved</label>
+                <lightning-input data-id="toggle1" type="toggle" checked={accountRec.Approved__c} disabled="true" ></lightning-input> <br/>
+            </div>
+            <div class="slds-size_1-of-5">
+                <label>Declined</label>
+                <lightning-input data-id="toggle2" type="toggle" class="toggleClr" checked={accountRec.Declined__c} disabled="true"></lightning-input> <br/>
+                <label>Docs Out</label>
+                <lightning-input data-id="toggle1" type="toggle" checked={accountRec.Docs_Out__c} disabled="true" ></lightning-input> <br/>
+                <label>Docs Out w/ Contracts</label>
+                <lightning-input data-id="toggle1" type="toggle" checked={accountRec.Docs_Out_Contracts__c} disabled="true" ></lightning-input> <br/>
+            </div>
+            <div class="slds-size_1-of-5">
+                <label>Docs In</label>
+                <lightning-input data-id="toggle2" type="toggle" class="toggleClr" checked={accountRec.Docs_In__c} disabled="true"></lightning-input> <br/>
+                <label>In Funding </label>
+                <lightning-input data-id="toggle1" type="toggle" checked={accountRec.In_Funding__c}  disabled="true"></lightning-input> <br/>
+                <label>Funded</label>
+                <lightning-input data-id="toggle1" type="toggle" checked={accountRec.Funded__c} disabled="true" ></lightning-input> <br/>
+            </div>
+            <div class="slds-size_1-of-5"></div>
+        </div>
+        </lightning-card>
+        
+</template>

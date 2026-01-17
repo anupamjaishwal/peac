@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Lease_Payment</fullName>
+    <active>true</active>
+    <compactLayoutAssignment>Lease_Payment</compactLayoutAssignment>
+    <description>Payment for a Lease</description>
+    <label>Lease Payment</label>
+    <picklistValues>
+        <picklist>Payment_Method__c</picklist>
+        <values>
+            <fullName>ACH</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Check</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wire</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Payment_Status__c</picklist>
+        <values>
+            <fullName>Draft</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Payment Confirmed</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Payment Released</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Payment Sent</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Ready to Send</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Void%2FCancelled</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Subsidy_Information__c</picklist>
+        <values>
+            <fullName>Advance Auto Parts%2C 1824309</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>AutoPlus%2C 1751979</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Autodesk 1%2C 1357848</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Biospace dba InBody%2C 1634899</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Biospace%2C 1634899</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Convergent Dental%2C 1635804</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Corghi USA%2C 1878939</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Glidewell Dental%2C 1651965</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HD Hyundai Construction Equipment%2C 1885889</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HD Hyundai Material Handling%2C 1885888</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Linder Machinery Company%2C 904786%2E6710</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LiuGong NA%2C  281579%2E8882</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panasonic - Projector%2C 1396515</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panasonic -BTS%2C 1396515</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Panasonic ProVideo%2C 1396515</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Snap On - Car-O-Liner%2C 4157870</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Snap On - Hoffmann%2C 1452626</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Snap-on %E2%80%93 John Bean%2C 1643016</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Straumann USA%2C 1651964</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Wellbilt%2C 1331054</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

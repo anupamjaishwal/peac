@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TargetFieldStaticText__c</fullName>
+    <externalId>false</externalId>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>If this mapping is for static text the value entered here will be mapped to the field defined in the Developer Name field else a custom field defined here will be the target on the lead for the lead from the account field defined on the Developer Name</inlineHelpText>
+    <label>Target Field/Static Text</label>
+    <length>255</length>
+    <required>true</required>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

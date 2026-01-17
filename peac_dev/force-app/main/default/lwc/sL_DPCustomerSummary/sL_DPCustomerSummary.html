@@ -1,0 +1,25 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <lightning-card title="Customer Summary Information">
+            <lightning-layout multiple-rows="false">
+                <lightning-layout-item size="6" padding="around-small">
+                    <lightning-input type="number" label="Total Amount Due" readonly value={aggregated.totalAmountDue} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="Total Amount Pastdue" readonly value={aggregated.totalAmtPastDue} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="Total Tax" readonly value={aggregated.totalTax} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="Miscellaneous" readonly value={aggregated.miscellaneous} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="$01" readonly value={aggregated.pastDue130} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="$61" readonly value={aggregated.pastDue6190} formatter="currency" step="0.01"></lightning-input>
+                </lightning-layout-item>
+                <lightning-layout-item size="6" padding="around-small">
+                    <lightning-input type="number" label="Total CBR" readonly value={aggregated.totalCbr} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="Total Active Contracts" readonly value={aggregated.totalActive}></lightning-input>
+                    <lightning-input type="number" label="Current Invoiced" readonly value={aggregated.currentInvoiced} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="Late Charges" readonly value={aggregated.lateCharges} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="$31" readonly value={aggregated.pastDue3160} formatter="currency" step="0.01"></lightning-input>
+                    <lightning-input type="number" label="$91" readonly value={aggregated.pastDue90} formatter="currency" step="0.01"></lightning-input>
+                </lightning-layout-item>
+            </lightning-layout>
+        </lightning-card>
+    </template>
+</template>

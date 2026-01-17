@@ -1,0 +1,6 @@
+<template>
+    <lightning-datatable key-field="Id" data={rows} columns={columns} onrowaction={handleSelection} hide-checkbox-column></lightning-datatable>
+    <p class="slds-text-align_center" if:false={rows.length}>
+        No existing contacts found
+    </p>
+</template>

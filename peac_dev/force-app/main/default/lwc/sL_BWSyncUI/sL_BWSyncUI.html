@@ -1,0 +1,41 @@
+<template>
+    <template if:true={isModalOpen}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <!-- Modal/Popup Box LWC header here -->
+                <header class="slds-modal__header">
+                    <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Salesforce to Bridgeware Sync</h2>
+                </header>
+                <!-- Modal/Popup Box LWC body starts here -->
+                <div class="slds-modal__content slds-p-around_medium modalBodySpinner" id="modal-content-id-1">
+                    <template if:true={inProgress}>
+                        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+                    </template>
+                    <template if:true={isSuccess}>
+                        <div class="slds-text-align_center">
+                            <lightning-icon icon-name="action:approval" alternative-text="Success" title="Success"></lightning-icon>
+                        </div>
+                    </template>
+                    <template if:true={isError}>
+                        <div class="slds-text-align_center">
+                            <lightning-icon icon-name="standard:incident" alternative-text="Error" title="Error"></lightning-icon>
+                        </div>
+                    </template>
+                <br/>
+                    <div class="slds-text-align_center">
+                        <h3>{syncMessage}
+                        </h3>
+                    </div>
+                </div>
+                <!-- Modal/Popup Box LWC body ends here -->
+                <!-- Modal/Popup Box LWC footer starts here -->
+                <footer class="slds-modal__footer">
+                    <button disabled={inProgress} class="slds-button slds-button_neutral" onclick={closeModal} title="Finish">Finish</button>
+                </footer>
+                <!-- Modal/Popup Box LWC footer ends here -->
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>

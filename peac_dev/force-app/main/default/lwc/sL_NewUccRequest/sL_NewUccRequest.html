@@ -1,0 +1,25 @@
+<template>
+    <lightning-card title={title}>
+        <lightning-layout>
+            <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+            <template if:false={isLoading}>
+                <lightning-layout-item size="6">
+
+                    <lightning-record-edit-form object-api-name="UCC_Request__c" onsuccess={handleSuccess}>
+                        <lightning-input-field field-name="Name"></lightning-input-field>
+                        <lightning-input-field field-name="Account__c" value={account}></lightning-input-field>
+                        <lightning-input-field field-name="Filer__c" value={filer}></lightning-input-field>
+                        <lightning-input-field field-name="Contract__c" value={contract}></lightning-input-field>
+                        <lightning-input-field field-name="Order_Status__c" value={status}></lightning-input-field>
+                        <lightning-input-field field-name="Filing_Date__c"></lightning-input-field>
+                        <lightning-button type="button" label="Cancel" onclick={goToCallingRecord}
+                            class="slds-m-left_x-small"></lightning-button>
+                        <lightning-button class="slds-m-left_x-small"
+                                        type="submit"
+                                        label="Save" variant="brand"></lightning-button>
+                    </lightning-record-edit-form>
+                </lightning-layout-item>
+            </template>
+        </lightning-layout>
+    </lightning-card>
+</template>

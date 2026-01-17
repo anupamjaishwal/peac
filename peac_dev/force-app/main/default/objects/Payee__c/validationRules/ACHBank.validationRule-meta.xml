@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ACHBank</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(ACH_Available__c == true, (
+OR(LEN(ACH_Bank_Transit__c) &lt;&gt; 9,
+!ISNUMBER(ACH_Bank_Transit__c), 
+MOD((VALUE(MID(ACH_Bank_Transit__c,1,1)) * 3) + 
+(VALUE(MID(ACH_Bank_Transit__c,2,1)) * 7) + 
+(VALUE(MID(ACH_Bank_Transit__c,3,1))) + 
+(VALUE(MID(ACH_Bank_Transit__c,4,1)) * 3) + 
+(VALUE(MID(ACH_Bank_Transit__c,5,1)) * 7) + 
+(VALUE(MID(ACH_Bank_Transit__c,6,1))) + 
+(VALUE(MID(ACH_Bank_Transit__c,7,1)) * 3) + 
+(VALUE(MID(ACH_Bank_Transit__c,8,1)) * 7) + 
+(VALUE(MID(ACH_Bank_Transit__c,9,1))),10) &lt;&gt; 0)
+
+))</errorConditionFormula>
+    <errorDisplayField>ACH_Bank_Transit__c</errorDisplayField>
+    <errorMessage>The ACH/Bank Transit number is invalid based up ABA rules.</errorMessage>
+</ValidationRule>

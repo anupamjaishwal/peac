@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Channel__c</fullName>
+    <externalId>false</externalId>
+    <label>Channel</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>OEG</fullName>
+                <default>false</default>
+                <label>OEG</label>
+            </value>
+            <value>
+                <fullName>DLG</fullName>
+                <default>false</default>
+                <label>DLG</label>
+            </value>
+            <value>
+                <fullName>Healthcare</fullName>
+                <default>false</default>
+                <label>Healthcare</label>
+            </value>
+            <value>
+                <fullName>HKF</fullName>
+                <default>false</default>
+                <label>HKF</label>
+            </value>
+            <value>
+                <fullName>Snap</fullName>
+                <default>false</default>
+                <label>Snap</label>
+            </value>
+            <value>
+                <fullName>WS</fullName>
+                <default>false</default>
+                <label>WS</label>
+            </value>
+            <value>
+                <fullName>CVG</fullName>
+                <default>false</default>
+                <label>CVG</label>
+            </value>
+            <value>
+                <fullName>Retail</fullName>
+                <default>false</default>
+                <label>Retail</label>
+            </value>
+            <value>
+                <fullName>IFP</fullName>
+                <default>false</default>
+                <label>IFP</label>
+            </value>
+            <value>
+                <fullName>No Doc Fee</fullName>
+                <default>false</default>
+                <label>No Doc Fee</label>
+            </value>
+            <value>
+                <fullName>Franchise EF</fullName>
+                <default>false</default>
+                <label>Franchise EF</label>
+            </value>
+            <value>
+                <fullName>Franchise Loan</fullName>
+                <default>false</default>
+                <label>Franchise Loan</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

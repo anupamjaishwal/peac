@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>X224764_Batch</fullName>
+    <columns>NAME</columns>
+    <columns>Payee_Name__c</columns>
+    <columns>CREATED_DATE</columns>
+    <columns>Payment_Status__c</columns>
+    <columns>Application_Number__c</columns>
+    <columns>External_Payment_Batch__c</columns>
+    <columns>Date_Sent_to_External_System__c</columns>
+    <columns>Total__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Application_Number__c</field>
+        <operation>equals</operation>
+        <value>1329279</value>
+    </filters>
+    <label>224764 Batch</label>
+</ListView>

@@ -1,0 +1,245 @@
+<template>
+  <template if:true={refreshed}>
+    <p style="position: relative;height: 80px;">
+      <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </p>
+  </template>
+    <template if:true={isEdit}>
+        <lightning-record-edit-form object-api-name="Opportunity" record-id={recordId}
+            onload={handleLoad} onsubmit={handleSubmit} onsuccess={handleSuccess} onerror={handleError}>
+            <template if:true={isLoading}>
+                <p style="position: relative;height: 80px;">
+                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                </p>
+            </template>
+            <template if:false={isLoading}>
+                <!-- <lightning-card title={title}> -->
+                    
+                        <lightning-messages> </lightning-messages>
+                        <h3 class="slds-section__title slds-theme_shade primaryPaletteBorder blueFont">
+                            <span class="section-header-title slds-var-p-horizontal_small slds-truncate">Current Offer</span>
+                        </h3>
+                                <lightning-layout multiple-rows="true">
+                                    <lightning-layout-item size="6">
+                                      <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                                        <lightning-input type="number" formatter="currency" label="Monthly Payment" readonly value={EFMonthlyPayment}></lightning-input>
+                                      </div>
+                                      <lightning-input-field field-name="Purchase_Options__c" disabled></lightning-input-field>
+                                      <lightning-input-field field-name="Required_Adv_Payments__c" onchange={handleAdvancePayment} class="hasAdvancePayment"></lightning-input-field>
+                                      <!--<lightning-input-field if:true={hasAdvancePayment} field-name="CAN_Advance_Payment__c"></lightning-input-field>-->
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                        <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                                          <lightning-input type="text" label="Rate Factor" readonly value={rateFactorValue}></lightning-input>
+                                        </div>
+                                        <!--<lightning-output-field field-name="Rate_Factor__c"></lightning-output-field>-->
+                                        <lightning-output-field field-name="Equipment_Cost__c"></lightning-output-field>
+                                        <lightning-input-field field-name="Terms__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Max_Term_Approved__c" style="display: none;"></lightning-input-field>
+                                        
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                        
+                                        <template if:true={isSaving}>
+                                            <p style="position: relative;height: 80px;">
+                                                <lightning-spinner alternative-text="Saving Offer..." size="small" variant="brand"></lightning-spinner>
+                                            </p>
+                                        </template>
+                                        <template if:false={isSaving}>
+                                            <div class="slds-text-align_right slds-p-bottom_medium">
+                                                <lightning-button type="button" label="Cancel" class="slds-var-p-right_medium" onclick={handleCancel}></lightning-button>
+                                                <lightning-button variant="brand" type="submit" label="Save"></lightning-button>
+                                            </div>
+                                            
+                                        </template>
+                                    </lightning-layout-item>
+                                    
+                                </lightning-layout>
+                    
+                    <!-- <p slot="footer" if:false={isLoading}>
+                        
+                    </p>
+                </lightning-card> -->
+            </template>
+        </lightning-record-edit-form>
+    </template>
+    <template if:false={isEdit}>
+      <template if:false={refreshed}>
+          <template lwc:if={showRateFactorMsg}>
+            <div class="slds-text-color_error slds-text-align_center bold">
+              <h2>
+                {rateFactorMsg}
+              </h2>
+            </div>
+        </template>
+        <lightning-record-view-form object-api-name="Opportunity" record-id={recordId}
+            onload={handleLoad} onsuccess={handleSuccess}>
+            <template if:true={isLoading}>
+                <p style="position: relative;height: 80px;">
+                    <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                </p>
+            </template>
+            <template if:false={isLoading}>
+                <!-- <lightning-card title={title}> -->
+                    
+                        <lightning-messages> </lightning-messages>
+                        <h3 class="slds-section__title slds-theme_shade primaryPaletteBorder blueFont">
+                            <span class="section-header-title slds-var-p-horizontal_small slds-truncate">Current Offer</span>
+                        </h3>
+                                <lightning-layout multiple-rows="true">
+                                    <lightning-layout-item size="6">
+                                      <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                                        <lightning-input type="number" formatter="currency" label="Monthly Payment" readonly value={EFMonthlyPayment}></lightning-input>
+                                      </div>
+                                      <lightning-output-field field-name="Purchase_Options__c"></lightning-output-field>
+                                      <lightning-output-field field-name="Required_Adv_Payments__c"></lightning-output-field>
+                                      <!--<lightning-output-field if:true={hasAdvancePayment} field-name="CAN_Advance_Payment__c"></lightning-output-field>-->
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="6">
+                                      <div class="slds-form_horizontal slds-form slds-grid slds-wrap">
+                                        <lightning-input type="text" label="Rate Factor" readonly value={rateFactorValue}></lightning-input>
+                                      </div>
+                                      <!--<lightning-output-field field-name="Rate_Factor__c"></lightning-output-field>-->
+                                      <lightning-output-field field-name="Equipment_Cost__c"></lightning-output-field>
+                                      <lightning-output-field field-name="Terms__c"></lightning-output-field>
+                                    </lightning-layout-item>
+                                    <lightning-layout-item size="12">
+                                      <template lwc:if={editable}>
+                                        <div class="slds-text-align_right slds-p-bottom_medium">
+                                          <lightning-button type="submit" variant="brand" class="slds-var-p-right_medium" label="Edit Offer" onclick={handleEdit}></lightning-button>
+                                          <lightning-button variant="brand" class="slds-var-p-right_medium" label="Refresh" onclick={handleRefresh}></lightning-button>
+                                          <!-- <lightning-button type="submit" variant="brand" label="Select Offer" onclick={notYet}></lightning-button> -->
+                                        </div>
+                                      </template>
+                                    </lightning-layout-item>
+                                    
+                                </lightning-layout>
+                    
+                    <!-- <p slot="footer" if:false={isLoading}>
+                    </p>
+                </lightning-card> -->
+            </template>
+        </lightning-record-view-form>
+      </template>
+    </template>
+    
+    <!--Asset Section-->
+    <div class="slds-p-top_xxx-small" style="border-style: solid; border-width: thin;">
+
+      <div class="slds-text-align_right slds-p-bottom_xx-small">
+        <lightning-button class="slds-var-p-right_medium" variant="brand"  label="New Asset" onclick={handleNewAsset} type="submit">
+        </lightning-button>
+      </div>
+
+      
+
+      <template if:true={isNewAsset}>
+        <!-- Modal/Popup Box LWC starts here -->
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+          <div class="slds-modal__container">
+            <!-- Modal/Popup Box LWC header here -->
+            <header class="slds-modal__header">
+              <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={closeNewAsset}>
+                <lightning-icon icon-name="utility:close"
+                  alternative-text="close"
+                  variant="inverse"
+                  size="small" >
+                </lightning-icon>
+                <span class="slds-assistive-text">Close</span>
+              </button>
+              <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">New Asset</h2>
+            </header>
+            <!-- Modal/Popup Box LWC body starts here -->
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+              <lightning-record-edit-form object-api-name="Asset__c" onsuccess={handleAssetSuccess} onsubmit={handleSubmit} 
+              onerror={handleError}>
+                <lightning-layout multiple-rows="true"> 
+                  <lightning-layout-item size="12">
+                    <h2 class="test-id__section-header-button slds-section__title">Information</h2>
+                  </lightning-layout-item>
+                  <lightning-layout-item size="6">
+                    <lightning-input-field field-name="Name"></lightning-input-field>
+                    <lightning-input-field field-name="Quantity__c"></lightning-input-field>
+                    <lightning-input-field field-name="Equipment_Code__c" required></lightning-input-field>
+                    <lightning-input-field field-name="Serial_Number__c"></lightning-input-field>
+                    <lightning-input-field field-name="Model__c"></lightning-input-field>
+                  </lightning-layout-item>
+                  <lightning-layout-item size="6">
+                    <lightning-input-field field-name="Opportunity__c" value={recordId} disabled></lightning-input-field>
+                    <lightning-input-field field-name="Description__c"></lightning-input-field>
+                    <lightning-input-field field-name="Cost__c" required></lightning-input-field>
+                    <lightning-input-field field-name="Manufacturer__c"></lightning-input-field>
+                    <lightning-input-field field-name="Other_Manufacturer__c"></lightning-input-field>
+                  </lightning-layout-item>
+
+                  <lightning-layout-item size="12">
+                    <h2 class="test-id__section-header-button slds-section__title">Equipment Location</h2>
+                    <lightning-input-field field-name="End_User_Billing_Address__c"></lightning-input-field>
+                  </lightning-layout-item>
+
+                  <lightning-layout-item size="12">
+                    <h2 class="test-id__section-header-button slds-section__title">Alternative Address</h2>
+                    <lightning-input-field field-name="Equipment_Street__c"></lightning-input-field>
+                    <lightning-input-field field-name="Equipment_City__c"></lightning-input-field>
+                    <lightning-input-field field-name="Equipment_State__c"></lightning-input-field>
+                    <lightning-input-field field-name="Equipment_Zip__c"></lightning-input-field>
+                  </lightning-layout-item>
+
+                  <lightning-layout-item size="12">
+                    <h2 class="test-id__section-header-button slds-section__title">Vehicle</h2>
+                  </lightning-layout-item>
+                  <lightning-layout-item size="6">
+                    <lightning-input-field field-name="Vehicle_year__c"></lightning-input-field>
+                    <lightning-input-field field-name="Vehicle_Type__c"></lightning-input-field>
+                    <lightning-input-field field-name="Mileage__c"></lightning-input-field>
+                    <lightning-input-field field-name="Owner_Operator__c"></lightning-input-field>
+                  </lightning-layout-item>
+                  <lightning-layout-item size="6">
+                    <lightning-input-field field-name="Vehicle_Make__c"></lightning-input-field>
+                    <lightning-input-field field-name="Other_Vehicle_Make__c"></lightning-input-field>
+                    <lightning-input-field field-name="New_Used__c"></lightning-input-field>
+                    <lightning-input-field field-name="Sleeper_Day_Cab__c"></lightning-input-field>
+                  </lightning-layout-item>
+
+                  <lightning-layout-item size="12">
+                    <template if:true={isSaving}>
+                      <p style="position: relative;height: 80px;">
+                        <lightning-spinner alternative-text="Saving Asset..." size="small" variant="brand"></lightning-spinner>
+                      </p>
+                    </template>
+                    <template if:false={isSaving}>
+                      <div class="slds-text-align_right">
+                        <lightning-button type="button" label="Cancel" class="slds-var-p-right_medium" onclick={closeNewAsset}></lightning-button>
+                        <lightning-button type="submit" variant="brand" label="Save"></lightning-button>
+                      </div>
+                    </template>
+                  </lightning-layout-item>
+                </lightning-layout>
+              </lightning-record-edit-form>
+
+              <!--<lightning-record-form
+                object-api-name="Asset__c"
+                layout-type="Full" columns="2"
+                mode="edit" oncancel={closeNewAsset} onload={loads}
+                onsuccess={handleAssetSuccess}>
+              </lightning-record-form>-->
+            </div>
+          </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+    
+    <c-sl_-custom-data-table-type 
+    data-name="assetTable"
+    key-field="Id" 
+    data={assets} 
+    columns={COLUMNS} 
+    hide-checkbox-column 
+    onrowaction={handleMeterInfo}
+    onsave={handleSaveDT}
+    draft-values={saveDraftValues}>
+      
+    </c-sl_-custom-data-table-type>
+  </div>
+  <!--End Asset Section-->
+</template>

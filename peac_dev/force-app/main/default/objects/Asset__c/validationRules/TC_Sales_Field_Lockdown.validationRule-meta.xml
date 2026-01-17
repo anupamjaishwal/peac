@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TC_Sales_Field_Lockdown</fullName>
+    <active>true</active>
+    <errorConditionFormula>ISCHANGED (Equipment_Code__c) &amp;&amp; Opportunity__r.Current_User_Sales__c &amp;&amp; Opportunity__r.In_Lease_Lockdown_Stage__c</errorConditionFormula>
+    <errorDisplayField>Equipment_Code__c</errorDisplayField>
+    <errorMessage>Equipment Code locked for sales users past the application stage</errorMessage>
+</ValidationRule>

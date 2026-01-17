@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Insurance_Coverage__c</fullName>
+    <externalId>false</externalId>
+    <formula>IF(Passenger_Capacity__c &gt; 35, 5000000, IF(Passenger_Capacity__c &gt;= 1 &amp;&amp; Passenger_Capacity__c &lt;= 34, 1500000, 0))</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>Insurance Coverage</label>
+    <precision>18</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Currency</type>
+</CustomField>

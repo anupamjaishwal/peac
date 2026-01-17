@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All_Tolerances</fullName>
+    <columns>MasterLabel</columns>
+    <columns>DeveloperName</columns>
+    <columns>Account__c</columns>
+    <columns>Low_Amount__c</columns>
+    <columns>High_Amount__c</columns>
+    <columns>Variance__c</columns>
+    <columns>Variance_Type__c</columns>
+    <filterScope>Everything</filterScope>
+    <label>All Tolerances</label>
+</ListView>

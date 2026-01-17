@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Use_Platform_Event_Instead_of_Future__c</fullName>
+    <defaultValue>false</defaultValue>
+    <externalId>false</externalId>
+    <label>Use Platform Event Instead of Future</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

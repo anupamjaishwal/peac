@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Entry_Criteria__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <inlineHelpText>The set of conditions used to determine if the rate card is applicable to a transaction.</inlineHelpText>
+    <label>Entry Criteria</label>
+    <referenceTo>TCRE__Rule_Config__c</referenceTo>
+    <relationshipLabel>Rate Cards</relationshipLabel>
+    <relationshipName>Rate_Cards</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

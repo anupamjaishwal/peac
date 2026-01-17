@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Document Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>CR - Credit Application</fullName>
+                <default>false</default>
+                <label>CR - Credit Application</label>
+            </value>
+            <value>
+                <fullName>CR - Invoice/Quote/Proposal</fullName>
+                <default>false</default>
+                <label>CR - Invoice/Quote/Proposal</label>
+            </value>
+            <value>
+                <fullName>CR - Financial Statements</fullName>
+                <default>false</default>
+                <label>CR - Financial Statements</label>
+            </value>
+            <value>
+                <fullName>CR - Misc</fullName>
+                <default>false</default>
+                <label>CR - Misc</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Apr</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Apr</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Aug</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Aug</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Dec</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Dec</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Feb</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Feb</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Jan</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Jan</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Jul</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Jul</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Jun</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Jun</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Mar</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Mar</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - May</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - May</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Nov</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Nov</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Oct</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Oct</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements - Sept</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements - Sept</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements MTD</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements MTD</label>
+            </value>
+            <value>
+                <fullName>FS - Competitor Payoff</fullName>
+                <default>false</default>
+                <label>FS - Competitor Payoff</label>
+            </value>
+            <value>
+                <fullName>FS - Credit Application</fullName>
+                <default>false</default>
+                <label>FS - Credit Application</label>
+            </value>
+            <value>
+                <fullName>FS - Financial Statements</fullName>
+                <default>false</default>
+                <label>FS - Financial Statements</label>
+            </value>
+            <value>
+                <fullName>FS - Tax Returns</fullName>
+                <default>false</default>
+                <label>FS - Tax Returns</label>
+            </value>
+            <value>
+                <fullName>FS - Voided Check</fullName>
+                <default>false</default>
+                <label>FS - Voided Check</label>
+            </value>
+            <value>
+                <fullName>CR - Bank Statements</fullName>
+                <default>false</default>
+                <label>CR - Bank Statements</label>
+            </value>
+            <value>
+                <fullName>FS - Landlord Reference</fullName>
+                <default>false</default>
+                <label>FS - Landlord Reference</label>
+            </value>
+            <value>
+                <fullName>FS - Lease Agreement</fullName>
+                <default>false</default>
+                <label>FS - Lease Agreement</label>
+            </value>
+            <value>
+                <fullName>FS - Mortgage Statement</fullName>
+                <default>false</default>
+                <label>FS - Mortgage Statement</label>
+            </value>
+            <value>
+                <fullName>FS - Payoff Agreement</fullName>
+                <default>false</default>
+                <label>FS - Payoff Agreement</label>
+            </value>
+            <value>
+                <fullName>FS - Signed Loan Agreement</fullName>
+                <default>false</default>
+                <label>FS - Signed Loan Agreement</label>
+            </value>
+            <value>
+                <fullName>FS - Bank Statements -Sept</fullName>
+                <default>false</default>
+                <label>FS - Bank Statements -Sept</label>
+            </value>
+            <value>
+                <fullName>FS - Drivers License</fullName>
+                <default>false</default>
+                <label>FS - Drivers License</label>
+            </value>
+            <value>
+                <fullName>LC - Misc</fullName>
+                <default>false</default>
+                <label>LC - Misc</label>
+            </value>
+            <value>
+                <fullName>FS - Misc</fullName>
+                <default>false</default>
+                <label>FS - Misc</label>
+            </value>
+            <value>
+                <fullName>FS - Clear Report</fullName>
+                <default>false</default>
+                <label>FS - Clear Report</label>
+            </value>
+            <value>
+                <fullName>FS - LexisNexis</fullName>
+                <default>false</default>
+                <label>FS - LexisNexis</label>
+            </value>
+            <value>
+                <fullName>FS - Site Inspection</fullName>
+                <default>false</default>
+                <label>FS - Site Inspection</label>
+            </value>
+            <value>
+                <fullName>FS - UCC Data</fullName>
+                <default>false</default>
+                <label>FS - UCC Data</label>
+            </value>
+            <value>
+                <fullName>FS - Welcome Call</fullName>
+                <default>false</default>
+                <label>FS - Welcome Call</label>
+            </value>
+            <value>
+                <fullName>CR - Personal Guaranty</fullName>
+                <default>false</default>
+                <label>CR - Personal Guaranty</label>
+            </value>
+            <value>
+                <fullName>DL - Application</fullName>
+                <default>false</default>
+                <label>DL - Application</label>
+            </value>
+            <value>
+                <fullName>DL - Misc</fullName>
+                <default>false</default>
+                <label>DL - Misc</label>
+            </value>
+            <value>
+                <fullName>LC - Booking Sheet - Sales</fullName>
+                <default>false</default>
+                <label>LC - Booking Sheet - Sales</label>
+            </value>
+            <value>
+                <fullName>LC - Booking Sheet - Funding</fullName>
+                <default>false</default>
+                <label>LC - Booking Sheet - Funding</label>
+            </value>
+            <value>
+                <fullName>LC - Progress Payment Rider Sheet LC - Delivery Guaranty</fullName>
+                <default>false</default>
+                <label>LC - Progress Payment Rider Sheet LC - Delivery Guaranty</label>
+            </value>
+            <value>
+                <fullName>LC - Verbal</fullName>
+                <default>false</default>
+                <label>LC - Verbal</label>
+            </value>
+            <value>
+                <fullName>LC - Vehicle Title</fullName>
+                <default>false</default>
+                <label>LC - Vehicle Title</label>
+            </value>
+            <value>
+                <fullName>LC - UCC filed copy</fullName>
+                <default>false</default>
+                <label>LC - UCC filed copy</label>
+            </value>
+            <value>
+                <fullName>LC - Title Vehicle</fullName>
+                <default>false</default>
+                <label>LC - Title Vehicle</label>
+            </value>
+            <value>
+                <fullName>LC - Tax Exempt Forms/Resale Certificate</fullName>
+                <default>false</default>
+                <label>LC - Tax Exempt Forms/Resale Certificate</label>
+            </value>
+            <value>
+                <fullName>LC - Sale Leaseback</fullName>
+                <default>false</default>
+                <label>LC - Sale Leaseback</label>
+            </value>
+            <value>
+                <fullName>LC - Purchase Order</fullName>
+                <default>false</default>
+                <label>LC - Purchase Order</label>
+            </value>
+            <value>
+                <fullName>LC - Proof of Location</fullName>
+                <default>false</default>
+                <label>LC - Proof of Location</label>
+            </value>
+            <value>
+                <fullName>LC - Progress Payment Rider &amp; Guaranty</fullName>
+                <default>false</default>
+                <label>LC - Progress Payment Rider &amp; Guaranty</label>
+            </value>
+            <value>
+                <fullName>LC - Lease</fullName>
+                <default>false</default>
+                <label>LC - Lease</label>
+            </value>
+            <value>
+                <fullName>LC - Invoice</fullName>
+                <default>false</default>
+                <label>LC - Invoice</label>
+            </value>
+            <value>
+                <fullName>IN - Proof of Insurance</fullName>
+                <default>false</default>
+                <label>IN - Proof of Insurance</label>
+            </value>
+            <value>
+                <fullName>LC - Internal</fullName>
+                <default>false</default>
+                <label>LC - Internal</label>
+            </value>
+            <value>
+                <fullName>LC - Guarantor</fullName>
+                <default>false</default>
+                <label>LC - Guarantor</label>
+            </value>
+            <value>
+                <fullName>LC - Driver Licenses</fullName>
+                <default>false</default>
+                <label>LC - Driver Licenses</label>
+            </value>
+            <value>
+                <fullName>LC - Booking Sheet - Final</fullName>
+                <default>false</default>
+                <label>LC - Booking Sheet - Final</label>
+            </value>
+            <value>
+                <fullName>LC - Assignment of Proceeds</fullName>
+                <default>false</default>
+                <label>LC - Assignment of Proceeds</label>
+            </value>
+            <value>
+                <fullName>LC - Assignment of Invoice</fullName>
+                <default>false</default>
+                <label>LC - Assignment of Invoice</label>
+            </value>
+            <value>
+                <fullName>LC - ACH/Auto Debit Forms &amp; Copy of Check</fullName>
+                <default>false</default>
+                <label>LC - ACH/Auto Debit Forms &amp; Copy of Check</label>
+            </value>
+            <value>
+                <fullName>FS - SOS/License Verification</fullName>
+                <default>false</default>
+                <label>FS - SOS/License Verification</label>
+            </value>
+            <value>
+                <fullName>FS - Booking Sheet</fullName>
+                <default>false</default>
+                <label>FS - Booking Sheet</label>
+            </value>
+            <value>
+                <fullName>FS - Approval Letter</fullName>
+                <default>false</default>
+                <label>FS - Approval Letter</label>
+            </value>
+            <value>
+                <fullName>Approval Letter</fullName>
+                <default>false</default>
+                <label>Approval Letter</label>
+            </value>
+            <value>
+                <fullName>FS - Driver&apos;s License</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>FS - Driver&apos;s License</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

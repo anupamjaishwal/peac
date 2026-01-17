@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Object_Name__c</fullName>
+    <description>Store object name</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>Object Name</label>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Gds_Score_Request_Company__c</fullName>
+                <default>true</default>
+                <label>Gds Score Request Company</label>
+            </value>
+            <value>
+                <fullName>Contact</fullName>
+                <default>false</default>
+                <label>Contact</label>
+            </value>
+            <value>
+                <fullName>Opportunity</fullName>
+                <default>false</default>
+                <label>Opportunity</label>
+            </value>
+            <value>
+                <fullName>Gds_Score_Request_Individual__c</fullName>
+                <default>false</default>
+                <label>Gds Score Request Individual</label>
+            </value>
+            <value>
+                <fullName>Financial__c</fullName>
+                <default>false</default>
+                <label>Financial</label>
+            </value>
+            <value>
+                <fullName>Competitor__c</fullName>
+                <default>false</default>
+                <label>Competitor</label>
+            </value>
+            <value>
+                <fullName>Bank Information</fullName>
+                <default>false</default>
+                <label>Bank Information</label>
+            </value>
+            <value>
+                <fullName>Bank Statements</fullName>
+                <default>false</default>
+                <label>Bank Statements</label>
+            </value>
+            <value>
+                <fullName>Webservice_Field__c</fullName>
+                <default>false</default>
+                <label>Webservice Field</label>
+            </value>
+            <value>
+                <fullName>GDS_Score__c</fullName>
+                <default>false</default>
+                <label>GDS Score</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

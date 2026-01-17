@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>All</fullName>
+    <columns>NAME</columns>
+    <columns>Date_Due__c</columns>
+    <columns>Link__c</columns>
+    <columns>Contract__c</columns>
+    <columns>Dealer_Account__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>NAME</field>
+        <operation>startsWith</operation>
+        <value>1529</value>
+    </filters>
+    <label>All</label>
+</ListView>

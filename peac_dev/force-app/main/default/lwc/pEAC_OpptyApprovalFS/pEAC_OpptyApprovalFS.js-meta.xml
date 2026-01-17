@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__RecordPage</target>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__RecordPage,lightning__AppPage,lightning__HomePage">
+            <!-- Legacy properties kept for compatibility during migration -->
+            <property name="cardTitle" type="String" label="Card Title (deprecated)"/>
+            <property name="fieldsLeft" type="String" label="Left Column Fields (deprecated)"/>
+            <property name="fieldsRight" type="String" label="Right Column Fields (deprecated)"/>
+            <!-- Current properties -->
+            <property name="objectApiName" type="String" default="Opportunity" label="Object API Name"/>
+            <property name="sectionLabel" type="String" default="Approval" label="Section Label"/>
+            <property name="collapsedByDefault" type="Boolean" default="false" label="Collapsed by default"/>
+            <property name="fieldsCsv" type="String" label="Right-side Opportunity fields (comma-separated)"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

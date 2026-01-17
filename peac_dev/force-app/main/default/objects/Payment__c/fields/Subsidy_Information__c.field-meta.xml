@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Subsidy_Information__c</fullName>
+    <externalId>false</externalId>
+    <label>Subsidy Information</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Advance Auto Parts, 1824309</fullName>
+                <default>false</default>
+                <label>Advance Auto Parts, 1824309</label>
+            </value>
+            <value>
+                <fullName>Autodesk 1, 1357848</fullName>
+                <default>false</default>
+                <label>Autodesk 1, 1357848</label>
+            </value>
+            <value>
+                <fullName>AutoPlus, 1751979</fullName>
+                <default>false</default>
+                <label>AutoPlus, 1751979</label>
+            </value>
+            <value>
+                <fullName>Biospace, 1634899</fullName>
+                <default>false</default>
+                <label>Biospace, 1634899</label>
+            </value>
+            <value>
+                <fullName>Biospace dba InBody, 1634899</fullName>
+                <default>false</default>
+                <label>Biospace dba InBody, 1634899</label>
+            </value>
+            <value>
+                <fullName>Convergent Dental, 1635804</fullName>
+                <default>false</default>
+                <label>Convergent Dental, 1635804</label>
+            </value>
+            <value>
+                <fullName>Corghi USA, 1878939</fullName>
+                <default>false</default>
+                <label>Corghi USA, 1878939</label>
+            </value>
+            <value>
+                <fullName>Glidewell Dental, 1651965</fullName>
+                <default>false</default>
+                <label>Glidewell Dental, 1651965</label>
+            </value>
+            <value>
+                <fullName>HD Hyundai Construction Equipment, 1885889</fullName>
+                <default>false</default>
+                <label>HD Hyundai Construction Equipment, 1885889</label>
+            </value>
+            <value>
+                <fullName>HD Hyundai Material Handling, 1885888</fullName>
+                <default>false</default>
+                <label>HD Hyundai Material Handling, 1885888</label>
+            </value>
+            <value>
+                <fullName>Linder Machinery Company, 904786.6710</fullName>
+                <default>false</default>
+                <label>Linder Machinery Company, 904786.6710</label>
+            </value>
+            <value>
+                <fullName>LiuGong NA,  281579.8882</fullName>
+                <default>false</default>
+                <label>LiuGong NA,  281579.8882</label>
+            </value>
+            <value>
+                <fullName>Panasonic -BTS, 1396515</fullName>
+                <default>false</default>
+                <label>Panasonic -BTS, 1396515</label>
+            </value>
+            <value>
+                <fullName>Panasonic - Projector, 1396515</fullName>
+                <default>false</default>
+                <label>Panasonic - Projector, 1396515</label>
+            </value>
+            <value>
+                <fullName>Panasonic ProVideo, 1396515</fullName>
+                <default>false</default>
+                <label>Panasonic ProVideo, 1396515</label>
+            </value>
+            <value>
+                <fullName>Snap On - Car-O-Liner, 4157870</fullName>
+                <default>false</default>
+                <label>Snap On - Car-O-Liner, 4157870</label>
+            </value>
+            <value>
+                <fullName>Snap On - Hoffmann, 1452626</fullName>
+                <default>false</default>
+                <label>Snap On - Hoffmann, 1452626</label>
+            </value>
+            <value>
+                <fullName>Snap-on – John Bean, 1643016</fullName>
+                <default>false</default>
+                <label>Snap-on – John Bean, 1643016</label>
+            </value>
+            <value>
+                <fullName>Straumann USA, 1651964</fullName>
+                <default>false</default>
+                <label>Straumann USA, 1651964</label>
+            </value>
+            <value>
+                <fullName>Wellbilt, 1331054</fullName>
+                <default>false</default>
+                <label>Wellbilt, 1331054</label>
+            </value>
+            <value>
+                <fullName>1 - Scotsman</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>1 - Scotsman</label>
+            </value>
+            <value>
+                <fullName>10 - ICE</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>10 - ICE</label>
+            </value>
+            <value>
+                <fullName>11 - Zultys</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>11 - Zultys</label>
+            </value>
+            <value>
+                <fullName>12 - Jackson</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>12 - Jackson</label>
+            </value>
+            <value>
+                <fullName>13 - Panasonic</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>13 - Panasonic</label>
+            </value>
+            <value>
+                <fullName>14 - Christie Digital Systems</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>14 - Christie Digital Systems</label>
+            </value>
+            <value>
+                <fullName>15 - Profoto</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>15 - Profoto</label>
+            </value>
+            <value>
+                <fullName>16 - Hasselblad Bron, Inc</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>16 - Hasselblad Bron, Inc</label>
+            </value>
+            <value>
+                <fullName>17 - Eiki</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>17 - Eiki</label>
+            </value>
+            <value>
+                <fullName>18 - PW Stoelting</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>18 - PW Stoelting</label>
+            </value>
+            <value>
+                <fullName>19 - Hofmann USA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>19 - Hofmann USA</label>
+            </value>
+            <value>
+                <fullName>2 - Hobart</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>2 - Hobart</label>
+            </value>
+            <value>
+                <fullName>20 - Leica</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>20 - Leica</label>
+            </value>
+            <value>
+                <fullName>21 - JVC Kenwood</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>21 - JVC Kenwood</label>
+            </value>
+            <value>
+                <fullName>23 - Newtek</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>23 - Newtek</label>
+            </value>
+            <value>
+                <fullName>3 - Vtech</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>3 - Vtech</label>
+            </value>
+            <value>
+                <fullName>4 - Manitowoc</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>4 - Manitowoc</label>
+            </value>
+            <value>
+                <fullName>6 - Autodesk 2</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>6 - Autodesk 2</label>
+            </value>
+            <value>
+                <fullName>7 - Adtran</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>7 - Adtran</label>
+            </value>
+            <value>
+                <fullName>8 - Electrolux</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>8 - Electrolux</label>
+            </value>
+            <value>
+                <fullName>9 - Henny Penny</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>9 - Henny Penny</label>
+            </value>
+            <value>
+                <fullName>EiKi</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EiKi</label>
+            </value>
+            <value>
+                <fullName>Leicha</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Leicha</label>
+            </value>
+            <value>
+                <fullName>New Tek</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>New Tek</label>
+            </value>
+            <value>
+                <fullName>Panasonic-Camera</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Panasonic-Camera</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

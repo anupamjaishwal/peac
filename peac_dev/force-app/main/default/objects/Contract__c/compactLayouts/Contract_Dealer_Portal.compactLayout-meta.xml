@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contract_Dealer_Portal</fullName>
+    <fields>Name</fields>
+    <fields>Customer__c</fields>
+    <fields>Contract_Start_Date__c</fields>
+    <fields>Contract_End_Date__c</fields>
+    <fields>Contract_Balance_Remaining__c</fields>
+    <fields>OwnerId</fields>
+    <label>Contract Dealer Portal</label>
+</CompactLayout>

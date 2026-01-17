@@ -1,0 +1,9 @@
+.customLabel{
+    font-weight: var(--lwc-fontWeightBold,700);
+}
+.customOutputFieldContainer{
+    display: block;
+}
+.inlineOutputField{
+    display: inline-flex;
+}

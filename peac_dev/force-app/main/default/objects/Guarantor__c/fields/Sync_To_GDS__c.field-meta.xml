@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Sync_To_GDS__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Determine whether the PG value has already been sent from rescore or not.</description>
+    <externalId>false</externalId>
+    <label>Sync To GDS</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

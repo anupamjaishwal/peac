@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>TUR_Warehouse__c</fullName>
+    <externalId>false</externalId>
+    <label>TUR Warehouse</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>ALS CA</fullName>
+                <default>false</default>
+                <label>ALS CA</label>
+            </value>
+            <value>
+                <fullName>Mars International CA</fullName>
+                <default>false</default>
+                <label>Mars International CA</label>
+            </value>
+            <value>
+                <fullName>Mars International IL</fullName>
+                <default>false</default>
+                <label>Mars International IL</label>
+            </value>
+            <value>
+                <fullName>Mars International NJ</fullName>
+                <default>false</default>
+                <label>Mars International NJ</label>
+            </value>
+            <value>
+                <fullName>Midwest CA</fullName>
+                <default>false</default>
+                <label>Midwest CA</label>
+            </value>
+            <value>
+                <fullName>Midwest CO</fullName>
+                <default>false</default>
+                <label>Midwest CO</label>
+            </value>
+            <value>
+                <fullName>Midwest IL</fullName>
+                <default>false</default>
+                <label>Midwest IL</label>
+            </value>
+            <value>
+                <fullName>Midwest OH</fullName>
+                <default>false</default>
+                <label>Midwest OH</label>
+            </value>
+            <value>
+                <fullName>Nevill</fullName>
+                <default>false</default>
+                <label>Nevill</label>
+            </value>
+            <value>
+                <fullName>Omni Capital</fullName>
+                <default>false</default>
+                <label>Omni Capital</label>
+            </value>
+            <value>
+                <fullName>RSI CT</fullName>
+                <default>false</default>
+                <label>RSI CT</label>
+            </value>
+            <value>
+                <fullName>RSI FL</fullName>
+                <default>false</default>
+                <label>RSI FL</label>
+            </value>
+            <value>
+                <fullName>RSI SC</fullName>
+                <default>false</default>
+                <label>RSI SC</label>
+            </value>
+            <value>
+                <fullName>RSI TN</fullName>
+                <default>false</default>
+                <label>RSI TN</label>
+            </value>
+            <value>
+                <fullName>RSI TX</fullName>
+                <default>false</default>
+                <label>RSI TX</label>
+            </value>
+            <value>
+                <fullName>Wulff Enterprises GA</fullName>
+                <default>false</default>
+                <label>Wulff Enterprises GA</label>
+            </value>
+            <value>
+                <fullName>Wulff Enterprises OH</fullName>
+                <default>false</default>
+                <label>Wulff Enterprises OH</label>
+            </value>
+            <value>
+                <fullName>Copex NC</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Copex NC</label>
+            </value>
+            <value>
+                <fullName>Copex RI</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Copex RI</label>
+            </value>
+            <value>
+                <fullName>EBU CA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EBU CA</label>
+            </value>
+            <value>
+                <fullName>EBU FL</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EBU FL</label>
+            </value>
+            <value>
+                <fullName>EBU TX</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>EBU TX</label>
+            </value>
+            <value>
+                <fullName>Northbay Networks</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Northbay Networks</label>
+            </value>
+            <value>
+                <fullName>RSI GA</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>RSI GA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

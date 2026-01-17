@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Opportunity_Closed</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(
+   !ISBLANK(Opportunity__c),
+    $Setup.ORE__c.Bypass__c =False, 
+   Opportunity__r.IsClosed
+)</errorConditionFormula>
+    <errorMessage>The related opportunity is closed. You cannot edit an approved offer related to a closed opportunity.</errorMessage>
+</ValidationRule>

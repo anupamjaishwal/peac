@@ -1,0 +1,11 @@
+<template>
+    <template if:true={showSpinner}>
+        <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+    </template>
+    <div if:true={errormessagetoshow} class="errormsg">
+        <b>{errormessagetoshow}</b>
+    </div>
+    <div if:true={successmessagetoshow} class="successmsg">
+        <b>{successmessagetoshow}</b>
+    </div>
+</template>

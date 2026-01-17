@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>x1099check</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND(X1099__c == true, 
+(OR(LEN(Tax_ID_Nbr__c) == 0,LEN(TIN_Name__c) == 0,ISPICKVAL(Tax_ID_type__c,&apos;&apos;) ) ))</errorConditionFormula>
+    <errorDisplayField>X1099__c</errorDisplayField>
+    <errorMessage>1099 requires Tax ID type, Tax ID Nbr, and TIN Name entries</errorMessage>
+</ValidationRule>

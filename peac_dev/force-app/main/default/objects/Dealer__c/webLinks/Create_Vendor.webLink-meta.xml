@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebLink xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Create_Vendor</fullName>
+    <availability>online</availability>
+    <displayType>massActionButton</displayType>
+    <encodingKey>UTF-8</encodingKey>
+    <height>600</height>
+    <linkType>url</linkType>
+    <masterLabel>Create Vendor</masterLabel>
+    <openType>sidebar</openType>
+    <protected>false</protected>
+    <requireRowSelection>false</requireRowSelection>
+    <url>https://cs61.salesforce.com/a01/e?CF00N4C000000IZ0K={!Opportunity.Name}&amp;&amp;retURL=%{!Opportunity.Account}&amp;CF00N4C000000deWM={!Opportunity.Account}</url>
+</WebLink>

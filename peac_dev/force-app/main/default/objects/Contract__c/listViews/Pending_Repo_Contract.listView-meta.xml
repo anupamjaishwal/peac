@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pending_Repo_Contract</fullName>
+    <columns>NAME</columns>
+    <columns>Customer__c</columns>
+    <columns>CCAN__c</columns>
+    <columns>Account_Level_Collection_Agent__c</columns>
+    <columns>Account_Level_Collection_Group__c</columns>
+    <columns>AcctLvl_Highest_Delinquency_Contract__c</columns>
+    <columns>Contract_Start_Date__c</columns>
+    <columns>Contract_End_Date__c</columns>
+    <columns>Contract_Balance_Remaining__c</columns>
+    <filterScope>Queue</filterScope>
+    <label>Pending Repo</label>
+    <queue>Pending_Repo</queue>
+    <sharedTo>
+        <role>Collections_Manager</role>
+        <role>Collections_Supervisor</role>
+        <role>VP_of_Collections</role>
+    </sharedTo>
+</ListView>

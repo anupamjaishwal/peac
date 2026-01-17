@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Included_in_Last_Score__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>SAL-2317</description>
+    <externalId>false</externalId>
+    <inlineHelpText>If this box is checked, it indicates that the guarantor was included in the last scoring run</inlineHelpText>
+    <label>Included in Last Score</label>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

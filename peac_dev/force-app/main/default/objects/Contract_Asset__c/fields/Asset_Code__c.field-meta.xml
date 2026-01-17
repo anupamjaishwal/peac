@@ -1,0 +1,1020 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Asset_Code__c</fullName>
+    <externalId>false</externalId>
+    <label>Asset Code</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>006.005</fullName>
+                <default>false</default>
+                <label>Air Compressors</label>
+            </value>
+            <value>
+                <fullName>900.001</fullName>
+                <default>false</default>
+                <label>ATM</label>
+            </value>
+            <value>
+                <fullName>013.006</fullName>
+                <default>false</default>
+                <label>Emmissions Testing Equipm</label>
+            </value>
+            <value>
+                <fullName>013.008</fullName>
+                <default>false</default>
+                <label>Frame Machine</label>
+            </value>
+            <value>
+                <fullName>013.010</fullName>
+                <default>false</default>
+                <label>Tire Balancer</label>
+            </value>
+            <value>
+                <fullName>013.001</fullName>
+                <default>false</default>
+                <label>Air Compressors - 013.001</label>
+            </value>
+            <value>
+                <fullName>013.003</fullName>
+                <default>false</default>
+                <label>Key Trak</label>
+            </value>
+            <value>
+                <fullName>013.000</fullName>
+                <default>false</default>
+                <label>Automotive (General)</label>
+            </value>
+            <value>
+                <fullName>013.002</fullName>
+                <default>false</default>
+                <label>Auto Lifts</label>
+            </value>
+            <value>
+                <fullName>013.004</fullName>
+                <default>false</default>
+                <label>Waste Oil Heater</label>
+            </value>
+            <value>
+                <fullName>013.005</fullName>
+                <default>false</default>
+                <label>Automotive Diagnostic Mac</label>
+            </value>
+            <value>
+                <fullName>013.011</fullName>
+                <default>false</default>
+                <label>Paint Booth</label>
+            </value>
+            <value>
+                <fullName>013.100</fullName>
+                <default>false</default>
+                <label>Other Auto Equipment</label>
+            </value>
+            <value>
+                <fullName>013.007</fullName>
+                <default>false</default>
+                <label>Pipe Bender</label>
+            </value>
+            <value>
+                <fullName>013.009</fullName>
+                <default>false</default>
+                <label>Tire Changer</label>
+            </value>
+            <value>
+                <fullName>045.000</fullName>
+                <default>false</default>
+                <label>Broker</label>
+            </value>
+            <value>
+                <fullName>008.001</fullName>
+                <default>false</default>
+                <label>CCTV Security System</label>
+            </value>
+            <value>
+                <fullName>006.000</fullName>
+                <default>false</default>
+                <label>Commerce &amp; Indus (Gen)</label>
+            </value>
+            <value>
+                <fullName>006.003</fullName>
+                <default>false</default>
+                <label>Scales</label>
+            </value>
+            <value>
+                <fullName>006.007</fullName>
+                <default>false</default>
+                <label>Used Fork Lift</label>
+            </value>
+            <value>
+                <fullName>006.100</fullName>
+                <default>false</default>
+                <label>Other C&amp;I</label>
+            </value>
+            <value>
+                <fullName>006.001</fullName>
+                <default>false</default>
+                <label>Carpet Cutting Machine</label>
+            </value>
+            <value>
+                <fullName>006.002</fullName>
+                <default>false</default>
+                <label>Packaging Equipment</label>
+            </value>
+            <value>
+                <fullName>006.004</fullName>
+                <default>false</default>
+                <label>Paint Sprayers</label>
+            </value>
+            <value>
+                <fullName>006.017</fullName>
+                <default>false</default>
+                <label>Scissor Lifts</label>
+            </value>
+            <value>
+                <fullName>006.010</fullName>
+                <default>false</default>
+                <label>Furnace</label>
+            </value>
+            <value>
+                <fullName>006.006</fullName>
+                <default>false</default>
+                <label>Generator</label>
+            </value>
+            <value>
+                <fullName>006.013</fullName>
+                <default>false</default>
+                <label>Boiler</label>
+            </value>
+            <value>
+                <fullName>006.015</fullName>
+                <default>false</default>
+                <label>Machine Tool</label>
+            </value>
+            <value>
+                <fullName>006.014</fullName>
+                <default>false</default>
+                <label>Bailer</label>
+            </value>
+            <value>
+                <fullName>006.016</fullName>
+                <default>false</default>
+                <label>Material Handling</label>
+            </value>
+            <value>
+                <fullName>018.000</fullName>
+                <default>false</default>
+                <label>Commercial Cleaning</label>
+            </value>
+            <value>
+                <fullName>001.006</fullName>
+                <default>false</default>
+                <label>Web Hosting/Dev/Provider</label>
+            </value>
+            <value>
+                <fullName>001.007</fullName>
+                <default>false</default>
+                <label>SAP Software</label>
+            </value>
+            <value>
+                <fullName>001.002</fullName>
+                <default>false</default>
+                <label>Computer Laptops</label>
+            </value>
+            <value>
+                <fullName>001.100</fullName>
+                <default>false</default>
+                <label>Other Computer Equipment</label>
+            </value>
+            <value>
+                <fullName>001.000</fullName>
+                <default>false</default>
+                <label>Computer Hard/Soft (Gen)</label>
+            </value>
+            <value>
+                <fullName>001.004</fullName>
+                <default>false</default>
+                <label>Computer Hardware(Gen)</label>
+            </value>
+            <value>
+                <fullName>001.003</fullName>
+                <default>false</default>
+                <label>Computer Software (Gen)</label>
+            </value>
+            <value>
+                <fullName>071.000</fullName>
+                <default>false</default>
+                <label>Computers with Monitors</label>
+            </value>
+            <value>
+                <fullName>028.005</fullName>
+                <default>false</default>
+                <label>Excavator</label>
+            </value>
+            <value>
+                <fullName>028.001</fullName>
+                <default>false</default>
+                <label>Pressure Washers</label>
+            </value>
+            <value>
+                <fullName>028.004</fullName>
+                <default>false</default>
+                <label>Woodworking</label>
+            </value>
+            <value>
+                <fullName>028.008</fullName>
+                <default>false</default>
+                <label>Trenching Equipment</label>
+            </value>
+            <value>
+                <fullName>028.006</fullName>
+                <default>false</default>
+                <label>Bull Dozer</label>
+            </value>
+            <value>
+                <fullName>028.100</fullName>
+                <default>false</default>
+                <label>Other Construction</label>
+            </value>
+            <value>
+                <fullName>028.000</fullName>
+                <default>false</default>
+                <label>Construction (General)</label>
+            </value>
+            <value>
+                <fullName>028.002</fullName>
+                <default>false</default>
+                <label>Surveying</label>
+            </value>
+            <value>
+                <fullName>028.003</fullName>
+                <default>false</default>
+                <label>Welding</label>
+            </value>
+            <value>
+                <fullName>028.007</fullName>
+                <default>false</default>
+                <label>Skid Steer</label>
+            </value>
+            <value>
+                <fullName>014.004</fullName>
+                <default>false</default>
+                <label>Copiers</label>
+            </value>
+            <value>
+                <fullName>077.001</fullName>
+                <default>false</default>
+                <label>Dental Implant Systems</label>
+            </value>
+            <value>
+                <fullName>007.000</fullName>
+                <default>false</default>
+                <label>Dry Cleaning</label>
+            </value>
+            <value>
+                <fullName>048.000</fullName>
+                <default>false</default>
+                <label>Electonic Testing</label>
+            </value>
+            <value>
+                <fullName>900.016</fullName>
+                <default>false</default>
+                <label>Energy Management</label>
+            </value>
+            <value>
+                <fullName>019.000</fullName>
+                <default>false</default>
+                <label>Fitness</label>
+            </value>
+            <value>
+                <fullName>006.008</fullName>
+                <default>false</default>
+                <label>Fork Lift</label>
+            </value>
+            <value>
+                <fullName>068.000</fullName>
+                <default>false</default>
+                <label>GPS Unit</label>
+            </value>
+            <value>
+                <fullName>074.000</fullName>
+                <default>false</default>
+                <label>Healthcare Diagnostic(Gen</label>
+            </value>
+            <value>
+                <fullName>074.005</fullName>
+                <default>false</default>
+                <label>Laboratory Systems</label>
+            </value>
+            <value>
+                <fullName>074.004</fullName>
+                <default>false</default>
+                <label>Imaging Systems</label>
+            </value>
+            <value>
+                <fullName>074.001</fullName>
+                <default>false</default>
+                <label>Cardiology Systems</label>
+            </value>
+            <value>
+                <fullName>074.002</fullName>
+                <default>false</default>
+                <label>Dental Systems</label>
+            </value>
+            <value>
+                <fullName>074.100</fullName>
+                <default>false</default>
+                <label>Other Healthcare Diagnost</label>
+            </value>
+            <value>
+                <fullName>074.009</fullName>
+                <default>false</default>
+                <label>Respiratory Systems</label>
+            </value>
+            <value>
+                <fullName>074.003</fullName>
+                <default>false</default>
+                <label>Examination Devices</label>
+            </value>
+            <value>
+                <fullName>074.006</fullName>
+                <default>false</default>
+                <label>Optomerty Equipment</label>
+            </value>
+            <value>
+                <fullName>074.008</fullName>
+                <default>false</default>
+                <label>Radiology Systems</label>
+            </value>
+            <value>
+                <fullName>076.005</fullName>
+                <default>false</default>
+                <label>Healthcare Office Furnitu</label>
+            </value>
+            <value>
+                <fullName>076.006</fullName>
+                <default>false</default>
+                <label>POS Systems -- Medical</label>
+            </value>
+            <value>
+                <fullName>076.008</fullName>
+                <default>false</default>
+                <label>Healthcare Telephone Syst</label>
+            </value>
+            <value>
+                <fullName>076.000</fullName>
+                <default>false</default>
+                <label>Healthcare InfoSystems (G</label>
+            </value>
+            <value>
+                <fullName>076.100</fullName>
+                <default>false</default>
+                <label>Other Healthcare Infosyst</label>
+            </value>
+            <value>
+                <fullName>076.002</fullName>
+                <default>false</default>
+                <label>Healthcare Computer Softw</label>
+            </value>
+            <value>
+                <fullName>076.003</fullName>
+                <default>false</default>
+                <label>Exam/Patient Room Devices</label>
+            </value>
+            <value>
+                <fullName>076.007</fullName>
+                <default>false</default>
+                <label>Practice Management Softw</label>
+            </value>
+            <value>
+                <fullName>076.001</fullName>
+                <default>false</default>
+                <label>Healthcare Computer Hardw</label>
+            </value>
+            <value>
+                <fullName>076.004</fullName>
+                <default>false</default>
+                <label>Medical Transcription Sys</label>
+            </value>
+            <value>
+                <fullName>077.100</fullName>
+                <default>false</default>
+                <label>Other Healthcare Surgical</label>
+            </value>
+            <value>
+                <fullName>077.000</fullName>
+                <default>false</default>
+                <label>Healthcare Surgical (Gen)</label>
+            </value>
+            <value>
+                <fullName>077.002</fullName>
+                <default>false</default>
+                <label>Surgical Accessories</label>
+            </value>
+            <value>
+                <fullName>075.000</fullName>
+                <default>false</default>
+                <label>Healthcare Therapy (Gen)</label>
+            </value>
+            <value>
+                <fullName>075.002</fullName>
+                <default>false</default>
+                <label>Light Therapy</label>
+            </value>
+            <value>
+                <fullName>075.100</fullName>
+                <default>false</default>
+                <label>Other Healthcare Therapy</label>
+            </value>
+            <value>
+                <fullName>075.001</fullName>
+                <default>false</default>
+                <label>Cosmetic Therapy</label>
+            </value>
+            <value>
+                <fullName>075.004</fullName>
+                <default>false</default>
+                <label>Physical Therapy</label>
+            </value>
+            <value>
+                <fullName>075.010</fullName>
+                <default>false</default>
+                <label>Veterinary Systems</label>
+            </value>
+            <value>
+                <fullName>075.003</fullName>
+                <default>false</default>
+                <label>Microdermabrasion Units</label>
+            </value>
+            <value>
+                <fullName>046.000</fullName>
+                <default>false</default>
+                <label>HVAC</label>
+            </value>
+            <value>
+                <fullName>047.000</fullName>
+                <default>false</default>
+                <label>HVAC - 047.000</label>
+            </value>
+            <value>
+                <fullName>900.005</fullName>
+                <default>false</default>
+                <label>Intangible</label>
+            </value>
+            <value>
+                <fullName>035.001</fullName>
+                <default>false</default>
+                <label>Lawn Mowers</label>
+            </value>
+            <value>
+                <fullName>035.100</fullName>
+                <default>false</default>
+                <label>Other Landscaping</label>
+            </value>
+            <value>
+                <fullName>035.000</fullName>
+                <default>false</default>
+                <label>Landscaping</label>
+            </value>
+            <value>
+                <fullName>035.003</fullName>
+                <default>false</default>
+                <label>Snow Plow</label>
+            </value>
+            <value>
+                <fullName>900.008</fullName>
+                <default>false</default>
+                <label>Leasehold Improvements</label>
+            </value>
+            <value>
+                <fullName>054.000</fullName>
+                <default>false</default>
+                <label>Legal Transcription</label>
+            </value>
+            <value>
+                <fullName>004.000</fullName>
+                <default>false</default>
+                <label>Medical (General)</label>
+            </value>
+            <value>
+                <fullName>078.000</fullName>
+                <default>false</default>
+                <label>Medical Lasers</label>
+            </value>
+            <value>
+                <fullName>037.000</fullName>
+                <default>false</default>
+                <label>Medical Transcription</label>
+            </value>
+            <value>
+                <fullName>050.000</fullName>
+                <default>false</default>
+                <label>Musical Instruments</label>
+            </value>
+            <value>
+                <fullName>014.001</fullName>
+                <default>false</default>
+                <label>Copier - Used</label>
+            </value>
+            <value>
+                <fullName>014.007</fullName>
+                <default>false</default>
+                <label>Dictation</label>
+            </value>
+            <value>
+                <fullName>014.100</fullName>
+                <default>false</default>
+                <label>Other Office Equipment</label>
+            </value>
+            <value>
+                <fullName>014.010</fullName>
+                <default>false</default>
+                <label>Mailing</label>
+            </value>
+            <value>
+                <fullName>014.009</fullName>
+                <default>false</default>
+                <label>LCD Projector</label>
+            </value>
+            <value>
+                <fullName>014.000</fullName>
+                <default>false</default>
+                <label>Office Equipment (General)</label>
+            </value>
+            <value>
+                <fullName>014.008</fullName>
+                <default>false</default>
+                <label>Fax</label>
+            </value>
+            <value>
+                <fullName>014.011</fullName>
+                <default>false</default>
+                <label>Office Furniture</label>
+            </value>
+            <value>
+                <fullName>003.100</fullName>
+                <default>false</default>
+                <label>Other Photography Equip</label>
+            </value>
+            <value>
+                <fullName>003.004</fullName>
+                <default>false</default>
+                <label>Photo Processing</label>
+            </value>
+            <value>
+                <fullName>003.001</fullName>
+                <default>false</default>
+                <label>Non-Digital Cameras</label>
+            </value>
+            <value>
+                <fullName>003.002</fullName>
+                <default>false</default>
+                <label>Digital Cameras</label>
+            </value>
+            <value>
+                <fullName>003.000</fullName>
+                <default>false</default>
+                <label>Photography (General)</label>
+            </value>
+            <value>
+                <fullName>003.003</fullName>
+                <default>false</default>
+                <label>Camcorders</label>
+            </value>
+            <value>
+                <fullName>064.000</fullName>
+                <default>false</default>
+                <label>Playground</label>
+            </value>
+            <value>
+                <fullName>024.000</fullName>
+                <default>false</default>
+                <label>POS/Point of Sale</label>
+            </value>
+            <value>
+                <fullName>001.001</fullName>
+                <default>false</default>
+                <label>Printing</label>
+            </value>
+            <value>
+                <fullName>011.002</fullName>
+                <default>false</default>
+                <label>Ice Machines</label>
+            </value>
+            <value>
+                <fullName>011.003</fullName>
+                <default>false</default>
+                <label>Refrigeration Cases</label>
+            </value>
+            <value>
+                <fullName>011.004</fullName>
+                <default>false</default>
+                <label>Walk In Coolers</label>
+            </value>
+            <value>
+                <fullName>011.008</fullName>
+                <default>false</default>
+                <label>Fryer</label>
+            </value>
+            <value>
+                <fullName>011.100</fullName>
+                <default>false</default>
+                <label>Other Restaurant</label>
+            </value>
+            <value>
+                <fullName>011.001</fullName>
+                <default>false</default>
+                <label>Espresso Machines</label>
+            </value>
+            <value>
+                <fullName>011.005</fullName>
+                <default>false</default>
+                <label>Dishmachines</label>
+            </value>
+            <value>
+                <fullName>011.007</fullName>
+                <default>false</default>
+                <label>Hood System</label>
+            </value>
+            <value>
+                <fullName>011.009</fullName>
+                <default>false</default>
+                <label>Ice Cream Machines</label>
+            </value>
+            <value>
+                <fullName>011.006</fullName>
+                <default>false</default>
+                <label>Range/Oven</label>
+            </value>
+            <value>
+                <fullName>011.000</fullName>
+                <default>false</default>
+                <label>Restaurant (General)</label>
+            </value>
+            <value>
+                <fullName>011.010</fullName>
+                <default>false</default>
+                <label>Beverage Dispensing Syste</label>
+            </value>
+            <value>
+                <fullName>900.014</fullName>
+                <default>false</default>
+                <label>Consulting/Training</label>
+            </value>
+            <value>
+                <fullName>900.018</fullName>
+                <default>false</default>
+                <label>Predictive Dialers</label>
+            </value>
+            <value>
+                <fullName>900.022</fullName>
+                <default>false</default>
+                <label>Tanning Beds</label>
+            </value>
+            <value>
+                <fullName>900.028</fullName>
+                <default>false</default>
+                <label>Data Conversion</label>
+            </value>
+            <value>
+                <fullName>900.030</fullName>
+                <default>false</default>
+                <label>Software Development</label>
+            </value>
+            <value>
+                <fullName>900.013</fullName>
+                <default>false</default>
+                <label>Computer Peripherals</label>
+            </value>
+            <value>
+                <fullName>900.024</fullName>
+                <default>false</default>
+                <label>Non Digital Photo Process</label>
+            </value>
+            <value>
+                <fullName>900.026</fullName>
+                <default>false</default>
+                <label>Future Services</label>
+            </value>
+            <value>
+                <fullName>900.032</fullName>
+                <default>false</default>
+                <label>Maintenance &amp; Repairs</label>
+            </value>
+            <value>
+                <fullName>900.037</fullName>
+                <default>false</default>
+                <label>Warrant, Protection Plan</label>
+            </value>
+            <value>
+                <fullName>900.015</fullName>
+                <default>false</default>
+                <label>Credit Card Terminals</label>
+            </value>
+            <value>
+                <fullName>900.019</fullName>
+                <default>false</default>
+                <label>Satellite Dishes</label>
+            </value>
+            <value>
+                <fullName>900.023</fullName>
+                <default>false</default>
+                <label>Trade Show Booths</label>
+            </value>
+            <value>
+                <fullName>900.025</fullName>
+                <default>false</default>
+                <label>Mattresses</label>
+            </value>
+            <value>
+                <fullName>900.000</fullName>
+                <default>false</default>
+                <label>Restricted Assets (Gen)</label>
+            </value>
+            <value>
+                <fullName>900.003</fullName>
+                <default>false</default>
+                <label>Verifone - Software only</label>
+            </value>
+            <value>
+                <fullName>900.004</fullName>
+                <default>false</default>
+                <label>Verifone</label>
+            </value>
+            <value>
+                <fullName>900.011</fullName>
+                <default>false</default>
+                <label>Church Fixtures</label>
+            </value>
+            <value>
+                <fullName>900.012</fullName>
+                <default>false</default>
+                <label>Coin Operated Copiers</label>
+            </value>
+            <value>
+                <fullName>900.033</fullName>
+                <default>false</default>
+                <label>Programming</label>
+            </value>
+            <value>
+                <fullName>900.009</fullName>
+                <default>false</default>
+                <label>Car Wash Plumbing</label>
+            </value>
+            <value>
+                <fullName>900.010</fullName>
+                <default>false</default>
+                <label>Check Cashing Machines</label>
+            </value>
+            <value>
+                <fullName>900.029</fullName>
+                <default>false</default>
+                <label>Delivery-Ship &amp; Handling</label>
+            </value>
+            <value>
+                <fullName>900.034</fullName>
+                <default>false</default>
+                <label>Removal of Equipment</label>
+            </value>
+            <value>
+                <fullName>900.035</fullName>
+                <default>false</default>
+                <label>Support</label>
+            </value>
+            <value>
+                <fullName>900.036</fullName>
+                <default>false</default>
+                <label>Travel Time</label>
+            </value>
+            <value>
+                <fullName>900.017</fullName>
+                <default>false</default>
+                <label>Pay Phones</label>
+            </value>
+            <value>
+                <fullName>900.007</fullName>
+                <default>false</default>
+                <label>Artwork</label>
+            </value>
+            <value>
+                <fullName>900.020</fullName>
+                <default>false</default>
+                <label>Scuba</label>
+            </value>
+            <value>
+                <fullName>900.021</fullName>
+                <default>false</default>
+                <label>Surge Suppressors</label>
+            </value>
+            <value>
+                <fullName>900.027</fullName>
+                <default>false</default>
+                <label>Annual Subscriptions</label>
+            </value>
+            <value>
+                <fullName>900.006</fullName>
+                <default>false</default>
+                <label>Aluminum Ramps</label>
+            </value>
+            <value>
+                <fullName>900.031</fullName>
+                <default>false</default>
+                <label>Installation</label>
+            </value>
+            <value>
+                <fullName>026.000</fullName>
+                <default>false</default>
+                <label>Safes</label>
+            </value>
+            <value>
+                <fullName>057.000</fullName>
+                <default>false</default>
+                <label>Salon Equipment</label>
+            </value>
+            <value>
+                <fullName>008.000</fullName>
+                <default>false</default>
+                <label>Security Systems (general)</label>
+            </value>
+            <value>
+                <fullName>008.002</fullName>
+                <default>false</default>
+                <label>Security Systems</label>
+            </value>
+            <value>
+                <fullName>008.100</fullName>
+                <default>false</default>
+                <label>Other Security</label>
+            </value>
+            <value>
+                <fullName>008.003</fullName>
+                <default>false</default>
+                <label>Fire Suppression</label>
+            </value>
+            <value>
+                <fullName>008.004</fullName>
+                <default>false</default>
+                <label>Security Access</label>
+            </value>
+            <value>
+                <fullName>008.005</fullName>
+                <default>false</default>
+                <label>Burglar Alarm</label>
+            </value>
+            <value>
+                <fullName>900.002</fullName>
+                <default>false</default>
+                <label>Sign - Customized</label>
+            </value>
+            <value>
+                <fullName>036.000</fullName>
+                <default>false</default>
+                <label>Signs - Non Customized</label>
+            </value>
+            <value>
+                <fullName>034.000</fullName>
+                <default>false</default>
+                <label>Sound Systems</label>
+            </value>
+            <value>
+                <fullName>033.000</fullName>
+                <default>false</default>
+                <label>Storage Containers</label>
+            </value>
+            <value>
+                <fullName>056.000</fullName>
+                <default>false</default>
+                <label>Tanning Booths</label>
+            </value>
+            <value>
+                <fullName>053.000</fullName>
+                <default>false</default>
+                <label>Taxidermy</label>
+            </value>
+            <value>
+                <fullName>020.005</fullName>
+                <default>false</default>
+                <label>Voice Mail System</label>
+            </value>
+            <value>
+                <fullName>020.007</fullName>
+                <default>false</default>
+                <label>Paging</label>
+            </value>
+            <value>
+                <fullName>020.100</fullName>
+                <default>false</default>
+                <label>Other Telecommuncations</label>
+            </value>
+            <value>
+                <fullName>020.000</fullName>
+                <default>false</default>
+                <label>Telecom (General)</label>
+            </value>
+            <value>
+                <fullName>020.001</fullName>
+                <default>false</default>
+                <label>2 Way Radios</label>
+            </value>
+            <value>
+                <fullName>020.002</fullName>
+                <default>false</default>
+                <label>Message On-Hold System</label>
+            </value>
+            <value>
+                <fullName>020.003</fullName>
+                <default>false</default>
+                <label>Telephone-non internet</label>
+            </value>
+            <value>
+                <fullName>059.000</fullName>
+                <default>false</default>
+                <label>Televisions</label>
+            </value>
+            <value>
+                <fullName>055.000</fullName>
+                <default>false</default>
+                <label>Time Clocks</label>
+            </value>
+            <value>
+                <fullName>500.005</fullName>
+                <default>false</default>
+                <label>Titled V-Dump Trucks</label>
+            </value>
+            <value>
+                <fullName>500.003</fullName>
+                <default>false</default>
+                <label>Titled V-Trailers</label>
+            </value>
+            <value>
+                <fullName>500.002</fullName>
+                <default>false</default>
+                <label>Titled V-Construction</label>
+            </value>
+            <value>
+                <fullName>500.009</fullName>
+                <default>false</default>
+                <label>TV Glider Kit</label>
+            </value>
+            <value>
+                <fullName>500.007</fullName>
+                <default>false</default>
+                <label>Titled-V Logging</label>
+            </value>
+            <value>
+                <fullName>500.000</fullName>
+                <default>false</default>
+                <label>Titled Vehicles (General)</label>
+            </value>
+            <value>
+                <fullName>500.100</fullName>
+                <default>false</default>
+                <label>Titled V-Other</label>
+            </value>
+            <value>
+                <fullName>500.006</fullName>
+                <default>false</default>
+                <label>Titled V-Commercial</label>
+            </value>
+            <value>
+                <fullName>500.001</fullName>
+                <default>false</default>
+                <label>Titled V-Agriculture</label>
+            </value>
+            <value>
+                <fullName>500.008</fullName>
+                <default>false</default>
+                <label>Titled V-Other - 500.008</label>
+            </value>
+            <value>
+                <fullName>020.004</fullName>
+                <default>false</default>
+                <label>VOIP</label>
+            </value>
+            <value>
+                <fullName>021.000</fullName>
+                <default>false</default>
+                <label>Water Coolers</label>
+            </value>
+            <value>
+                <fullName>031.000</fullName>
+                <default>false</default>
+                <label>Water Filtration</label>
+            </value>
+            <value>
+                <fullName>049.000</fullName>
+                <default>false</default>
+                <label>Zambonies</label>
+            </value>
+            <value>
+                <fullName>500.010</fullName>
+                <default>false</default>
+                <label>Titled Vehicle - Passenger</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,112 @@
+<template>
+    <template if:false={isOpen}>
+        <lightning-card>
+            <p class="slds-text-align_center">
+                <lightning-button label="Log a Call..." title="Log a Call" onclick={handleOpen}></lightning-button>
+            </p>
+        </lightning-card>
+    </template>
+    <template if:true={isOpen}>
+        <lightning-card title={title}>
+            <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+            <template if:false={isLoading}>
+                <lightning-layout multiple-rows="true">
+                    <lightning-layout-item padding="around-medium" size="6">
+                        <lightning-combobox name="Department__c" label="Department" value={departmentValue}
+                            placeholder="Select Department" options={departmentOptions} onchange={handleDepartment}
+                            class="to-validate" required></lightning-combobox>
+                        <lightning-combobox name="Activity__c" label="Activity" value={activityValue}
+                            placeholder="Select Department" options={activityOptions} onchange={handleActivity}
+                            class="to-validate" required></lightning-combobox>
+                        <lightning-combobox name="Primary_Call_Outcome__c" label="Primary Call Outcome" value={primaryOutcomeValue}
+                            placeholder="Select Department" options={primaryOutcomeOptions} onchange={handlePrimaryOutcome}
+                            class="to-validate" required></lightning-combobox>
+                        <lightning-dual-listbox name="Secondary__c" label="Secondary Call Outcome" source-label="Available"
+                            selected-label="Chosen" field-level-help="Select Secondary Call Outcome" options={secondaryOptions}
+                            value={secondaryValue} onchange={handleSecondary}></lightning-dual-listbox>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-medium" size="6">
+                        <lightning-input name="Followup_Date__c" type="date" label="Follow-up Date" value={followupDate} onchange={handleFollowup}
+                            max={maxFollowup} min={minFollowup} message-when-range-overflow="Please select a date within 2 weeks after the Follow-up Date"
+                            message-when-range-underflow="Please select a date within 2 weeks before the Follow-up Date"
+                            class="to-validate"></lightning-input>
+                        <lightning-input name="Subject" label="Subject" value="Call" readonly></lightning-input>
+                        <!--lightning-record-edit-form object-api-name="Contract_Contact_Role__c">
+                            <label for="Contact__c" class="slds-form-element__label slds-no-flex">Name</label>
+                            <lightning-input-field id="Contact__c" field-name="Contact__c" variant="label-hidden" value={contactName} onchange={handleContact}></lightning-input-field>
+                        </lightning-record-edit-form-->
+                        <lightning-combobox
+                            name="Name"
+                            label="Name"
+                            value={ccrOptionVal} data-id="ccrComboVal"
+                            placeholder="Add a Contract Contact"
+                            options={TypeOptions}
+                            onchange={handleChangeCCR} ></lightning-combobox>
+                        <lightning-record-edit-form object-api-name="Contract__c" record-id={recordId}>
+                            <label for="Customer__c" class="slds-form-element__label slds-no-flex">Related To</label>
+                            <lightning-output-field id="Customer__c" field-name="Customer__c" variant="label-hidden" readonly></lightning-output-field>
+                            <label for="contractNumber" class="slds-form-element__label slds-no-flex">Contract</label>
+                            <lightning-input-field id="contractNumber" field-name="Name" variant="label-hidden" readonly></lightning-input-field>
+                        </lightning-record-edit-form>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-medium" size="12">
+                        <lightning-textarea name="Description" label="Comments" value={descriptionValue} onchange={handleDescription}
+                            class="to-validate" required></lightning-textarea>
+                        <p class="slds-text-align_right">
+                            <lightning-button type="button" label="Cancel" onclick={closeActionScreen}
+                                class="slds-var-m-left_x-small"></lightning-button>
+                            <lightning-button class="slds-var-m-left_x-small"
+                                type="button" label="Save" variant="brand" onclick={handleSave}></lightning-button>
+                        </p>
+                    </lightning-layout-item>
+                    <lightning-layout-item padding="around-medium" size="12">
+                    
+                    </lightning-layout-item>
+                </lightning-layout>
+            </template>
+        </lightning-card>
+    </template>
+    <template if:true={createNewCCR}>
+        <div class="slds-box slds-theme_shade">  
+            <div class="slds-modal slds-fade-in-open slds-backdrop">  
+            <div class="slds-modal__container">  
+            <!--HEADER Section-->  
+            <div class="slds-modal__header">  
+            <lightning-button-icon icon-name="utility:close" alternative-text="Close this window" size="large" variant="bare-inverse" onclick={closeModal} class="slds-modal__close"></lightning-button-icon>
+            <h2> New Contract Contact Role </h2> 
+            </div>  
+            <!---Body Section--> 
+            <div class='container'>
+        
+            <lightning-record-edit-form object-api-name="Contract_Contact_Role__c" onsuccess={handleSuccess}>
+                <div >
+                    <lightning-layout>
+                        <lightning-layout-item padding="around-small" size="4">
+                            <lightning-input-field field-name="Contract__c" value={recordId}></lightning-input-field>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <lightning-layout>
+                        <lightning-layout-item padding="around-small" size="4">
+                            <lightning-input-field field-name="Contact__c" data-id="Contact__c"></lightning-input-field>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                    <lightning-layout>
+                        <lightning-layout-item padding="around-small" size="4">
+                            <lightning-input-field field-name="Role__c" data-id="Role__c"></lightning-input-field>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                   
+                </div>
+            </lightning-record-edit-form>
+        
+                </div> 
+                <!--Footer Section-->
+                <div class="slds-modal__footer">            
+                        <lightning-button label='Cancel' onclick={closeModal} class='slds-m-around_medium'></lightning-button>
+                        <lightning-button label="Save" type='submit' variant="brand" onclick={onHandleSave} ></lightning-button>
+                </div>
+                </div>  
+                </div>  
+                </div>  
+    </template>
+</template>

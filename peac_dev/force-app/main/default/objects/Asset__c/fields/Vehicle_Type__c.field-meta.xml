@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Vehicle_Type__c</fullName>
+    <externalId>false</externalId>
+    <label>Vehicle Type</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Light Duty</fullName>
+                <default>false</default>
+                <label>Light Duty</label>
+            </value>
+            <value>
+                <fullName>Medium Duty</fullName>
+                <default>false</default>
+                <label>Medium Duty</label>
+            </value>
+            <value>
+                <fullName>Heavy Duty</fullName>
+                <default>false</default>
+                <label>Heavy Duty</label>
+            </value>
+            <value>
+                <fullName>Trailer</fullName>
+                <default>false</default>
+                <label>Trailer</label>
+            </value>
+            <value>
+                <fullName>Motorcoach</fullName>
+                <default>false</default>
+                <label>Motorcoach</label>
+            </value>
+            <value>
+                <fullName>School Bus</fullName>
+                <default>false</default>
+                <label>School Bus</label>
+            </value>
+            <value>
+                <fullName>Shuttle Bus</fullName>
+                <default>false</default>
+                <label>Shuttle Bus</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

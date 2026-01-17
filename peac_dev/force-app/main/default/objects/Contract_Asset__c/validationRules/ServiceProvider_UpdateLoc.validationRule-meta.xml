@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>ServiceProvider_UpdateLoc</fullName>
+    <active>true</active>
+    <errorConditionFormula>IF(AND( ISCHANGED( Service_Provider__c ) , NOT( ISCHANGED( Location__c ) ) ), True, False)</errorConditionFormula>
+    <errorMessage>Please update the Location to match your Service Provider</errorMessage>
+</ValidationRule>

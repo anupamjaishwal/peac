@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>xct_OvernightCheckOnly</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND( Overnight__c  = true,
+TEXT(Payment_Method__c)  &lt;&gt;  &quot;Check&quot;)</errorConditionFormula>
+    <errorDisplayField>Overnight__c</errorDisplayField>
+    <errorMessage>Overnight is only available for Lease Check Payment Method</errorMessage>
+</ValidationRule>

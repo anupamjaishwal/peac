@@ -1,0 +1,45 @@
+<template>
+  <template if:true={isLoading}>
+    <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+  </template>
+  
+  <!--<lightning-card>-->
+    <div class="slds-border_top slds-border_bottom slds-border_right slds-border_left" style={divHeight}>
+      <div class="slds-page-header flex-container">
+        <div class="flex-child">
+          <h4 slot="title" class="slds-text-heading_medium .slds-text-title_bold">
+            <span class="slds-var-p-around_medium">
+              <lightning-icon icon-name={iconName} size="small"></lightning-icon>
+            </span>
+            {tableTitle} ({dataSize})
+          </h4>
+        </div>
+
+        <div class="flex-child-refresh-icon">
+          <lightning-button-icon
+            label="refresh"
+            icon-name="utility:refresh"
+            variant="border-filled"
+            title="Refresh"
+            alternative-text="Refresh"
+            onclick={handleRefresh}
+            icon-class="slds-m-around-medium">
+          </lightning-button-icon>
+        </div>
+      </div>
+
+      <c-sl_datatable-paginator
+        records={myData}
+        total-records={dataSize}
+        onpaginatorchange={handlePaginatorChange}
+      ></c-sl_datatable-paginator>
+
+      <lightning-datatable
+        key-field="Id"
+        data={recordsToDisplay}
+        columns={myColumns}
+        hide-checkbox-column=true>
+      </lightning-datatable>
+    </div>
+  <!--</lightning-card>-->
+</template>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CallType__c</fullName>
+    <description>Store GDS call type</description>
+    <externalId>false</externalId>
+    <fieldManageability>DeveloperControlled</fieldManageability>
+    <label>CallType</label>
+    <required>true</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>SF</fullName>
+                <default>true</default>
+                <label>SF</label>
+            </value>
+            <value>
+                <fullName>LP</fullName>
+                <default>false</default>
+                <label>LP</label>
+            </value>
+            <value>
+                <fullName>RS</fullName>
+                <default>false</default>
+                <label>RS</label>
+            </value>
+            <value>
+                <fullName>Ocrolus</fullName>
+                <default>false</default>
+                <label>Ocrolus</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

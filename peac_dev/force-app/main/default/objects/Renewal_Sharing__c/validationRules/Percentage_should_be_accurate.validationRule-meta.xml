@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Percentage_should_be_accurate</fullName>
+    <active>true</active>
+    <description>The sum of the Dealer Percentage and PEAC Percentage should be 100</description>
+    <errorConditionFormula>((Dealer_Percentage__c )   +  (PEAC_Percentage__c )) &lt;&gt; 1</errorConditionFormula>
+    <errorMessage>The sum of the Dealer Percentage and PEAC Percentage fields should be 100</errorMessage>
+</ValidationRule>

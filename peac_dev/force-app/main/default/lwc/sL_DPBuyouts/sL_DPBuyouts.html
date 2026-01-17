@@ -1,0 +1,18 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <lightning-layout multiple-rows="true">
+            <lightning-layout-item size="12">
+                <template lwc:if={quoteBuyoutTypesToShow}>
+                    <c-s-l_-d-p-view-buyout record-id={recordId} quote-buyout-types={quoteBuyoutTypesToShow}></c-s-l_-d-p-view-buyout>
+                </template>
+            </lightning-layout-item>
+            <lightning-layout-item size="2" padding="around-small" alignment-bump="right">
+                <lightning-button label="Create Buyout(s)" title="Create Buyout(s)" onclick={handleCreateBuyouts} class="slds-var-m-left_x-small"></lightning-button>
+            </lightning-layout-item>
+            <lightning-layout-item size="2" padding="around-small" alignment-bump="left">
+                
+            </lightning-layout-item>
+        </lightning-layout>
+    </template>
+</template>

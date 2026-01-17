@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Integration_Name__c</fullName>
+    <externalId>false</externalId>
+    <label>Integration Name</label>
+    <required>false</required>
+    <trackHistory>true</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Infolease Update Customer</fullName>
+                <default>false</default>
+                <label>Infolease Update Customer</label>
+            </value>
+            <value>
+                <fullName>Infolease Update Insurance</fullName>
+                <default>false</default>
+                <label>Infolease Update Insurance</label>
+            </value>
+            <value>
+                <fullName>Infolease Update Asset</fullName>
+                <default>false</default>
+                <label>Infolease Update Asset</label>
+            </value>
+            <value>
+                <fullName>Infolease Update Contract</fullName>
+                <default>false</default>
+                <label>Infolease Update Contract</label>
+            </value>
+            <value>
+                <fullName>Infolease Open Item Waiver</fullName>
+                <default>false</default>
+                <label>Infolease Open Item Waiver</label>
+            </value>
+            <value>
+                <fullName>InfoLease Generate Buyout Quote</fullName>
+                <default>false</default>
+                <label>InfoLease Generate Buyout Quote</label>
+            </value>
+            <value>
+                <fullName>InfoLease Generate Buyout Quote DP</fullName>
+                <default>false</default>
+                <label>InfoLease Generate Buyout Quote DP</label>
+            </value>
+            <value>
+                <fullName>InfoLease Create Insurance</fullName>
+                <default>false</default>
+                <label>InfoLease Create Insurance</label>
+            </value>
+            <value>
+                <fullName>Infolease Create Customer</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Infolease Create Customer</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

@@ -1,0 +1,80 @@
+<template>
+    <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading"></lightning-spinner>
+    </template>
+    <template if:false={isLoading}>
+        <template if:true={isSummary}>
+            <lightning-layout multiple-rows="true">
+                <lightning-layout-item size="12">
+                    <template if:false={isDealerPortal}>
+                        <h2 class="slds-text-heading_medium slds-text-align_center">View Buyouts</h2>
+                        <lightning-button flexibility="auto" class="slds-float_left slds-p-left_small" variant="brand" label="Compare Buyouts" title="Compare Buyouts"
+                        onclick={printBuyout}></lightning-button>
+                    </template>
+
+                </lightning-layout-item>
+
+                <lightning-layout-item padding="around-small" size="6">
+                    <lightning-record-view-form record-id={recordId} object-api-name="Contract__c">
+                        <div class="slds-box slds-theme_default">
+                            <lightning-output-field field-name="Name"> </lightning-output-field>
+                        </div>
+                    </lightning-record-view-form>
+                </lightning-layout-item>
+                <lightning-layout-item flexibility="auto" padding="around-small" size="12">
+                    <c-sl-json-table header={buyoutHeader} rows={buyouts}
+                        ongotomode={handleGoToDetail} ongotokey={handleGoToDetail} onrowselection={handleRowSelection}>
+                    </c-sl-json-table>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+        <template if:true={isDetail}>
+            <lightning-layout multiple-rows="true" horizontal-align="space">
+                <lightning-layout-item size="12">
+                    <h2 class="slds-text-heading_medium slds-text-align_center">Buyout Details</h2>
+                </lightning-layout-item>
+                <lightning-layout-item size="2" padding="around-small" alignment-bump="right">
+                    <lightning-button label="Back" title="Back" onclick={handleGoToSummary}
+                        class="slds-var-m-left_x-small"></lightning-button>
+                </lightning-layout-item>
+                <lightning-layout-item size="8">
+                    <div lwc:if={showRAButton} class="slds-float_right slds-p-right_small">
+                        <lightning-button variant="brand" label="Return Authorization" title="Return Authorization"
+                            onclick={handleReturnAuthorization}></lightning-button>
+                    </div>
+                   <!-- <div class="slds-float_right slds-p-right_small">
+                        <lightning-button variant="brand" label="Print Detailed Buyout" title="Print Detailed Buyout" onclick={handleDetailedPdf}></lightning-button>
+                    </div>
+                    <div class="slds-float_right slds-p-right_small" >
+                        <lightning-button variant="brand" label="Print Summary Buyout" title="Print Summary Buyout" onclick={handlePdf}></lightning-button>
+                    </div> !-->
+                    <div class="slds-float_right slds-p-right_small">
+                        <lightning-button variant="brand" label="Print/Send Buyout" title="Print/Send Buyout"
+                            onclick={handlePrintSend}></lightning-button>
+                    </div>
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small" size="12">
+                    <c-sl-transposed-row fields={detailColumn} ongotokey={handleGoToSummary}></c-sl-transposed-row>
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+        <template if:true={isRA}>
+            <lightning-layout multiple-rows="true" horizontal-align="space">
+                <lightning-layout-item size="12">
+                    <h2 class="slds-text-heading_medium slds-text-align_center">Return Authorizations</h2>
+                </lightning-layout-item>
+                <lightning-layout-item size="2" padding="around-small" alignment-bump="right">
+                    <lightning-button label="Back" title="Back" onclick={handleGoToDetail}
+                        class="slds-var-m-left_x-small"></lightning-button>
+                </lightning-layout-item>
+                <lightning-layout-item padding="around-small" size="12">
+                    <!-- will uncomment when docGen is used <c-sl-r-a-files target-ids={targetIds} date-requested={dateRequested}></c-sl-r-a-files> -->
+                </lightning-layout-item>
+            </lightning-layout>
+        </template>
+        <template lwc:if={printSendModalPopUp}>
+            <c-peac_-print-send-buyout record-id={recordId} detail-column={detailColumn}
+                selected-quote-type={selectedQuoteType} onclosepopup={handlePrintSend}></c-peac_-print-send-buyout>
+        </template>
+    </template>
+</template>

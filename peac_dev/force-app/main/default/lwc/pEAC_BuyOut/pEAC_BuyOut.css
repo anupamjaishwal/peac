@@ -1,0 +1,10 @@
+.slds-modal__container{
+    width: 90% !important;
+    max-width: 90% !important;
+    
+}
+.slds-form-element_readonly {
+    flex-basis: auto;
+    border-bottom: var(--lwc-borderWidthThin, 1px) solid var(--slds-g-color-border-base-1, var(--lwc-colorBorder, rgb(0, 0, 0)));
+    margin-bottom: 5px;
+}

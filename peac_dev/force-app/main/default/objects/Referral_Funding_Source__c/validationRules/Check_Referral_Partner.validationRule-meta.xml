@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Check_Referral_Partner</fullName>
+    <active>true</active>
+    <errorConditionFormula>AND (
+  NOT(ISBLANK( Date_Submitted__c )),
+  ISBLANK( TEXT(Referral_Partner__c) )
+)</errorConditionFormula>
+    <errorDisplayField>Referral_Partner__c</errorDisplayField>
+    <errorMessage>You must select a Partner when submitted.</errorMessage>
+</ValidationRule>

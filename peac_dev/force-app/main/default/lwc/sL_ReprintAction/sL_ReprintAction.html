@@ -1,0 +1,16 @@
+<template>
+    <template if:true={isLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
+    <template if:false={isLoading}>
+        <div>
+            <template if:true={isDelinquent}>
+                <lightning-card title="Delinquent Contract">
+                    <p class="slds-text-align_center">{question}</p>
+                    <p slot="footer">
+                        <lightning-button label="Yes" onclick={handleProceedDQ}></lightning-button>
+                        <lightning-button variant="brand" label="No" onclick={handleCancelDQ}></lightning-button>
+                    </p>
+                </lightning-card>
+            </template>
+        </div>
+    </template>
+</template>
