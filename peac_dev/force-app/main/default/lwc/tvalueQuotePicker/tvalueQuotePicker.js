@@ -1,6 +1,6 @@
 import { LightningElement, api, track } from 'lwc'; // Note: 'wire' is removed
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import getQuotes from '@salesforce/apex/tvalueQuotePickerController.getQuotes';
+import getQuoteData from '@salesforce/apex/tvalueQuotePickerController.getQuoteData';
 import SELECT_LABEL from '@salesforce/label/c.TvalueQuotePicker_Select';
 import QUOTE_OPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_QuoteOption';
 import DESCRIPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_Description';
@@ -25,6 +25,7 @@ export default class TvalueQuotePicker extends LightningElement {
     @track isLoading = false;
     @track columns = [];
     @track isEmailModalOpen = false;
+    showYieldColumn = false; // Flag to control column visibility
 
     label = {
         SELECT_LABEL,
@@ -45,12 +46,12 @@ export default class TvalueQuotePicker extends LightningElement {
     };
 
     connectedCallback() {
-        this.initializeColumns();
-        this.loadQuotes(); // Call the imperative method
+        // We now initialize columns after we fetch the data and visibility flag
+        this.loadQuotes();
     }
 
     initializeColumns() {
-        this.columns = [
+        let tempColumns = [
             {
                 label: this.label.QUOTE_OPTION_LABEL,
                 fieldName: 'quoteOptionName',
@@ -94,13 +95,6 @@ export default class TvalueQuotePicker extends LightningElement {
                 cellAttributes: { alignment: 'right' }
             },
             {
-                label: this.label.YIELD_LABEL,
-                fieldName: 'yield',
-                type: 'percent',
-                sortable: true,
-                cellAttributes: { alignment: 'center' }
-            },
-            {
                 label: this.label.DEFERRAL_LABEL,
                 fieldName: 'deferral',
                 type: 'text',
@@ -129,21 +123,39 @@ export default class TvalueQuotePicker extends LightningElement {
                 cellAttributes: { alignment: 'center' }
             }
         ];
+
+        // Conditionally add the Yield column
+        if (this.showYieldColumn) {
+            const yieldColumn = {
+                label: this.label.YIELD_LABEL,
+                fieldName: 'yield',
+                type: 'percent',
+                sortable: true,
+                cellAttributes: { alignment: 'center' }
+            };
+            // Insert Yield column at the 7th position (index 6)
+            tempColumns.splice(6, 0, yieldColumn);
+        }
+
+        this.columns = tempColumns;
     } 
 
     loadQuotes() {
         this.isLoading = true;
-        // Call Apex imperatively
-        getQuotes({ recordId: this.recordId })
+        // Call the new Apex method
+        getQuoteData({ recordId: this.recordId })
             .then(result => {
                 console.log('Imperative call successful. Data:', result);
-                this.quotes = result;
+                this.quotes = result.quotes;
+                this.showYieldColumn = result.showYield;
+                this.initializeColumns(); // Initialize columns now that we have the flag
                 this.error = undefined;
             })
             .catch(error => {
                 console.error('Imperative call failed. Error:', error);
                 this.error = error;
                 this.quotes = [];
+                this.initializeColumns(); // Also initialize in case of error to show headers
             })
             .finally(() => {
                 this.isLoading = false;
