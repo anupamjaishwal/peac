@@ -1,5 +1,6 @@
 import { LightningElement, api, track } from 'lwc'; // Note: 'wire' is removed
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import { FlowAttributeChangeEvent } from 'lightning/flowSupport';
 import getQuoteData from '@salesforce/apex/tvalueQuotePickerController.getQuoteData';
 import SELECT_LABEL from '@salesforce/label/c.TvalueQuotePicker_Select';
 import QUOTE_OPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_QuoteOption';
@@ -19,6 +20,8 @@ import LEGAL_DISCLAIMER_LABEL from '@salesforce/label/c.TvalueQuotePicker_LegalD
 
 export default class TvalueQuotePicker extends LightningElement {
     @api recordId;
+    @api selectedQuoteIds = [];
+    @api selectedQuoteRecords = [];
     @track quotes = [];
     @track selectedRows = [];
     @track error;
@@ -168,6 +171,7 @@ export default class TvalueQuotePicker extends LightningElement {
         const selectedRows = event.detail.selectedRows;
         // Maps the selected rows to just their IDs for easier processing
         this.selectedRows = selectedRows.map(row => row.id);
+        this.updateFlowOutputs();
     }
 
     get hasQuotes() {
@@ -209,14 +213,17 @@ export default class TvalueQuotePicker extends LightningElement {
             return;
         }
 
-        this.dispatchEvent(new CustomEvent('usethisquote', {
-            detail: {
-                selectedQuoteIds: this.selectedRows,
-                quoteRecords: this.quotes.filter(q => this.selectedRows.includes(q.id))
-            },
-            bubbles: true,
-            composed: true
-        }));
+        //const selectedRecords = this.quotes.filter(q => this.selectedRows.includes(q.id));
+        this.updateFlowOutputs();
+
+        // this.dispatchEvent(new CustomEvent('usethisquote', {
+        //     detail: {
+        //         selectedQuoteIds: this.selectedRows,
+        //         quoteRecords: selectedRecords
+        //     },
+        //     bubbles: true,
+        //     composed: true
+        // }));
     }
 
     showToast(title, message, variant) {
@@ -230,5 +237,18 @@ export default class TvalueQuotePicker extends LightningElement {
 
     handleCloseEmailModal() {
         this.isEmailModalOpen = false;
+    }
+
+    updateFlowOutputs() {
+        // Update the output attributes for flow integration
+        this.selectedQuoteIds = this.selectedRows;
+        this.selectedQuoteRecords = this.quotes.filter(q => this.selectedRows.includes(q.id));
+
+        // Dispatch FlowAttributeChangeEvent to notify the flow runtime
+        const attributeChangeEvent = new FlowAttributeChangeEvent('selectedQuoteIds', this.selectedQuoteIds);
+        this.dispatchEvent(attributeChangeEvent);
+
+        const recordsChangeEvent = new FlowAttributeChangeEvent('selectedQuoteRecords', this.selectedQuoteRecords);
+        this.dispatchEvent(recordsChangeEvent);
     }
 }

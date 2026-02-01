@@ -12,7 +12,7 @@ public with sharing class tvalueQuotePickerController {
         @AuraEnabled public Decimal payment;
         @AuraEnabled public Decimal advancePayments;
         @AuraEnabled public Decimal yield;
-        @AuraEnabled public String deferral;
+        @AuraEnabled public Decimal deferral;
         @AuraEnabled public String endOption;
         @AuraEnabled public String notes;
         @AuraEnabled public DateTime createdDate;
@@ -20,9 +20,9 @@ public with sharing class tvalueQuotePickerController {
         public QuoteWrapper(tval__TValue_Quote__c tq) {
             this.id = tq.Id;
             // Parent Quote fields
-            this.quoteOptionName = tq.Name : '';
-            this.description = (tq.tval__Quote_Name__r != null) ? tq.tval__Quote_Name__r.Description : '';
-            this.notes = (tq.tval__Quote_Name__r != null) ? tq.tval__Quote_Name__r.Notes__c : '';
+            this.quoteOptionName = tq.Name;
+            this.description = (tq.Quote__c != null) ? tq.Quote__r.Description : '';
+            this.notes = (tq.Quote__c != null) ? tq.Quote__r.Notes__c : '';
             
             // tval__TValue_Quote__c fields
             this.financedAmount = tq.tval__Amount_Financed__c;
@@ -76,14 +76,14 @@ public with sharing class tvalueQuotePickerController {
         List<QuoteWrapper> quoteWrapperList = new List<QuoteWrapper>();
         try {
             List<tval__TValue_Quote__c> tValueQuotes;
-            String baseQuery = 'SELECT Id, CreatedDate, tval__Amount_Financed__c, tval__Term__c, tval__Payment_Amount__c, ' +
+            String baseQuery = 'SELECT Id, Name, CreatedDate, tval__Amount_Financed__c, tval__Term__c, tval__Payment_Amount__c, ' +
                                'tval__Number_of_Advanced_Payments__c, tval__Nominal_Annual_Rate__c, tval__Deferred_Payments__c, ' +
-                               'tval__Purchase_Option__c, tval__Quote_Name__r.Name, tval__Quote_Name__r.Description, ' +
-                               'tval__Quote_Name__r.Notes__c ' +
+                               'tval__Purchase_Option__c, Quote__c, Quote__r.Name, Quote__r.Description, ' +
+                               'Quote__r.Notes__c ' +
                                'FROM tval__TValue_Quote__c';
 
             if (recordId != null) {
-                tValueQuotes = Database.query(baseQuery + ' WHERE (tval__Quote_Name__r.OpportunityId = :recordId OR tval__Quote_Name__r.AccountId = :recordId) ORDER BY CreatedDate DESC');
+                tValueQuotes = Database.query(baseQuery + ' WHERE Quote__c = :recordId ORDER BY CreatedDate DESC');
             } else {
                 tValueQuotes = Database.query(baseQuery + ' ORDER BY CreatedDate DESC');
             }

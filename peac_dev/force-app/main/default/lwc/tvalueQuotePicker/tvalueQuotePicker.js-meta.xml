@@ -5,11 +5,15 @@
     <targets>
         <target>lightning__RecordPage</target>
         <target>lightning__FlowScreen</target>
-        <target>lightning__AppPage</target>
     </targets>
     <targetConfigs>
-        <targetConfig targets="lightning__RecordPage,lightning__FlowScreen">
+        <targetConfig targets="lightning__RecordPage">
             <property name="recordId" type="String" label="Record ID" description="The ID of the record to fetch quotes for"/>
+        </targetConfig>
+        <targetConfig targets="lightning__FlowScreen">
+            <property name="recordId" type="String" label="Record ID" description="The ID of the record to fetch quotes for (optional)"/>
+            <property name="selectedQuoteIds" type="String[]" label="Selected Quote IDs" description="Output: IDs of selected quotes" role="outputOnly"/>
+            <property name="selectedQuoteRecords" type="@salesforce/schema/tval__TValue_Quote__c[]" label="Selected Quote Records" description="Output: Full records of selected quotes" role="outputOnly"/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
