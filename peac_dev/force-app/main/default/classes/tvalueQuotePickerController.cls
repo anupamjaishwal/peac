@@ -50,51 +50,101 @@ public with sharing class tvalueQuotePickerController {
     }
 
     /**
-     * Main method called by the LWC. Determines yield visibility and fetches quote data.
+     * Main method called by the LWC. Determines yield visibility and fetches quote data by recordId.
      */
     @AuraEnabled(cacheable=true)
     public static QuoteDataWrapper getQuoteData(Id recordId) {
-        Boolean shouldShowYield = false;
-        Id userId = UserInfo.getUserId();
-        
-        List<User> userList = [SELECT Contact.AccountId FROM User WHERE Id = :userId AND ContactId != null LIMIT 1];
-        if (!userList.isEmpty() && userList[0].Contact.AccountId != null) {
-            Account userAccount = [SELECT Show_Yield_in_Dealer_Portal__c FROM Account WHERE Id = :userList[0].Contact.AccountId LIMIT 1];
-            if (userAccount.Show_Yield_in_Dealer_Portal__c) {
-                shouldShowYield = true;
-            }
-        }
-
-        List<QuoteWrapper> quoteWrapperList = getTValueQuotes(recordId);
-        return new QuoteDataWrapper(quoteWrapperList, shouldShowYield);
+        String whereClause = recordId != null ? 'WHERE Quote__c = :recordId' : '';
+        Map<String, Object> bindMap = new Map<String, Object>{'recordId' => recordId};
+        return fetchQuoteData(whereClause, bindMap);
     }
 
     /**
-     * Queries for tval__TValue_Quote__c records and transforms them into the wrapper class.
+     * Queries for tval__TValue_Quote__c records with dynamic WHERE clause.
+     * Supports filtering by recordId or list of quote IDs.
      */
-    private static List<QuoteWrapper> getTValueQuotes(Id recordId) {
-        List<QuoteWrapper> quoteWrapperList = new List<QuoteWrapper>();
+    private static QuoteDataWrapper fetchQuoteData(String whereClause, Map<String, Object> bindMap) {
         try {
-            List<tval__TValue_Quote__c> tValueQuotes;
-            String baseQuery = 'SELECT Id, Name, CreatedDate, tval__Amount_Financed__c, tval__Term__c, tval__Payment_Amount__c, ' +
-                               'tval__Number_of_Advanced_Payments__c, tval__Nominal_Annual_Rate__c, tval__Deferred_Payments__c, ' +
-                               'tval__Purchase_Option__c, Quote__c, Quote__r.Name, Quote__r.Description, ' +
-                               'Quote__r.Notes__c ' +
-                               'FROM tval__TValue_Quote__c';
-
-            if (recordId != null) {
-                tValueQuotes = Database.query(baseQuery + ' WHERE Quote__c = :recordId ORDER BY CreatedDate DESC');
-            } else {
-                tValueQuotes = Database.query(baseQuery + ' ORDER BY CreatedDate DESC');
+            String query = 'SELECT Id, Name, CreatedDate, tval__Amount_Financed__c, tval__Term__c, tval__Payment_Amount__c, ' +
+                          'tval__Number_of_Advanced_Payments__c, tval__Nominal_Annual_Rate__c, tval__Deferred_Payments__c, ' +
+                          'tval__Purchase_Option__c, Quote__c, Quote__r.Name, Quote__r.Description, Quote__r.Notes__c ' +
+                          'FROM tval__TValue_Quote__c';
+            
+            if (String.isNotBlank(whereClause)) {
+                query += ' ' + whereClause;
             }
             
-            for (tval__TValue_Quote__c tq : tValueQuotes) {
-                quoteWrapperList.add(new QuoteWrapper(tq));
-            }
+            query += ' ORDER BY CreatedDate DESC';
+            
+            List<tval__TValue_Quote__c> tValueQuotes = Database.queryWithBinds(query, bindMap, AccessLevel.USER_MODE);
+            List<QuoteWrapper> quoteWrapperList = buildQuoteWrappers(tValueQuotes);
+            return new QuoteDataWrapper(quoteWrapperList, shouldShowYieldColumn());
         } catch (Exception e) {
             throw new AuraHandledException('Error fetching TValue quotes: ' + e.getMessage());
         }
+    }
+
+    /**
+     * Queries for tval__TValue_Quote__c records by recordId and transforms them into the wrapper class.
+     */
+    private static List<QuoteWrapper> getTValueQuotes(Id recordId) {
+        try {
+            String query = 'SELECT Id, Name, CreatedDate, tval__Amount_Financed__c, tval__Term__c, tval__Payment_Amount__c, ' +
+                          'tval__Number_of_Advanced_Payments__c, tval__Nominal_Annual_Rate__c, tval__Deferred_Payments__c, ' +
+                          'tval__Purchase_Option__c, Quote__c, Quote__r.Name, Quote__r.Description, Quote__r.Notes__c ' +
+                          'FROM tval__TValue_Quote__c';
+            
+            if (recordId != null) {
+                query += ' WHERE Quote__c = :recordId';
+            }
+            
+            query += ' ORDER BY CreatedDate DESC';
+            
+            List<tval__TValue_Quote__c> tValueQuotes = Database.query(query);
+            return buildQuoteWrappers(tValueQuotes);
+        } catch (Exception e) {
+            throw new AuraHandledException('Error fetching TValue quotes: ' + e.getMessage());
+        }
+    }
+
+    /**
+     * Fetches tval__TValue_Quote__c records by their IDs and returns them with yield visibility flag.
+     * This method is called when the platform event NT_TValue_Event__e is received.
+     */
+    @AuraEnabled
+    public static QuoteDataWrapper getTValueQuotesByIds(List<String> quoteIds) {
+        String whereClause = 'WHERE Id IN :quoteIds';
+        Map<String, Object> bindMap = new Map<String, Object>{'quoteIds' => quoteIds};
+        return fetchQuoteData(whereClause, bindMap);
+    }
+
+    /**
+     * Converts tval__TValue_Quote__c records to QuoteWrapper objects.
+     */
+    private static List<QuoteWrapper> buildQuoteWrappers(List<tval__TValue_Quote__c> tValueQuotes) {
+        List<QuoteWrapper> quoteWrapperList = new List<QuoteWrapper>();
+        for (tval__TValue_Quote__c tq : tValueQuotes) {
+            quoteWrapperList.add(new QuoteWrapper(tq));
+        }
         return quoteWrapperList;
+    }
+
+    /**
+     * Determines if the current user should see the Yield column based on their Account settings.
+     */
+    private static Boolean shouldShowYieldColumn() {
+        Id userId = UserInfo.getUserId();
+        
+        // Single query combining User and Account relationship
+        List<User> userList = [SELECT Contact.Account.Show_Yield_in_Dealer_Portal__c 
+                               FROM User 
+                               WHERE Id = :userId AND Contact.AccountId != null 
+                               LIMIT 1];
+        
+        if (!userList.isEmpty() && userList[0].Contact.Account.Show_Yield_in_Dealer_Portal__c != null) {
+            return userList[0].Contact.Account.Show_Yield_in_Dealer_Portal__c;
+        }
+        return false;
     }
 
     /**

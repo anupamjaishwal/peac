@@ -1,7 +1,9 @@
 import { LightningElement, api, track } from 'lwc'; // Note: 'wire' is removed
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { FlowAttributeChangeEvent } from 'lightning/flowSupport';
+import { subscribe, unsubscribe, onError } from 'lightning/empApi';
 import getQuoteData from '@salesforce/apex/tvalueQuotePickerController.getQuoteData';
+import getTValueQuotesByIds from '@salesforce/apex/tvalueQuotePickerController.getTValueQuotesByIds';
 import SELECT_LABEL from '@salesforce/label/c.TvalueQuotePicker_Select';
 import QUOTE_OPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_QuoteOption';
 import DESCRIPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_Description';
@@ -29,6 +31,7 @@ export default class TvalueQuotePicker extends LightningElement {
     @track columns = [];
     @track isEmailModalOpen = false;
     showYieldColumn = false; // Flag to control column visibility
+    eventSubscription = null; // Platform event subscription
 
     label = {
         SELECT_LABEL,
@@ -51,6 +54,75 @@ export default class TvalueQuotePicker extends LightningElement {
     connectedCallback() {
         // We now initialize columns after we fetch the data and visibility flag
         this.loadQuotes();
+        this.subscribeToPlatformEvent();
+    }
+
+    disconnectedCallback() {
+        // Unsubscribe from platform event when component is destroyed
+        if (this.eventSubscription) {
+            unsubscribe(this.eventSubscription);
+        }
+    }
+
+    subscribeToPlatformEvent() {
+        // Subscribe to NT_TValue_Event__e platform event
+        const channel = '/event/NT_TValue_Event__e';
+        const replayId = -1; // Get new events only
+        
+        subscribe(channel, replayId, (message) => {
+            this.handlePlatformEvent(message);
+        }).then((subscription) => {
+            this.eventSubscription = subscription;
+            console.log('Subscribed to NT_TValue_Event__e');
+        }).catch((error) => {
+            console.error('Error subscribing to platform event:', error);
+        });
+
+        // Set up error handler for platform events
+        onError((error) => {
+            console.error('Platform event error:', error);
+        });
+    }
+
+    handlePlatformEvent(message) {
+        const eventData = message.data.payload;
+        console.log('Received platform event:', eventData);
+
+        // Check if the event is for this quote record
+        if (eventData.RecordId__c && eventData.TvalueQuoteIds__c) {
+            if (this.recordId && this.recordId === eventData.RecordId__c) {
+                // Event is for this record, fetch and render the new TValue quotes
+                this.loadTValueQuotesByIds(eventData.TvalueQuoteIds__c);
+            }
+        }
+    }
+
+    loadTValueQuotesByIds(tvalueQuoteIds) {
+        // Parse the semicolon-separated IDs
+        const ids = tvalueQuoteIds.split(';').map(id => id.trim()).filter(id => id.length > 0);
+        
+        if (ids.length === 0) {
+            return;
+        }
+
+        this.isLoading = true;
+        getTValueQuotesByIds({ quoteIds: ids })
+            .then(result => {
+                console.log('Fetched TValue quotes by IDs:', result);
+                this.quotes = result.quotes;
+                this.showYieldColumn = result.showYield;
+                this.initializeColumns();
+                this.error = undefined;
+                this.showToast('Success', 'New quotes loaded from platform event.', 'success');
+            })
+            .catch(error => {
+                console.error('Error fetching TValue quotes by IDs:', error);
+                this.error = error;
+                this.showToast('Error', 'Failed to load new quotes.', 'error');
+            })
+            .finally(() => {
+                this.isLoading = false;
+            });
     }
 
     initializeColumns() {
