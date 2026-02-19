@@ -1,0 +1,193 @@
+<aura:component controller="SL_DocumentChecklist" 
+	implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName" 
+	access="global" >
+	<aura:attribute name="lstRecords" type="list" />
+	<aura:attribute name="lstFilesId" type="Map" />
+	<aura:attribute name="LibraryID" type="String" />
+	<aura:attribute name="DocName" type="String" />
+	<aura:attribute name="DocDesc" type="String" />
+	
+	<aura:attribute name="sObjectName" type="String" />
+    <aura:attribute name="recordId" type="Id" />
+
+	<aura:attribute name="pickval" type="String" />
+	<aura:attribute name="picklistVal" type="list" />
+	
+	<aura:attribute name="contentID" type="String" />
+	<aura:attribute name="FirstLoyout" type="Boolean" default="true" />
+	<aura:attribute name="SecondPage" type="Boolean" default="false" />
+	<aura:attribute name="thirdPage" type="Boolean" default="false" />
+	<aura:attribute name="UploadFileName" type="String" default="" />
+
+	
+	<aura:attribute name="lstFields" type="list"  />
+	<aura:attribute name="lstQueryFields" type="list"/>
+	<aura:attribute name="currentSortColumn" type="String"/>
+	<aura:attribute name="selectedSortColumn" type="String"/>
+	<aura:attribute name="ascending" type="Boolean" default="true"/>
+
+	
+	<aura:attribute name="totalRecords" type="Integer" />
+	<aura:attribute name="startIndex" type="Integer" default="0"/>
+	<aura:attribute name="endIndex" type="Integer" default="5"/>	
+	<aura:attribute name="pageSize" type="Integer" default="5"/>
+
+	<aura:attribute name="width" type="String" description=" width of parent region"/>
+	<lightning:flexipageRegionInfo width="{!v.width}"/>
+
+	<aura:handler event="force:showToast" action="{!c.refreshcmp}" />
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+	<force:recordData aura:id="forceRecord"
+    recordId="{!v.recordId}" 
+    fields="Title_Processor__c" recordUpdated="{!c.handleRecordUpdate}" />
+
+	<div class="MyStyle" style="background-color: white;">
+		<aura:if isTrue="{!v.FirstLoyout}">
+			
+			<table class="slds-table slds-border_bottom slds-border_left slds-border_left slds-border_right slds-border_top slds-table_fixed-layout " role="grid">
+				<aura:if isTrue="{!v.width != 'SMALL'}">
+					<thead>
+						<tr class="slds-text-title_caps slds-border_bottom ">
+							<aura:iteration items="{!v.lstFields}" var="field" >
+								<th id="{!(field.fieldApi+'--'+field.sortable)}" scope="col" data-label="{!field.label}" onclick="{!c.sortRecords}" class="slds-cell-shrink slds-cell-wrap" 
+									style="{!(field.type == 'ICON' ? ' width:15px; ' : (field.type == 'REVIEW' ? ' width:55px;' : ''))}">  
+			                        <a class=" toggle  slds-th__action slds-text-link--reset" tabindex="0">
+	                                    <span class="slds-assistive-text">Sort</span>
+	                                    <span class="slds-truncate" title="{!field.label}">{!field.label}</span>
+	                                    <div class="{!field.sortable ? ' slds-icon_container ' : ' slds-hide ' }"  >
+	                                        <aura:if isTrue="{!field.fieldApi == v.currentSortColumn}">
+	                                            <span>
+	                                                <aura:if isTrue="{!v.ascending}">
+	                                                    <lightning:icon iconName="utility:arrowup" size="x-small" class="sdg-sort-icon"/>
+	                                                    <aura:set attribute="else">
+	                                                        <lightning:icon iconName="utility:arrowdown" size="x-small" class="sdg-sort-icon"/>
+	                                                    </aura:set>
+	                                                </aura:if>
+	                                            </span>
+	                                            <aura:set attribute="else">
+	                                                <lightning:icon iconName="utility:arrowup" size="x-small" class="hide sdg-sort-icon" />
+	                                            </aura:set>
+	                                        </aura:if>
+	                                    </div>
+	                                </a>
+								</th>
+							</aura:iteration>
+				    	</tr>
+					</thead>
+				</aura:if>
+				<tbody>
+					<aura:iteration items="{!v.lstRecords}" var="Record" indexVar="indx" > <!-- start="{!v.startIndex}" end="{!v.endIndex}" --> <!-- Commented By Harsh@Silverline SL-1242-->
+						<tr class="slds-border_bottom heightHead">
+							<!-- <aura:iteration items="{!v.lstFields}" var="field" >
+								<c:SL_DocColumn field = "{!field}"
+												record = "{!Record}"/>
+							</aura:iteration> -->
+							<c:SL_DocCheklistRecord record="{!Record}"
+													lstFields="{!v.lstFields}"
+													lstFiles="{!v.lstFilesId}"
+													width="{!v.width}"
+													LibraryID="{!v.LibraryID}"/>
+						</tr>
+					</aura:iteration>
+				<!-- 	 -->
+				</tbody> 
+			</table>
+			<!--<aura:if isTrue="{!v.lstRecords.length > v.pageSize}">
+                <div class="slds-text-align-center" style="padding: 0.5rem 0;">
+                    <button aura:id="prevButton" class="slds-button slds-button-neutral" onclick="{!c.prev}" disabled="true">PREV</button>
+                    <button aura:id="nextButton" class="slds-button slds-button-neutral" onclick="{!c.next}" >NEXT</button>
+                </div>
+            </aura:if>-->
+			<!--<lightning:button variant="brand" label="Add New Document" onclick="{!c.newDoc }" class="margintp"/>--><!-- commented By Harsh@Silverline SL-1242-->
+		</aura:if>
+
+		<aura:if isTrue="{!v.SecondPage}">
+			<article class="slds-card cardBackColor">
+			  	<div class="slds-card__header slds-grid">
+			    	<header class="slds-media slds-media_center slds-has-flexi-truncate">
+			      		<div class="slds-media__figure">
+				          	<lightning:icon class="slds-icon_container_circle" iconName="action:add_file" size="large" alternativeText="Indicates approval"/>
+				      	</div>
+				      	<div class="slds-media__body">
+				        	<h2>
+				            	<span class="slds-text-heading_medium">Add Document</span>
+				        	</h2>
+				        	<span class="slds-text-body_small">Add new documents</span>
+				      	</div>
+			    	</header>
+			  	</div>
+			  	<div class="slds-card__body"></div>
+			  	<footer class="slds-card__footer"></footer>
+			</article>
+			
+			<div class="slds-form slds-form_compound" style="padding-top: 0.5%;">
+			    <fieldset class="slds-form-element">
+		      		<div class="slds-form-element__group">
+		        		<div class="slds-form-element__row slds-grid slds-wrap">
+		          			<div class="slds-form-element inputPdd slds-col slds-medium-size_1-of-4 slds-large-size_1-of-4 slds-size_1-of-1">
+		            			<label class="slds-form-element__label" >Document Name</label>
+		            			<ui:inputText value="{!v.DocName}" required="true" class="slds-input"/>
+		          			</div>
+		          			<div class="slds-form-element slds-medium-size_1-of-4 slds-large-size_1-of-4 slds-size_1-of-1 inputPdd" style="margin-left: 0px;">
+		            			<label class="slds-form-element__label" >Document Status</label>
+		            			<ui:inputSelect aura:id="picklist2" value="{!v.pickval}" change="{!c.onSelectChange2}" options="{!v.picklistVal}" class="slds-input pickList"/>
+		      				</div>
+		      				<div class="slds-form-element slds-medium-size_2-of-4 slds-large-size_2-of-4 slds-size_1-of-1 inputPdd abc" style="margin-left: 0px;">
+		            			<label class="slds-form-element__label">Description</label>
+		            			<ui:inputText value="{!v.DocDesc}" class="slds-input maxWidth" />
+		      				</div>
+		    			</div>
+		      		</div>
+			    </fieldset>
+			</div>
+			<div class="slds-clearfix">
+				<lightning:button class="slds-float_right btnMargin" variant="brand" label="Next" onclick="{!c.nextBtn }"/>
+				<lightning:button class="slds-float_right Btn2" variant="brand" label="Cancel" onclick="{!c.cancel }"/>
+			</div>
+		</aura:if>
+
+		<aura:if isTrue="{!v.thirdPage}">
+			<article class="slds-card cardBackColor">
+			  	<div class="slds-card__header slds-grid">
+			    	<header class="slds-media slds-media_center slds-has-flexi-truncate">
+			      		<div class="slds-media__figure">
+				          	<lightning:icon class="slds-icon_container_circle" iconName="action:add_file" size="large" alternativeText="Indicates approval"/>
+				      	</div>
+				      	<div class="slds-media__body">
+				        	<h2>
+				            	<span class="slds-text-heading_medium">Upload Document</span>
+				        	</h2>
+				        	<span class="slds-text-body_small">Upload new documents</span>
+				      	</div>
+			    	</header>
+			  	</div>
+			  	<div class="slds-card__body"></div>
+			  	<footer class="slds-card__footer"></footer>
+			</article>
+			<div class="slds-clearfix">
+ 				 <div class="slds-clearfix">
+					<div class="{!v.UploadFileName.length > 0 ? ' slds-hide' : ' slds-float_left '}">
+						<lightning:fileUpload label="Attach receipt" 
+							class="fUploadCus"
+					        name="fileUploader" 
+					        multiple="false" 
+					        recordId="{!v.recordId}"
+					        onuploadfinished="{!c.handleUploadFinished}" />
+		    		</div>
+		    		<div class="{!v.UploadFileName.length > 0 ? ' slds-float_left ' : ' slds-hide '}" >
+		    			<span> 
+		    				<a onclick="{!c.naviToDetail}"> {!v.UploadFileName} </a>
+		    			</span>
+		    			&nbsp;&nbsp;
+		    			<lightning:buttonIcon iconName="utility:close" size="medium" onclick="{!c.deleteUploadedFile}" variant="bare" alternativeText="Remove file" />
+		    		</div>
+		    		<div class="slds-float_right" style="padding-top: 1.2rem;">
+						<lightning:button class="slds-float_right Btn2" variant="brand" label="Cancel" onclick="{!c.cancel }"/>
+						<lightning:button class="slds-float_right Btn2" variant="brand" label="Save" onclick="{!c.save }"/>
+					</div>
+				</div>
+			</div>
+		</aura:if>
+	</div>
+</aura:component>

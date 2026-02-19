@@ -1,0 +1,7 @@
+<aura:documentation>
+    <aura:description>
+        <p>Documentation for AuraChildRelatedActivities</p>
+        <p>This component will allow users to display tasks related to a parent record for this record.</p>
+    </aura:description>
+
+</aura:documentation>

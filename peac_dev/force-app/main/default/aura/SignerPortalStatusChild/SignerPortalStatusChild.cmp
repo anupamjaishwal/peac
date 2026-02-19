@@ -1,0 +1,306 @@
+<aura:component controller="PortalSignerStatusController"  implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	<aura:attribute type="Signer_Portal_Status__c" name="signerRec"/>
+    <aura:attribute name = "showChild" type = "Boolean" default = "false"/>
+    <aura:attribute name="tableRecordsForStatus" type="List"/>
+    <aura:attribute name="tableRecordsForStart" type="List"/>
+    <aura:attribute name="tableRecordsForComplete" type="List"/>
+    <aura:attribute type="List" name="fieldSetStatusValues"/>
+    <aura:attribute type="List" name="fieldSetStartValues"/>
+    <aura:attribute type="List" name="fieldSetCompleteValues"/>  
+    <aura:attribute type="List" name="signerLabelsList"/>
+    <aura:handler name = "init" value = "{!this}" action = "{!c.onInit}"/>  
+        
+        <aura:if isTrue="{!v.showChild}">
+        <lightning:tab label="{!v.signerRec.Name}" id="{!v.signerRec.Id}"> 
+             <lightning:layout class= "sldsFirstSection">
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                        <div class="custom-box slds-text-heading_medium">
+                            Signer
+                        </div>
+                        <div class="custom-box"><lightning:input disabled="true" value="{!v.signerRec.Contact__r.Name}" /></div>
+                    </lightning:layoutItem>
+                    
+                </lightning:layout>
+            <br/>
+            <div class="heading">
+                Account Creation Status
+            </div>
+            <br/>
+            <table class="slds-table slds-table--cell-buffer">
+                <thead>
+                    <tr class="">
+                        <th scope="col">
+                            <div class="slds-truncate" title="Step">Step</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Status">Status</div>
+                        </th>
+                        <th>
+                        </th>
+                        <th >
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Completion Date/Time">Completion Date/Time</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="Account Setup Complete"/></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.Account_Setup_Complete__c}" />
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Account_Setup_Complete_Date__c }"/>
+                            
+                         </td> 
+                    </tr>
+                    <tr><td>&nbsp;</td></tr>
+                </tbody>
+            </table>
+            <br/>
+            <div class="heading">
+                Overall Status
+            </div>
+            <br/>
+            <table class="slds-table slds-table--cell-buffer">
+                <thead>
+                    <tr class="">
+                        <th scope="col">
+                            <div class="slds-truncate" title="Step">Step</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Status">Status</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Start Date/Time">Start Date/Time</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Completion Date/Time">Completion Date/Time</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="1. Complete identity verification" /></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.ID_Ver_Status__c}" />
+                        </td>
+                        <td data-label="Start Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.ID_Ver_Start__c }" />
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.ID_Ver_Complete__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="2. Review &amp; Accept financing terms" /></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.Accept_Terms_Status__c }" />
+                        </td>
+                        <td data-label="Start Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Accept_Terms_Start__c }" />
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Accept_Terms_Complete__c }" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="3. Sign your financing agreement" /></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.Sign_Status__c}" />
+                        </td>
+                        <td data-label="Start Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Sign_Start__c}" />
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Sign_Complete__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="4. Upload required documents" /></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.Upload_Status__c}" />
+                        </td>
+                        <td data-label="Start Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Upload_Start__c}" />
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Upload_Complete__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="5. Provide bank account details" /></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.Bank_Details_Status__c}" />
+                        </td>
+                        <td data-label="Start Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Bank_Details_Start__c}" />
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Bank_Details_Complete__c}" />
+                        </td>
+                    </tr>                        
+                    <tr><td>&nbsp;</td></tr>
+                </tbody>
+            </table>
+            <br/>
+            <div class="heading">
+                Step 2 - Review and Accept Financing Terms Details
+            </div>
+            <br/>
+            <table class="slds-table slds-table--cell-buffer">
+                <thead>
+                    <tr class="">
+                        <th scope="col">
+                            <div class="slds-truncate" title="Step">Step</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Status">Status</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Start Date/Time">Start Date/Time</div>
+                        </th>
+                        <th scope="col">
+                            <div class="slds-truncate" title="Completion Date/Time">Completion Date/Time</div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="Business &amp; Equipment Information" /></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.Accept_Terms_Bus_Equip_Status__c}" />
+                        </td>
+                        <td data-label="Start Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Accept_Terms_Bus_Equip_Start__c}" />
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Accept_Terms_Bus_Equip_Complete__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="Terms" /></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.Accept_Terms_Terms_Status__c}" />
+                        </td>
+                        <td data-label="Start Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Accept_Terms_Terms_Status_Start__c}" />
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Accept_Terms_Terms_Status_Complete__c}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" data-label="Step">
+                            <p><lightning:formattedText value="Other Terms" /></p>
+                        </th>
+                        <td data-label="Status">
+                            <lightning:input disabled="true" value="{!v.signerRec.Accept_Terms_Other_Terms_Status__c }" />
+                        </td>
+                        <td data-label="Start Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Accept_Terms_Other_Terms_Start__c}"/>
+                        </td>
+                        <td data-label="Completion Date/Time">
+                            <lightning:input type="datetime" disabled="true" value="{!v.signerRec.Accept_Terms_Other_Terms_Complete__c}" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <br/>
+            <div class="heading">
+                Step 4 - Upload Required Docs Details
+            </div>
+            <br/>
+            <table class="slds-table slds-table--cell-buffer slds-table--striped">
+                <lightning:layout class= "slds-div">
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                        <div class="custom-box"><b>Step</b></div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                        <div class="custom-box"><b>Status</b></div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                        <div class="custom-box"><b>Start Date/Time</b></div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                        <div class="custom-box"><b>Completion Date/Time</b></div>
+                    </lightning:layoutItem>
+                </lightning:layout>
+                <br/>
+                <lightning:layout class= "slds-div">
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                         <aura:if isTrue="{!v.fieldSetStatusValues}">
+                        <div class="custom-box">
+                          <aura:if isTrue="{!v.fieldSetStatusValues}">
+                                    <aura:iteration items="{!v.signerLabelsList}" var="label" indexVar="index" >
+                                        <c:LightningCell CellInput= "{!label.MasterLabel}" record="{!v.tableRecordsForStatus}" statusField="{!v.fieldSetStatusValues}" index = "{!index}"/>
+                                   </aura:iteration>
+                                    
+                                </aura:if>
+                          </div>
+                              </aura:if> 
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                        <div class="custom-box">
+                             <aura:if isTrue="{!v.fieldSetStatusValues}" >
+                                    <aura:if isTrue="{!v.tableRecordsForStatus}">
+                                    <aura:iteration items="{!v.fieldSetStatusValues}" var="field" indexVar="index">
+                                        <c:LightningCell record="{!v.tableRecordsForStatus}" field="{!field}" statusField="{!v.fieldSetStatusValues}" index = "{!index}"/>
+                                    </aura:iteration>
+                                    </aura:if>
+                                </aura:if>
+                        
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                        <div class="custom-box">
+                        <aura:if isTrue="{!v.fieldSetStartValues}">
+                                 <aura:if isTrue="{!v.tableRecordsForStatus}">
+                                <aura:iteration items="{!v.fieldSetStartValues}" var="field" indexVar="index">
+                                    <c:LightningCell record="{!v.tableRecordsForStatus}" field="{!field}" statusField="{!v.fieldSetStatusValues}" index = "{!index}"/>
+                                 </aura:iteration>
+                                </aura:if>
+                            </aura:if>
+                        </div>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem flexibility="auto" padding="horizontal-medium">
+                        <div class="custom-box">
+                          <aura:if isTrue="{!v.fieldSetCompleteValues}">
+                                 <aura:if isTrue="{!v.tableRecordsForStatus}">
+                                <aura:iteration items="{!v.fieldSetCompleteValues}" var="field" indexVar="index">
+                                   <c:LightningCell record="{!v.tableRecordsForStatus}" field="{!field}" statusField="{!v.fieldSetStatusValues}" index = "{!index}"/>
+                                  </aura:iteration>
+                                </aura:if>
+                            </aura:if>
+                        </div>
+                    </lightning:layoutItem>
+                    
+                </lightning:layout>
+            </table>
+            </lightning:tab>
+             <aura:set attribute="else">
+         <lightning:spinner alternativeText="Loading" size="large" />
+        </aura:set>
+    </aura:if>
+</aura:component>

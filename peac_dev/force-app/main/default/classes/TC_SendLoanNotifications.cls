@@ -5,8 +5,9 @@
 
 public without sharing class TC_SendLoanNotifications {
 
+    @TestVisible
+    public static Boolean FORCE_EMAIL_FAILURE_FOR_TEST = false;
     public static void doAction(Map <Id, Opportunity> oldMap, Map <Id, Opportunity> newMap) {
-
 
         if(TC_RecursiveTriggerHelper.sendLoanNotifications)return;
         TC_RecursiveTriggerHelper.sendLoanNotifications = true;
@@ -578,68 +579,6 @@ public without sharing class TC_SendLoanNotifications {
 
                 if (Label.TC_DealerEmailsBCC.toLowerCase () != 'nobcc') bccAddresses = Label.TC_DealerEmailsBCC.split (';');
 
-
-
-                // ############################# This is sending multiple email (one for each contact). Keep it commented unless logic changes.
-                /*
-                if(emailTemplateList[0].Name != 'Loan Declined' && emailTemplateList[0].Name != 'Loan More Info' && emailTemplateList[0].Name != 'Loan Cancelled' && emailTemplateList[0].Name !='Loan Approved'){
-                    for (Id conId : oppContacts.get(oppId)){
-                        Messaging.SingleEmailMessage emailMessage = new Messaging.SingleEmailMessage();
-                        emailMessage.setWhatId(oppId);
-                        emailMessage.setTargetObjectId (conId);
-                        System.debug('Sending email to Contact: ' + conId);
-                        emailMessage.setTemplateId(templateId);
-                        if (!bccAddresses.isEmpty()) emailMessage.setBccAddresses(bccAddresses);
-                        emailMessage.setToAddresses (new List <Id>{
-                                conId
-                        });
-                        System.debug('Sent Emails to: ' + conId);
-                        if(!oAMap.isEmpty() || (emailTemplateList.size() == 1 && emailTemplateList[0].Name == 'Loan Declined')) {
-                            ccAddresses.add(opportunityMap.get(oppId).Assigned_Credit_User__r.Email);
-                        } else {
-                            ccAddresses.add('PartnerNotifications@peacsolutions.com');
-
-                            
-                            if(dealerBrokerContactMap.containsKey(conId) && dealerBrokerContactMap.get(conId).Account.SAM__r.Email <> null)
-                                ccAddresses.add(dealerBrokerContactMap.get(conId).Account.SAM__r.Email);
-                            if(dealerBrokerContactMap.containsKey(conId) && dealerBrokerContactMap.get(conId).Account.Owner.Email <> null)
-                                ccAddresses.add(dealerBrokerContactMap.get(conId).Account.Owner.Email);
-                        
-                        }                         
-
-                            emailMessage.setCcAddresses(ccAddresses);
-                        
-                        emailMessage.saveAsActivity = false;
-                        if (!noreply.isEmpty()) emailMessage.setOrgWideEmailAddressId(noreply[0].Id);
-                        
-                        if(!oAMap.isEmpty() && oppWithEmailAtts.containskey(oppId) && emailTemplateList[0].Name != 'Loan Declined' && emailTemplateList[0].Name != 'Loan More Info' && emailTemplateList[0].Name != 'Loan Cancelled') {
-                            emailMessage.setFileAttachments(oppWithEmailAtts.get(oppId));
-                        }
-                        //SAL-3040 if emailTemplate is Docs Out with Contracts, add attachments to email
-                        if (emailTemplateList.size() == 1 && emailTemplateList[0].Name == 'Loan Docs Out w/ Contracts') {
-                            List<Messaging.EmailFileAttachment> emailAttachments = new List<Messaging.EmailFileAttachment>();
-                            
-                            //check if there were contracts returned for this oppId
-                            if (oppWithEmailAtts.containsKey(oppId)){
-                                for (Messaging.EmailFileAttachment efa : oppWithEmailAtts.get(oppId)) {
-                                    emailAttachments.add(efa);
-                                }
-                                if (emailAttachments.size() > 0) {
-                                    emailMessage.setFileAttachments(emailAttachments);
-                                }
-                            }
-                        }
-                        
-                        emailsToSend.add(emailMessage);
-                        System.debug('email message target object id con: ' + emailMessage.targetObjectId);
-                    }
-                } 
-                */
-                // #############################
-
-
-
-
                 //This will be used to send a single email
                 if(opportunityOwnersMap != null){
                     Messaging.SingleEmailMessage emailMessage = new Messaging.SingleEmailMessage ();
@@ -662,6 +601,7 @@ public without sharing class TC_SendLoanNotifications {
                             }
                         }
                     }
+                    //recipients.add('nobody@gmail.com');
 
                     //Account Team Members
                     List<String> accountTeamMemberEmail = new List<String>(brokerTeamEmailsByOpp.get(oppId));
@@ -674,12 +614,8 @@ public without sharing class TC_SendLoanNotifications {
 
                     Id brokerAccountId; 
     
-                    if(!brokerMap.isEmpty() && brokerMap.containsKey(emailList.get(oppId)?.iterator().next())){
-                        Broker__c b = brokerMap.get(emailList.get(oppId).iterator().next());
-                        if(b != null){
-                            brokerAccountId= b.Account__c;
-                        }
-                    }
+                    if(!brokerMap.isEmpty() && brokerMap.containsKey(emailList.get(oppId)?.iterator().next()))
+                    brokerAccountId= brokerMap.get(emailList.get(oppId).iterator().next()).Account__c;
 
                     if (brokerAccountId != null && brokerAccountMap.containsKey(brokerAccountId)) {
                         String brokerOwnerEmail = brokerAccountMap.get(brokerAccountId).Owner.Email;
@@ -717,6 +653,8 @@ public without sharing class TC_SendLoanNotifications {
                         }
 
                         emailMessage.setCcAddresses(recipients);                                               
+
+
 
                         //For Loan More Info we need to set Guarantor as WhatId
                         if(emailTemplateList[0].Name == 'Loan More Info'){
@@ -756,23 +694,91 @@ public without sharing class TC_SendLoanNotifications {
                 if (emailsToSend.size() > 0) {
                    // emailsToSend.get(0).setCcAddresses(new List<String>{'PartnerNotifications@peacsolutions.com'});
                 }
-
-
             //}
         }
 
-        System.debug('>>>>> emailList: ' + emailsToSend.size ());
+        System.debug('emailList: ' + emailsToSend.size ());
         for(Messaging.SingleEmailMessage email  : emailsToSend){
-                    System.debug('>>>>> EMAIL: ' + email.getToAddresses() +'  ' + email.getCcAddresses());
+                    System.debug('EMAIL: ' + email.getToAddresses() +'  ' + email.getCcAddresses());
 
         }
+
+        // TEST-ONLY: force log creation without sending email please IGNORE
+        if (Test.isRunningTest() && FORCE_EMAIL_FAILURE_FOR_TEST) {
+            List<ErrorLogger__Error_Log__c> logs = new List<ErrorLogger__Error_Log__c>();
+
+            for (Id oppId : emailList.keySet()) {
+                logs.add(new ErrorLogger__Error_Log__c(
+                    ErrorLogger__Class_Name__c = 'TC_SendLoanNotifications',
+                    Opportunity__c = oppId, 
+                    ErrorLogger__Log_Detail__c = 'TEST: Forced email failure',
+                    ErrorLogger__Log_Level__c = 'Error',
+                    ErrorLogger__Timestamp__c = System.now().format('M/d/yyyy hh:mm a')
+                ));
+            }
+
+            if (!logs.isEmpty()) insert logs;
+            return; 
+        }
+        // TEST-ONLY: force log creation without sending email please IGNORE
+
+
         if (!emailsToSend.isEmpty()) {
             Messaging.SendEmailResult[] results = new List<Messaging.SendEmailResult>();
             if (!Test.isRunningTest()) {
                 try {
-                   results = Messaging.sendEmail(emailsToSend);
-                //if(emailTemplateList[0].Name != 'Loan Cancelled') results = Messaging.sendEmail(emailsToSend);
-
+                    results = Messaging.sendEmail(emailsToSend, false);
+                    System.debug('Error while sending dealer emails RESULTS: ' + results);
+                    Integer i = 0;
+                    for (Messaging.SendEmailResult res : results) {
+                        if (!res.isSuccess()) {
+                            Messaging.SingleEmailMessage emailMess = emailsToSend[i];
+                            Id whatIdUsed = emailMess.getWhatId();
+                            Boolean isMoreInfo =
+                                (emailTemplateList.size() > 0 &&
+                                emailTemplateList[0].Name == 'Loan More Info');
+                            Id finalOppId;
+                            // More Info -> whatId = Guarantor.Id
+                            // Find the Opportunity that owns that guarantor
+                            if (isMoreInfo) {
+                                finalOppId = null;
+                                for (Id oppKey : oldestGuarantorByOpp.keySet()) {
+                                    if (oldestGuarantorByOpp.get(oppKey).Id == whatIdUsed) {
+                                        finalOppId = oppKey;
+                                        break;
+                                    }
+                                }
+                            }
+                            // Not More Info -> whatId is Opportunity.Id
+                            else {
+                                finalOppId = whatIdUsed;
+                            }
+                            if (finalOppId == null) {
+                                finalOppId = whatIdUsed;
+                            }
+                            Messaging.SendEmailError[] errors = res.getErrors();
+                            System.debug('Errors ' + errors);
+                            for (Messaging.SendEmailError err : errors) {
+                                System.debug('Error message ' + err.getMessage());
+                                System.debug('Error object ID ' + err.getTargetObjectId());
+                                ErrorLogger__Error_Log__c logRecord = new ErrorLogger__Error_Log__c(
+                                    ErrorLogger__Class_Name__c = 'TC_SendLoanNotifications',
+                                    Opportunity__c = finalOppId,
+                                    ErrorLogger__Log_Detail__c = err.getMessage(),
+                                    ErrorLogger__Log_Level__c = 'Error',
+                                    ErrorLogger__Timestamp__c = System.now().format('M/d/yyyy hh:mm a')
+                                );
+                                System.debug('Log Created' + logRecord);
+                                try {
+                                    insert logRecord;
+                                } catch (Exception logEx) {
+                                    System.debug('Failed to create Integration Log: ' + logEx.getMessage());
+                                    System.debug('Stack: ' + logEx.getStackTraceString());
+                                }
+                            }
+                        }
+                        i++;
+                    }
                 } catch (Exception e) {
                     System.debug ('Error while sending dealer emails: ' + e + ' ' + results);
                 }

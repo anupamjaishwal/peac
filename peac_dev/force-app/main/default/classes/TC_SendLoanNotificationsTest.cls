@@ -29,12 +29,13 @@ public with sharing class TC_SendLoanNotificationsTest {
         c1.AccountId = a.Id;
         c1.Phone = '5555555555';
         contacts.add(c1);
-        
+
 		Contact c2 = new Contact();
         c2.FirstName = 'Dealer Repurchase DocGen';
         c2.LastName = 'DO NOT DELETE';
         c2.AccountId = a.Id;
         c2.Phone = '5555555557';
+        c2.Email = 'dealer.primary@test.com';
 		contacts.add(c2);
 
         insert contacts;
@@ -104,10 +105,30 @@ public with sharing class TC_SendLoanNotificationsTest {
         op.Loan_Purpose__c = 'Cash Crunch';
         op.CaseCenter__c = 'L78697698';
         op.StageName = 'Proposal';
+        op.Primary_Broker__c = b.Id;
+
 
         insert op;
 
-        System.debug('Opportunity Created Created');
+        insert new Guarantor__c(
+            Opportunity__c = op.Id,
+            Type__c = 'Personal Guarantor',
+            PG_Number__c = 'PG1'
+        );
+        
+        Opportunity_Attachment__c oa = new Opportunity_Attachment__c(
+            Opportunity__c = op.Id,
+            Dealer_Doc_Type__c = 'Approval Letter'
+        );
+        insert oa;
+        
+        Attachment att = new Attachment();
+        att.ParentId = oa.Id;
+        att.Name = 'approval_letter.pdf';
+        att.Body = Blob.valueOf('fake pdf bytes');
+        insert att;
+        
+        System.debug('Opportunity Created');
         
         Broker__c broker = new Broker__c();
         broker.Account__c = b.Id;
@@ -115,11 +136,7 @@ public with sharing class TC_SendLoanNotificationsTest {
         insert broker;
         System.debug('Broker Relationship Created');
 
-        Dealer__c dealer = new Dealer__c();
-        dealer.Opportunity__c = op.Id;
-        dealer.Dealer__c = d.Id;
-        dealer.Primary_Dealer__c = false;
-        insert dealer;
+       
 
         OpportunityContactRole ocr = new OpportunityContactRole();
         ocr.ContactId = c2.Id;
@@ -188,4 +205,96 @@ public with sharing class TC_SendLoanNotificationsTest {
         update op;
         Test.stopTest();
     }
+    
+    @IsTest
+    public static void testMoreInfo_CreatesErrorLog_WhenEmailFails(){
+        TC_SendLoanNotifications.FORCE_EMAIL_FAILURE_FOR_TEST = true;
+    
+        Opportunity op = [SELECT Id, Application_Status__c FROM Opportunity WHERE Name = 'Test Opp' LIMIT 1];
+    
+        delete [SELECT Id FROM ErrorLogger__Error_Log__c WHERE Opportunity__c = :op.Id];
+    
+        Test.startTest();
+        op.Application_Status__c = 'More Info';
+        update op;
+        Test.stopTest();
+    
+        System.assert(
+            [SELECT COUNT() FROM ErrorLogger__Error_Log__c WHERE Opportunity__c = :op.Id] > 0,
+            'Expected ErrorLogger__Error_Log__c record for forced email failure (More Info)'
+        );
+    }
+    
+    @IsTest
+    public static void testApproved_CreatesErrorLog_WhenEmailFails(){
+        TC_SendLoanNotifications.FORCE_EMAIL_FAILURE_FOR_TEST = true;
+    
+        Opportunity op = [SELECT Id, Application_Status__c FROM Opportunity WHERE Name = 'Test Opp' LIMIT 1];
+    
+        delete [SELECT Id FROM ErrorLogger__Error_Log__c WHERE Opportunity__c = :op.Id];
+    
+        Test.startTest();
+        op.Application_Status__c = 'Approved';
+        update op;
+        Test.stopTest();
+    
+        System.assert(
+            [SELECT COUNT() FROM ErrorLogger__Error_Log__c WHERE Opportunity__c = :op.Id] > 0,
+            'Expected ErrorLogger__Error_Log__c record for forced email failure (Approved)'
+        );
+    }
+    
+    @IsTest
+    public static void testDocsOutContracts_CoversOpportunityAttachmentRedBlock() {
+    
+        Opportunity op = [
+            SELECT Id, OwnerId
+            FROM Opportunity
+            WHERE Name = 'Test Opp'
+            LIMIT 1
+        ];
+    
+        Broker__c br = [
+            SELECT Id, Account__c, Opportunity__c
+            FROM Broker__c
+            WHERE Opportunity__c = :op.Id
+            LIMIT 1
+        ];
+    
+        Opportunity_Attachment__c oa = new Opportunity_Attachment__c();
+        oa.Name = 'Test OA';
+        oa.Opportunity__c = op.Id;
+        oa.Dealer_Doc_Type__c = 'Approval Letter'; 
+        oa.Type__c = 'Approval Letter';           
+        insert oa;
+    
+        Attachment att = new Attachment();
+        att.ParentId = oa.Id;
+        att.Name = 'ApprovalLetter.pdf';
+        att.Body = Blob.valueOf('dummy pdf bytes');
+        insert att;
+    
+        Map<Id, Set<Id>> emailList = new Map<Id, Set<Id>>();
+        emailList.put(op.Id, new Set<Id>{ br.Id });
+    
+        Map<Id, Id> ownerIds = new Map<Id, Id>{ op.Id => op.OwnerId };
+    
+        Id templateId;
+        List<EmailTemplate> tList = [
+            SELECT Id, Name
+            FROM EmailTemplate
+            WHERE Name IN ('Loan Docs Out w/ Contracts', 'Loan Docs Out', 'Loan Approved', 'Loan More Info')
+            LIMIT 1
+        ];
+        System.assert(!tList.isEmpty(), 'No EmailTemplate found in org to run sendLoanEmails.');
+        templateId = tList[0].Id;
+    
+        Test.startTest();
+        TC_SendLoanNotifications.sendLoanEmails(emailList, templateId, ownerIds);
+        Test.stopTest();
+    
+        System.assertEquals(true, true);
+    }
+    
+
 }

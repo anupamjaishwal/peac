@@ -1,0 +1,11 @@
+<aura:component access="global">
+    <aura:registerEvent name="appEvent" type="c:tc_bookMillionDollarLeaseConfirmation_evt"/>
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+
+    <!--Component Start-->
+    <div class="slds-text-align_center slds-m-around_x-medium">
+        <lightning:button name="ok" label="OK" variant="brand" onclick="{!c.handleOK}"/>
+        <lightning:button name="cancel" label="Cancel" onclick="{!c.handleCancel}"/>
+    </div>
+    <!--Component End   -->
+</aura:component>

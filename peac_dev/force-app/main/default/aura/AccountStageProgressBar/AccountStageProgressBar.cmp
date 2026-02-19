@@ -1,0 +1,21 @@
+<aura:component implements="force:hasRecordId,flexipage:availableForAllPageTypes"
+                access="global" controller="AccountDetails">
+
+	<!-- Visual progress bar indicating the current status of a property -->
+	
+    <aura:attribute name="steps" type="String[]" default="['Qualification', 'Discovery', 'Proposal', 'Close','Account Development','Account Penetration']" />
+    <aura:attribute name="errorMessage" type="String"/>
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="account" type="Account" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:dependency resource="markup://force:recordSaveSuccess" type="EVENT" />
+    <aura:handler event="force:refreshView" action="{!c.refreshView}" />
+    
+    <div aura:id="div1"></div>
+    <c:ProgressBar steps="{!v.steps}" currentStep="{!v.account.Account_Stage__c}" extraStep="Very Low"
+               stepChange="{!c.queryAccount}"/>
+    <div aura:id="div2">
+    	<ui:outputText class="errorMessage" value="{!v.errorMessage}" />
+    </div>
+    
+</aura:component>

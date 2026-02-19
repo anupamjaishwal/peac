@@ -6,5 +6,10 @@
         <minorNumber>16</minorNumber>
         <namespace>Validity_Verify</namespace>
     </packageVersions>
+    <packageVersions>
+        <majorNumber>1</majorNumber>
+        <minorNumber>60</minorNumber>
+        <namespace>tval</namespace>
+    </packageVersions>
     <status>Active</status>
 </ApexClass>

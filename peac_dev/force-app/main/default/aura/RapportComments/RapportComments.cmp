@@ -1,0 +1,5 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader" access="global">
+    
+    <ui:button label="Open in New window" press="{!c.openActionWindow1}"/>
+	
+</aura:component>

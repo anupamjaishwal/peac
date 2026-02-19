@@ -1,0 +1,219 @@
+<!--
+ - Created by tamarack on 1/28/20.
+ -->
+
+<aura:component description="tc_RenderDecisionButton"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickActionWithoutHeader,lightning:hasPageReference,lightning:isUrlAddressable"
+                access="global"
+                controller="TC_RenderDecisionButtonCtrl">
+
+    <aura:attribute name="wrapper" type="TC_RenderDecisionButtonCtrl.RenderDecisionWrapper"/>
+
+    <aura:attribute name="actionOptions" type="List" default="[
+            {'label':'Yes','value':'Yes'},
+            {'label':'No','value':'No'}
+            ]"/>
+    <aura:attribute name="actionValue" type="String" default="Yes"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}"/>
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}"/>
+    <aura:attribute name="spinner" type="boolean" default="false"/>
+
+    <div class="slds-col modal-header slds-modal__header">
+        <h2 class="title slds-text-heading--medium">Render Decision</h2>
+    </div>
+
+    <div class="slds-col modal-body scrollable slds-p-around_large" style="height: 300px; overflow-y: auto !important">
+
+        <aura:if isTrue="{!and(not(empty(v.wrapper.errorList)), v.wrapper.errorList.length > 0)}">
+            <aura:if isTrue="{!v.wrapper.fraudFlag}">
+                <div class="slds-box slds-theme_error slds-m-bottom_small">
+                    <div class="slds-text-color_inverse">
+                        Customer is associated with potential fraud.
+                    </div>
+                </div>
+            </aura:if>
+            <div class="slds-p-bottom_medium">
+                The following criteria were not met. Render Decision action could not be completed:
+            </div>
+            <div class="slds-p-bottom_medium">
+                <ol class="slds-list_ordered">
+                    <aura:iteration items="{!v.wrapper.errorList}" var="warningMessage" indexVar="i">
+                        <li>
+                            {!warningMessage}
+                        </li>
+                    </aura:iteration>
+                </ol>
+            </div>
+        </aura:if>
+
+        <!-- Confirm Action Step screen -->
+        <aura:if isTrue="{!and(v.wrapper.confirmActionStep, and(empty(v.wrapper.errorList), v.wrapper.errorList.length == 0))}">
+            <aura:if isTrue="{!v.wrapper.fraudFlag}">
+                <div class="slds-box slds-theme_error slds-m-bottom_small">
+                    <div class="slds-text-color_inverse">
+                        Customer is associated with potential fraud.
+                    </div>
+                </div>
+            </aura:if>
+            <lightning:radioGroup name="radioGroup" label="Are you sure you want to take this action step?" type="radio"
+                                  options="{!v.actionOptions}" value="{!v.actionValue}"/>
+        </aura:if>
+
+        <!-- Screen after Render Decision -->
+        <aura:if isTrue="{!and(and(v.wrapper.supplementalCodes,equals(v.actionValue, 'Yes')),and(
+                                not(v.wrapper.confirmActionStep),
+                                and(empty(v.wrapper.errorList), v.wrapper.errorList.length == 0)
+                                ))}">
+            <aura:if isTrue="{!equals(v.wrapper.opp.Decline_Reason__c,'Rejected with Supplemental Information')}">
+                <div class="slds-p-bottom_medium">
+                    Decline Reason = "Rejected with Supplemental Information." Select one or more Supplemental Decline Codes:
+                </div>
+                <div class="slds-p-bottom_medium">
+                    <lightning:recordEditForm recordId="" objectApiName="Opportunity">
+                        <div class="slds-grid slds-wrap">
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Business or Personal Bankruptcy"
+                                                      checked="{!v.wrapper.opp.Business_or_Personal_Bankruptcy__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Dealer Issue"
+                                                 checked="{!v.wrapper.opp.Dealer_Issue__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Additional Bureau Information"
+                                                 checked="{!v.wrapper.opp.Additional_Bureau_Information__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Existing Marlin Customer Not Paid as Agr"
+                                                 checked="{!v.wrapper.opp.Existing_Marlin_Customer_Not_Paid_As_Agr__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Equipment Issue"
+                                                 checked="{!v.wrapper.opp.Equipment_Issue__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Exposure"
+                                                 checked="{!v.wrapper.opp.Exposure__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="PG on app not linked to business"
+                                                 checked="{!v.wrapper.opp.PG_on_app_not_linked_to_business__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Excessive Suits, Liens or Judgments"
+                                                 checked="{!v.wrapper.opp.Excessive_Suits_Liens_or_Judgments__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Poor Financial Condition"
+                                                 checked="{!v.wrapper.opp.Poor_Financial_Condition__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="No Comp Debt"
+                                                 checked="{!v.wrapper.opp.No_Comp_Debt__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Scored incorrect bureau-correct bureau d"
+                                                 checked="{!v.wrapper.opp.Scored_incorrect_bureau_correct_bureau_d__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Verified Different TIB"
+                                                 checked="{!v.wrapper.opp.Verified_Different_TIB__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Insufficient Bank Balance"
+                                                 checked="{!v.wrapper.opp.Insufficient_Bank_Balance__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="NSF/OD Activity"
+                                                 checked="{!v.wrapper.opp.NSF_OD_Activity__c}"/>
+                            </div>
+                            <div class="slds-col slds-x-small-size_1-of-2">
+                                <lightning:input type="checkbox" label="Fraud Flag"
+                                                 checked="{!v.wrapper.opp.Fraud_Flag__c}"/>
+                            </div>
+                            <div class="slds-size_1-of-1">
+                                <lightning:input label="Other" value="{!v.wrapper.opp.Other__c}"/>
+                            </div>
+                        </div>
+                    </lightning:recordEditForm>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!equals(v.wrapper.opp.Reason_for_Approval__c, 'Approved with Supplemental Information')}">
+                <div class="slds-p-bottom_medium">
+                    Reason for Approval = "Approved with Supplemental Information." Select one or more Supplemental Approval Codes:
+                </div>
+                <lightning:recordEditForm recordId="{!v.wrapper.opp.Id}" objectApiName="Opportunity">
+                    <div class="slds-grid slds-wrap">
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="checkbox" label="Sufficient Financial Strength"
+                                             checked="{!v.wrapper.opp.Sufficient_Financial_Strength__c}"/>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="checkbox" label="Strong Trade/Comparable Lease/Bank Refer"
+                                             checked="{!v.wrapper.opp.Strong_Trade_Comparable_Lease_Bank_Refer__c}"/>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="checkbox" label="Verified Different Time in Business"
+                                             checked="{!v.wrapper.opp.Verified_Different_Time_in_Business__c}"/>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="checkbox" label="Cross Corporate Guarantor"
+                                             checked="{!v.wrapper.opp.Cross_Corporate_Guarantor__c}"/>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="checkbox" label="Scored incorrect bureau-correct bureau s"
+                                             checked="{!v.wrapper.opp.Scored_incorrect_bureau_correct_bureau_s__c}"/>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="checkbox" label="Additional Bureau Data"
+                                             checked="{!v.wrapper.opp.Additional_Bureau_Data__c}"/>
+                        </div>
+                        <div class="slds-size_1-of-2">
+                            <lightning:input type="checkbox" label="Existing Marlin Customer with Good Pay H"
+                                             checked="{!v.wrapper.opp.Existing_Marlin_Customer_with_Good_Pay_H__c}"/>
+                        </div>
+                        <div class="slds-size_1-of-1">
+                            <lightning:input label="Approval Other" value="{!v.wrapper.opp.Approval_Other__c}"/>
+                        </div>
+                    </div>
+                </lightning:recordEditForm>
+            </aura:if>
+        </aura:if>
+    </div>
+
+    <div class="slds-col modal-footer slds-modal__footer">
+        <lightning:button label="Next" onclick="{!c.nextButton}" variant="brand"/>
+    </div>
+
+    <aura:if isTrue="{!v.spinner}">
+        <div aura:id="spinnerId" class="slds-spinner_container">
+            <div class="slds-spinner_brand  slds-spinner slds-spinner_large slds-is-relative" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+
+    <aura:html tag="style">
+        .slds-modal__container {
+        min-width: 50vw;
+        }
+
+        .cuf-content {
+            padding: 0 0rem !important;
+        }
+        .slds-p-around--medium {
+            padding: 0rem !important;
+        }
+        .slds-modal__content {
+            overflow-y: hidden !important;
+            height: unset !important;
+            max-height: unset !important;
+        }
+    </aura:html>
+
+</aura:component>

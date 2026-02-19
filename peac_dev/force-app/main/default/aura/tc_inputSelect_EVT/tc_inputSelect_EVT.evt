@@ -1,0 +1,7 @@
+<!--
+ - Created by andrewmayer on 1/9/19.
+ -->
+
+<aura:event type="COMPONENT" description="tc_inputSelect_EVT">
+    <aura:attribute name="fieldAPIName" type="String"/>
+</aura:event>

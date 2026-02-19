@@ -1,0 +1,9 @@
+<aura:component implements="lightning:isUrlAddressable" access="global">
+    <!-- added by Raja -->
+    <aura:attribute name="message" type="String" default="Close Not Clicked"/>
+    
+    <lightning:workspaceAPI aura:id="workspace"/> 
+    
+    <!-- <c:sL_CaseModal recordId="{!v.recordId}" onclosemodal="{!c.handleCloseModal}"></c:sL_CaseModal> -->
+    <c:sL_EditCase isNewCase="true" oncloseclicked="{!c.handleFilterChange}"></c:sL_EditCase>
+</aura:component>

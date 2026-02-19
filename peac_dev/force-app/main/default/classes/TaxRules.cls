@@ -5,7 +5,8 @@
  * @last modified on  : 02-20-2025
  * @last modified by  : lvang@northteq.com
  **/
-global class TaxRules {
+global without sharing class TaxRules {
+
     global class TaxRulesException extends Exception { }
     static Map<String, Set<String> > objectQueryFieldsMap = new Map<String, Set<String> >();
 
@@ -124,19 +125,19 @@ global class TaxRules {
                 childQuery = childQuery.removeEnd(',');
                 childQuery += ')';
                 // SAL-5860 Misael Romero
-            List<SObject> childRecords = Database.query(childQuery);
+                List<SObject> childRecords = Database.query(childQuery);
 
-            for (SObject child : childRecords) {
-                recIds.add(child.Id);
+                for (SObject child : childRecords) {
+                    recIds.add(child.Id);
 
-                if (childTaxObject.Tax_State_Field__r.QualifiedApiName != null){
-                    states.add((String) child.get(childTaxObject.Tax_State_Field__r.QualifiedApiName));
+                    if (childTaxObject.Tax_State_Field__r.QualifiedApiName != null){
+                        states.add((String) child.get(childTaxObject.Tax_State_Field__r.QualifiedApiName));
+                    }
                 }
-            }
                 system.debug('recIds: ' + recIds);
                 system.debug('childQuery: ' + childQuery);
 
-            objectQueryFieldsMap.put(childTaxObject.Object__r.QualifiedApiName, new Set<String> {'Name'});
+                objectQueryFieldsMap.put(childTaxObject.Object__r.QualifiedApiName, new Set<String> {'Name'});
                 queuedChildTaxObjs.add(childTaxObject);
             }
             
@@ -272,9 +273,10 @@ global class TaxRules {
         String rateQuery = TaxRulesHelper.createQueryString(rateQueryFields, TaxRulesHelper.getSettings().getRateObject(), null, null) + ' WHERE ';
 
         for (Id key : recordTaxValuesMap.keySet()) {
-            rateQuery += '(' + TaxRulesHelper.getSettings().getRateStateField() + ' = \'' + recordTaxValuesMap.get(key).state + '\'';
-            rateQuery += ' AND ' + TaxRulesHelper.getSettings().getRateCountyField() + ' = \'' + recordTaxValuesMap.get(key).county + '\'';
-            rateQuery += ' AND ' + TaxRulesHelper.getSettings().getRateCityField() + ' = \'' + recordTaxValuesMap.get(key).city + '\')';
+            TaxValues theRate = recordTaxValuesMap.get(key);// SAL-6475 Misael Romero
+            rateQuery += '(' + TaxRulesHelper.getSettings().getRateStateField() + ' = \'' + String.escapeSingleQuotes(theRate.state) + '\'';
+            rateQuery += ' AND ' + TaxRulesHelper.getSettings().getRateCountyField() + ' = \'' + String.escapeSingleQuotes(theRate.county) + '\'';
+            rateQuery += ' AND ' + TaxRulesHelper.getSettings().getRateCityField() + ' = \'' + String.escapeSingleQuotes(theRate.city) + '\')';
 
             if (counter < recordTaxValuesMap.keySet().size())
                 rateQuery += ' OR ';

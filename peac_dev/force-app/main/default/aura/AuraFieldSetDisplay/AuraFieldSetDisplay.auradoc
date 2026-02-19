@@ -1,0 +1,20 @@
+<aura:documentation>
+    <aura:description>
+        <h1>Documentation for Siloed Info Display</h1>
+        <p>This component takes the object name and field set parameters and uses that data to display the fields defined in that objects field set. Administrators can configure:</p>
+        <ul>
+            <li><em>Object Type</em>: The type of object being displayed</li>
+            <li><em>Title</em>: The title of the component on the page</li>
+            <li><em>Number Of Columns</em>: The number of columns that are displayed</li>
+            <li><em>Record Mode</em>: The record mode includes three options for the user to interact with the fields
+                <ol>
+                    <li>View: The component loads in a view state and allows for inline editing</li>
+                    <li>Edit: The component loads in an edit state</li>
+                    <li>Read Only: The component loads in a read only state and cannot be edited by the user</li>
+                </ol>
+            </li>
+            <li><em>Field Set Name</em>: The name of the field set that will be displayed with this component</li>
+            <li><em>Logo</em>: Allows the user to select a logo that is displayed for that component from the standard Salesforce logos</li>
+        </ul>
+    </aura:description>
+</aura:documentation>

@@ -1,0 +1,11 @@
+<aura:component description="Book to InfoLease Action" controller="TC_BookToInfoLeaseCtrl" 
+                implements="force:hasRecordId,force:lightningQuickAction" access="global">
+
+    <aura:attribute name="recordId" type="String" access="global"/>
+    <lightning:spinner aura:id="spinner"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <lightning:overlayLibrary aura:id="overlayLib"/>
+    <aura:handler event="c:tc_bookMillionDollarLeaseConfirmation_evt" action="{!c.handleMillionDollarQuestionEvent}"/>
+
+</aura:component>

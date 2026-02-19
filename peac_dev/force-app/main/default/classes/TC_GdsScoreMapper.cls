@@ -9,13 +9,8 @@ public with sharing class TC_GdsScoreMapper {
 
         // get salesforce ids to pass into mapping flows, apex orchestrates the flows
         List <Opportunity> opps = new List <Opportunity> ([
-                SELECT Id
-                        , Branch__c
-                        , Primary_Source__c
-                        , AccountId
-                        , Terms__c
-                        , Primary_Broker__c
-                        , Dealer_Primary_Number__c
+                SELECT Id, Branch__c, Primary_Source__c, AccountId, Terms__c, Primary_Broker__c, Dealer_Primary_Number__c,
+                        Approved_Amount__c, Equipment_Cost_w_o_Tax__c
                         , Marlin_Business_Group__c, CustomerType__c,Decision_Status__c, Digital_Portal_ID__c, Credit_Strategy__c
                         , (SELECT Id, Account__c, Contact__c, RecordType.Name, Primary__c FROM Guarantor__r WHERE RP_PRIN_GUAR_CODE__c != 'Principal' ORDER BY CreatedDate ASC)
                         , (SELECT Dealer__c, Primary_Dealer__c   FROM Brokers__r ORDER BY CreatedDate ASC)
@@ -384,8 +379,6 @@ public with sharing class TC_GdsScoreMapper {
 
         /** Doing mapping logic too complicated for flows **/
 
-
-
         // setting credit stips
         List <String> stips = new List <String> ();
 
@@ -403,6 +396,7 @@ public with sharing class TC_GdsScoreMapper {
         if (reqResp.scoreReq.Ud_Vendor_Approval_Output_Stip__c == '1') stips.add ('Vendor approval');
         if (reqResp.scoreReq.Ud_PG_Required_Stip__c == '1') stips.add ('PG Required');
         if (reqResp.scoreReq.Ud_Proof_of_Ownership_Stip__c == '1') stips.add ('Proof of ownership');
+        if (reqResp.scoreReq.Ud_Proof_of_License_Stip__c == '1') stips.add ('Proof of License');
         if (reqResp.scoreReq.UD_ACH_Guarantor_Stip__c == '1') stips.add ('ACH Guarantee Form');
         if (reqResp.scoreReq.Ud_Proof_of_Equipment_Location_Stip__c == '1') stips.add ('Proof of equipment location');
         if (reqResp.scoreReq.Ud_Auth_Signer_Track_Bus_Stip__c == '1') stips.add ('Authorized Signer Must Track to Business');
@@ -584,6 +578,8 @@ public with sharing class TC_GdsScoreMapper {
                 opp.Application_Status__c = 'Automatically Approved';
                 opp.Decisioned_By__c = 'Scorecard';
                 opp.Credit_Decision__c = true;
+                // SAL-5556 Misael Romero
+                opp.Approved_Amount__c = opp.Equipment_Cost_w_o_Tax__c;
                 if (opp.Originally_Decisioned_By__c == null){
                     opp.Originally_Decisioned_By__c = 'Scorecard';
                 }

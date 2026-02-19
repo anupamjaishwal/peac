@@ -1,0 +1,7 @@
+<!--
+ - Created  on 12/28/17.
+ -->
+
+<aura:event type="APPLICATION" description="tc_applicationNavigation_evt">
+    <aura:attribute name="data" type="Object" default="{}"/>
+</aura:event>

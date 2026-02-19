@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="product_item" width="100%" height="100%">
+    <rect x="4.56" y="4.541" width="14.4" height="3.84" rx=".96" ry=".96" fill="#777777"/>
+    <rect x="4.56" y="9.821" width="6.48" height="3.84" rx=".96" ry=".96" fill="#777777"/>
+    <rect x="4.56" y="15.101" width="6.48" height="3.84" rx=".96" ry=".96" fill="#777777"/>
+    <rect x="12.48" y="9.821" width="6.48" height="3.84" rx=".96" ry=".96" fill="#777777"/>
+    <rect x="12.48" y="15.101" width="6.48" height="3.84" rx=".96" ry=".96" fill="#777777"/>
+</svg>

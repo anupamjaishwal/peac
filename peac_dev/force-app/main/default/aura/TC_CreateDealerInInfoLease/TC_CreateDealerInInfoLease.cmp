@@ -1,0 +1,9 @@
+<aura:component description="Create Dealer In InfoLease" controller="TC_BWcreateDealerCtrl" 
+                implements="force:hasRecordId,force:lightningQuickAction">
+    
+    <aura:attribute name="recordId" type="String" access="global"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <lightning:spinner aura:id="spinner"/>
+</aura:component>

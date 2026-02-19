@@ -1,0 +1,25 @@
+<!--
+ - Created by corycafferty on 2019-06-20.
+ -->
+<aura:component access="global"
+                description="tc_pullGDSDealerDNB"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader"
+                controller="TC_LGHTNPullGDSDealerDNB">
+
+    <ltng:require scripts="{!$Resource.AuraUtils}" afterScriptsLoaded="{!c.doInit}"/>
+    <aura:registerEvent name="toastEvent" type="c:toast_evt"/>
+
+    <div class="slds-container" aura:id="mySpinner">
+        <div class="slds-container--fluid">
+            <div class="slds-grid slds-grid--align-center">
+                <lightning:spinner variant="brand" size="large" />
+            </div>
+        </div>
+
+        <div class="slds-container--fluid slds-m-top--large">
+            <div class="slds-grid slds-grid--align-center slds-text-heading--small">
+                Requesting DNB, please wait...
+            </div>
+        </div>
+    </div>
+</aura:component>

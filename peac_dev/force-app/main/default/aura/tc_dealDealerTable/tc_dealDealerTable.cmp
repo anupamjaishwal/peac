@@ -1,0 +1,128 @@
+<aura:component description="tc_dealDealerTable"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome"
+                access="global"
+                controller="TC_LoanApplicationCtrl">
+
+    <aura:attribute name="dealerList" type="List" access="global"/>
+    <aura:attribute name="expressProfile" type="boolean" access="global" default="false"/>
+
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+
+
+    <aura:registerEvent name="appNavEvent" type="c:tc_applicationNavigation_evt"/>
+    <aura:handler value="{!this}" name="init" action="{!c.doInit}"/>
+<aura:attribute name="currentUser" type="User"/>
+    <force:recordData aura:id="recordLoader" recordId="{!$SObjectType.CurrentUser.Id}"  fields="Profile.Name,Name" targetFields="{!v.currentUser}"  recordUpdated="{!c.recordUpdate}"/>
+
+    <div class=" slds-m-around_small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right"/>
+        <lightning:button label="Save and Quit" onclick="{!c.saveAndQuitPartnerController}" variant="brand" iconName="utility:save"
+                          iconPosition="right" aura:id="nextButton"/>
+    </div>
+
+    <div class="slds-m-around_small">
+        <lightning:tabset >
+
+            <!-- branch to platform update franchise to program-->
+            <!-- Brokers need to be added in Program ORT and Loan ORT (SAL-1804) -->
+            <!-- Added Program with a space as a condition to fix issue when editing in app wizard SAL-2044 -->
+            <aura:if isTrue="{!v.clientWrapper.recordTypeName == 'CVG' || v.clientWrapper.recordTypeName == 'Program' || v.clientWrapper.recordTypeName == 'Loan' || v.clientWrapper.recordTypeName == 'Program ' || v.expressProfile == true}">
+
+                <lightning:tab >
+                    <aura:set attribute="label">
+                        Brokers ({!v.clientWrapper.brokerAccounts.length})
+                    </aura:set>
+                    <lightning:button label="Add Broker" iconName="utility:add" onclick="{!c.addBroker}" variant="neutral"/>
+                    <aura:iteration var="broker" items="{!v.clientWrapper.brokerAccounts}" indexVar="i">
+                        <span>
+                            <c:tc_dealDealerDetail partner="{!broker}" index="{!i}" partnerType="broker" clientWrapper="{!v.clientWrapper}"/>
+
+                            <div class="slds-p-around_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+                                <lightning:button label="{!'Clear Broker ' + (i+1)}" iconName="utility:clear" onclick="{!c.clearBrokerItem}" value="{!i}" class="slds-m-left_small"/>
+                                    <lightning:button label="{!'Remove Broker ' + (i+1)}" iconName="utility:delete" onclick="{!c.deleteBrokerItem}" value="{!i}" class="slds-m-left_small"/>
+                            </div>
+                        </span>
+                    </aura:iteration>
+                </lightning:tab>
+            </aura:if>
+
+
+            <aura:if isTrue="{!(v.clientWrapper.recordTypeName != 'Loan')}">
+                <lightning:tab >
+                    <aura:set attribute="label">
+                        Dealers ({!v.clientWrapper.dealerAccounts.length})
+                    </aura:set>
+
+                    <lightning:button label="Add Dealer" iconName="utility:add" onclick="{!c.addDealer}" variant="neutral"/>
+
+                    <aura:iteration var="dealer" items="{!v.clientWrapper.dealerAccounts}" indexVar="i">
+                    <span>
+                        <c:tc_dealDealerDetail partner="{!dealer}" index="{!i}" partnerType="dealer" clientWrapper="{!v.clientWrapper}" />
+
+                        <div class="slds-p-around_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+                            <lightning:button label="{!'Clear Dealer ' + (i+1)}" iconName="utility:clear" onclick="{!c.clearDealerItem}" value="{!i}" class="slds-m-left_small"/>
+                                <lightning:button label="{!'Remove Dealer ' + (i+1)}" iconName="utility:delete" onclick="{!c.deleteDealerItem}" value="{!i}" class="slds-m-left_small"/>
+                        </div>
+                    </span>
+                    </aura:iteration>
+                </lightning:tab>
+            </aura:if>
+
+
+
+            <!-- branch to platform update franchise to program-->
+            <!-- Added Program with a space as a condition to fix issue when editing in app wizard SAL-2044 -->
+            <aura:if isTrue="{!v.clientWrapper.recordTypeName == 'Program' || v.clientWrapper.recordTypeName == 'Program '}">
+                <lightning:tab >
+                    <aura:set attribute="label">
+                        Franchisors ({!v.clientWrapper.franchisorAccounts.length})
+                    </aura:set>
+                    <lightning:button label="Add Franchisor" iconName="utility:add" onclick="{!c.addFranchisor}" variant="neutral"/>
+                    <aura:iteration var="franchisor" items="{!v.clientWrapper.franchisorAccounts}" indexVar="i">
+                <span>
+                    <c:tc_dealDealerDetail partner="{!franchisor}"  index="{!i}" partnerType="franchisor" clientWrapper="{!v.clientWrapper}"/>
+
+                    <div class="slds-p-around_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+                        <lightning:button label="{!'Clear Franchisor ' + (i+1)}" iconName="utility:clear" onclick="{!c.clearFranchisorItem}" value="{!i}" class="slds-m-left_small"/>
+                            <lightning:button label="{!'Remove Franchisor ' + (i+1)}" iconName="utility:delete" onclick="{!c.deleteFranchisorItem}" value="{!i}" class="slds-m-left_small"/>
+                    </div>
+                </span>
+                    </aura:iteration>
+                </lightning:tab>
+
+            </aura:if>
+
+
+
+
+
+        </lightning:tabset>
+
+    </div>
+
+
+
+
+
+
+
+    <!--
+
+    <aura:iteration items="{!v.dealerList}" var="equip" indexVar="i">
+            <span>
+                <c:tc_dealDealerDetail dealer="{!equip}" recordType="{!v.recordType}" index="{!i}" />
+                <div class="slds-p-around_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+                    <lightning:button label="{!'Clear Dealers ' + (i+1)}" iconName="utility:clear" onclick="{!c.clearItem}" value="{!i}" class="slds-m-left_small"/>
+                    <aura:if isTrue="{!i!=0}">
+                        <lightning:button label="{!'Remove Dealer ' + (i+1)}" iconName="utility:delete" onclick="{!c.deleteItem}" value="{!i}" class="slds-m-left_small"/>
+                    </aura:if>
+                </div>
+            </span>
+    </aura:iteration>
+
+    <div class=" slds-m-around_small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <lightning:button label="Add" iconName="utility:add" onclick="{!c.addDealer}" variant="neutral"/>
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right"/>
+    </div>-->
+    <lightning:spinner aura:id="spinner" class="slds-hide"/>
+</aura:component>

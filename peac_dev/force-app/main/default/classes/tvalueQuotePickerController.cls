@@ -147,6 +147,16 @@ public with sharing class tvalueQuotePickerController {
         return false;
     }
 
+    @AuraEnabled(cacheable=true)
+    public static Boolean isPortalUser() {
+        return UserInfo.getUserType() != 'Standard';
+    }
+
+    @AuraEnabled
+    public static String getSessionId() {
+        return UserInfo.getSessionId();
+    }
+
     /**
      * Sends an email using the data from the email modal LWC.
      */

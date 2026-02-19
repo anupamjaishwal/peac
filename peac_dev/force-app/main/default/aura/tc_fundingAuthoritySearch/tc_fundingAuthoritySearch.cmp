@@ -1,0 +1,46 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId,lightning:isUrlAddressable,force:lightningQuickActionWithoutHeader,force:hasRecordId"
+                controller="TC_FundingAuthoritySearchLtng">
+	
+    <aura:attribute name="results" type="List" default="[]"/>
+    <aura:attribute name="search" type="String"/>
+    
+    
+    
+    <lightning:card title="Search for CMS User">
+        <aura:set attribute="actions">
+            <lightning:button label="Select" onclick="{!c.selectUserCtrl}"/>
+        </aura:set>
+        <div class="slds-grid slds-wrap">
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                <ui:inputText value="{!v.search}" keyup="{!c.onKeyup}" updateOn="keyup"/>
+            </div>
+        </div>
+        
+        <!-- start -->
+        <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <tbody>
+
+                <aura:iteration items="{!v.results}" var="result">
+                    <tr>
+                        <td >
+                            <div>
+                                <ui:inputRadio aura:id="radioButtonGroup"  value="{!result.selected}" change="{!c.onRadio}" />
+                            </div>
+                        </td>
+                        <td >
+                            <div> 
+                                <b>{!result.record.Name}</b> Authority <ui:outputCurrency value="{!result.authority}"/>
+                            </div>
+                        </td>
+                    </tr>
+                </aura:iteration>
+
+            </tbody>
+        </table>
+        
+        
+        
+        <!-- end -->
+        <lightning:spinner aura:id="spinner" class="slds-hide"/>
+    </lightning:card>
+</aura:component>

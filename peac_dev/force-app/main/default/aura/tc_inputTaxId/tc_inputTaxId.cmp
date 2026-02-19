@@ -1,0 +1,18 @@
+<!--
+ - Created  on 1/1/18.
+ -->
+
+<aura:component description="tc_inputTaxId">
+    <aura:attribute name="value" type="String" required="true"/>
+    <aura:attribute name="name" type="String" required="true"/>
+    <aura:attribute name="entityType" type="String" default="person"/>
+    <aura:attribute name="class" type="String"/>
+    <aura:attribute name="label" type="String" required="true"/>
+    <aura:attribute name="required" type="Boolean" default="{!false}"/>
+    <aura:attribute name="isValid" type="Boolean" default="{!true}"/>
+
+    <!--<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>-->
+
+    <lightning:input value="{!v.value}" name="{!v.name}" label="{!v.label}" onchange="{!c.formatSSN}"
+                     class="{!v.class}" required="{!v.required}" type="text"/>
+</aura:component>

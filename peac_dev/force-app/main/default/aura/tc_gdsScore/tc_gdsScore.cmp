@@ -1,0 +1,10 @@
+<aura:component implements="force:hasRecordId,force:lightningQuickAction" 
+				controller="TC_GdsScoreCtrl"
+                access="global"
+                description="Submit to GDS Score">
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInIt}"/>
+    <aura:attribute name="fromWizard" default="{!false}" access="global" type="Boolean"/>
+    <lightning:spinner aura:id="spinner"/>
+	
+</aura:component>

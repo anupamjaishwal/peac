@@ -1,0 +1,13 @@
+.THIS .totalFinanceAmount {
+    color: rgb(0, 50, 88);
+    font-weight: bold;
+    font-size: 15px;
+}
+/*adjusting help text position*/
+.THIS .customIcon div{
+    vertical-align: top !important;
+}
+ 
+.THIS.customIcon div{
+    vertical-align: top !important;
+}

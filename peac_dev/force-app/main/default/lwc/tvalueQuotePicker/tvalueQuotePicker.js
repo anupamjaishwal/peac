@@ -1,9 +1,15 @@
-import { LightningElement, api, track } from 'lwc'; // Note: 'wire' is removed
+import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import { FlowAttributeChangeEvent } from 'lightning/flowSupport';
+import { FlowAttributeChangeEvent, FlowNavigationNextEvent } from 'lightning/flowSupport';
 import { subscribe, unsubscribe, onError } from 'lightning/empApi';
+import { loadScript } from 'lightning/platformResourceLoader';
+import COMETD from '@salesforce/resourceUrl/cometD';
+import getSessionId from '@salesforce/apex/tvalueQuotePickerController.getSessionId';
+import isPortalUser from '@salesforce/apex/tvalueQuotePickerController.isPortalUser';
 import getQuoteData from '@salesforce/apex/tvalueQuotePickerController.getQuoteData';
 import getTValueQuotesByIds from '@salesforce/apex/tvalueQuotePickerController.getTValueQuotesByIds';
+import WAITING_LABEL from '@salesforce/label/c.TvalueQuotePicker_Waiting';
+import QUOTES_NOT_GENERATED_LABEL from '@salesforce/label/c.TvalueQuotePicker_QuotesNotGenerated';
 import SELECT_LABEL from '@salesforce/label/c.TvalueQuotePicker_Select';
 import QUOTE_OPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_QuoteOption';
 import DESCRIPTION_LABEL from '@salesforce/label/c.TvalueQuotePicker_Description';
@@ -24,14 +30,23 @@ export default class TvalueQuotePicker extends LightningElement {
     @api recordId;
     @api selectedQuoteIds = [];
     @api selectedQuoteRecords = [];
+    @api selectedQuoteId;
     @track quotes = [];
     @track selectedRows = [];
     @track error;
     @track isLoading = false;
     @track columns = [];
     @track isEmailModalOpen = false;
-    showYieldColumn = false; // Flag to control column visibility
-    eventSubscription = null; // Platform event subscription
+    showYieldColumn = false;
+    eventSubscription = null;
+    cometdLib = null;
+    libInitialized = false;
+    sessionId;
+    // Waiting-for-quotes state (used when no recordId provided)
+    @track waitingForQuotes = false;
+    waitingTimer = null;
+    waitingTimeoutMs = 10000; // 10 seconds
+    @track waitingError = false;
 
     label = {
         SELECT_LABEL,
@@ -48,52 +63,135 @@ export default class TvalueQuotePicker extends LightningElement {
         CREATED_LABEL,
         EMAIL_QUOTES_LABEL,
         USE_THIS_QUOTE_LABEL,
-        LEGAL_DISCLAIMER_LABEL
+        LEGAL_DISCLAIMER_LABEL,
+        WAITING_LABEL,
+        QUOTES_NOT_GENERATED_LABEL
     };
 
     connectedCallback() {
-        // We now initialize columns after we fetch the data and visibility flag
         this.loadQuotes();
-        this.subscribeToPlatformEvent();
-    }
-
-    disconnectedCallback() {
-        // Unsubscribe from platform event when component is destroyed
-        if (this.eventSubscription) {
-            unsubscribe(this.eventSubscription);
+        this.initEventSubscription();
+        // If no recordId provided, show waiting state while we await platform events
+        if (!this.recordId) {
+            this.startWaitingForQuotes();
         }
     }
 
-    subscribeToPlatformEvent() {
-        // Subscribe to NT_TValue_Event__e platform event
-        const channel = '/event/NT_TValue_Event__e';
-        const replayId = -1; // Get new events only
-        
-        subscribe(channel, replayId, (message) => {
+    disconnectedCallback() {
+        if (this.eventSubscription) {
+            unsubscribe(this.eventSubscription);
+        }
+        if (this.cometdLib) {
+            this.cometdLib.disconnect();
+        }
+    }
+
+    // Determine user type and subscribe accordingly
+    initEventSubscription() {
+        isPortalUser()
+            .then((isPortal) => {
+                if (isPortal) {
+                    console.log('Portal user detected — using CometD');
+                    this.setupCometD();
+                } else {
+                    console.log('Internal user detected — using empApi');
+                    this.setupEmpApi();
+                }
+            })
+            .catch((error) => {
+                console.error('Error checking user type:', error);
+            });
+    }
+
+    // empApi path for internal users
+    setupEmpApi() {
+        subscribe('/event/NT_TValue_Event__e', -1, (message) => {
             this.handlePlatformEvent(message);
         }).then((subscription) => {
             this.eventSubscription = subscription;
-            console.log('Subscribed to NT_TValue_Event__e');
-        }).catch((error) => {
-            console.error('Error subscribing to platform event:', error);
         });
 
-        // Set up error handler for platform events
         onError((error) => {
-            console.error('Platform event error:', error);
+            console.error('empApi error:', error);
         });
     }
 
-    handlePlatformEvent(message) {
-        const eventData = message.data.payload;
-        console.log('Received platform event:', eventData);
+    // CometD path for portal users — replicates sL_DPOffers pattern
+    setupCometD() {
+        getSessionId()
+            .then((sessionId) => {
+                this.sessionId = sessionId;
+                return loadScript(this, COMETD);
+            })
+            .then(() => {
+                this.initCometD();
+            })
+            .catch((error) => {
+                console.error('CometD setup failed:', error);
+            });
+    }
 
-        // Check if the event is for this quote record
-        if (eventData.RecordId__c && eventData.TvalueQuoteIds__c) {
-            if (this.recordId && this.recordId === eventData.RecordId__c) {
-                // Event is for this record, fetch and render the new TValue quotes
-                this.loadTValueQuotesByIds(eventData.TvalueQuoteIds__c);
+    initCometD() {
+        if (this.libInitialized) {
+            return;
+        }
+        this.libInitialized = true;
+
+        const cometdLib = new window.org.cometd.CometD();
+        cometdLib.configure({
+            url: window.location.protocol + '//' + window.location.hostname + '/cometd/58.0/',
+            requestHeaders: { Authorization: 'OAuth ' + this.sessionId },
+            appendMessageTypeToURL: false,
+            logLevel: 'debug'
+        });
+
+        cometdLib.websocketEnabled = false;
+        const _this = this;
+        cometdLib.handshake((status) => {
+            if (status.successful) {
+                cometdLib.subscribe('/event/NT_TValue_Event__e', function (message) {
+                    console.log('subscribed to message!', message);
+                    _this.handlePlatformEvent(message);
+                });
+            } else {
+                console.error('Error in handshaking: ' + JSON.stringify(status));
             }
+        });
+        // cometdLib.handshake((handshakeReply) => {
+        //     console.log('CometD handshake:', handshakeReply);
+        //     if (handshakeReply.successful) {
+        //         cometdLib.subscribe('/event/NT_TValue_Event__e', (message) => {
+        //             console.log('CometD event received:', message);
+        //             this.handlePlatformEvent(message);
+        //         });
+        //     }
+        // });
+
+        this.cometdLib = cometdLib;
+    }
+
+    handlePlatformEvent(message) {
+        const eventData = message && message.data && message.data.payload ? message.data.payload : null;
+
+        if (!eventData) {
+            console.warn('Platform event payload missing or malformed');
+            return;
+        }
+
+        // Received an event - cancel any waiting timer and clear waiting error
+        this.cancelWaitingForQuotes();
+        this.waitingError = false;
+
+        // If the event contains explicit TValue quote ids, prefer fetching those directly
+        if (eventData.TvalueQuoteIds__c && String(eventData.TvalueQuoteIds__c).trim().length > 0) {
+            this.loadTValueQuotesByIds(eventData.TvalueQuoteIds__c);
+            return;
+        }
+
+        // Otherwise, if the event targets a record and it matches this component's record, reload quotes for the record
+        if (eventData.RecordId__c) {
+            this.recordId = eventData.RecordId__c;
+            this.loadQuotes();
         }
     }
 
@@ -108,12 +206,14 @@ export default class TvalueQuotePicker extends LightningElement {
         this.isLoading = true;
         getTValueQuotesByIds({ quoteIds: ids })
             .then(result => {
-                console.log('Fetched TValue quotes by IDs:', result);
+                // Cancel waiting state since we got data
+                this.cancelWaitingForQuotes();
+                this.waitingError = false;
                 this.quotes = result.quotes;
                 this.showYieldColumn = result.showYield;
                 this.initializeColumns();
                 this.error = undefined;
-                this.showToast('Success', 'New quotes loaded from platform event.', 'success');
+                this.showToast('Success', 'New quotes loaded', 'success');
             })
             .catch(error => {
                 console.error('Error fetching TValue quotes by IDs:', error);
@@ -220,7 +320,6 @@ export default class TvalueQuotePicker extends LightningElement {
         // Call the new Apex method
         getQuoteData({ recordId: this.recordId })
             .then(result => {
-                console.log('Imperative call successful. Data:', result);
                 this.quotes = result.quotes;
                 this.showYieldColumn = result.showYield;
                 this.initializeColumns(); // Initialize columns now that we have the flag
@@ -262,8 +361,9 @@ export default class TvalueQuotePicker extends LightningElement {
         return this.selectedRows.length;
     }
 
-    get selectedQuoteRecords() {
+    get currentSelectedRecords() {
         return this.quotes.filter(q => this.selectedRows.includes(q.id));
+        //return matched.length > 0 ? matched[0] : null;
     }
 
     handleEmailQuotes() {
@@ -288,14 +388,9 @@ export default class TvalueQuotePicker extends LightningElement {
         //const selectedRecords = this.quotes.filter(q => this.selectedRows.includes(q.id));
         this.updateFlowOutputs();
 
-        // this.dispatchEvent(new CustomEvent('usethisquote', {
-        //     detail: {
-        //         selectedQuoteIds: this.selectedRows,
-        //         quoteRecords: selectedRecords
-        //     },
-        //     bubbles: true,
-        //     composed: true
-        // }));
+        //Dispatch event to move Flow forward
+        const navigateNextEvent = new FlowNavigationNextEvent();
+        this.dispatchEvent(navigateNextEvent);
     }
 
     showToast(title, message, variant) {
@@ -312,15 +407,38 @@ export default class TvalueQuotePicker extends LightningElement {
     }
 
     updateFlowOutputs() {
-        // Update the output attributes for flow integration
-        this.selectedQuoteIds = this.selectedRows;
-        this.selectedQuoteRecords = this.quotes.filter(q => this.selectedRows.includes(q.id));
-
-        // Dispatch FlowAttributeChangeEvent to notify the flow runtime
-        const attributeChangeEvent = new FlowAttributeChangeEvent('selectedQuoteIds', this.selectedQuoteIds);
+        const attributeChangeEvent = new FlowAttributeChangeEvent('selectedQuoteIds', this.selectedRows);
         this.dispatchEvent(attributeChangeEvent);
 
-        const recordsChangeEvent = new FlowAttributeChangeEvent('selectedQuoteRecords', this.selectedQuoteRecords);
+        const selected = this.currentSelectedRecords?.[0] ?? null;
+        const recordsChangeEvent = new FlowAttributeChangeEvent('selectedQuoteRecords', selected ? [selected] : []);
         this.dispatchEvent(recordsChangeEvent);
+
+        const idChangeEvent = new FlowAttributeChangeEvent('selectedQuoteId', selected ? selected.id : null);
+        this.dispatchEvent(idChangeEvent);
+    }
+
+    // Start a waiting state when there is no recordId and we're awaiting platform events.
+    startWaitingForQuotes() {
+        this.waitingForQuotes = true;
+        this.waitingError = false;
+        if (this.waitingTimer) {
+            clearTimeout(this.waitingTimer);
+        }
+        this.waitingTimer = setTimeout(() => {
+            // No events received within timeout
+            this.waitingForQuotes = false;
+            this.waitingError = true;
+            this.waitingTimer = null;
+        }, this.waitingTimeoutMs);
+    }
+
+    cancelWaitingForQuotes() {
+        if (this.waitingTimer) {
+            clearTimeout(this.waitingTimer);
+            this.waitingTimer = null;
+        }
+        this.waitingForQuotes = false;
+        this.waitingError = false;
     }
 }

@@ -1,0 +1,171 @@
+<aura:component controller="SL_DocumentChecklist">
+	<aura:attribute name="field" type="Map" />
+	<aura:attribute name="record" type="object" />
+	<aura:attribute name="picklistStatus" type="list" />
+	<aura:attribute name="isEdit" type="Boolean" default="false" />
+	<aura:attribute name="entryAllowed" type="Boolean" default="false" />
+	<aura:attribute name="width" type="String" />
+	<aura:attribute name="DetailPageID" type="String" />
+	<aura:attribute name="value" type="String" />
+
+	<aura:attribute name="ContentDocId" type="String" />
+	<aura:attribute name="LibraryID" type="String" />
+	<aura:attribute name="uploadFile" type="Boolean" />
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+	<aura:registerEvent name="SL_EditRecord" type="c:SL_EditRecord"/>
+	<aura:registerEvent name="SL_SaveRecord" type="c:SL_SaveRecord"/>
+	<aura:registerEvent name="SL_UpdateRecord" type="c:SL_UpdateRecord"/>
+
+	
+	<aura:if isTrue="{!v.field.type == 'STRING'}" >		
+			<aura:if isTrue="{!v.entryAllowed}" >
+				<ui:inputText value="{!v.value}" aura:id="{!v.field.fieldApi}" blur="{!c.updateVal}" />
+				<aura:set attribute="else">
+					<div class="slds-truncate" >
+	        			<ui:outputText title="{!v.value}" value="{!v.value}" />
+	        		</div>
+				</aura:set>
+			</aura:if>
+	</aura:if>
+
+	<aura:if isTrue="{!v.field.type == 'ICON'}"  >
+			<aura:if isTrue="{!v.entryAllowed}" >
+				<span>
+					<a id="{!v.record.Id}" onclick="{!c.saveRecord}">
+	        			<lightning:icon iconName="utility:save" size="x-small" title="Save" class="icnGreen"/>
+	        		</a>
+				</span>
+				<span>
+					<a id="{!v.record.Id}" onclick="{!c.cancelUpdate}">
+	        			<lightning:icon iconName="utility:close" size="x-small" title="Cancel" class="icnRed"/>
+	        		</a>
+				</span>
+				<aura:set attribute="else">
+					<div class="slds-truncate" >
+						<a id="{!v.record.Id}" onclick="{!c.editRecord}">
+	        				<lightning:icon iconName="utility:edit" size="x-small" title="Edit"/>
+	        			</a>
+	        		</div>
+				</aura:set>
+			</aura:if>
+	</aura:if>
+
+	<aura:if isTrue="{!v.field.type == 'PICKLIST'}" >
+			<aura:if isTrue="{!v.entryAllowed}" >
+				<div class="slds-truncate" >
+	        		<ui:inputSelect aura:id="picklist" value="{!v.value}"  options="{!v.picklistStatus}" class="slds-input" blur="{!c.updateVal}"/>
+	        	</div>
+				<aura:set attribute="else">
+					<div class="slds-truncate" >
+	        			<ui:outputText title="{!v.value}" value="{!v.value}" />
+	        		</div>
+				</aura:set>
+			</aura:if>
+	</aura:if>
+
+	<aura:if isTrue="{!v.field.type == 'REFERENCE'}" >
+			<aura:if isTrue="{!v.entryAllowed}" >
+				<ui:outputText title="{!v.value}" value="{!v.value}" />
+				<aura:set attribute="else">
+					<div class="slds-truncate" >
+						<a onclick="{!c.naviToDetail}">
+	        				<ui:outputText title="{!v.value}" value="{!v.value}" />
+	        			</a>
+	        		</div>
+				</aura:set>
+			</aura:if>
+	</aura:if>
+
+	
+	<aura:if isTrue="{!v.field.type == 'TEXTAREA'}" >
+			<aura:if isTrue="{!v.entryAllowed}" >
+				<div class="slds-truncate " >
+	        		<ui:inputText value="{!v.value}" aura:id="{!v.field.fieldApi}" blur="{!c.updateVal}" />	
+	        	</div>
+				<aura:set attribute="else">
+					<div class="slds-truncate " >
+	        			<ui:outputText title="{!v.value}" value="{!v.value}" />
+	        		</div>
+				</aura:set>
+			</aura:if>
+	</aura:if>
+
+	<aura:if isTrue="{!v.field.type == 'DATETIME'}" >
+			<aura:if isTrue="{!v.entryAllowed}" >
+				<div class="slds-truncate " >
+	            	<ui:inputDate value="{!v.value}" displayDatePicker="true" blur="{!c.updateVal}" />
+	        	</div>
+				<aura:set attribute="else">
+					<div class="slds-truncate " >
+	        			<ui:outputText title="{!v.value}" value="{!v.value}" />
+	        		</div>
+				</aura:set>
+			</aura:if>
+	</aura:if>
+
+	<aura:if isTrue="{!v.field.type == 'DATE'}">
+	       <aura:if isTrue="{!v.entryAllowed}" >
+	            <div class="slds-truncate " >
+	            	<ui:inputDate value="{!v.value}" displayDatePicker="true" blur="{!c.updateVal}" />
+	        	</div>
+	            <aura:set attribute="else">
+	            	<div class="slds-truncate ">
+	                	<ui:outputDate value="{!v.value}" />
+	            	</div>
+	            </aura:set>
+	        </aura:if>
+    </aura:if>
+
+    <aura:if isTrue="{!v.field.type  == 'BOOLEAN'}">
+	       <aura:if isTrue="{!v.entryAllowed}" >
+	            <ui:inputCheckbox value="{!v.value}"  blur="{!c.updateVal}" />
+	            <aura:set attribute="else">
+	            	<div class="slds-truncate">
+	                	<ui:outputCheckbox value="{!v.value}" />
+	            	</div>
+	            </aura:set>
+	        </aura:if>
+    </aura:if>
+
+    <aura:if isTrue="{!v.field.type == 'EMAIL'}">
+	       <aura:if isTrue="{!v.entryAllowed}" >
+	            <ui:inputEmail value="{!v.value}"  blur="{!c.updateVal}" />
+	            <aura:set attribute="else">
+	            	<div class="slds-truncate ">
+	                	<ui:outputEmail value="{!v.value}" />
+	            	</div>
+	            </aura:set>
+	        </aura:if>
+    </aura:if>
+
+    <aura:if isTrue="{!v.field.type == 'PERCENT'}">
+	       <aura:if isTrue="{!v.entryAllowed}" >
+    			<lightning:input type="number" value="{!v.value}" min="0" max="100" onblur="{!c.updateVal}"/>
+	            <aura:set attribute="else">
+	            	<div class="slds-truncate">
+	                	<ui:outputText value="{!v.value}" />
+	            	</div>
+	            </aura:set>
+	        </aura:if>
+    </aura:if>
+
+    <aura:if isTrue="{!v.field.type == 'REVIEW'}">
+    	<div class="{!'slds-truncate' +(v.uploadFile ? ' ' : ' slds-hide ')}" >
+	        <lightning:fileUpload label="Attach receipt"
+				        			class="{!v.width == 'MEDIUM' ? ' fUploadCus upldFile upldfile1 ' : ' fUploadCus upldFile upldfile1 '}"
+							        name="fileUploader" 
+							        multiple="false" 
+							        recordId="{!v.record.Id}"
+							        onuploadfinished="{!c.handleUploadFinished}" />
+		</div>
+		<div  class="{!'slds-truncate' +(v.uploadFile ? ' slds-hide ' : ' ') }" >
+			<a id="{!v.ContentDocId}" onclick="{!c.previewRec}" class="textColor">
+    			<lightning:icon iconName="utility:file" size="small" alternativeText="Indicates approval"/>
+    			<!-- <span class="slds-truncate textWrap">Review Document </span> -->
+    			<p class="slds-text-body_small"> Review Document </p>
+    		</a>
+		</div>
+	</aura:if>
+</aura:component>

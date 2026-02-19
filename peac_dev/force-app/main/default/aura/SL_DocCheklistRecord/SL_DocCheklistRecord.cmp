@@ -1,0 +1,78 @@
+<aura:component controller="SL_DocumentChecklist" implements="force:hasRecordId,force:hasSObjectName" access="global" >
+
+	<aura:attribute name="record" type="Object" />
+	<aura:attribute name="lstFields" type="list"/>
+	<aura:attribute name="lstFiles" type="list"/>
+	<aura:attribute name="width" type="String" description=" width of parent region"/>
+
+	<aura:attribute name="uploadFile" type="Boolean" default="false" />
+	<aura:attribute name="ContentDocId" type="String" />	
+	<aura:attribute name="value" type="String" />
+	<aura:attribute name="backup" type="sObject" />
+	<aura:attribute name="EditRecord" type="Boolean" default="false" />
+	<aura:attribute name="LibraryID" type="String" />
+	<aura:attribute name="device" type="String" />
+
+	<aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+	<aura:handler name="SL_EditRecord" event="c:SL_EditRecord" action="{!c.isEdit}"/>
+	<aura:handler name="SL_UpdateRecord" event="c:SL_UpdateRecord" action="{!c.updatedValue}"/>	
+	<aura:handler name="SL_SaveRecord" event="c:SL_SaveRecord" action="{!c.save}"/>	
+
+	<aura:iteration items="{!v.lstFields}" var="field" >
+		<aura:if isTrue="{!v.width != 'SMALL'}">
+			<td  role="gridcell" data-label="{!field.label}" class="slds-cell-wrap thWidth">
+				<aura:if isTrue="{!v.EditRecord}" >
+					<c:SL_DocColumn field="{!field}"
+									record="{!v.record}"
+									isEdit="true"
+									ContentDocId="{!v.ContentDocId}"
+									uploadFile="{!v.uploadFile}"
+									width="{!v.width}"
+									LibraryID="{!v.LibraryID}"/>
+					<aura:set attribute="else">
+						<c:SL_DocColumn field="{!field}"
+										record="{!v.record}"
+										isEdit="false"
+										ContentDocId="{!v.ContentDocId}"
+										uploadFile="{!v.uploadFile}"
+										width="{!v.width}"
+										LibraryID="{!v.LibraryID}"/>
+					</aura:set>
+				</aura:if>
+			</td>
+		</aura:if>
+		
+	</aura:iteration>
+	<aura:if isTrue="{!v.width == 'SMALL'}">
+		<div class="slds-grid slds-wrap" style="padding:5px; margin-bottom: 17px;">
+			<aura:iteration items="{!v.lstFields}" var="field" >
+	  			<div class="slds-col slds-size_1-of-3 DivHight">
+	  				<span>{!field.label} </span>
+	  			</div>
+	  			<div class="slds-col slds-size_2-of-3 DivHight">
+	  				<aura:if isTrue="{!v.EditRecord}" >
+						<c:SL_DocColumn field="{!field}"
+										record="{!v.record}"
+										isEdit="true"
+										ContentDocId="{!v.ContentDocId}"
+										uploadFile="{!v.uploadFile}"
+										width="{!v.width}"
+										LibraryID="{!v.LibraryID}"/>
+						<aura:set attribute="else">
+							<c:SL_DocColumn field="{!field}"
+											record="{!v.record}"
+											isEdit="false"
+											ContentDocId="{!v.ContentDocId}"
+											uploadFile="{!v.uploadFile}"
+											width="{!v.width}"
+											LibraryID="{!v.LibraryID}"/>
+						</aura:set>
+					</aura:if>
+	  			</div>
+	  		</aura:iteration>
+  		</div>
+	</aura:if>
+
+	
+</aura:component>

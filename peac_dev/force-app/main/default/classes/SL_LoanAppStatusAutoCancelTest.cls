@@ -6,6 +6,7 @@ private class SL_LoanAppStatusAutoCancelTest {
     // Setup method to create test data and simulate history changes
     @TestSetup
     private static void setupTestData() {
+        Test.setMock(HttpCalloutMock.class, new TC_BWcreateCustomerCalloutMockImpl ());
         List<Account> accsToupdate = new List<Account>();
 
         Account a = new Account();

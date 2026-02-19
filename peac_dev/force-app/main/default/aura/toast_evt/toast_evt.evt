@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="Error messages for non S1 apps">
+    <aura:attribute name="toast" type="Object" default="{}"/>
+</aura:event>

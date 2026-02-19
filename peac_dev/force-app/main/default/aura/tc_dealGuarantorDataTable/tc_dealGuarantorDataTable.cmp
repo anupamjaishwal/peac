@@ -1,0 +1,207 @@
+<!--
+ - Created  on 1/1/18.
+ -->
+
+<aura:component description="tc_dealGuarantorDataTable">
+    <aura:attribute name="guarantors" type="TC_DatabaseUtil.TC_RecordWrapper[]" access="global" default="[]"/>
+    <aura:attribute name="isCCG" type="String" access="global"/>
+
+    <aura:if isTrue="{!v.isCCG == 'true'}">
+
+        <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-no-cell-focus slds-table_fixed-layout">
+            <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col">
+                        <div class="slds-truncate"></div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Name</div>
+                    </th>
+<!--
+                    <th scope="col">
+                        <div class="slds-truncate">Street</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">City</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">State</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Postal Code</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Phone</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Email</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Ownership</div>
+                    </th>-->
+                </tr>
+            </thead>
+            <tbody>
+                <aura:iteration var="guar" items="{!v.guarantors}" indexVar="i">
+                    <tr>
+                        <th scope="row">
+                            <div class="slds-truncate">
+                                {!i+1}
+                            </div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.account.Name}"/>
+                                <aura:if isTrue="{!guar.dupe}">
+                                    <span style="color:red;">&nbsp;(Duplicate Account record found and pulled in)</span>
+                                </aura:if>
+                            </div>
+                        </td>
+                        <!--
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.account.Business_Address__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.account.Business_City__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.account.Business_State__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.account.Business_Zip__c}"/>
+                            </div>
+                        </td>
+
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputPhone value="{!guar.account.Phone}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputEmail value="{!guar.account.Email}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.account.Ownership_Pct__c}"/>
+                            </div>
+                        </td>-->
+
+                    </tr>
+                </aura:iteration>
+            </tbody>
+        </table>
+
+        <aura:set attribute="else">
+
+            <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-no-cell-focus slds-table_fixed-layout">
+                <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col">
+                        <div class="slds-truncate"></div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Name</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Ownership</div>
+                    </th>
+
+                    <th scope="col">
+                        <div class="slds-truncate">SSN</div>
+                    </th>
+                    <!--
+                    <th scope="col">
+                        <div class="slds-truncate">City</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">State</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Postal Code</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Phone</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">Email</div>
+                    </th>
+                    <th scope="col">
+                        <div class="slds-truncate">SSN</div>
+                    </th>-->
+                </tr>
+                </thead>
+                <tbody>
+                <aura:iteration var="guar" items="{!v.guarantors}" indexVar="i">
+                    <tr>
+                        <th scope="row">
+                            <div class="slds-truncate">
+                                {!i+1}
+                            </div>
+                        </th>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.contact.FirstName + ' ' + guar.contact.LastName}"/>
+                                <aura:if isTrue="{!guar.dupe}">
+                                    <span style="color:red;">&nbsp;(Duplicate Contact record found and pulled in)</span>
+                                </aura:if>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.contact.Ownership_Pct__c}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.contact.SSN__c}"/>
+                            </div>
+                        </td>
+                        <!--
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.contact.MailingCity}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.contact.MailingStateCode}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.contact.MailingPostalCode}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputPhone value="{!guar.contact.Phone}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputEmail value="{!guar.contact.Email}"/>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="slds-truncate">
+                                <ui:outputText value="{!guar.contact.SSN__c}"/>
+                            </div>
+                        </td>-->
+                    </tr>
+                </aura:iteration>
+                </tbody>
+            </table>
+
+
+        </aura:set>
+    </aura:if>
+</aura:component>

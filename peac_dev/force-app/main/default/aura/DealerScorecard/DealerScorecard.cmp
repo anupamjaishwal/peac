@@ -1,0 +1,139 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <div class="slds-p-around_large slds-box">
+        
+        <lightning:recordEditForm recordId="{!v.recordId}" objectApiName="Account">
+            <lightning:messages />
+            
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Marlin_Score__c" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Recommended_Decision__c" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Reasons_Not_Scored__c" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Business_Rules_Not_Met__c" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Name" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Hard_Rule_Count__c" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Account_Branch__c" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Soft_Rule_Count__c" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Equipment_Type__c" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            
+            
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="of_Employees_DE__c" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="SBRI__c" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Current_Month_PYDX__c" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Account_Months_In_Business__c" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="CC_Score__c" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="SicDesc" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="D_B_High_Credit__c" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="PYNT_High_Credit__c" />
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            <lightning:layout horizontalAlign="spread">
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="ThreatMetrix_Result__c" />
+                    </div>
+                </lightning:layoutItem>
+                <lightning:layoutItem >
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:outputField fieldName="Account_EU_FS_SIC_Description__c" /> <!-- SAL-2736 -->
+                    </div>
+                </lightning:layoutItem>
+            </lightning:layout>
+            <br/>
+            
+        </lightning:recordEditForm>
+        
+    </div>
+</aura:component>

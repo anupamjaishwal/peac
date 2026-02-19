@@ -1,0 +1,156 @@
+<!--
+ - Created  on 12/30/17.
+ -->
+
+<aura:component description="Deal of Application" access="global"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome"
+                controller="TC_LoanApplicationCtrl">
+
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+    <aura:attribute name="deal" type="Opportunity" access="global" default="{sobjectType:'Opportunity'}"/>
+    <aura:attribute name="quoteOptions" type="List" default="[]"/>
+    <aura:attribute name="totalFinanceAmount" type="Decimal" access="global" default="0"/>
+    <aura:attribute name="masterLineId" type="String" access="global" default=""/>
+    <aura:attribute name="masterLine" type="String" access="global" default=""/>
+    <aura:attribute name="salesreps" type="List"/>
+
+    <aura:attribute name="isLoan" type="Boolean" access="global"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <!--<lightning:button label="Clear Company" iconName="utility:clear" variant="neutral" onclick="{!c.clearDeal}" class="slds-m-left_small"/>-->
+        <!--<lightning:button label="Save" onclick="{!c.quickSave}" variant="brand" iconName="utility:save" iconPosition="left"/>
+        <lightning:button label="Next" onclick="{!c.goToNext}" variant="brand" iconName="utility:forward" iconPosition="right" aura:id="nextButton"/>-->
+        <!-- Combining Next and Save to make it more user friendly -->
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right" aura:id="nextButton"/>
+        <lightning:button label="Save and Quit" onclick="{!c.saveAndQuitDealController}" variant="brand" iconName="utility:save"
+                          iconPosition="right" aura:id="nextButton"/>
+    </div>
+
+    <lightning:recordEditForm recordTypeId="{!v.clientWrapper.deal.opportunity.RecordTypeId}" objectApiName="Opportunity" recordId="{!v.clientWrapper.deal.opportunity.Id}">
+    <c:tc_accordionSection isCollapsible="false" title="Deal Details">
+
+        <div class="slds-grid slds-wrap">
+
+            <lightning:input value="{!v.clientWrapper.deal.opportunity.Name}" label="Opportunity Name" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>
+            <aura:if isTrue="{!v.isLoan}">
+            	<div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+            		<label class="slds-form-element__label">Product</label> 
+            		<lightning:inputField  fieldName="Product__c" value="{!v.clientWrapper.deal.opportunity.Product__c}"
+                                   variant="label-hidden"/>
+            	</div>
+            </aura:if>
+
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                <label class="slds-form-element__label"><abbr class="slds-required" title="required">* </abbr>Primary Source</label> 
+            <lightning:inputField aura:id="PrimarySource" fieldName="Primary_Source__c" value="{!v.clientWrapper.deal.opportunity.Primary_Source__c}"
+                                   variant="label-hidden"/>
+            </div>
+            <aura:if isTrue="{!v.clientWrapper.deal.opportunity.Primary_Source__c == 'Internal Referral: Email' || v.clientWrapper.deal.opportunity.Primary_Source__c == 'Internal Referral: Vendor'|| v.clientWrapper.deal.opportunity.Primary_Source__c == 'Internal Referral: Warm Transfer'}">
+                
+                <lightning:inputField fieldName="Internal_Referral_Associate_c__c" value="{!v.clientWrapper.deal.opportunity.Internal_Referral_Associate_c__c}"
+                                      class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" />
+                <lightning:inputField fieldName="Internal_Referral_Department__c" value="{!v.clientWrapper.deal.opportunity.Internal_Referral_Department__c}"
+                                      class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" />
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.Internal_Referral_Asssociate_Email__c}" label="Internal Referral Associate Email" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3"/>
+            </aura:if>
+
+            <aura:if isTrue="{!v.isLoan}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Opportunity'}" fldInfo="Loan_Purpose__c"  label="Loan Purpose" value="{!v.clientWrapper.deal.opportunity.Loan_Purpose__c}" required="{!v.isLoan}"/>
+                </div>
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.Oppt_FS_Use_Of_Funds__c}" label="Use of Funds" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.isLoan}"/>
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.Requested_Amount__c}" label="Requested Amount" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.isLoan}"/>
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+            		<label class="slds-form-element__label">Estimated Daily Balance</label> 
+            		<lightning:inputField  fieldName="Oppt_Estimated_Daily_Balance__c" value="{!v.clientWrapper.deal.opportunity.Oppt_Estimated_Daily_Balance__c}"
+                                   variant="label-hidden"/>
+            	</div>
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.Annual_Revenue__c}" label="Annual Revenue" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.isLoan}"/>
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.Years_in_Business__c}" label="Years in Business" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" />
+            </aura:if>
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                <label class="slds-form-element__label">Close Date</label>
+                <div class="slds-form-element__control">
+                    <ui:inputDate displayDatePicker="true" value="{!v.clientWrapper.deal.opportunity.CloseDate}" format="MM/dd/yyyy" />
+                </div>
+            </div>
+
+            <aura:if isTrue="{!v.clientWrapper.recordTypeName != 'Loan'}">
+
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Opportunity'}" fldInfo="Purchase_Options__c"  label="Purchase Option" value="{!v.clientWrapper.deal.opportunity.Purchase_Options__c}"/>
+                </div>
+
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Opportunity'}" fldInfo="Payment_Frequency__c" label="Payment Frequency" value="{!v.clientWrapper.deal.opportunity.Payment_Frequency__c}"/>
+                </div>
+
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.Terms__c}" label="Term" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3"/>
+
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.of_Payments__c}" label="# of Payments" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3"/>
+            <!-- START : VARUN -->
+                   <lightning:input value="{!v.clientWrapper.deal.opportunity.Additional_Dealer_emails__c}" label="Additonal Dealer Emails" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3"/>
+            <!-- END : VARUN -->
+            </aura:if>
+
+
+            <aura:if isTrue="{!and(v.clientWrapper.recordTypeName != 'Lease', v.clientWrapper.recordTypeName != 'Loan')}">
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.Points__c}" label="Points" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3"/>
+            </aura:if>
+
+            <aura:if isTrue="{!v.clientWrapper.recordTypeName == 'OEG'}">
+                    <lightning:input value="{!v.clientWrapper.deal.opportunity.Payment_Amount__c}" label="Payment Amount" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" />
+            </aura:if>
+
+            <aura:if isTrue="{!v.clientWrapper.recordTypeName != 'Loan'}">
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                <c:tc_inputSelect objInfo="{sobjectType : 'Opportunity'}" fldInfo="Metered__c" label="Metered" value="{!v.clientWrapper.deal.opportunity.Metered__c}"/>
+            </div>
+            </aura:if>
+
+            <aura:if isTrue="{!and(v.clientWrapper.deal.opportunity.Metered__c == 'Yes', v.clientWrapper.recordTypeName != 'Loan')}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Opportunity'}" fldInfo="Meter_Account__c" label="Meter Account" value="{!v.clientWrapper.deal.opportunity.Meter_Account__c}"/>
+                </div>
+            </aura:if>
+            
+            <aura:if isTrue="{!v.clientWrapper.recordTypeName == 'HKF' || v.clientWrapper.recordTypeName == 'Program'}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Opportunity'}" fldInfo="Program__c" label="Program" value="{!v.clientWrapper.deal.opportunity.Program__c}" multiple="true"/>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.isLoan}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Opportunity'}" fldInfo="Competitor_Loan_Existing_Y_N__c" label="Competitor" value="{!v.clientWrapper.deal.opportunity.Competitor_Loan_Existing_Y_N__c}" />
+                </div>
+                <lightning:input value="{!v.clientWrapper.deal.opportunity.Reported_Loans_w_Balance__c}" label="Reported Loans w/Balance" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" />
+            </aura:if>
+
+            <!-- 8/25/2020 removing project type https://marlinbusiness.atlassian.net/browse/SAL-1757 -->
+            <!--<aura:if isTrue="{!v.clientWrapper.recordTypeName == 'Franchise'}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Opportunity'}" fldInfo="Oppt_Project_Type__c" label="Project Type" value="{!v.clientWrapper.deal.opportunity.Oppt_Project_Type__c}" required="true"/>
+                </div>
+            </aura:if>-->
+        </div>
+		<!-- date example
+        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3 slds-form-element">
+            <label class="slds-form-element__label">First Payment Date</label>
+            <div class="slds-form-element__control">
+                <ui:inputDate displayDatePicker="true" value="{!v.deal.First_Payment_Date__c}" format="MM/dd/yyyy"/>
+            </div>
+        </div>-->
+    </c:tc_accordionSection>
+    </lightning:recordEditForm>
+                
+    <div class="slds-p-around_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <!--<lightning:button label="Clear Deal"  iconName="utility:clear" onclick="{!c.clearDeal}" class="slds-m-left_small"/>-->
+        <!--<lightning:button label="Save" onclick="{!c.quickSave}" variant="brand" iconName="utility:save" iconPosition="left"/>
+        --><lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right" aura:id="nextButton"/><!--
+    	
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right" aura:id="nextButton"/>-->
+	</div>
+    <lightning:spinner aura:id="spinner" class="slds-hide"/>
+</aura:component>

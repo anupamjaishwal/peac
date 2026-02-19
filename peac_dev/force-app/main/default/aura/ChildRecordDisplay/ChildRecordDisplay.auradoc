@@ -1,0 +1,25 @@
+<aura:documentation>
+    <aura:description>
+        <h1>Siloed Info Child Record Display</h1>
+        <p>
+            This component allows users records that are related to this one to be displayed and/or added based on the parent relationship and field set combination selected. Administrators can conigure:
+        </p>
+        <ul>
+            <li><em>Child object to related field to field set</em>: The child object to Parent Relationship To Field Set relationship.</li>
+            <li><em>Display Title</em>: The title of the component on the page.</li>
+            <li><em>Number of Columns Displayed</em>: The number of columns that are displayed.</li>
+            <li><em>Record Display Mode</em>: The record mode includes three options for the user to interact with the fields.
+                <ol>
+                    <li>View: The component loads in a view state and allows for inline editing</li>
+                    <li>Edit: The component loads in an edit state</li>
+                    <li>Read Only: The component loads in a read only state and cannot be edited by the user</li>
+                </ol>
+            </li>
+            <li><em>Where Conditions</em>: Any filters that need to be applied when querying the child records.</li>
+            <li><em>Order By Conditions</em>: Specify the order in which the child records should be displayed. Comma separate additional values.</li>
+            <li><em>Number of Records to Display</em>: Specify the number of child records should be displayed.</li>
+            <li><em>Logo</em>: Allows the user to select a logo that is displayed for that component from the standard Salesforce logos</li>
+        </ul>
+    </aura:description>
+
+</aura:documentation>

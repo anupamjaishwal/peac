@@ -1,0 +1,30 @@
+.THIS .heading {
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    color: #222222;
+}
+
+.THIS .slds-grid.slds-div .slds-col{
+    padding:0 5px;
+}
+
+.THIS .text{
+    display: inline-block;
+    padding-top: 0;
+    padding-right: var(--sds-c-input-spacing-horizontal-end, var(--lwc-spacingMedium,1rem));
+    padding-bottom: 0;
+    padding-left: var(--sds-c-input-spacing-horizontal-start, var(--lwc-spacingSmall,0.75rem));
+    width: 100%;
+    min-height: calc(var(--lwc-heightInput,1.875rem) + (1px * 2));
+    line-height: var(--lwc-heightInput,1.875rem);
+    border-radius: var(--sds-c-input-radius-border, var(--lwc-borderRadiusMedium,0.25rem));
+    background-color: var(--sds-c-input-color-background, var(--lwc-colorBackgroundInput,rgb(255, 255, 255)));
+    color: var(--sds-c-input-text-color);
+    box-shadow: var(--sds-c-input-shadow);
+    transition: border var(--lwc-durationQuickly,0.1s) linear,background-color var(--lwc-durationQuickly,0.1s) linear;
+}

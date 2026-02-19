@@ -5,26 +5,42 @@
             <div class="header-title">
                 <h2>Quote Details</h2>
             </div>
-            <div class="header-buttons">
-                <button 
-                    class="slds-button slds-button_neutral"
-                    onclick={handleEmailQuotes}>
-                    <lightning-icon icon-name="utility:email" size="small"></lightning-icon>
-                    {label.EMAIL_QUOTES_LABEL}
-                </button>
-                <button 
-                    class="slds-button slds-button_brand"
-                    onclick={handleUseThisQuote}>
-                    <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
-                    {label.USE_THIS_QUOTE_LABEL}
-                </button>
-            </div>
+            <template if:false={waitingForQuotes}>
+                <div class="header-buttons">
+                    <button 
+                        class="slds-button slds-button_neutral"
+                        onclick={handleEmailQuotes}>
+                        <lightning-icon icon-name="utility:email" size="small"></lightning-icon>
+                        {label.EMAIL_QUOTES_LABEL}
+                    </button>
+                    <button 
+                        class="slds-button slds-button_brand"
+                        onclick={handleUseThisQuote}>
+                        <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
+                        {label.USE_THIS_QUOTE_LABEL}
+                    </button>
+                </div>
+            </template>
+            <template if:true={waitingForQuotes}>
+                <div class="waiting-container">
+                    <lightning-spinner alternative-text="Waiting for quotes..." size="medium"></lightning-spinner>
+                    <p class="waiting-message">{label.WAITING_LABEL}</p>
+                </div>
+            </template>
         </div>
 
         <!-- Loading Spinner -->
         <template if:true={isLoading}>
             <div class="loader-container">
                 <lightning-spinner alternative-text="Loading..." size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Waiting for quotes (no recordId) -->
+        <template if:true={waitingError}>
+            <div class="error-container">
+                <lightning-badge label="Error"></lightning-badge>
+                <p class="error-message">{label.QUOTES_NOT_GENERATED_LABEL}</p>
             </div>
         </template>
 
@@ -37,7 +53,8 @@
         </template>
 
         <!-- No Data Message -->
-        <template if:true={hasQuotes}>
+        <template if:false={waitingForQuotes}>
+            <template if:true={hasQuotes}>
             <!-- Selection Info -->
             <div class="selection-info">
                 <template if:true={hasSelection}>
@@ -81,21 +98,22 @@
             <div class="legal-section">
                 <p class="legal-text">{label.LEGAL_DISCLAIMER_LABEL}</p>
             </div>
-        </template>
+            </template>
 
-        <!-- Empty State -->
-        <template if:false={hasQuotes}>
+            <!-- Empty State -->
+            <template if:false={hasQuotes}>
             <div class="empty-state">
                 <lightning-icon icon-name="utility:info" size="large"></lightning-icon>
                 <h3>No Quotes Available</h3>
                 <p>There are no quotes to display at this time.</p>
             </div>
+            </template>
         </template>
     </div>
 
     <template if:true={isEmailModalOpen}>
         <c-tvalue-quote-email
-            selected-quotes={selectedQuoteRecords}
+            selected-quotes={currentSelectedRecords}
             onclose={handleCloseEmailModal}>
         </c-tvalue-quote-email>
     </template>

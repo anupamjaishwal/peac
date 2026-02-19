@@ -12,7 +12,7 @@ public with sharing class TC_PossibleOffers {
 
         Opportunity opp = [SELECT Id, Equipment_Cost__c, Risk_Based_Pricing__c, Credit_Risk_Grade__c, Lessor__c, Points__c, Deferral_Payments__c FROM Opportunity WHERE Id = :oppId];
         System.debug('?>?>?>'+opp);
-        TCRE.RuleEngine rateCardRE = new TCRE.RuleEngine();
+        SL_RuleEngine rateCardRE = new SL_RuleEngine();// SAL-6028 Misael Romero
         Set<Id> objIds = new Set<Id>();
         objIds.add(oppId);
 
@@ -43,7 +43,7 @@ public with sharing class TC_PossibleOffers {
                     ruleConfigIds.add(rcr.Row_Criteria__c);
                 }
 
-                TCRE.RuleEngine rateRowRE = new TCRE.RuleEngine();
+                SL_RuleEngine rateRowRE = new SL_RuleEngine();// SAL-6028 Misael Romero
                 rateRowRE.logicObjectIds = objIds;
                 rateRowRE.ruleConfigIds = ruleConfigIds;
                 rateRowRE.ruleObjectType = 'Rate_Card_Row__c';
@@ -92,7 +92,7 @@ public with sharing class TC_PossibleOffers {
                     ruleConfigIds.add(rcc.Column_Criteria__c);
                 }
 
-                TCRE.RuleEngine rateColRE = new TCRE.RuleEngine();
+                SL_RuleEngine rateColRE = new SL_RuleEngine();// SAL-6028 Misael Romero
                 rateColRE.logicObjectIds = objIds;
                 rateColRE.ruleConfigIds = ruleConfigIds;
                 rateColRE.ruleObjectType = 'Rate_Card_Column__c';
@@ -162,7 +162,7 @@ public with sharing class TC_PossibleOffers {
 
         Formula.recalculateFormulas(new List<Opportunity>{opp});
 
-        TCRE.RuleEngine re = new TCRE.RuleEngine();
+        SL_RuleEngine re = new SL_RuleEngine();// SAL-6028 Misael Romero
         re.logicObjects = new List<Opportunity>();
         re.logicObjects.add(opp);
         re.logicObjectType = 'Opportunity';
@@ -194,7 +194,7 @@ public with sharing class TC_PossibleOffers {
                     ruleConfigIds.add(rcr.Row_Criteria__c);
                 }
 
-                TCRE.RuleEngine rateRowRE = new TCRE.RuleEngine();
+                SL_RuleEngine rateRowRE = new SL_RuleEngine();// SAL-6028 Misael Romero
                 rateRowRE.logicObjects = new List<Opportunity>();
                 rateRowRE.logicObjects.add(opp);
                 rateRowRE.logicObjectType = 'Opportunity';
@@ -246,7 +246,7 @@ public with sharing class TC_PossibleOffers {
                     ruleConfigIds.add(rcc.Column_Criteria__c);
                 }
 
-                TCRE.RuleEngine rateColRE = new TCRE.RuleEngine();
+                SL_RuleEngine rateColRE = new SL_RuleEngine();// SAL-6028 Misael Romero
                 rateColRE.logicObjects = new List<Opportunity>();
                 rateColRE.logicObjects.add(opp);
                 rateColRE.logicObjectType = 'Opportunity';
@@ -335,7 +335,7 @@ public with sharing class TC_PossibleOffers {
             this.EquipmentCost = equipmentCost;
             this.Points = points;
             Double deferral = deferralString != null ? TC_PossibleOffers.deferralMapping.get (deferralString) : 0;
-            this.RateFactor = Decimal.valueOf(Math.pow((1+this.Yield/100/12),deferral)*(this.Yield/100/12)/(1-Math.pow((1+(this.Yield/100/12)),-this.Term))).setScale(8);
+            this.RateFactor = Decimal.valueOf(Math.pow((1+this.Yield/100/12),deferral)*(this.Yield/100/12)/(1-Math.pow((1+(this.Yield/100/12)),-this.Term)));// .setScale(8); SAL-6028 Misael Romero
             this.MonthlyPayment = (this.EquipmentCost*(1+this.Points/100)*this.RateFactor).setScale(2);
 
         }

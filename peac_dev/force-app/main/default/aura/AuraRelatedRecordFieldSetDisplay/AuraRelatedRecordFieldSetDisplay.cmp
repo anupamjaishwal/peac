@@ -1,0 +1,45 @@
+<aura:component implements="flexipage:availableForRecordHome,forceCommunity:availableForAllPageTypes,force:hasRecordId,force:hasSObjectName" access="global" controller="AuraFieldSetDisplayCont" >
+    <aura:attribute name="fieldSetName" type="String"
+                    description="The name of the field set to be displayed" />
+    <aura:attribute name="tileTitle" type="String"
+                    description="The title displayed in the tile" />
+    <aura:attribute name="fields" type="String[]"
+                    description="The fields to display in the component" />
+    <aura:attribute name="numColumns" type="Integer" default="2"
+                    description="The number of columns to display" />
+    <aura:attribute name="recordMode" type="String" default="view"
+                    description="The mode to display the component, valid values are view, readonly and edit"/>
+    <aura:attribute name="lookupFieldToFieldSet" type="String"
+                    description="The API Name of the lookup field and fieldset API name for its object with a : as the dilimeter, e.g. on the Account object ParentId:Test_FS"/>
+    <aura:attribute name="lookupFieldName" type="String"
+                    description="The API Name of the lookup field on this record that will be displayed in this component"/>
+    <aura:attribute name="lookupObjectType" type="String"
+                    description="The API name of the object to display in the component"/>
+    <aura:attribute name="lookupObjectId" type="String"
+                    description="The Id of the object that will be displayed in the component"/>
+    <aura:attribute access="global" name="hideTileTitle"  type="Boolean" default="false" description="Will hide the title if set to true"/>
+    <aura:attribute name="logo" type="String" description="The logo to display on the card" default="" />
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+    <lightning:card variant="narrow" class="{!'slds-theme_default '+if(v.hideTileTitle,'hide-title',' ')}">
+        <aura:set attribute="title" >
+            <lightning:icon iconName="{!'standard:'+v.logo}" size="small" />&nbsp;
+            {!v.tileTitle}
+        </aura:set>
+        <p class="slds-p-horizontal_small">
+            <aura:if isTrue="{!and(not(empty(v.lookupObjectId)), not(empty(v.lookupObjectType)))}">
+                <lightning:recordForm
+                        aura:id="relatedRecordDisplay"
+                        recordId="{!v.lookupObjectId}"
+                        objectApiName="{!v.lookupObjectType}"
+                        fields="{!v.fields}"
+                        columns="{!v.numColumns}"
+                        mode="{!v.recordMode}"
+                />
+            </aura:if>
+        </p>
+    </lightning:card>
+
+</aura:component>

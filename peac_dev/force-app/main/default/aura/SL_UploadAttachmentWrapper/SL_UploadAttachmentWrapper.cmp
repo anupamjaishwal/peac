@@ -1,0 +1,8 @@
+<aura:component implements="lightning:isUrlAddressable" access="global">
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="lookupFieldName" type="String" default="Account__c" />
+    <aura:attribute name="operation" type="String" default="uploadFile" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+        
+    <c:sL_OnBaseAttachment recordId="{!v.pageReference.state.c__id}" lookupFieldName="{!v.pageReference.state.c__field}" operation="{!v.pageReference.state.c__operation}"></c:sL_OnBaseAttachment>
+</aura:component>

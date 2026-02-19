@@ -1,0 +1,8 @@
+<design:component label="Silverline Document Checklist">
+    <sfdc:objects>
+        <sfdc:object>Case</sfdc:object>
+        <sfdc:object>Opportunity</sfdc:object>
+        <sfdc:object>Contract_Asset__c</sfdc:object>
+    </sfdc:objects>
+    <design:attribute name="pageSize" label="Page Size" description="Maximum records visible at a time. Default value is 5."/>
+</design:component>

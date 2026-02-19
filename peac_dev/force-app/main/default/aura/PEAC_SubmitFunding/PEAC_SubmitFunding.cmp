@@ -1,0 +1,4 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+    <aura:attribute name="recordId" type="String"/>
+        <c:pEAC_DP_SubmitFunding onclose="{!c.close}" recordId="{!v.recordId}" rec="{!v.recordId}"></c:pEAC_DP_SubmitFunding>
+</aura:component>

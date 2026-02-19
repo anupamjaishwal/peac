@@ -121,6 +121,7 @@ public with sharing class SL_MeterDataController {
         if(fileName.contains('.csv')) folder = 'csv';
         if(fileName.contains('.txt')) folder = 'txt';
         if(fileName.contains('.csv') && fileName.contains('InvoiceData') ) folder = 'csv_invoiceData';
+        if(fileName.contains('.csv') && fileName.contains('MiscCharges') ) folder = 'csv_invoiceData';
         if(fileName.contains('.csv') && fileName.contains('Success') ) folder = 'csvSuccess';
         if(fileName.contains('.csv') && fileName.contains('Failure') ) folder = 'csvFailure';
         if(fileName.contains('.csv') && fileName.contains('Exception') ) folder = 'csv_Exception';
@@ -149,8 +150,8 @@ public with sharing class SL_MeterDataController {
 
 
         string signedpermissions = 'r';
-        String signedstart = sasStart.formatGMT('YYYY-MM-dd\'T\'HH:mm:ss\'Z\'');
-        string signedexpiry = sasExpiry.formatGMT('YYYY-MM-dd\'T\'HH:mm:ss\'Z\'');
+        String signedstart = sasStart.formatGMT('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
+        string signedexpiry = sasExpiry.formatGMT('yyyy-MM-dd\'T\'HH:mm:ss\'Z\'');
         string signedservice = 'b';
         String canonicalizedresource = '/blob/'+storageName+'/'+storageContainer+'/'+filename;
 

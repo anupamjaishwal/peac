@@ -1,0 +1,391 @@
+<aura:component controller="AccountQuoteController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,force:hasRecordId,forceCommunity:availableForAllPageTypes" >
+    
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="ShowError" type="boolean" default="false"/>
+    <aura:attribute name="ShowErr2" type="boolean" default="false"/>
+    <aura:attribute name="ShowErr3" type="boolean" default="false"/>
+    <aura:attribute name="ShowForm" type="boolean" default="false"/>
+     <aura:attribute name="onGenerateQuote" type="boolean" default="true"/>
+     <aura:attribute name="onSave" type="boolean" default="false"/>
+    <aura:attribute name="Corp" type="String" default=""/>
+    <aura:attribute name="PGReq" type="String" default=""/>
+    <aura:attribute name="Gating" type="String" default=""/>
+     <aura:attribute name="leadRecordId" type="String" default=""/>
+        <aura:attribute name ="callout1" type = "Boolean" default="false"/>
+        <aura:attribute name ="callout2" type = "Boolean" default="false"/>
+        <aura:attribute name ="callout3" type = "Boolean" default="false"/>
+    <aura:attribute name="MaxCorp" type="String" default=""/>
+     <aura:attribute name="setTime" type="Integer" default="0"/>
+    <aura:attribute name="QuoteTerm1" type="Integer" default="0"/>
+    <aura:attribute name="QuoteTerm2" type="Integer" default="0"/>
+    <aura:attribute name="QuoteTerm3" type="Integer" default="0"/>
+    <aura:attribute name="QuoteTerm4" type="Integer" default="0"/>
+    <aura:attribute name="QuoteTerm5" type="Integer" default="0"/>
+    <aura:attribute name="QuotePayment1" type="Decimal" default="0.0"/>
+    <aura:attribute name="QuotePayment2" type="Decimal" default="0.0"/>
+    <aura:attribute name="QuotePayment3" type="Decimal" default="0.0"/>
+    <aura:attribute name="QuotePayment4" type="Decimal" default="0.0"/>
+    <aura:attribute name="QuotePayment5" type="Decimal" default="0.0"/>
+    <aura:attribute name ="Clicked" type = "Boolean" default="false"/>
+       <aura:attribute name ="isUpdate" type = "Boolean" default="false"/>
+    <aura:handler name="init" value="{! this }" action="{! c.init }"/>
+    <aura:html tag="style">
+        .slds-modal__container{
+        max-width: 45rem !important;
+        width:45% !important;
+        
+        }
+        .slds-modal__content{
+        height: 60% !important;
+        max-height: 70% !important;
+        }
+        .slds-spinner_container{
+        top: 25% !important;
+        bottom: 25% !important ;
+        }
+    </aura:html>
+    <aura:if isTrue="{!v.ShowError}">
+        
+        <p style="background:rgb(178,0,0) ; color:white ;padding-top: 5px;padding-bottom: 5px">&nbsp;
+            <lightning:icon iconName="utility:error" variant="inverse" size="x-small" class="inverse-icon"/><b> Cannot generate quote when Account Playbook status is Rejected, Cutoff or Do Not Solicit.</b><br/> </p>
+    </aura:if>
+    
+    <aura:if isTrue="{!v.ShowErr2}">
+        <p style="background:rgb(178,0,0) ; color:white ;padding-top: 5px;padding-bottom: 5px">&nbsp;
+            <lightning:icon iconName="utility:error" variant="inverse" size="x-small" class="inverse-icon" /><b> Cannot generate quote if the Dealer is not set for Risk Based Pricing.</b> <br/> </p>   
+    </aura:if>
+    
+    <aura:if isTrue="{!v.ShowErr3}">
+        
+        <p style="background:rgb(178,0,0) ; color:white; ;padding-top: 5px;padding-bottom: 5px">&nbsp;
+            <lightning:icon iconName="utility:error" variant="inverse" size="x-small" class="inverse-icon"/><b> Cannot generate quote when Account Playbook status is Rejected, Cutoff or Do Not Solicit and the Dealer is not set for Risk Based Pricing </b><br/></p>   
+    </aura:if>
+    
+    <aura:if isTrue="{!v.ShowForm}">
+    <br/>
+    <h3 class="slds-section-title--divider">Lead Information</h3>
+    <br/>
+    <lightning:recordEditForm aura:id="leadCreateForm" objectApiName="Lead" recordId="{!v.leadRecordId}" onerror="{!c.handleError}" onsuccess="{!c.handleSuccess}" onsubmit="{!c.handleOnSubmit}">
+        
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="Lead Source" fieldName="LeadSource" required="true" aura:id="LeadSource" disabled = "true" value="Dealer Quote" label="Lead Source" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="LeadStatus" required="true" fieldName="Status" aura:id="LeadStatus" label="Lead Status" />
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="LeadType" required="true" fieldName="Lead_Type__c" disabled = "true" aura:id="LeadType" value="End User"  label="Lead Type" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="RelatedDealer" aura:id="RelatedDealer" required="true" fieldName="Related_Dealer__c" value="{!v.recordId}" disabled = "true"  label="Related Dealer" />
+                </div>
+            </lightning:layoutItem>
+            
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="CompanyName" required="true" aura:id="CompanyName" fieldName="Company"  label="Company Name" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="AddLine1" required="true" aura:id="AddLine1" fieldName="Business_Address_Line1__c" label="Business Address Line 1" />
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>    
+        <br/>
+        
+        
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="AddLine2" required="false" aura:id="AddLine2" fieldName="Business_Address_Line2__c"  label="Business Address Line 2" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="BusinessCity" required="true" aura:id="BusinessCity" fieldName="Business_City__c"  label="Business City" />
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="BusinessState" required="true" aura:id="BusinessState" fieldName="Business_State__c"  label="Business State" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="BusinessZip" required="true" aura:id="BusinessZip" fieldName="Business_Zip__c"  label="Business Zip" />
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">     
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="BusinessPhone" required="true" aura:id="BusinessPhone" fieldName="Business_Phone__c"  label="Business Phone" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="FirstName" required="true" aura:id="FirstName" fieldName="FirstName"  label="Contact First Name" />
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">  
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="LastName" required="true" aura:id="LastName" fieldName="LastName"  label="Contact Last Name" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="ContactEmail" required="false" fieldName="Email"  label="Contact E-mail" />
+                </div>
+            </lightning:layoutItem> 
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">  
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="Phone" required="false" fieldName="Phone"  label="Contact Phone " />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem > 
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="DealerContact" required="false" fieldName="Lead_Dealer_Contact_Name__c"   label="Dealer Contact" />
+                </div>
+            </lightning:layoutItem> 
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread"> 
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="DealerContactEmail" required="false" fieldName="Dealer_email__c" label="Dealer Contact Email " />
+                </div>
+            </lightning:layoutItem>
+            
+        </lightning:layout>
+        <br/>
+        <br/>
+        
+        <h3 class="slds-section-title--divider">Equipment Information</h3>
+        <br/>
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="EquipmentCost" required="true" aura:id="EquipmentCost" fieldName="Equipment_Cost__c"  aura:Id="EquipmentCost" label="Equipment Cost" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="EquipmentType" required="true" aura:id="EquipmentType" fieldName="Equipment_Type__c"  label="Equipment Type" />
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        <br/>
+        
+        <h3 class="slds-section-title--divider">Quote Section </h3>
+        <br/>
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="FinancingType" required="true" aura:id="FinancingType" fieldName="Financing_Type__c"  disabled = "true"   value="EFA" label="Financing Type" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="CorpOnlyRiskGrade" required="false"  disabled = "true" fieldName="Corp_Only_Risk_Grade__c"  value="{!v.Corp}" label="Corp Only Risk Grade" />
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="PGRequired" required="false" fieldName="PGRequired__c" disabled = "true"  value="{!v.PGReq}" label="PG Required" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="GatingCriteriaMet" required="false" disabled = "true"  fieldName="Gating_Criteria_Met__c"  value="{!v.Gating}"  label="Gating Criteria Met" />
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+            <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="MaxCorpOnlyAmount" required="false" disabled = "true" fieldName="Max_Corp_Only_Amount__c"  value="{!v.MaxCorp}" label="Max Corp Only Amount" />
+                </div>
+            </lightning:layoutItem>
+           
+           
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+             <lightning:layoutItem >
+                <div class="slds-form-element__control fieldwidth">
+                    <lightning:inputField name="QuoteTerm1"  required="false" disabled = "true"  fieldName="QuoteTerm1__c"   label="QuoteTerm1" value="{!v.QuoteTerm1}" />
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element">
+                    
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuotePayment1"  required="false" disabled = "true"  fieldName="QuotePayment1__c"    label="QuotePayment1" value="{!v.QuotePayment1}"/>
+                    </div>
+                </div>
+            </lightning:layoutItem>
+          
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+              <lightning:layoutItem >
+                <div class="slds-form-element">
+                    
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuoteTerm2"  required="false" disabled = "true"  fieldName="QuoteTerm2__c"     label="QuoteTerm2"  value="{!v.QuoteTerm2}" />
+                    </div>
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element">
+                    
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuotePayment2"  required="false" disabled = "true" fieldName="QuotePayment2__c"     label="QuotePayment2"  value="{!v.QuotePayment2}" />
+                        
+                    </div>
+                </div>
+            </lightning:layoutItem>
+                   </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+             <lightning:layoutItem >      
+                <div class="slds-form-element">
+                    
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuoteTerm3"  required="false" disabled = "true"  fieldName="QuoteTerm3__c"   label="QuoteTerm3"  value="{!v.QuoteTerm3}" />
+                    </div>
+                </div>
+            </lightning:layoutItem>
+
+            <lightning:layoutItem >
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuotePayment3"  required="false" disabled = "true"  fieldName="QuotePayment3__c"    label="QuotePayment3"  value="{!v.QuotePayment3}"  />
+                    </div>
+                </div>
+            </lightning:layoutItem>
+          
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+              <lightning:layoutItem >
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuoteTerm4"  required="false" disabled = "true"  fieldName="QuoteTerm4__c"  label="QuoteTerm4"  value="{!v.QuoteTerm4}" />
+                    </div>
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuotePayment4"  required="false" disabled = "true"  fieldName="QuotePayment4__c"   label="QuotePayment4"  value="{!v.QuotePayment4}"  />
+                    </div>
+                </div>
+            </lightning:layoutItem>
+         
+        </lightning:layout>
+        <br/>
+        
+        <lightning:layout horizontalAlign="spread">
+               <lightning:layoutItem >
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuoteTerm5"  required="false" disabled = "true"  fieldName="QuoteTerm5__c"  label="QuoteTerm5"  value="{!v.QuoteTerm5}" />
+                    </div>
+                </div>
+            </lightning:layoutItem>
+            <lightning:layoutItem >
+                <div class="slds-form-element">
+                    <div class="slds-form-element__control fieldwidth">
+                        <lightning:inputField name="QuotePayment5"  required="false" disabled = "true"  fieldName="QuotePayment5__c"   label="QuotePayment5"  value="{!v.QuotePayment5}" />
+                    </div>
+                </div>
+            </lightning:layoutItem>
+        </lightning:layout>
+        <br/>
+        <div class="slds-align_absolute-center">
+               <aura:if isTrue ="{!v.onGenerateQuote}">
+                <div class="slds-align_absolute-center">
+                    <lightning:button variant="brand" name="Submit" label="Generate Quote" onclick="{!c.getQuoteDetail}" class="slds-m-top_medium"/>
+                </div>
+            </aura:if>
+         
+             <aura:if isTrue ="{!v.onSave}">
+                    <lightning:button variant="brand" name="Close" label="Close" onclick="{!c.CloseModal}" class="slds-m-top_medium"/>
+            </aura:if>
+        </div>
+        </lightning:recordEditForm> 
+        <div>
+            <aura:if isTrue ="{!v.Clicked}">
+                <div class = "spinner">
+                    <div class="slds-spinner_container ">
+                        <div role="status" class="slds-spinner slds-spinner_medium slds-spinner_brand">
+                            <div class="slds-spinner__dot-a"></div>
+                            <div class="slds-spinner__dot-b"></div>
+                            <aura:if isTrue="{!v.callout1}">
+                                <div class="custom-loading-text1">
+                                      Loading...
+                                </div>
+                            </aura:if>
+                            <aura:if isTrue="{!v.callout2}">
+                                <div class="custom-loading-text2">
+                                     Please wait, While generating Quote...
+                                 
+                                </div>
+                            </aura:if>
+                            <aura:if  isTrue="{!v.callout3}">
+                                <div class="custom-loading-text3">
+                                Processing Lead, Please wait...
+                                </div>
+                            </aura:if>
+                        </div>
+                        
+                    </div>
+                </div>
+            </aura:if>
+        </div>
+    </aura:if>
+</aura:component>

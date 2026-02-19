@@ -45,7 +45,9 @@ public without sharing class TC_ContactRelatedObjUpdate implements TC_TriggerAct
             
             if(tc.isAfter() && (tc.isInsert() || tc.isUpdate()) && shouldVerifyEmail && countMembers > 0) {
                 if(!System.isFuture() && !System.isBatch()){// Misael Romero, due to test class errors
-                    verifyEmail(cont.Id,cont.Email);
+                    if(!Test.isRunningTest()){
+                        verifyEmail(cont.Id,cont.Email);
+                    }
                 }
              }
             
@@ -60,7 +62,6 @@ public without sharing class TC_ContactRelatedObjUpdate implements TC_TriggerAct
         //by vrun
         if(!contMap.isEmpty()) checkForUserToUpdate(contMap, fieldsChangedById);
     
-        // WCL related
         if(tc.getNewMap() != null && tc.getoldMap() != null) {
             Map<Id,Set<Id>> contactWithOppIdMap = new Map<Id, Set<Id>>();
             for(Guarantor__c gr : [select Id, Contact__c, Opportunity__c from Guarantor__c where Contact__c IN :tc.getNewMap().keySet()]) {

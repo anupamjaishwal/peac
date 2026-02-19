@@ -1,0 +1,317 @@
+<aura:component description="Company Details of Application" access="global" controller="TC_LoanApplicationCtrl"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome">
+
+    <!--<aura:attribute name="company" type="Object" access="global"/>
+    <aura:attribute name="contact" type="Object" access="global"/>-->
+
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+    <aura:attribute name="isFormValid" type="Boolean" access="global" default="{!true}"/>
+    <aura:attribute name="isGuest" type="Boolean" default="{!false}"/>
+    <aura:registerEvent name="appNavEvent" type="c:tc_applicationNavigation_evt"/>
+    <aura:attribute name="isLoan" type="Boolean" access="global" />
+    <aura:attribute name="customerAddressSameAsCompany" type="Boolean" access="global" default="false" />
+    <aura:attribute name="companyDupeOnSave" type="Boolean" access="global" default="false" />
+    <aura:attribute name="contactFieldsRequired" type="Boolean" access="global" default="false" />
+	<aura:attribute name="customerContactRoles" type="TC_DatabaseUtil.LightningPicklist[]" access="global" />
+    <aura:attribute name="isPreApproval" type="Boolean" access="global" default="{!false}" />
+    <aura:attribute name="ssn" type="String" access="global" />
+    
+    <aura:handler name="lookupChoose" event="c:tc_inputLookupChoose_evt" action="{!c.handleChooseCTRL}"
+                  description="Event handler to get the selected record from LookupItem component."/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-large-size_1-of-1">
+
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward"
+                          iconPosition="right" aura:id="nextButton"/>
+        <lightning:button label="Save and Quit" onclick="{!c.saveAndQuitController}" variant="brand" iconName="utility:save"
+                          iconPosition="right" aura:id="nextButton"/>
+        <span class="slds-float_right">
+        <lightning:button label="Entity Confirmation" onclick="{!c.entityConfirmationClicked}" variant="brand" iconName="utility:matrix"
+                          iconPosition="right" aura:id="entityConfirmation"/>
+        </span>
+        
+    </div>
+
+    <c:tc_accordionSection title="Company Details">
+
+        <div class="slds-grid slds-wrap">
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                <aura:if isTrue="{!v.isLoan}">
+                    <c:tc_lookupInput fieldLabel="Search Company"
+                                      objectAPIName="Account"
+                                      subHeadingFieldsAPI="CCID__c,Business_Phone__c,Business_City__c,Business_State__c"
+                                      placeholder="Search Company"
+                                      chosenRecordLabel="{#v.clientWrapper.company.account.Name}"
+                                      chosenRecordId="{!v.clientWrapper.company.account.Id}"
+                                      aura:id="lookupid"
+                                      showCreateNew="false"
+                                      showLabel="false"
+                                      inputClass="slds-size_1-of-1"
+                                      iconCategoryName="standard:account"/>
+
+
+                    <aura:set attribute="else">
+                        <c:tc_lookupInput fieldLabel="Search Company"
+                                          objectAPIName="Account"
+                                          subHeadingFieldsAPI="CCAN__c,Business_Phone__c,Business_City__c,Business_State__c"
+                                          placeholder="Search Company"
+                                          chosenRecordLabel="{#v.clientWrapper.company.account.Name}"
+                                          chosenRecordId="{!v.clientWrapper.company.account.Id}"
+                                          aura:id="lookupid"
+                                          showCreateNew="false"
+                                          showLabel="false"
+                                          inputClass="slds-size_1-of-1"
+                                          iconCategoryName="standard:account"/>
+                    </aura:set>
+
+                </aura:if>
+
+            </div>
+            <aura:if isTrue="{!v.clientWrapper.company.dupe}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                    <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                </div>
+            </aura:if>
+            <aura:if isTrue="{!v.clientWrapper.company.account.PG_Required__c}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                    <h3 style="color:red;">This Company will require a PG to be added in the Guarantors tab</h3>
+                </div>
+            </aura:if>
+
+
+            <lightning:input value="{!v.clientWrapper.company.account.Name}" name="companyName" label="Full Legal Name" required="true"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.company.readOnly}"/>
+
+            <lightning:input value="{!v.clientWrapper.company.account.DBA__c}" name="dbaName" label="DBA"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.company.readOnly}"/>
+
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Business_Type__c" required="true" label="Business Type" value="{!v.clientWrapper.company.account.Business_Type__c}" disabled="{!v.clientWrapper.company.readOnly}"/>
+            </div>
+
+            <aura:if isTrue="{!v.isLoan}">
+                            <lightning:input value="{!v.clientWrapper.company.account.Tax_ID__c}" name="fedTaxID" label="Tax ID" required="true"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.company.readOnly}"/>
+            </aura:if>
+            <aura:if isTrue="{!v.clientWrapper.recordTypeName != 'Loan'}">
+                            <lightning:input value="{!v.clientWrapper.company.account.Tax_ID__c}" name="fedTaxID" label="Tax ID" 
+                            class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.company.readOnly}"/>
+            </aura:if>
+
+            <aura:if isTrue="{!and(v.clientWrapper.recordTypeName != 'Loan',v.clientWrapper.company.readOnly == true)}">
+                <lightning:input value="{!v.clientWrapper.company.account.CCAN__c}" name="pcode" label="CCAN"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"  disabled="{!true}"/>
+            </aura:if>
+
+            <aura:if isTrue="{!v.isLoan}">
+                <aura:if isTrue="{!v.clientWrapper.company.readOnly == true}">
+                    <lightning:input value="{!v.clientWrapper.company.account.CCID__c}" name="pcode" label="CCID"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"  disabled="{!true}"/>
+                </aura:if>
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <label class="slds-form-element__label">Date Established</label>
+                    <div class="slds-form-element__control">
+                        <ui:inputDate displayDatePicker="true" value="{!v.clientWrapper.company.account.Date_Established__c}" format="MM/dd/yyyy" disabled="{!v.clientWrapper.company.readOnly}"/>
+                    </div>
+                </div>
+                <!--<lightning:input value="{!v.clientWrapper.company.account.AnnualRevenue}" label="Annual Revenue"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" disabled="{!v.clientWrapper.company.readOnly}" />-->
+                <!--<lightning:input value="{!v.clientWrapper.company.account.Bank_Balance__c}" label="Bank Balance"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" disabled="{!v.clientWrapper.company.readOnly}" />-->
+            </aura:if>
+
+            <lightning:input value="{!v.clientWrapper.company.account.Business_Phone__c}" name="phone" label="Phone"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" required="true" disabled="{!v.clientWrapper.company.readOnly}"/>
+
+            <lightning:input value="{!v.clientWrapper.company.account.Business_Address__c}" name="street" label="Street" required="true"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.company.readOnly}"/>
+            <lightning:input value="{!v.clientWrapper.company.account.Business_City__c}" name="city" label="City"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" required="true" disabled="{!v.clientWrapper.company.readOnly}"/>
+
+            
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Business_State__c" required="true" label="State" value="{!v.clientWrapper.company.account.Business_State__c}" disabled="{!v.clientWrapper.company.readOnly}"/>
+            </div>
+
+            <lightning:input value="{!v.clientWrapper.company.account.Business_Zip__c}" name="pcode" label="Postal Code"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" required="true" disabled="{!v.clientWrapper.company.readOnly}"/>
+
+            <lightning:input checked="{!v.isPreApproval}" name="preApproval" label="Pre-Approval"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="checkbox" required="false"/>
+
+            <div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-large-size_1-of-1">
+                <lightning:button label="Clear Company" iconName="utility:clear" variant="neutral" onclick="{!c.clearCompany}"
+                                  class="slds-m-left_small"/>
+            </div>
+
+
+
+
+
+        </div>
+
+    </c:tc_accordionSection>
+
+
+
+    <c:tc_accordionSection title="Customer Contact">
+
+        <div class="slds-grid slds-wrap"> 
+
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                <c:tc_lookupInput fieldLabel="Search Contact"
+                                  objectAPIName="Contact"
+                                  subHeadingFieldsAPI="FirstName,LastName,SSNMain__c,Phone,MailingCity,MailingStateCode"
+                                  placeholder="Search Contact"
+                                  chosenRecordLabel="{#v.clientWrapper.contact.contact.FirstName}"
+                                  chosenRecordId="{!v.clientWrapper.contact.contact.Id}"
+                                  aura:id="lookupid2"
+                                  showCreateNew="false"
+                                  showLabel="false"
+                                  inputClass="slds-size_1-of-1"
+                                  iconCategoryName="standard:contact"
+                                  filter="{!'AccountId=\'' + v.clientWrapper.company.account.Id + '\' AND AccountId != null AND Validity_Verify__Status__c != \'Invalid\' AND Validity_Verify__Status__c != null'}"/>
+            </div>
+
+            <aura:if isTrue="{!v.clientWrapper.contact.dupe}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                    <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                </div>
+            </aura:if>
+
+            <lightning:input value="{!v.clientWrapper.contact.contact.FirstName}" label="First Name"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}" required="{!v.contactFieldsRequired}" />
+            <lightning:input value="{!v.clientWrapper.contact.contact.LastName}" label="Last Name"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}" required="{!v.contactFieldsRequired}" onchange="{!c.contactLastNameChanged}"/>
+
+            <lightning:input value="{!v.clientWrapper.contact.contact.Title}"  label="Title"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}"/>
+
+            <lightning:input value="{!v.clientWrapper.contact.contact.Phone}" label="Phone"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}"/>
+            <lightning:input value="{!v.clientWrapper.contact.contact.MobilePhone}" label="Mobile"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}"/>
+            <lightning:input value="{!v.clientWrapper.contact.contact.Email}" label="Email"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}" required="{!v.clientWrapper.curentUserProfileName == 'DLG Rep'}"/>
+           
+            <aura:if isTrue="{!v.clientWrapper.contact.contact.Id}">
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <lightning:recordEditForm recordId="{!v.clientWrapper.contact.contact.Id}" objectApiName="Contact">
+                        <lightning:inputField class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" fieldName="SSNMain__c" disabled="{!v.clientWrapper.contact.readOnly}"/>
+                    </lightning:recordEditForm>
+                </div>
+                <!--<lightning:input value="{!v.ssn}" label="SSN"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}"/>-->
+                <aura:set attribute="else">
+                    <lightning:input value="{!v.clientWrapper.contact.contact.SSNMain__c}" label="SSN"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}"/>
+                    
+                </aura:set>
+            </aura:if>
+    
+            
+            <lightning:input value="{!v.clientWrapper.contact.contact.Ownership_Pct__c}" label="% Ownership"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}"/>
+			<aura:if isTrue="{!v.isLoan}">
+            	<div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                	<label class="slds-form-element__label">DOB</label>
+                    <div class="slds-form-element__control">
+                     	<ui:inputDate displayDatePicker="true" value="{!v.clientWrapper.contact.contact.Birthdate}" format="MM/dd/yyyy" required="true" disabled="{!v.clientWrapper.contact.readOnly}" />
+                    </div>
+                </div>
+            </aura:if>
+            <!--<aura:if isTrue="{!v.v.clientWrapper.contact.contact.Id == null}">
+                <lightning:select name="select" label="Role" required="true"  class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" aura:id="contactRoleSelect" onchange="{!c.contactRoleSelected}">
+                    <aura:iteration items="{!v.clientWrapper.possibleCustomerContactRoles}" var="role">
+                        <option value="{!role.value}" text="{!role.label}"></option>
+                    </aura:iteration>
+                </lightning:select>
+                <aura:set attribute="else">
+                    <lightning:input value="{!v.clientWrapper.contact.contact.Ownership_Pct__c}" label="% Ownership"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}"/>
+                </aura:set>
+            </aura:if>-->
+            <aura:if isTrue="{!v.clientWrapper.contact.roleSaved}">
+                <lightning:input value="{!v.clientWrapper.contact.role}" label="Role"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!true}"/>
+                
+                <aura:set attribute="else">
+                    <lightning:select label="Role" value="{!v.clientWrapper.contact.role}" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.clientWrapper.contact.roleSaved}">
+                    	<aura:iteration items="{!v.clientWrapper.possibleCustomerContactRoles}" var="role">
+                        	<option value="{!role.value}" text="{!role.label}"></option>
+                    	</aura:iteration>
+					</lightning:select>
+                    
+                </aura:set>
+            </aura:if>
+            <!--
+            <lightning:select label="Role" value="{!v.clientWrapper.contact.role}" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.clientWrapper.contact.roleSaved}">
+            	<aura:iteration items="{!v.clientWrapper.possibleCustomerContactRoles}" var="role">
+                    <option value="{!role.value}" text="{!role.label}"></option>
+                </aura:iteration>
+            </lightning:select>-->
+
+
+            <lightning:input value="{!v.customerAddressSameAsCompany}" label="Customer address same as company address"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1" type="Checkbox" onchange="{!c.customerAddressSameAsCompanyCTRL}" disabled="{!v.clientWrapper.contact.readOnly}"/>
+            <aura:if isTrue="{!!v.customerAddressSameAsCompany}">
+                <lightning:input value="{!v.clientWrapper.contact.contact.MailingStreet}" label="Address"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}" required="{!v.contactFieldsRequired}"/>
+
+                <lightning:input value="{!v.clientWrapper.contact.contact.MailingCity}" label="City"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}" required="{!v.contactFieldsRequired}"/>
+
+
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Contact'}" fldInfo="MailingStateCode" label="State" value="{!v.clientWrapper.contact.contact.MailingStateCode}" disabled="{!v.clientWrapper.contact.readOnly}" required="{!v.contactFieldsRequired}"/>
+                </div>
+
+                <lightning:input value="{!v.clientWrapper.contact.contact.MailingPostalCode}" label="Zip"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.clientWrapper.contact.readOnly}" required="{!v.contactFieldsRequired}"/>
+
+
+
+
+                <aura:set attribute="else">
+                    <lightning:input value="{!v.clientWrapper.company.account.Business_Address__c}" label="Address"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="true"/>
+
+                    <lightning:input value="{!v.clientWrapper.company.account.Business_City__c}" label="City"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"  disabled="true"/>
+
+
+
+                    <lightning:input value="{!v.clientWrapper.company.account.Business_State__c}" label="State"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="true"/>
+
+                    <lightning:input value="{!v.clientWrapper.company.account.Business_Zip__c}" label="Zip"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="true"/>
+                </aura:set>
+            </aura:if>
+
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                <c:tc_inputSelect objInfo="{sobjectType : 'Contact'}" fldInfo="Dealer_Customer_Supplied_PG__c"  label="Dealer/Customer Supplied PG"
+                                  value="{!v.clientWrapper.contact.contact.Dealer_Customer_Supplied_PG__c}" disabled="{!v.clientWrapper.contact.readOnly}"/>
+            </div>
+
+            <!-- SAL-2384 when SSN is inputted, this field is required -->
+            <lightning:input checked="{!v.clientWrapper.contact.contact.OK_to_Pull_Credit__c}" label="OK to Pull Credit"
+                             class="slds-p-left_x-small slds-p-top_x-large slds-large-size_1-of-3" type="checkbox"
+                             disabled="{!v.clientWrapper.contact.readOnly}"/>
+
+        </div>
+
+        <div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+            <lightning:button label="Clear Contact" iconName="utility:clear" variant="neutral" onclick="{!c.clearContact}"
+                              class="slds-m-left_small"/>
+        </div>
+
+    </c:tc_accordionSection>
+
+
+
+
+    <lightning:spinner aura:id="spinner" class="slds-hide"/>
+</aura:component>

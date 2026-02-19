@@ -1,0 +1,28 @@
+<!--
+ - Created by andrewmayer on 1/11/19.
+ -->
+
+<aura:component description="tc_dealEditApplication"
+                access="global"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader,force:appHostable,lightning:isUrlAddressable"
+                controller="TC_LoanApplicationCtrl">
+
+    <aura:attribute name="recordId" type="String" access="global"/>
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+    <ltng:require scripts="{!$Resource.AuraUtils}" afterScriptsLoaded="{!c.doInit}"/>
+    <aura:attribute name="doInitBoolean" type="Boolean" default="{!false}"/>
+
+
+
+    <aura:if isTrue="{!v.doInitBoolean}">
+        <c:tc_loanApplicationGuest clientWrapper="{!v.clientWrapper}" isEdit="{!true}" wizardHeading="Edit"/>
+    </aura:if>
+
+    <!--<c:tc_loanApplicationGuest clientWrapper="{!v.clientWrapper}" isEdit="{!true}" wizardHeading="Edit"/>-->
+
+
+
+
+
+    <lightning:spinner aura:id="spinner" class="slds-hide"/>
+</aura:component>

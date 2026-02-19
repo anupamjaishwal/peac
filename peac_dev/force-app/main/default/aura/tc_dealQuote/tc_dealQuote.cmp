@@ -1,0 +1,85 @@
+<aura:component description="Quote for Application" access="global" controller="TC_LoanApplicationCtrl"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome">
+    <aura:attribute name="company" type="Account" access="global"/>
+    <aura:attribute name="deal" type="Object" access="global"/>
+     <aura:attribute name="showSpinner" type="boolean" access="global"/>
+    <aura:attribute name="offerWrap" type="TC_PossibleOffers.PossibleOffer[]" access="global"/>
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+    <aura:attribute name="opplst" type="Opportunity" access="global"/>
+    
+    <aura:registerEvent name="appNavEvent" type="c:tc_applicationNavigation_evt"/>
+    <aura:handler name="change" value="{!v.company}" action="{!c.itemsChange}"/>
+    <lightning:empApi aura:id="empApi"/>
+    <!-- Holds the streaming event subscription -->
+    <aura:attribute name="subscription" type="Map"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-large-size_1-of-1">
+        <lightning:button label="Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward"
+                          iconPosition="right" aura:id="nextButton"/>
+    </div>
+    <aura:if isTrue="{!v.showSpinner}" > 
+    <div class="exampleHolder">
+        <lightning:spinner alternativeText="Loading" size="large" />
+    </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.opplst.Gating_Criteria_Met__c == 0}">
+        <div class="slds-text-color_error">
+            <br/>
+            <p>
+                <lightning:formattedText value="We regret that based upon your business profile, we are unable to extend credit to you at this time.  You have the right to a written statement of specific reasons for the denial.  To obtain this statement, within sixty (60) days of today’s date, please contact Marlin Business Bank c/o Credit Inquires at 300 Fellowship Road, Mount Laurel, NJ 08054, or you may call 888-479-111 ext. 4401, an un-manned line, and leave a message.  Please be sure to include your business name, business tax ID number and business phone number.  You have the right to obtain a written statement of reasons for the denial within 30 days of receiving your request for the statement."/>
+            </p>
+            <br/>
+            <p>
+                <b><lightning:formattedText value="Notice: "/></b>
+                <lightning:formattedText value="The Equal Credit Opportunity Act prohibits creditors from discriminating against credit applicants on the basis of race, color, religion, national origin, sex, marital status, age (provided the applicant has the capacity to enter into a binding contract); because all or part of the applicant’s income derives from any public assistance program; or because the applicant has in good faith  exercised any right under the Consumer Credit Protection Act. The Federal agency that administers compliance with this law concerning finance company creditors is the Federal Trade Commission, Equal Credit Opportunity, Washington, DC 20580 or the FTC Regional Office for the region in which the creditor operates. The Federal agency that administers compliance with this law concerning bank creditors is the Federal Reserve Consumer Help Center, PO Box 1200, Minneapolis, MN 55480."/>
+            </p>
+            <br/>
+        </div>
+    </aura:if>
+
+    <aura:if isTrue="{!v.opplst.Gating_Criteria_Met__c != 0}">
+        <aura:if isTrue="{!v.opplst.Risk_Based_Pricing__c}">
+            Risk Grade :  {!v.opplst.Corp_Only_Risk_Grade__c}
+            <table class="slds-table slds-table_bordered slds-table_cell-buffer" width="100%">
+                <thead>
+                <tr class="slds-text-title_caps">
+                    <th scope="col">
+                        <div>Term</div>
+                    </th>
+                    <th scope="col">
+                        <div>Monthly Payment</div>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                <aura:iteration items="{!v.offerWrap}" var="obj">
+                    <tr>
+                        <td>
+                            <div>{!obj.Term}</div>
+                        </td>
+                        <td>
+                            <div>{!obj.MonthlyPayment}</div>
+                        </td>
+                    </tr>
+                </aura:iteration>
+                </tbody>
+            </table>
+            <aura:set attribute="else">
+                Non Risk Based Pricing - Quote(s) not available.
+            </aura:set>
+        </aura:if>
+    </aura:if>
+
+
+    
+    <div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-large-size_1-of-1">
+        <lightning:button label="Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward"
+                          iconPosition="right" aura:id="nextButton"/>
+    </div>
+    
+    <lightning:spinner aura:id="spinner" class="slds-hide"/>
+    
+</aura:component>

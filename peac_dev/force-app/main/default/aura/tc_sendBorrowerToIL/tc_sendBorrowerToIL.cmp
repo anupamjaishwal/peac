@@ -1,0 +1,8 @@
+<aura:component access="global"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome,force:lightningQuickActionWithoutHeader"
+                controller="TC_BWcreateCustomerCtrl">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:spinner alternativeText="Loading" size="large" aura:id="spinner" variant="brand" class="slds-show" />
+	
+</aura:component>

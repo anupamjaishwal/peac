@@ -1,0 +1,74 @@
+<!--
+    This component will display a field based on the AuraFieldDescription object record passed into it.
+    lightning:inputField would be the preferred method; however, there is an issue with firing .submit() from a controller
+    and the record edit component where the onSubmission handler does not fire. This is a way to get around that particular
+    issue
+-->
+<aura:component description="AuraFieldDisplay">
+    <aura:attribute access="global" name="field" type="Map" description="The field to display" required="true" />
+    <aura:attribute access="global" name="sObject" type="SObject" description="The SObject that the field will be updating" />
+    <aura:attribute access="global" name="ignoreRequired" type="Boolean" default="true" />
+    <aura:attribute access="global" name="setReadOnly" type="Boolean" default="false" />
+    <aura:method name="validateField" action="{!c.doValidateField}"/>
+
+    <!--<lightning:inputField fieldName="{!v.field.fieldName}" required="{!v.field.isRequired}" value="{!v.field.fieldValue}" />-->
+    <aura:if isTrue="{!v.field.formInputType=='textarea'}">
+        <lightning:textarea
+                label="{!v.field.fieldLabel}"
+                value="{!v.field.fieldValue}"
+                required="{!v.field.isRequired}"
+                onchange="{!c.doChange}"
+                aura:id="aura_field_display_input"
+                disabled="{!v.setReadOnly}"
+        />
+        <aura:set attribute="else">
+            <aura:if isTrue="{!v.field.isBoolean}">
+                <lightning:input
+                        label="{!v.field.fieldLabel}"
+                        checked="{!v.field.fieldValue}"
+                        type="{!v.field.formInputType}"
+                        required="{!if (v.ignoreRequired, false,v.field.isRequired)}"
+                        onchange="{!c.doChange}"
+                        aura:id="aura_field_display_input"
+                        disabled="{!v.setReadOnly}"
+                />
+                <aura:set attribute="else">
+                    <aura:if isTrue="{!v.field.isPicklist}">
+                        <lightning:select
+                                label="{!v.field.fieldLabel}"
+                                value="{!v.field.fieldValue}"
+                                required="{!if (v.ignoreRequired, false,v.field.isRequired)}"
+                                onchange="{!c.doChange}"
+                                aura:id="aura_field_display_input"
+                                disabled="{!v.setReadOnly}"
+                        >
+                            <aura:iteration items="{!v.field.selectOptions}" var="so" >
+                                <option value="{!so.value}" text="{!so.label}" selected="{!v.field.fieldValue == so.value}" disabled="{!so.isDisabled}"/>
+                            </aura:iteration>
+                        </lightning:select>
+                        <aura:set attribute="else">
+
+                            <lightning:input
+                                    label="{!v.field.fieldLabel}"
+                                    value="{!v.field.fieldValue}"
+                                    type="{!v.field.formInputType}"
+                                    maxlength="{!v.field.fieldLength}"
+                                    messageWhenTooLong="{!'Too long, maximum of '+max}"
+                                    step="{!v.field.step}"
+                                    max="{!v.field.max}"
+                                    min="{!v.field.min}"
+                                    required="{!if (v.ignoreRequired, false,v.field.isRequired)}"
+                                    onchange="{!c.doChange}"
+                                    class="{!v.field.fieldName}"
+                                    formatter="{!v.field.fieldFormat}"
+                                    aura:id="aura_field_display_input"
+                                    disabled="{!v.setReadOnly}"
+                            />
+                        </aura:set>
+                    </aura:if>
+                </aura:set>
+            </aura:if>
+        </aura:set>
+    </aura:if>
+
+</aura:component>

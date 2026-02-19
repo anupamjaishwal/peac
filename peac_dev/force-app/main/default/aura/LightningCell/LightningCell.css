@@ -1,0 +1,16 @@
+.THIS .field{
+  padding: 5px;
+  border: 1px solid #dce4ec;
+  border-radius: 2px;
+}
+
+.THIS.input-Label input{
+    border:none;
+    padding: 0px;
+    background:none;
+    box-shadow:none;
+}
+
+.THIS.input-DateTime input {
+    width: 120px !important;
+}

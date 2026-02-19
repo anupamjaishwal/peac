@@ -1,0 +1,22 @@
+<!--
+    This component will obtain the list of AuraFieldDescription object records based on the section passed and will display
+    the fields via the AuraFieldDisplay component.
+-->
+<aura:component description="AuraFieldSectionDisplay" access="global">
+    <aura:attribute access="global" name="sectionName" type="String" description="The name of the section to iterate over" required="true" />
+    <aura:attribute access="global" name="sectionToFieldMap" type="Map" description="The map of section header to field description" required="false" />
+    <aura:attribute access="global" name="fieldList" type="List" description="The fields that are retrieved from the map by the controller" default="[]" />
+    <aura:attribute access="global" name="fieldClass" type="String" description="The class to be applied to each of the fields" default="slds-col slds-x-small-size_1-of-1 slds-large-size_1-of-2" />
+    <aura:attribute access="global" name="ignoreRequired" type="Boolean" default="false" />
+    <aura:attribute access="global" name="sObject" type="SObject" />
+    <aura:attribute access="global" name="allReadOnly" type="Boolean" default="{!false}" />
+    <aura:attribute access="global" name="prePopulate" type="Boolean" default="{!false}" description="This option will automatically try to copy the data from the field list" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:method name="validateFields" action="{!c.doValidateFields}"/>
+
+    <aura:iteration var="field" items="{!v.fieldList}">
+        <div class="{!v.fieldClass}">
+            <c:AuraFieldDisplay field="{#field}" sObject="{!v.sObject}" ignoreRequired="{!v.ignoreRequired}" setReadOnly="{!v.allReadOnly}" aura:id="auraFieldDisplay" />
+        </div>
+    </aura:iteration>
+</aura:component>

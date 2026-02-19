@@ -1,0 +1,46 @@
+.THIS.scrollerSize {
+    height: 300px;
+}
+
+.THIS .PortalSpinner{
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+
+.THIS .custom-box > .slds-form-element {
+    min-height: 70px;
+}
+
+.THIS .custom-box > .slds-form-element > .slds-grow {
+    position: relative;
+    top: 7px;
+}
+
+.THIS .sldsFirstSection .custom-box>.slds-form-element {
+    height: auto;
+    min-height: auto;
+}
+.THIS .sldsFirstSection .custom-box>.slds-form-element>.slds-grow {
+    top:auto;
+}
+
+.THIS .sldsFirstSection .custom-box .slds-no-flex {
+    display:none;
+}
+
+.THIS .sldsFirstSection .custom-box {
+    display: inline-flex;
+}
+.THIS .sldsFirstSection .custom-box:first-child {
+    padding:0 10px 0 0;
+    font-family: Arial,Helvetica,sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    font-style: normal;
+    font-stretch: normal;
+    line-height: 1.5;
+    letter-spacing: 0.5px;
+    color: #222222;
+}

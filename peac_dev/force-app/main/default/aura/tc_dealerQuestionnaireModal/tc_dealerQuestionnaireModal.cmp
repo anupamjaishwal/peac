@@ -1,0 +1,133 @@
+<!--
+ - Created by szheng on 4/27/20.
+ -->
+
+<aura:component description="tc_dealerQuestionnaireModal">
+
+    <aura:attribute name="wrapper" type="TC_DealerQuestionnaireCtrl"/>
+    <aura:attribute name="spinnerBoolean" type="Boolean" default="{!false}"/>
+    <aura:method name="fieldValidation" action="{!c.fieldValidation}" access="PUBLIC">
+        <aura:attribute name="displayError" type="Boolean"/>
+    </aura:method>
+
+    <lightning:recordEditForm objectApiName="Account">
+        
+        <div class="slds-p-around_medium">
+            <label>Does the equipment being financed require ongoing services to maintain functionality?</label>
+            <lightning:inputField aura:id="required" variant="label-hidden" fieldName="Service__c" value="{!v.wrapper.account.Service__c}"
+                                  onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+        </div>
+
+        <aura:if isTrue="{!or(equals(v.wrapper.account.Service__c, 'Yes'), equals(v.wrapper.account.New_Dealer_Service_Based__c, 'Service-Based'))}">
+            <div class="slds-box">
+                <div class="slds-text-title_caps">
+                    Service Based Questions
+                </div>
+                <i>Because dealer is service based or equipment being financed requires ongoing services:</i><br/>
+                <div class="slds-p-around_medium">
+                    <label>What % of finance offering approximately is service related cost?</label><span style="color:red">*</span>
+                    <lightning:inputField aura:id="serviceRequiredAlways" variant="label-hidden" fieldName="Percentage_of_Service__c" value="{!v.wrapper.account.Percentage_of_Service__c}"
+                                          onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+                </div>
+
+                <div class="slds-p-around_medium">
+                    <label>If dealer goes out of business, sells or closes the business, are there alternate service providers capable of taking over services?</label><span style="color:red">*</span>
+                    <lightning:inputField aura:id="serviceRequiredAlways" variant="label-hidden" fieldName="Alternative_Provider__c" value="{!v.wrapper.account.Alternative_Provider__c}"
+                                          onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}" required= "True"/>
+                </div>
+                
+                <div class="slds-p-around_medium">
+                    <label>If service is included or required, what is the length of term?</label>
+                    <lightning:inputField aura:id="serviceRequired" variant="label-hidden" fieldName="Service_Term__c" value="{!v.wrapper.account.Service_Term__c}"
+                                          onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+                </div>
+
+                <div class="slds-p-around_medium">
+                    <label>Are the services provided by the dealer or a 3rd party?</label>
+                    <lightning:inputField aura:id="serviceRequired" variant="label-hidden" fieldName="Service_Provider__c" value="{!v.wrapper.account.Service_Provider__c}"
+                                          onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+                </div>
+
+                <aura:if isTrue="{!equals(v.wrapper.account.Service_Provider__c, '3rd party')}">
+                    <div class="slds-p-left_xx-large">
+                        <label>If services are provided by a 3rd party, is it a manufacturer or an Internet Service Provider?</label>
+                        <lightning:inputField aura:id="dealerRequired" variant="label-hidden" fieldName="Manufacturer_ISP__c" value="{!v.wrapper.account.Manufacturer_ISP__c}"
+                                              onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+                    </div>
+                </aura:if>
+
+                <div class="slds-p-around_medium">
+                    <label>Are the managed services part of a hosted cloud solution?</label>
+                    <lightning:inputField aura:id="serviceRequired" variant="label-hidden" fieldName="Hosted_Solution__c" value="{!v.wrapper.account.Hosted_Solution__c}"
+                                          onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+                </div>
+
+                <aura:if isTrue="{!equals(v.wrapper.account.Hosted_Solution__c, 'Yes')}">
+                    <div class="slds-p-left_xx-large">
+                        <label>If part of a cloud solution, is the solution proprietary or a 3rd party (i.e. Cisco)?</label>
+                        <lightning:inputField aura:id="hostedRequired" variant="label-hidden" fieldName="Proprietary__c" value="{!v.wrapper.account.Proprietary__c}"
+                                              onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+                    </div>
+                </aura:if>
+
+                <div class="slds-p-around_medium">
+                    <label>If dealer is purchasing services from a manufacturer (i.e. ShoreTel) or internet service provider, are they paying those fees for entire term or finance agreement upfront or monthly?</label>
+                    <lightning:inputField aura:id="serviceRequired" variant="label-hidden" fieldName="Purchased_Services__c" value="{!v.wrapper.account.Purchased_Services__c}"
+                                          onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+                </div>
+                
+                <div class="slds-p-around_medium">
+                    <label>Will dealer provide Marlin a pro-rata refund for services funded but not rendered due to customer default?</label>
+                    <lightning:inputField aura:id="serviceRequired" variant="label-hidden" fieldName="Pro_Rata__c" value="{!v.wrapper.account.Pro_Rata__c}"
+                                          onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+                </div>
+            </div>
+        </aura:if>
+
+        <div class="slds-p-around_medium">
+            <label>Does your company install or is equipment drop-shipped?</label>
+            <lightning:inputField aura:id="required" variant="label-hidden" fieldName="Delivery__c" value="{!v.wrapper.account.Delivery__c}"
+                                  onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+        </div>
+
+        <!-- <div class="slds-p-around_medium">
+            <label>How many Sales reps do you have?</label>
+            <lightning:inputField aura:id="required" variant="label-hidden" fieldName="Sales_Reps_Questionnaire__c" value="{!v.wrapper.account.Sales_Reps_Questionnaire__c}"
+                                  onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+        </div> -->
+
+        <div class="slds-p-around_medium">
+            <label>Are any of your Sales Reps 1099?</label>
+            <lightning:inputField aura:id="required" variant="label-hidden" fieldName="Sales_Reps_1099__c" value="{!v.wrapper.account.Sales_Reps_1099__c}"
+                                  onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+        </div>
+
+        <div class="slds-p-around_medium">
+            <label>Operate at a Commercial Location?</label>
+            <lightning:inputField aura:id="required" variant="label-hidden" fieldName="Location__c" value="{!v.wrapper.account.Location__c}"
+                                  onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+        </div>
+
+        <div class="slds-p-around_medium">
+            <label>Do you want access to online tools?</label>
+            <lightning:inputField aura:id="required" variant="label-hidden" fieldName="Online_Tools__c" value="{!v.wrapper.account.Online_Tools__c}"
+                                  onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+        </div>
+
+        <div class="slds-p-around_medium">
+            <label>Anticipated monthly sales volume with Marlin?</label>
+            <lightning:inputField aura:id="required" variant="label-hidden" fieldName="Volume__c" value="{!v.wrapper.account.Volume__c}"
+                                  onchange="{!c.checkValid}" disabled="{!v.wrapper.readMode}"/>
+        </div>
+    </lightning:recordEditForm>
+
+    <aura:if isTrue="{!v.spinnerBoolean}">
+        <div class="slds-spinner_container slds-is-fixed">
+            <div class="slds-spinner--brand  slds-spinner slds-spinner--large" role="alert">
+                <span class="slds-assistive-text">Loading</span>
+                <div class="slds-spinner__dot-a"></div>
+                <div class="slds-spinner__dot-b"></div>
+            </div>
+        </div>
+    </aura:if>
+</aura:component>

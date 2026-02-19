@@ -1,0 +1,43 @@
+<aura:component implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes" access="global" controller="AuraFieldSetDisplayCont" >
+    <aura:attribute access="global" name="fieldSetName" type="String"
+                    description="The name of the field set to be displayed" />
+    <aura:attribute access="global" name="tileTitle" type="String"
+                    description="The title displayed in the tile" />
+    <aura:attribute access="global" name="fields" type="String[]"
+                    description="The fields to display in the component" />
+    <aura:attribute access="global" name="numColumns" type="Integer" default="1"
+                    description="The number of columns to display" />
+    <aura:attribute access="global" name="recordMode" type="String" default="view"
+                    description="The mode to display the component, valid values are view, readonly and edit"  />
+    <aura:attribute access="global" name="objType" type="String" description="The sobject type" />
+    <aura:attribute access="global" name="recId" type="Id" description="The Id of the record" />
+    <aura:attribute access="global" name="logo" type="String" description="The logo to display on the card" default="" />
+    <aura:attribute access="global" name="rec" type="SObject" description="The sobject record to be displayed" />
+    <aura:attribute access="global" name="hideTileTitle"  type="Boolean" default="false" description="Will hide the title if set to true"/>
+    <aura:attribute access="global" name="defaultVals" type="Object" description="The default values for a new sobject" />
+    <aura:attribute access="global" name="respObj" type="Object" description="resp" />
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <lightning:card variant="narrow" class="{!'slds-theme_default '+if(v.hideTileTitle,'hide-title',' ')}">
+        <aura:set attribute="title" >
+            <lightning:icon iconName="{!'standard:'+v.logo}" size="small" />
+            {!v.tileTitle}
+        </aura:set>
+        <div class="slds-card__body slds-card__body_inner">
+            <aura:renderIf isTrue="{!and(or(v.hideTileTitle, not(empty(v.recordId)),not(empty(v.recId))),not(empty(v.sObjectName)))}">
+                <lightning:recordForm
+                        aura:id="fieldSetDisplay"
+                        recordId="{!if(empty(v.recordId),v.recId,v.recordId)}"
+                        objectApiName="{!v.sObjectName}"
+                        fields="{!v.fields}"
+                        columns="{!v.numColumns}"
+                        mode="{!v.recordMode}"
+                        density="auto"
+                        onerror="{!c.handleError}"
+                        onsubmit="{!c.doSubmit}"
+                />
+            </aura:renderIf>
+        </div>
+    </lightning:card>
+
+</aura:component>

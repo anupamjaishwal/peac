@@ -112,15 +112,16 @@
         insert pg;
         
     }
-    // redundant
+    
     @isTest public static void gdsTest () {
         
         Test.setMock(HttpCalloutMock.class, new TC_GdsScoreApiCalloutMock ());
-        
-        Test.startTest();
-        TC_GdsScoreApi.runGdsScore ([SELECT Id FROM Opportunity WHERE Name = 'testopp'][0].Id);
-        Test.stopTest();
-        
+        User u = TestDataFactory.createTestUser();
+        System.runAs(u){
+            Test.startTest();
+            TC_GdsScoreApi.runGdsScore ([SELECT Id FROM Opportunity WHERE Name = 'testopp'][0].Id);
+            Test.stopTest();
+        }
     }
     
     @isTest public static void gdsTestFromPb () {
@@ -150,9 +151,11 @@
     
     @isTest public static void gdsTest1 () {
         Test.setMock(HttpCalloutMock.class, new TC_GdsScoreApiCalloutMock ());
-        
-        Test.startTest();
-        TC_GdsScoreApi.runGdsScore ([SELECT Id FROM Opportunity WHERE Name = 'testopp1'][0].Id);
-        Test.stopTest();      
+        User u = TestDataFactory.createTestUser();
+        System.runAs(u){
+            Test.startTest();
+            TC_GdsScoreApi.runGdsScore ([SELECT Id FROM Opportunity WHERE Name = 'testopp1'][0].Id);
+            Test.stopTest();      
+        }   
     }
 }

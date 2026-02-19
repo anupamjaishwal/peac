@@ -2,7 +2,7 @@ global with sharing class SL_LoanAppStatusAutoCancelBatch implements Database.Ba
 
     global Database.QueryLocator start(Database.BatchableContext bc) {
         return Database.getQueryLocator([
-            SELECT Id, Application_Status__c,Primary_Broker__c, StageName, CreatedDate, Credit_Analyst__c, OwnerId, Owner.Email, Initial_Approval_Date__c, Initial_More_Info_Date__c, LastStageChangeDate
+            SELECT Id, Application_Status__c,Primary_Broker__c, StageName, CreatedDate, Opportunity_Status__c,Lost_Reason__c,Credit_Analyst__c, OwnerId, Owner.Email, Initial_Approval_Date__c, Initial_More_Info_Date__c, LastStageChangeDate
             FROM Opportunity
            WHERE Application_Status__c IN ('More Info', 'Automatically Approved', 'Manually Approved', 'Approved') AND (Initial_More_Info_Date__c != NULL OR Initial_Approval_Date__c != NULL) AND LastStageChangeDate != NULL
            AND Loan_Record_Type__c=true
@@ -64,7 +64,6 @@ global with sharing class SL_LoanAppStatusAutoCancelBatch implements Database.Ba
                                // || (stageChanged == null && !isNewRecord);
 
          
-
             if (appStatusStale && stageStale) {
                 staleOpps.put(opp.Id, opp);
             }
@@ -82,10 +81,14 @@ global with sharing class SL_LoanAppStatusAutoCancelBatch implements Database.Ba
         if(!staleOpps.isEmpty()){
             
             List<Opportunity> updatedOpps = new List<Opportunity>();
-            List<Integration_Log__c> errorLogs = new List<Integration_Log__c>();
+            List<ErrorLogger__Error_Log__c> errorLogs = new List<ErrorLogger__Error_Log__c>();
 
             for (Opportunity opp : staleOpps.values()) {
                 opp.Application_Status__c = 'Cancelled';
+                opp.StageName = 'Lost';
+                opp.Opportunity_Status__c= 'Lost';
+                opp.Lost_Reason__c='Other-See Notes';
+
             }
             Database.SaveResult[] srList = Database.update(staleOpps.values(), false);
             // Iterate through each returned result
@@ -98,12 +101,12 @@ global with sharing class SL_LoanAppStatusAutoCancelBatch implements Database.Ba
                     // Operation failed, so get all errors                
                     for(Database.Error err : sr.getErrors()) {
                     
-                        Integration_Log__c logRecord = new Integration_Log__c(
-                                    Name = 'LoanAppStatusAutoCancelBatch',
+                        ErrorLogger__Error_Log__c logRecord = new ErrorLogger__Error_Log__c(
+                                    ErrorLogger__Class_Name__c = 'SL_LoanAppStatusAutoCancelBatch',
                                     Opportunity__c = sr.getId(),
-                                    Record_Id__c = sr.getId(),
-                                    Error_Message__c = err.getMessage(),
-                                    Status__c = 'Error'
+                                    ErrorLogger__Timestamp__c= Datetime.now().format('dd-MM-yyyy, hh:mm a'),
+                                    ErrorLogger__Log_Detail__c = err.getMessage(),
+                                    ErrorLogger__Log_Level__c = 'ERROR'
                                 );
 
                         errorLogs.add(logRecord);

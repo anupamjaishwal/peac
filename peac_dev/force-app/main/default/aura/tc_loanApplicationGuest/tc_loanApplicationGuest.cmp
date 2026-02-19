@@ -1,0 +1,314 @@
+<!--
+ - Created  on 12/18/17.
+ -->
+
+<aura:component description="Loan Application" access="global"
+				implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome,force:appHostable, lightning:isUrlAddressable"
+				controller="TC_LoanApplicationCtrl">
+	<aura:attribute name="isGuest" type="Boolean" access="global" default="{!true}"/>
+	<aura:attribute name="isButtonNavigation" type="Boolean" access="global" default="{!false}"/>
+	<aura:attribute name="recordId" type="String" access="global"/>
+	<aura:attribute name="applicationTitle" type="String" access="global" default="Enter New Deal"/>
+	<aura:attribute name="fromDetail" type="Boolean" default="{!false}"/>
+	<aura:attribute name="company" type="Account" access="global" default="{sobjectType : 'Account'}"/>
+	<aura:attribute name="companyCustomer" type="Contact" access="global" default="{sobjectType : 'Contact'}"/>
+	<aura:attribute name="readonlyview" type="Boolean" access="global" default="true"/>
+
+	<aura:attribute name="guarantors" type="List" access="global" default="[]"/>
+	<aura:attribute name="ccgGuarantors" type="List" access="global" default="[]"/>
+	<aura:attribute name="fileList" type="List" access="global" default="[]"/>
+	<aura:attribute name="quoteOptions" type="List" access="global" default="[]"/>
+	<aura:attribute name="equipmentList" type="List" access="global" default="[]"/>
+    <aura:attribute name="dealOpp" type="Opportunity" access="global" default="{sobjectType : 'Opportunity'}"/>
+	<aura:attribute name="dealersList" type="TC_DatabaseUtil.TC_RecordWrapper[]"/>
+	<aura:attribute name="brokerList" type="TC_DatabaseUtil.TC_RecordWrapper[]"/>
+    <aura:attribute name="franchisorList" type="TC_DatabaseUtil.TC_RecordWrapper[]"/>
+	<aura:attribute name="wizardHeading" type="String" default="Enter New" access="global"/>
+    <aura:attribute name="customerContactRoles" type="TC_DatabaseUtil.LightningPicklist[]" access="global" />
+
+
+	<aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+
+	<aura:attribute name="dealerList" type="TC_DatabaseUtil.TC_RecordWrapper[]" access="global" default="[]"/>
+	<aura:attribute name="deal" type="Opportunity" access="global" default="{sobjectType : 'Opportunity'}"/>
+	<aura:attribute name="currentStep" type="String" access="global" default="step_1"/>
+	<aura:attribute name="totalFinanceAmount" type="Decimal" access="global" default="0"/>
+	<aura:attribute name="availableRecordTypes" type="List"/>
+
+	<ltng:require scripts="{!$Resource.AuraUtils}" afterScriptsLoaded="{!c.doInit}"/>
+	<aura:attribute name="modalPromise" type="Aura.Action"/>
+	<aura:attribute name="gdsScoreModalPromise" type="Aura.Action"/>
+
+	<aura:handler event="c:tc_applicationNavigation_evt" action="{!c.handleTabNavigation}"/>
+
+	<aura:attribute name="isEdit" type="Boolean" access="global" default="{!false}"/>
+	<aura:attribute name="isShowAllTabs" type="Boolean" access="global" default="{!false}"/>
+	
+	<lightning:overlayLibrary aura:id="overlayLib"/>
+    <aura:attribute name="quoteIds" type="String" />
+
+	<!--v.clientWrapper.recordTypeName: {!v.clientWrapper.recordTypeName}, v.clientWrapper.curentUserProfileName: {!v.clientWrapper.curentUserProfileName}
+-->
+
+
+	<lightning:card title="{!v.wizardHeading + ' ' + v.clientWrapper.recordTypeName + ' Deal'}">
+
+		<!-- At least  one record type available -->
+		<aura:if isTrue="{!greaterthan (v.availableRecordTypes.length, 1) || v.isEdit == true}">
+
+
+			<!-- record type selected -->
+			<aura:if isTrue="{!(v.clientWrapper.recordTypeName == null || v.clientWrapper.recordTypeName == '') &amp;&amp; v.availableRecordTypes.length > 2}">
+
+				<!-- Tabs: Product -->
+
+				<div class="slds-m-around_small">
+					<lightning:tabset aura:id="navTabSet" selectedTabId="{!v.currentStep}" onselect="{!c.handleTabSelect}">
+
+						<lightning:tab label="Product" id="step_1">
+							<c:tc_loanProduct recordTypes="{!v.availableRecordTypes}"  clientWrapper="{!v.clientWrapper}" />
+						</lightning:tab>
+					</lightning:tabset>
+				</div>
+
+				<!-- record type not selected yet and more than 1 available -->
+				<aura:set attribute="else">
+
+					<!-- record type loan and user is program rep -->
+					<!-- 9/14/20 this used to be ifp rep or wholesale, but it was changed to Program based on the BRD (SAL-1804) -->
+					<!-- 5/7 SAL-2618 - added IFP Rep to the criteria because they need to enter a Broker -->
+					
+					<aura:if isTrue="{!v.clientWrapper.recordTypeName == 'Loan' &amp;&amp; v.isShowAllTabs}">
+
+						<div class="slds-grid slds-align_absolute-center">
+							<!--<div class="slds-medium-size_1-of-4 slds-small-size_2-of-4">
+								<lightning:button class="{!'slds-float_right ' + if (v.currentStep == 'step_1', 'slds-hide', '')}" label="Quit and save as draft" onclick="{!c.goToBack}" variant="brand" iconName="utility:back" iconPosition="left"/>
+							</div>-->
+							<div class="slds-medium-size_1-of-4 slds-small-size_2-of-4">
+								<lightning:button class="{!'slds-float_right ' + if (v.currentStep == 'step_1', 'slds-hide', '')}" label="Back" onclick="{!c.goToBack}" variant="brand" iconName="utility:back" iconPosition="left" aura:id="backButton"/>
+							</div>
+							<div class="slds-size_2-of-4 slds-media slds-media_center slds-show_medium slds-align_absolute-center">
+								<lightning:progressIndicator currentStep="{!v.currentStep}">
+									<lightning:progressStep label="Customer" value="step_1" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+									<lightning:progressStep label="Guarantors" value="step_2" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+									<lightning:progressStep label="Deal" value="step_3" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+									<lightning:progressStep label="Partners" value="step_4" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+									<lightning:progressStep label="Bank Statements" value="step_5" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+											
+									<lightning:progressStep label="Review/Submit" value="step_6" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+								</lightning:progressIndicator>
+							</div>
+							<div class="slds-medium-size_1-of-4 slds-small-size_2-of-4">
+								<lightning:button class="{!'slds-float_left ' + if (v.currentStep == 'step_6', 'slds-hide', '')}" label="Next" onclick="{!c.goToNext}" variant="brand" iconName="utility:forward" iconPosition="right" aura:id="nextButton"/>
+							</div>
+						</div>
+
+
+
+						<div class="slds-m-around_small">
+							<lightning:tabset aura:id="navTabSet" selectedTabId="{!v.currentStep}" onselect="{!c.handleTabSelect}">
+
+								<lightning:tab label="Customer" id="step_1">
+									<c:tc_dealCompany clientWrapper="{!v.clientWrapper}" isGuest="{!v.isGuest}" isLoan="true" customerContactRoles="{!v.customerContactRoles}"/>
+								</lightning:tab>
+
+								<lightning:tab label="Guarantors" id="step_2" onactive="{!c.refreshDealGuarantorsComponent}">
+									<c:tc_dealGuarantors aura:id="dealGuarantorsComp" clientWrapper="{!v.clientWrapper}" isLoan="true"/>
+								</lightning:tab>
+
+
+								<lightning:tab label="Deal" id="step_3" onactive="{!c.refreshDealDetailsComponent}">
+
+									<c:tc_dealDetails aura:id="dealDetailsComp" deal="{!v.deal}" clientWrapper="{!v.clientWrapper}"  isLoan="true"/>
+								</lightning:tab>
+
+								<lightning:tab label="Partners" id="step_4">
+									<c:tc_dealDealerTable  clientWrapper="{!v.clientWrapper}" aura:id="dealDocs" />
+								</lightning:tab>
+								<lightning:tab label="Bank Statements" id="step_5">
+									<c:peac_loanStatementsAttachement  docType='FS - Bank Statements' opportunityId ="{!v.clientWrapper.deal.opportunity.Id}" accountId ="{!v.clientWrapper.deal.opportunity.AccountId}" />
+								</lightning:tab>
+								<lightning:tab label="Review/Submit" id="step_6" onactive="{!c.refreshDealReviewComponent}">
+									<!--
+							<div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-align_absolute-center">
+								<lightning:button label="Submit Application" onclick="{!c.submitDeal}" class="slds-p-horizontal_x-large slds-p-vertical_medium" variant="brand" iconName="utility:touch_action" iconPosition="left"/>
+							</div>
+							-->
+									<c:tc_dealReview aura:id="dealReviewComp" clientWrapper="{!v.clientWrapper}" isLoan="true"/>
+									<c:tc_accordionSection isCollapsible="false" title="Bank Statements">
+        
+										<c:peac_loanStatementsAttachement aura:id="loanstatement" opportunityId ="{!v.clientWrapper.deal.opportunity.Id}" isView="{!v.readonlyview}">
+										</c:peac_loanStatementsAttachement>
+									</c:tc_accordionSection>
+											
+									<div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-align_absolute-center">
+										<lightning:button label="Submit to Credit" onclick="{!c.submitToCaseCenter}" class="slds-p-horizontal_x-large slds-p-vertical_medium" variant="brand" iconName="utility:touch_action" iconPosition="left"/>
+									</div>
+								</lightning:tab>
+							</lightning:tabset>
+						</div>
+
+						<aura:set attribute="else">
+							<!-- record type loan -->
+							<aura:if isTrue="{!v.clientWrapper.recordTypeName == 'Loan'}">
+
+								<div class="slds-grid slds-align_absolute-center">
+									<!--<div class="slds-medium-size_1-of-4 slds-small-size_2-of-4">
+								<lightning:button class="{!'slds-float_right ' + if (v.currentStep == 'step_1', 'slds-hide', '')}" label="Quit and save as draft" onclick="{!c.goToBack}" variant="brand" iconName="utility:back" iconPosition="left"/>
+							</div>-->
+									<div class="slds-medium-size_1-of-4 slds-small-size_2-of-4">
+										<lightning:button class="{!'slds-float_right ' + if (v.currentStep == 'step_1', 'slds-hide', '')}" label="Back" onclick="{!c.goToBack}" variant="brand" iconName="utility:back" iconPosition="left" aura:id="backButton"/>
+									</div>
+									<div class="slds-size_2-of-4 slds-media slds-media_center slds-show_medium slds-align_absolute-center">
+										<lightning:progressIndicator currentStep="{!v.currentStep}">
+											<lightning:progressStep label="Customer" value="step_1" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+											<lightning:progressStep label="Guarantors" value="step_2" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+											<lightning:progressStep label="Deal" value="step_3" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+											<lightning:progressStep label="Bank Statements" value="step_4" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+											
+											<lightning:progressStep label="Review/Submit" value="step_5" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+										</lightning:progressIndicator>
+									</div>
+									<div class="slds-medium-size_1-of-4 slds-small-size_2-of-4">
+										<lightning:button class="{!'slds-float_left ' + if (v.currentStep == 'step_5', 'slds-hide', '')}" label="Next" onclick="{!c.goToNext}" variant="brand" iconName="utility:forward" iconPosition="right" aura:id="nextButton"/>
+									</div>
+								</div>
+
+
+
+								<div class="slds-m-around_small">
+									<lightning:tabset aura:id="navTabSet" selectedTabId="{!v.currentStep}" onselect="{!c.handleTabSelect}">
+
+										<lightning:tab label="Customer" id="step_1">
+											<c:tc_dealCompany clientWrapper="{!v.clientWrapper}" isGuest="{!v.isGuest}" isLoan="true" customerContactRoles="{!v.customerContactRoles}"/>
+										</lightning:tab>
+
+										<lightning:tab label="Guarantors" id="step_2" onactive="{!c.refreshDealGuarantorsComponent}">
+											<c:tc_dealGuarantors aura:id="dealGuarantorsComp" clientWrapper="{!v.clientWrapper}" isLoan="true"/>
+										</lightning:tab>
+
+
+										<lightning:tab label="Deal" id="step_3" onactive="{!c.refreshDealDetailsComponent}">
+
+											<c:tc_dealDetails aura:id="dealDetailsComp" deal="{!v.deal}" clientWrapper="{!v.clientWrapper}"  isLoan="true"/>
+										</lightning:tab>
+										<lightning:tab label="Bank Statements" id="step_4">
+											<c:peac_loanStatementsAttachement  docType='FS - Bank Statements' opportunityId ="{!v.clientWrapper.deal.opportunity.Id}" accountId ="{!v.clientWrapper.deal.opportunity.AccountId}" />
+										</lightning:tab>
+										<lightning:tab label="Review/Submit" id="step_5" onactive="{!c.refreshDealReviewComponent}">
+											<!--
+							<div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-align_absolute-center">
+								<lightning:button label="Submit Application" onclick="{!c.submitDeal}" class="slds-p-horizontal_x-large slds-p-vertical_medium" variant="brand" iconName="utility:touch_action" iconPosition="left"/>
+							</div>
+							-->
+											<c:tc_dealReview aura:id="dealReviewComp" clientWrapper="{!v.clientWrapper}" isLoan="true"/>
+											<c:tc_accordionSection isCollapsible="false" title="Bank Statements">
+        
+												<c:peac_loanStatementsAttachement aura:id="loanstatement" opportunityId ="{!v.clientWrapper.deal.opportunity.Id}" isView="{!v.readonlyview}">
+												</c:peac_loanStatementsAttachement>
+											</c:tc_accordionSection>
+											<div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-align_absolute-center">
+												<lightning:button label="Submit to Credit" onclick="{!c.submitToCaseCenter}" class="slds-p-horizontal_x-large slds-p-vertical_medium" variant="brand" iconName="utility:touch_action" iconPosition="left"/>
+											</div>
+										</lightning:tab>
+									</lightning:tabset>
+								</div>
+
+								<!-- record type lease -->
+
+
+								<aura:set attribute="else">
+
+									<div class="slds-grid slds-align_absolute-center">
+										<div class="slds-medium-size_1-of-4 slds-small-size_2-of-4">
+											<lightning:button class="{!'slds-float_right ' + if (v.currentStep == 'step_1', 'slds-hide', '')}" label="Back" onclick="{!c.goToBack}" variant="brand" iconName="utility:back" iconPosition="left" aura:id="backButton"/>
+										</div>
+										<div class="slds-size_2-of-4 slds-media slds-media_center slds-show_medium slds-align_absolute-center">
+											<lightning:progressIndicator currentStep="{!v.currentStep}">
+												<lightning:progressStep label="Customer" value="step_1" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+												<lightning:progressStep label="Deal" value="step_2" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+												<lightning:progressStep label="Equipment" value="step_3" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+												<lightning:progressStep label="Partners" value="step_4" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+												<lightning:progressStep label="Guarantors" value="step_5" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
+                                                <lightning:progressStep label="Quote" value="step_6" class="slds-no-flex slds-truncate"/>
+												<lightning:progressStep label="Review/Submit" value="step_7" class="slds-no-flex slds-truncate"/>
+											</lightning:progressIndicator>
+										</div>
+										<div class="slds-medium-size_1-of-4 slds-small-size_2-of-4">
+											<lightning:button class="{!'slds-float_left ' + if (v.currentStep == 'step_5' || v.currentStep == 'step_6', 'slds-hide', '')}" label="Next" onclick="{!c.goToNext}" variant="brand" iconName="utility:forward" iconPosition="right" aura:id="nextButton"/>
+										</div>
+									</div>
+
+
+
+									<div class="slds-m-around_small">
+										<lightning:tabset aura:id="navTabSet" selectedTabId="{!v.currentStep}" onselect="{!c.handleTabSelect}">
+
+											<lightning:tab label="Customer" id="step_1">
+												<c:tc_dealCompany clientWrapper="{!v.clientWrapper}" isGuest="{!v.isGuest}" isLoan="false"/>
+											</lightning:tab>
+
+											<lightning:tab label="Deal" id="step_2" onactive="{!c.refreshDealDetailsComponent}">
+												<c:tc_dealDetails aura:id="dealDetailsComp" deal="{!v.deal}" clientWrapper="{!v.clientWrapper}"  isLoan="false"/>
+											</lightning:tab>
+
+											<lightning:tab label="Equipment" id="step_3" onactive="{!c.refreshDealEquipmentComponent}">
+												<c:tc_dealEquipment aura:id="dealEquipmentComp" clientWrapper="{!v.clientWrapper}" />
+											</lightning:tab>
+
+											<lightning:tab label="Partners" id="step_4">
+												<c:tc_dealDealerTable  clientWrapper="{!v.clientWrapper}" aura:id="dealDocs" />
+											</lightning:tab>
+
+											<lightning:tab label="Guarantors" id="step_5" onactive="{!c.refreshDealGuarantorsComponent}">
+												<c:tc_dealGuarantors aura:id="dealGuarantorsComp" clientWrapper="{!v.clientWrapper}" isLoan="true"/>
+											</lightning:tab>
+                                            <lightning:tab label="Quote" id="step_6" onactive="{!c.refreshDealQuotesComponent}">
+												<c:tc_dealQuote aura:id="dealQuotesComp" clientWrapper="{!v.clientWrapper}"/>
+											</lightning:tab>
+
+											<lightning:tab label="Review/Submit" id="step_7" onactive="{!c.refreshDealReviewComponent}">
+												<!--
+							<div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-align_absolute-center">
+								<lightning:button label="Submit Application" onclick="{!c.submitDeal}" class="slds-p-horizontal_x-large slds-p-vertical_medium" variant="brand" iconName="utility:touch_action" iconPosition="left"/>
+							</div>
+							-->
+												<c:tc_dealReview aura:id="dealReviewComp" clientWrapper="{!v.clientWrapper}" isLoan="false" />
+												
+												<div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-align_absolute-center">
+                                                    <aura:if isTrue="{!v.clientWrapper.gdsScoreEnabled}">
+                                                    	<lightning:button label="Submit to Credit" onclick="{!c.submitToRapport}" class="slds-p-horizontal_x-large slds-p-vertical_medium" variant="brand" iconName="utility:touch_action" iconPosition="left"/>
+                                                    	<aura:set attribute="else">
+                                                            <lightning:button label="Submit to Rapport" onclick="{!c.submitToRapport}" class="slds-p-horizontal_x-large slds-p-vertical_medium" variant="brand" iconName="utility:touch_action" iconPosition="left"/>
+                                                        </aura:set>
+                                                    </aura:if>
+
+
+												</div>
+											</lightning:tab>
+										</lightning:tabset>
+									</div>
+
+
+								</aura:set>
+							</aura:if>
+						</aura:set>
+					</aura:if>
+
+
+
+
+
+				</aura:set>
+			</aura:if>
+
+			<!-- Only one record type available display no access error -->
+			<aura:set attribute="else">
+				You do not have permission to edit this deal. Please contact an administrator
+			</aura:set>
+		</aura:if>
+
+	</lightning:card>
+
+	<lightning:spinner aura:id="spinner" class="slds-hide"/>
+</aura:component>

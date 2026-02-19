@@ -1,0 +1,8 @@
+/**
+ * Created by szheng on 4/27/20.
+ */
+
+ .THIS .custom_focus input  {
+     outline: 10px;
+     border-color: #e60000;
+ }

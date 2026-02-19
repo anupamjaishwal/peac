@@ -1,0 +1,36 @@
+<aura:component description="tc_loanProduct" access="global"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome"
+                controller="TC_LoanApplicationCtrl">
+    <aura:attribute name="recordTypeName" type="String" access="global" />
+    <aura:attribute name="tempRecordTypeName" type="String" access="global" />
+    <aura:attribute name="recordTypeId" type="String" access="global" />
+    <aura:attribute name="recordTypes" type="List" access="global" />
+
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+
+    <div class="slds-p-vertical_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <lightning:button label="Continue" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward"
+                          iconPosition="right" aura:id="nextButton"/>
+    </div>
+
+    <c:tc_accordionSection title="Product Selection">
+        <!--
+        <div class="slds-grid slds-wrap">
+
+            <lightning:select name="select" label="Pick a Product" required="true" messageWhenValueMissing="Please select a product" aura:id="productSelect" onchange="{!c.productChangedCtrl}" class="slds-large-size_1-of-1">
+                <aura:iteration items="{!v.recordTypes}" var="pt">
+                    <option value="{!pt.recordTypeId}" text="{!pt.recordTypeName}"></option>
+                </aura:iteration>
+            </lightning:select>
+        </div> recordTypeDisplayName-->
+        <div class="slds-grid slds-wrap">
+
+            <lightning:select name="select" label="Pick a Product" required="true" messageWhenValueMissing="Please select a product" aura:id="productSelect" onchange="{!c.productChangedCtrl}" class="slds-large-size_1-of-1">
+                <aura:iteration items="{!v.recordTypes}" var="pt">
+                    <option value="{!pt.recordTypeId}" text="{!pt.recordTypeDisplayName}"></option>
+                </aura:iteration>
+            </lightning:select>
+        </div>
+
+    </c:tc_accordionSection>
+</aura:component>

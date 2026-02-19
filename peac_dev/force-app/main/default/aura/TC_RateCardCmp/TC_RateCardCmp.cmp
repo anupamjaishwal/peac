@@ -1,0 +1,115 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:hasRecordId" access="global" controller="TC_RateCardCtrl">
+    
+    <!--    
+    <ltng:require styles="{!$Resource.slds202_cp +'/assets/styles/salesforce-lightning-design-system-ltng.css'}"/>
+-->    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="rateCardId" type="String"/>
+    <aura:attribute name="rateCardCols" type="Rate_Card_Column__c[]"/>
+    <aura:attribute name="rateCardRows" type="Rate_Card_Row__c[]"/>
+    <aura:attribute name="rateValues" type="Decimal[]"/>
+    <aura:attribute name="conditionValue" type="String"/>
+    <aura:attribute name="isConditionMatching" type="Boolean"/>
+    
+    
+    
+    <!-- buttons -->
+    
+    <div class="slds-grid slds-grid--pull-padded slds-grid--align-center">
+        
+        <div class="slds-col slds-col-padded slds-m-vertical--small">
+            <button aura:id="saveAllButton" onclick="{!c.saveRateCard}" class="slds-button--neutral slds-button slds-theme--success">
+                Save All
+            </button>
+        </div>        
+    </div>
+    
+    <!-- end buttons -->
+    
+    
+    
+    
+    <div class="slds-grid">
+        <div class="slds-col slds-size--1-of-24">
+            <div class="slds-grid slds-text-align--right labelCol">
+                <div class="slds-col">
+                    <ui:inputText class="slds-input slds-text-heading--label slds-text-align--right" disabled="true" value=""/>
+                </div>
+            </div>
+            <aura:iteration items="{!v.rateCardRows}" var="row">
+                <div class="slds-grid slds-text-align--right labelCol">
+                    <div class="slds-col">
+                        <ui:inputText class="slds-input slds-text-heading--label slds-text-align--right" disabled="true" value="{!row.Name}"/>
+                    </div>
+                </div>
+            </aura:iteration>
+        </div>      
+        <aura:iteration items="{!v.rateCardCols}" var="col">
+            <div class="slds-col slds-size--1-of-12">
+                <ui:inputText class="slds-input slds-text-heading--label slds-text-align--center" disabled="true" value="{!col.Name}"/>
+                
+                <aura:iteration items="{!col.Rate_Card_Rates__r}" var="val">
+                    <ui:inputNumber class="slds-input" value="{!val.Rate__c}" />
+                </aura:iteration>
+                <aura:if isTrue="{!v.isConditionMatching}">
+                  <ui:inputText class="slds-input slds-text-heading--label slds-text-align--center" disabled="true" value="{!col.Residual__c}"/>
+                </aura:if>
+            </div>
+        </aura:iteration>
+    </div>
+    
+    
+    
+    
+    <!-- MODAL SECTION -->
+    
+    <aura:attribute name="isOpen" type="boolean" default="false"/>
+    
+    
+    <!--Use "slds-m-around- -xx-large" class to add standard Large padding to the component--> 
+    <div class="slds-m-around--xx-large">
+        <button class="slds-button slds-button--brand" onclick="{!c.openModal}">Open Modal</button>  
+        
+        <!--Use aura:if tag to display Modal Box, on the bese of conditions. [isOpen boolean attribute] -->   
+        <aura:if isTrue="{!v.isOpen}">
+            
+            <!--###### MODAL BOX Start From Here ######--> 
+            <div role="dialog" tabindex="-1" aria-labelledby="header99" class="slds-modal slds-fade-in-open ">
+                <div class="slds-modal__container">
+                    <!-- ###### MODAL BOX HEADER Part Start From Here ######-->
+                    <div class="slds-modal__header">
+                        <button class="slds-button slds-modal__close slds-button--icon-inverse" title="Close" onclick="{!c.closeModal}">
+                            X
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 id="header99" class="slds-text-heading--medium">Edit Record</h2>
+                    </div>
+                    <!--###### MODAL BOX BODY Part Start From Here ######-->
+                    <div class="slds-modal__content slds-p-around--medium">
+
+                        <div class="slds-form--stacked slds-p-around--medium slds-m-bottom--x-small">
+                            <center><ui:button label="Save" press="{!c.save}"/></center>
+                            <force:recordEdit aura:id="edit" recordId="a1N4100000GwDJXEA3"/>
+                        </div>    
+                       
+                    </div>
+                    <!--###### MODAL BOX FOOTER Part Start From Here ######-->
+                    <div class="slds-modal__footer">
+                        <button class="slds-button slds-button--neutral" onclick="{!c.closeModal}" >Cancel</button>
+                        <button class="slds-button slds-button--brand" onclick="{!c.saveModal}">Save</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slds-backdrop slds-backdrop--open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+            
+        </aura:if>
+    </div>
+    
+    
+    
+    
+    
+</aura:component>

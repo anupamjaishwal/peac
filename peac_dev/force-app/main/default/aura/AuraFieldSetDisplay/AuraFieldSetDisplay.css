@@ -1,0 +1,12 @@
+.THIS {
+}
+.THIS .cardHeader {
+    background-color: #0070d2;
+}
+.THIS .slds-card__header {
+    /*background-color: #0070d2;*/
+}
+
+.THIS.hide-title > header.slds-card__header {
+    display: none;
+}

@@ -1,0 +1,33 @@
+<!--
+  @description       : 
+  @author            : Joseph Cadd
+  @group             : 
+  @last modified on  : 05-06-2021
+  @last modified by  : Joseph Cadd
+  Modifications Log 
+  Ver   Date         Author        Modification
+  1.0   05-01-2021   Joseph Cadd   Initial Version
+-->
+<aura:component  implements="flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,force:lightningQuickAction" access="global" > 
+        
+    <!-- <aura:handler name="init" value="{! this }" action="{! c.init }"/> -->
+
+    <aura:attribute name="record" type="Object" description="The record object to be displayed"/>
+    <aura:attribute name="simpleRecord" type="Object" description="A simplified view record object to be displayed"/>
+    <aura:attribute name="recordError" type="String" description="An error message bound to force:recordData"/>
+
+    <aura:attribute name="recordSaved" type="Boolean" default="false" description=""/>
+
+    <force:recordData aura:id="recordEditor"
+        fields="Name,DM_Review_Status__c,Review_For__c"
+        recordId="{!v.recordId}"
+        targetError="{!v.recordError}"
+        targetRecord="{!v.record}"
+        targetFields ="{!v.simpleRecord}"
+        recordUpdated="{!c.init}"
+        mode="EDIT"/>
+
+    <div class="spinner">
+        <lightning:spinner alternativeText="Loading" size="medium" />
+    </div>        
+</aura:component>

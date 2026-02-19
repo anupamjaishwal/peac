@@ -1,0 +1,183 @@
+<!--
+ - Created  on 1/1/18.
+ -->
+
+<aura:component description="tc_dealEquipmentDetail" controller="TC_LoanApplicationCtrl">
+    
+    <aura:attribute name="equipment" type="Object" required="true" access="global"/>
+    <aura:attribute name="company" type="Account" access="global"/>
+    <aura:attribute name="index" type="Integer"/>
+    <aura:attribute name="picklists" type="Object" access="global"/>
+    <aura:attribute name="equipmentAddressSameAsCompany" type="Boolean" access="global" default="false" />
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+    <aura:attribute name="filterCriteria" type="List"  access="global"/>
+    <aura:attribute name="otherManafacturerRequired" type="boolean"  access="global"/>
+    <aura:handler  name="init" value="{!this}" action="{!c.doinit}"/>
+    
+    <c:tc_accordionSection title="{!'Equipment '  + (v.index + 1) + ' Details' + if (v.equipment.Name, ' - ' + v.equipment.Name, '')}">
+        <div>
+            <div class="slds-grid slds-wrap">
+                
+                
+                <lightning:input value="{!v.equipment.equipment.Description__c}" label="Equipment Description"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>
+                <lightning:input value="{!v.equipment.equipment.Cost__c}" label="Equipment Cost"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>
+                
+                
+                <!--<lightning:input value="{!v.equipment.Equipment_Code__c}" label="Equipment Code"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>-->
+                <!--<lightning:input value="{!v.equipment.equipment.Recourse_Term__c}" label="Term"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>-->
+                
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="New_Used__c" label="New/Used/Refurbished" value="{!v.equipment.equipment.New_Used__c}" required="true"/>
+                </div>
+                <!--<lightning:input value="{!v.equipment.New_Used__c}" label="New/Used/Refurbished"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>-->
+                <lightning:input value="{!v.equipment.equipment.Quantity__c}" label="Quantity"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>
+                
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="Equipment_Code__c" label="Equipment Code" value="{!v.equipment.equipment.Equipment_Code__c}" required="true"/>
+                </div> 
+                
+                <lightning:input value="{!v.equipment.equipment.Customer_Reference__c}" label="Customer Reference"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false"/>
+                
+                <lightning:input value="{!v.equipment.equipment.Department_Location__c}" label="Department Location"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false"/>
+                
+               <!-- <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="Manufacturer1__c" label="Manufacturer" value="{!v.equipment.equipment.Manufacturer__c}"/>
+                </div> -->
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                	<c:pEAC_ReusableLookupLWC label="{!$Label.c.PEAC_Manufacturer}" selectedIconName="standard:account" objectLabel="Account" helpText="{!$Label.c.PEAC_Manufacturer_Help_Text}"
+                                              objectApiName="Account" fieldApiName="Name" otherFieldApiName="Dealer_Number__c"
+                                              filterCriteriaList="{!v.filterCriteria}" selectedRecordId="{!v.equipment.equipment.Manufacturer__c}"
+                                              onvalueselected="{!c.handleSelectedManufacturer}"/>
+                </div>
+                 <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                
+                   <!-- <label class="slds-form-element__label" style="margin-right: 0.5rem;">{!$Label.c.PEAC_Other_Manufacturer}</label>-->
+                    <!--lightning help text for input field-->
+                   <!-- <lightning:helptext content="{!$Label.c.PEAC_Other_Manufacturer_Help}" class="customIcon"/> -->
+                    <lightning:input value="{!v.equipment.equipment.Other_Manufacturer__c}" label="{!$Label.c.PEAC_Other_Manufacturer}" fieldLevelHelp="{!$Label.c.PEAC_Other_Manufacturer_Help}"
+                      required="{!v.otherManafacturerRequired}"/>
+                </div>
+                
+                <!--
+
+-->
+                
+                
+                <aura:if isTrue="{!v.equipment.equipment.Equipment_Code__c == 'Titled V-Agriculture' || v.equipment.equipment.Equipment_Code__c == 'Titled V-Commercial' || v.equipment.equipment.Equipment_Code__c == 'Titled V-Construction' || v.equipment.equipment.Equipment_Code__c == 'Titled V-Dump Trucks' || v.equipment.equipment.Equipment_Code__c == 'Titled Vehicles (General)' || v.equipment.equipment.Equipment_Code__c == 'Titled V-Harvesting' || v.equipment.equipment.Equipment_Code__c == 'Titled-V Logging' || v.equipment.equipment.Equipment_Code__c == 'Titled V-Other' || v.equipment.equipment.Equipment_Code__c == 'Titled V-Trailers'}">
+                    <lightning:input value="{!v.equipment.equipment.Vehicle_year__c}" label="Vehicle Year"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false"/>
+                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                        <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="Vehicle_Make__c" label="Make" value="{!v.equipment.equipment.Vehicle_Make__c}" />
+                    </div>
+                    <lightning:input value="{!v.equipment.equipment.Vehicle_Model__c}" label="Model"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" />
+                    
+                    <!--<div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                        <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="Vehicle_Model__c" label="Model" value="{!v.equipment.equipment.Vehicle_Model__c}" />
+                    </div>-->
+                    
+                    
+                    
+                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                        <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="Vehicle_Type__c" label="Type" value="{!v.equipment.equipment.Vehicle_Type__c}" />
+                    </div>
+                    
+                    <!--<lightning:input value="{!v.equipment.equipment.Mileage__c}" label="Mileage"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false"/>-->
+                    
+                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                        <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="Mileage__c" label="Mileage" value="{!v.equipment.equipment.Mileage__c}" />
+                    </div>
+                    
+                    
+                    <lightning:input value="{!v.equipment.equipment.VIN__c}" label="VIN"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false"/>
+                    
+                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                        <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="Sleeper_Day_Cab__c" label="Sleeper/Day Cab" value="{!v.equipment.equipment.Sleeper_Day_Cab__c}" />
+                    </div>
+                    
+                    <lightning:input value="{!v.equipment.equipment.Passenger_Capacity__c}" label="Passenger Capacity"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false"/>
+                </aura:if>
+                
+                
+                <lightning:input value="{!v.equipment.equipment.End_User_Billing_Address__c}" label="Equipment address same as company address"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1" type="checkbox" checked="{!v.equipment.equipment.End_User_Billing_Address__c}"/>
+                <aura:if isTrue="{!!v.equipment.equipment.End_User_Billing_Address__c}">
+                    
+                    <lightning:input value="{!v.equipment.equipment.Equipment_Street__c}" label="Address"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>
+                    <lightning:input value="{!v.equipment.equipment.Equipment_City__c}" label="City"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>
+                    
+                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                        <c:tc_inputSelect objInfo="{sobjectType : 'Asset__c'}" fldInfo="Equipment_State__c" label="State" value="{!v.equipment.equipment.Equipment_State__c}" required="true"/>
+                    </div>
+                    <!--<lightning:input value="{!v.equipment.Equipment_State__c}" label="Equipment State"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>-->
+                    <lightning:input value="{!v.equipment.equipment.Equipment_Zip__c}" label="Zip"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true"/>
+                    
+                    <aura:set attribute="else">
+                        <lightning:input value="{!v.clientWrapper.company.account.Business_Address__c}" label="Address"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="true"/>
+                        
+                        <lightning:input value="{!v.clientWrapper.company.account.Business_City__c}" label="City"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"  disabled="true"/>
+                        
+                        
+                        
+                        <lightning:input value="{!v.clientWrapper.company.account.Business_State__c}" label="State"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="true"/>
+                        
+                        <lightning:input value="{!v.clientWrapper.company.account.Business_Zip__c}" label="Zip"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="true"/>
+                    </aura:set>
+                </aura:if>
+                <!-- project type -->
+                
+                
+                
+                
+            </div>
+        </div>
+    </c:tc_accordionSection>
+    
+    <!--
+    <c:tc_accordionSection title="{!'Equipment '  + (v.index + 1) + ' Location Details'}">
+        <div>
+            <div class="slds-grid slds-wrap">
+
+                <c:tc_addressLookup class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_2-of-3"
+                                    street="{!v.equipment.Location_Address__c}"
+                                    city="{!v.equipment.Location_City__c}"
+                                    stateCode="{!v.equipment.Location_State__c}"
+                                    postalCode="{!v.equipment.Location_Zip__c}"
+                                    placeholder="Equipment Location Address (Enter and Select Address)"/>
+                <lightning:input aura:id="sameAsCompanyAddress" label="Same as Company Address" onchange="{!c.handleSameAddress}"
+                                 class="slds-p-around_small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="checkbox"/>
+                <lightning:input value="{!v.equipment.Location_Address__c}" name="street" label="Street"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"/>
+                <lightning:input value="{!v.equipment.Location_City__c}" name="city" label="City"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"/>
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-8">
+                    <c:tc_inputSelect objInfo="{!v.equipment}" fldInfo="Location_State__c" label="State" value="{!v.equipment.Location_State__c}"/>
+                </div>
+                <lightning:input value="{!v.equipment.Location_Zip__c}" name="postalCode" label="Postal Code"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-8" type="text"/>
+                <lightning:input value="{!v.equipment.County__c}" name="county" label="County"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"/>
+
+            </div>
+        </div>
+    </c:tc_accordionSection>-->
+</aura:component>

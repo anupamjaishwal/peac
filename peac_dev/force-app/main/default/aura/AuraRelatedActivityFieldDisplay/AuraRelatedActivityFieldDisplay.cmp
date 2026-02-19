@@ -1,0 +1,26 @@
+<aura:component description="AuraRelatedActivityFieldDisplay">
+    <aura:attribute access="global" name="describedSObjectFields" type="List" description="The list of described sobject fields" />
+    <aura:attribute access="global" name="sobj" type="SObject" />
+    <aura:attribute access="global" name="index" type="Integer" />
+    <aura:attribute access="global" name="numColumns" type="Integer" default="1"
+                    description="The number of columns to display" />
+    <aura:attribute access="private" name="size" type="Integer" default="3" />
+    <aura:attribute access="private" name="fields" type="List" />
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!and(not(empty(v.describedSObjectFields)))}">
+        <div class="c-container">
+        <lightning:layout multipleRows="true" >
+            <aura:iteration var="fld" items="{!v.fields}">
+                <aura:if isTrue="{!fld.fieldName != 'Subject'}">
+                    <lightning:layoutItem size="{!v.size}" class="slds-p-around_xxx-small">
+                        <c:AuraFieldDisplay field="{#fld}" sObject="{#v.sobj}" setReadOnly="true" />
+                    </lightning:layoutItem>
+                </aura:if>
+            </aura:iteration>
+        </lightning:layout>
+        </div>
+    </aura:if>
+</aura:component>

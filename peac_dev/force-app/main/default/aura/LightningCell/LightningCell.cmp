@@ -1,0 +1,23 @@
+<aura:component access="global">
+    <aura:attribute name="record" type="sObject" description="record which is being displayed"/>
+    <aura:attribute name="field" type="Object" description="field object which is being rendered"/>
+    <aura:attribute name="statusField" type="Object" description="status field object which is being rendered"/>
+    <aura:attribute name="cellValue" type="Object"/>
+    <aura:attribute name="statusFieldValue" type="Object"/>
+    <aura:attribute name="cellLabel" type="String"/>
+    <aura:attribute name="isTextField" type="boolean" default="false"/>
+    <aura:attribute name="isDateTimeField" type="String" default="false"/>
+    <aura:attribute name="index" type="integer"/>
+    <aura:attribute name="CellInput" type="String"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:if isTrue="{!v.CellInput}"> 
+       <lightning:input class = "{!v.statusFieldValue == 'Not Required'? 'slds-hide': 'input-Label'}" disabled="true" value="{!v.CellInput}"/>
+    </aura:if>    
+       <aura:if isTrue="{!v.isTextField}"> 
+    	<lightning:input class = "{!v.cellValue == 'Not Required'? 'slds-hide': 'input-DateTime'}"  disabled="true" value="{!v.cellValue}"/>
+    </aura:if>
+   <aura:if isTrue="{!v.isDateTimeField}">
+    	<lightning:input type="datetime"  class = "{!v.statusFieldValue == 'Not Required'? 'slds-hide': 'input-DateTime'}" disabled="true" value="{!v.cellValue}" />
+    </aura:if>   
+</aura:component>

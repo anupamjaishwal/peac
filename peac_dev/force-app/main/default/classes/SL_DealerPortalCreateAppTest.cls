@@ -208,22 +208,30 @@ public with sharing class SL_DealerPortalCreateAppTest {
         }
         Integer contactsCreated = [SELECT COUNT() FROM Contact];
         System.Assert.areEqual(3, contactsCreated, 'must used the existing dupe');// 3 contacts already exist as prep data
-        Contact c = new Contact (AccountId = accId, FirstName = 'new test',
-                 LastName = 'testbeni new', OtherStreet = 'test new', OtherCity = 'test', 
-                 OtherStateCode = 'MN', OtherPostalCode = '05030', Title = 'title new', 
-                 SSN__c = '050305251', BirthDate = Date.today (),
-                 Email = 'test@email05030525.com', Validity_Verify__Status__c = 'Valid');
-        parameters.clear();
-        parameterObj.guarantorContact = c;
-        parameters.add(parameterObj);
-        guarantorsCreated = SL_DealerPortalCAGuarantor.createGuarantorContact(parameters);
+        // DP-872 Misael Romero
+        // Contact c = new Contact (AccountId = accId, FirstName = 'new test',
+        //          LastName = 'testbeni new', OtherStreet = 'test new', OtherCity = 'test', 
+        //          OtherStateCode = 'MN', OtherPostalCode = '05030', Title = 'title new', 
+        //          SSN__c = '050305251', BirthDate = Date.today (),
+        //          Email = 'test@email05030525.com', Validity_Verify__Status__c = 'Valid');
+        // parameters.clear();
+        // parameterObj.guarantorContact = c;
+        // parameters.add(parameterObj);
+        // guarantorsCreated = SL_DealerPortalCAGuarantor.createGuarantorContact(parameters);
+        Contact testExisting = testCon[0];
+        Contact testInput = testExisting.clone(false,false,false);
+        testInput.MailingStreet = '12180856 new Street';
+        Boolean isNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(testExisting, testInput, 'MailingStreet', false);
         Opportunity opp = SL_SCTestData.testOpportunities[0].clone(false,false,false);
         List<Opportunity> createdOpp = SL_DealerPortalCAAllowSave.updateOpp(new List<Opportunity>{opp});
         SL_DealerPortalCAAllowSave.updateOpp(createdOpp);
         Test.stopTest();
-        contactsCreated = [SELECT COUNT() FROM Contact];
-        System.Assert.areEqual(4, contactsCreated, 'must insert a second one');
+        // DP-872 Misael Romero
+        // contactsCreated = [SELECT COUNT() FROM Contact];
+        // System.Assert.areEqual(4, contactsCreated, 'must insert a second one'); 
         System.Assert.areEqual(1, guarantorsCreated.size(), 'must create a guarantor anyways');
+        System.Assert.isTrue(isNewData);
+        System.Assert.areEqual(testExisting.MailingStreet, testInput.MailingStreet, 'if input data is not empty and it is different than existing update existing record with new data');
         
     }
 

@@ -1,0 +1,73 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId,lightning:isUrlAddressable"
+                controller="TC_ApprovalProcessCtrl">
+    
+    <aura:html tag="style">
+        .slds-modal__container {
+        min-width: 90vw;
+        }
+    </aura:html>
+    
+    <lightning:radioGroup
+        aura:id="mygroup"
+        name="radioButtonGroup"/>
+
+    
+    <aura:attribute name="approvalProcesses" type="List"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <lightning:card title="Approval Processes" iconName="standard:approval">
+        <aura:set attribute="actions">
+            <lightning:button  variant="brand" label="Submit" onclick="{!c.submitClicked}" />
+        </aura:set>
+        
+    	<table class="slds-table slds-table_bordered slds-table_cell-buffer">
+            <thead>
+            <tr class="slds-text-title_caps">
+                <th scope="col">
+                    
+                </th>
+                <th scope="col">
+                    <div>Name</div>
+                </th>
+                <th scope="col">
+                    <div>Comments</div>
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+
+                <aura:iteration items="{!v.approvalProcesses}" var="ap">
+                    <tr>
+                        <td >
+                            <div><ui:inputRadio aura:id="radioButtonGroup"  value="{!ap.selected}" change="{!c.onRadio}" />
+                                <!--<lightning:input type="checkbox" checked="{!ap.selected}" value="{!ap.selected}" />-->
+                            </div>
+                        </td>
+                        <td >
+                            <div>
+                                <b>{!ap.name}</b>
+                                <br/>{!ap.description}
+                                <!--<aura:if isTrue="{!ap.status == 'SUCCESS'}">
+                                    <br/><span style="color:green">{!ap.status}</span>
+                                    <aura:set attribute="else">
+                                    	<br/><span style="color:red">{!ap.status} {!ap.errorMessage}</span>
+                                    </aura:set>
+                                </aura:if>-->
+                            </div>
+                        </td>
+                        <td >
+                            <ui:inputText value="{!ap.comment}"/>
+                            <!--<lightning:input type="text" value="{!ap.comments}" /> -->
+                        </td>
+                    </tr>
+                </aura:iteration>
+
+            </tbody>
+        </table>
+
+
+    </lightning:card>
+    <lightning:spinner aura:id="spinner"/>
+    
+	
+</aura:component>

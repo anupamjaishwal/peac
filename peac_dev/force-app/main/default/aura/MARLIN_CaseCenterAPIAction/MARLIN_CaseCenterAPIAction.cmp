@@ -1,0 +1,26 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="PEAC_LoanCalloutController" access="global" >
+    <aura:attribute name="caseCenterResponse" type="String" default="Please wait..." />
+    <aura:attribute name="caseCenterProgress" type="String" default="Starting..." />
+    <aura:attribute name="validateAppResult" type="String" default="Not Started" />
+    <aura:attribute name="validateSubmitResult" type="String" default="Not Started" />
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}" />
+
+    <!-- Tam App Wizard Change -->
+    <aura:attribute name="fromWizard" type="Boolean" default="{!false}" access="global" />
+
+    <b>Opportunity Id: </b>{!v.recordId}	<br />
+    <b>Validate Application:</b>: {!v.validateAppResult}	<br />
+    <b>Submit Application to GDS:</b>: {!v.validateSubmitResult}	<br />
+    
+    <br />
+        
+    <ui:spinner aura:id="spinner" />
+
+    <aura:if isTrue="{!!v.fromWizard}">
+        <ui:button label="Close" press="{!c.processClose}"/>
+    </aura:if>
+
+</aura:component>

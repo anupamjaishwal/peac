@@ -1,0 +1,95 @@
+<!--
+ - Created  on 1/1/18.
+ -->
+
+<aura:component description="tc_dealEquipmentDataTable">
+    <aura:attribute name="equipmentList" type="TC_DatabaseUtil.TC_RecordWrapper[]" access="global" default="[]"/>
+
+    <table class="slds-table slds-table_bordered slds-max-medium-table_stacked-horizontal slds-no-cell-focus slds-table_fixed-layout">
+        <thead>
+            <tr class="slds-text-title_caps">
+                <th scope="col">
+                    <div class="slds-truncate">Equip Desc</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate">Cost</div>
+                </th>
+                <!--
+                <th scope="col">
+                    <div class="slds-truncate">Quantity</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate">Term</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate">Code</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate">Street</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate">City</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate">State</div>
+                </th>
+                <th scope="col">
+                    <div class="slds-truncate">Postal Code</div>
+                </th>-->
+            </tr>
+        </thead>
+        <tbody>
+            <aura:iteration var="equip" items="{!v.equipmentList}" indexVar="i">
+                <tr>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Description__c}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Cost__c}"/>
+                        </div>
+                    </td><!--
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Quantity__c}"/>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Recourse_Term__c}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Equipment_Code__c}"/>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Equipment_Street__c}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Equipment_City__c}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Equipment_State__c}"/>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="slds-truncate">
+                            <ui:outputText value="{!equip.equipment.Equipment_Zip__c}"/>
+                        </div>
+                    </td>-->
+                </tr>
+            </aura:iteration>
+        </tbody>
+    </table>
+</aura:component>

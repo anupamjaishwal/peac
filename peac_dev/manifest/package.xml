@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>*</members>
-        <name>CustomLabel</name>
+        <members>Create_Application_Asset_Info</members>
+        <members>Create_Application_Dealer_Portal</members>
+        <members>NT_Pricing_Standalone_Quote_Input_Screen</members>
+        <name>Flow</name>
     </types>
-    
     <version>56.0</version>
 </Package>

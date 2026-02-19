@@ -1235,6 +1235,132 @@ Stack Trace: {3}</value>
         <value>Please choose a valid custom metadata type.</value>
     </labels>
     <labels>
+        <fullName>TvalueEmailError</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Error message for sending quote email.</shortDescription>
+        <value>Failed to send email. Please try again.</value>
+    </labels>
+    <labels>
+        <fullName>TvalueEmailSubject</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Default subject for quote emails.</shortDescription>
+        <value>Your Equipment Finance Quote Options</value>
+    </labels>
+    <labels>
+        <fullName>TvalueEmailSuccess</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Success message for sending quote email.</shortDescription>
+        <value>Email sent successfully!</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_AdvancePayments</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_AdvancePayments</shortDescription>
+        <value>Advance Payments</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_Created</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_Created</shortDescription>
+        <value>Created</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_Deferral</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_Deferral</shortDescription>
+        <value>Deferral</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_Description</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_Description</shortDescription>
+        <value>Description</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_EmailQuotes</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_EmailQuotes</shortDescription>
+        <value>Email Quotes</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_EndOption</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_EndOption</shortDescription>
+        <value>End Option</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_FinancedAmount</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_FinancedAmount</shortDescription>
+        <value>Financed Amount</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_LegalDisclaimer</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Legal disclaimer text for the Tvalue Quote Picker component.</shortDescription>
+        <value>This is placeholder legal language. The information provided in this table is for illustrative purposes only and does not constitute a binding offer. Rates, terms, and conditions are subject to change without notice and may vary based on creditworthiness, collateral, and other factors. All financing is subject to final credit approval.</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_Notes</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_Notes</shortDescription>
+        <value>Notes</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_Payment</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_Payment</shortDescription>
+        <value>Payment</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_QuoteOption</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_QuoteOption</shortDescription>
+        <value>Name</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_Select</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_Select</shortDescription>
+        <value>Select</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_Term</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_Term</shortDescription>
+        <value>Term (Mos)</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_UseThisQuote</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_UseThisQuote</shortDescription>
+        <value>Use This Quote</value>
+    </labels>
+    <labels>
+        <fullName>TvalueQuotePicker_Yield</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>TvalueQuotePicker_Yield</shortDescription>
+        <value>Yield</value>
+    </labels>
+    <labels>
         <fullName>User_Scorecard</fullName>
         <categories>User Id</categories>
         <language>en_US</language>
@@ -1257,129 +1383,17 @@ Stack Trace: {3}</value>
         <value>xfscare@leaseservices.com</value>
     </labels>
     <labels>
-        <fullName>TvalueQuotePicker_Select</fullName>
+        <fullName>TvalueQuotePicker_Waiting</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_Select</shortDescription>
-        <value>Select</value>
+        <shortDescription>Waiting for TValue quotes</shortDescription>
+        <value>Waiting for quotes to be generated...</value>
     </labels>
     <labels>
-        <fullName>TvalueQuotePicker_QuoteOption</fullName>
+        <fullName>TvalueQuotePicker_QuotesNotGenerated</fullName>
         <language>en_US</language>
         <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_QuoteOption</shortDescription>
-        <value>Name</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_Description</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_Description</shortDescription>
-        <value>Description</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_FinancedAmount</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_FinancedAmount</shortDescription>
-        <value>Financed Amount</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_Term</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_Term</shortDescription>
-        <value>Term (Mos)</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_Payment</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_Payment</shortDescription>
-        <value>Payment</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_AdvancePayments</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_AdvancePayments</shortDescription>
-        <value>Advance Payments</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_Yield</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_Yield</shortDescription>
-        <value>Yield</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_Deferral</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_Deferral</shortDescription>
-        <value>Deferral</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_EndOption</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_EndOption</shortDescription>
-        <value>End Option</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_Notes</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_Notes</shortDescription>
-        <value>Notes</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_Created</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_Created</shortDescription>
-        <value>Created</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_EmailQuotes</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_EmailQuotes</shortDescription>
-        <value>Email Quotes</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_UseThisQuote</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>TvalueQuotePicker_UseThisQuote</shortDescription>
-        <value>Use This Quote</value>
-    </labels>
-    <labels>
-        <fullName>TvalueQuotePicker_LegalDisclaimer</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Legal disclaimer text for the Tvalue Quote Picker component.</shortDescription>
-        <value>This is placeholder legal language. The information provided in this table is for illustrative purposes only and does not constitute a binding offer. Rates, terms, and conditions are subject to change without notice and may vary based on creditworthiness, collateral, and other factors. All financing is subject to final credit approval.</value>
-    </labels>
-    <labels>
-        <fullName>TvalueEmailSubject</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Default subject for quote emails.</shortDescription>
-        <value>Your Equipment Finance Quote Options</value>
-    </labels>
-    <labels>
-        <fullName>TvalueEmailSuccess</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Success message for sending quote email.</shortDescription>
-        <value>Email sent successfully!</value>
-    </labels>
-    <labels>
-        <fullName>TvalueEmailError</fullName>
-        <language>en_US</language>
-        <protected>false</protected>
-        <shortDescription>Error message for sending quote email.</shortDescription>
-        <value>Failed to send email. Please try again.</value>
+        <shortDescription>TValue quotes not generated</shortDescription>
+        <value>Quotes are not being generated. Please try again later.</value>
     </labels>
 </CustomLabels>

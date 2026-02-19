@@ -2355,6 +2355,37 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
     public static void callGdsScoreApex (Id recordId) {
         TC_GdsScoreApi.runGdsScoreFromTriggeredAction (new Set <Id> {recordId});
     }
+
+    /**
+     * Fetch quote details for given TValue quote IDs and return the parent Quote record.
+     * Accepts a string of IDs (CSV, semicolon-separated, array-like) and returns the first matching Quote__c.
+     */
+    @AuraEnabled
+    public static tval__TValue_Quote__c getQuoteDetailsByIds(String quoteIds) {
+        if (String.isBlank(quoteIds)) return null;
+
+        // Normalize and split incoming ID string (handles comma, semicolon, whitespace, and array-like strings)
+        Set<Id> ids = new Set<Id>();
+        for (String part : quoteIds.replace('"','').replace('[','').replace(']','').split('[,;\\s]+')) {
+            if (String.isNotBlank(part)) ids.add(part.trim());
+        }
+
+        if (ids.isEmpty()) return null;
+
+        // Query tval__TValue_Quote__c and return the parent Quote__r (first found)
+        List<tval__TValue_Quote__c> tqs = [
+            SELECT Id, Quote__c, Quote__r.Equipment_Type__c, tval__Quote_Amount__c, Quote__r.Description, tval__Term__c,
+            tval__Period__c, tval__Purchase_Option__c
+            FROM tval__TValue_Quote__c
+            WHERE Id IN :ids
+            LIMIT 1
+        ];
+
+        if (!tqs.isEmpty() && tqs[0].Quote__c != null) {
+            return tqs[0];
+        }
+        return null;
+    }
     
     // SAL-2384 if SSN is entered, require 'Dealer/Customer Supplied PG' and 'OK to Pull Credit' fields
     @testVisible

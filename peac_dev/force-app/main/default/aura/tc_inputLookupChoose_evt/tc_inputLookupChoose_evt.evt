@@ -1,0 +1,22 @@
+<!--
+ - Created  on 1/2/18.
+ -->
+
+<aura:event type="COMPONENT" description="tc_inputLookupChoose_evt">
+    <aura:attribute name="recordId" type="String"
+                    required="true"
+                    description="Used to send selected record Id"/>
+
+    <aura:attribute name="recordLabel"
+                    type="String"
+                    description="Used to send selected record Name"
+                    required="true"/>
+
+    <aura:attribute name="objectAPIName"
+                    type="String"
+                    description="Used to send selected record object name"
+                    required="true"/>
+
+    <aura:attribute name="itemIndex"
+                    type="Integer"/>
+</aura:event>

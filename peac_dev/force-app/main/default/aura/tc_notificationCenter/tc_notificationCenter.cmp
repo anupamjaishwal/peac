@@ -1,0 +1,187 @@
+<!--
+ - Created by crudrud on 10/29/20.
+ -->
+
+<aura:component description="tc_notificationCenter"
+                implements="force:hasRecordId,flexipage:availableForRecordHome"
+                Controller="tc_notificationCenterController">
+
+    <aura:attribute name="accountRecord" type="Object"/>
+    <aura:attribute name="recordLoadError" type="String"/>
+    <aura:attribute name="Objaccount" type="Account"/>
+    <aura:attribute name="ObjCon" type="object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="recordId" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <force:recordData aura:id="recordLoader"
+                      recordId="{!v.recordId}"
+                      fields="Name"
+                      targetFields="{!v.accountRecord}"
+                      targetError="{!v.recordLoadError}"
+    />
+
+
+    <lightning:card title="Notification Center">
+
+        <lightning:recordEditForm objectApiName="Account" recordId="{!v.recordId}">
+            <!-- Put everything in here -->
+        </lightning:recordEditForm>
+
+        <div>
+            <lightning:formattedText title="Dealer Name" value="{!'Dealer Name: ' + v.accountRecord.Name}"/>
+        </div>
+
+        <div>
+            <br/>
+            <lightning:formattedText value="Equipment Finance Notifications"/>
+
+            <div class="c-container">
+                <lightning:layout>
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="Submitted"/>
+                        <lightning:input type="checkbox-button" label="Submitted" name="submitted"
+                                         checked="{!v.Objaccount.Submitted__c}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="More Info"/>
+                        <lightning:input type="checkbox-button" label="More Info" name="moreInfo"
+                                         checked="{!v.Objaccount.More_Info__c}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="Approved"/>
+                        <lightning:input type="checkbox-button" label="Approved" name="approved"
+                                         checked="{!v.Objaccount.Approved__c}"/>
+                    </lightning:layoutItem>
+                    <!-- JAH Comment out Approved with pricing for now
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="Approved with pricing"/>
+                        <lightning:input type="checkbox-button" label="Approved with pricing"  name="approvedWithPricing"  checked="{!v.Objaccount.Approved_with_pricing__c}"/>
+                    </lightning:layoutItem>
+					-->
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="Declined"/>
+                        <lightning:input type="checkbox-button" label="Declined" name="declined"
+                                         checked="{!v.Objaccount.Declined__c}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="Docs Out"/>
+                        <lightning:input type="checkbox-button" label="Docs Out" name="docsOut"
+                                         checked="{!v.Objaccount.Docs_Out__c}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="Docs Out w/ Contracts"/>
+                        <lightning:input type="checkbox-button" label="Docs Out w/ Contracts" name="docsOutContracts"
+                                         checked="{!v.Objaccount.Docs_Out_Contracts__c}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="Docs In"/>
+                        <lightning:input type="checkbox-button" label="Docs In" name="docsIn"
+                                         checked="{!v.Objaccount.Docs_In__c}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="In Funding"/>
+                        <lightning:input type="checkbox-button" label="In Funding" name="inFunding"
+                                         checked="{!v.Objaccount.In_Funding__c}"/>
+                    </lightning:layoutItem>
+                    <lightning:layoutItem padding="around-small">
+                        <lightning:formattedText value="Funded"/>
+                        <lightning:input type="checkbox-button" label="Funded" name="funded"
+                                         checked="{!v.Objaccount.Funded__c}"/>
+                    </lightning:layoutItem>
+                </lightning:layout>
+            </div>
+        </div>
+
+        <aura:if isTrue="{!v.Objaccount.Is_Broker__c}">
+            <div>
+                <lightning:formattedText value="Loan Notifications"/>
+
+                <div class="c-container">
+                    <lightning:layout>
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:formattedText value="Submitted"/>
+                            <lightning:input type="checkbox-button" label="Submitted" name="submittedLoan"
+                                             checked="{!v.Objaccount.Submitted_Loan__c}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:formattedText value="More Info"/>
+                            <lightning:input type="checkbox-button" label="More Info" name="moreInfoLoan"
+                                             checked="{!v.Objaccount.More_Info_Loan__c}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:formattedText value="Approved"/>
+                            <lightning:input type="checkbox-button" label="Approved" name="approvedLoan"
+                                             checked="{!v.Objaccount.Approved_Loan__c}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:formattedText value="Declined"/>
+                            <lightning:input type="checkbox-button" label="Declined" name="declinedLoan"
+                                             checked="{!v.Objaccount.Declined_Loan__c}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:formattedText value="Docs Out"/>
+                            <lightning:input type="checkbox-button" label="Docs Out" name="docsOutLoan"
+                                             checked="{!v.Objaccount.Docs_Out_Loan__c}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:formattedText value="Docs Out w/ Contracts"/>
+                            <lightning:input type="checkbox-button" label="Docs Out w/ Contracts" name="docsOutContractsLoan"
+                                             checked="{!v.Objaccount.Docs_Out_Contracts_Loan__c}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:formattedText value="Docs In"/>
+                            <lightning:input type="checkbox-button" label="Docs In" name="docsInLoan"
+                                             checked="{!v.Objaccount.Docs_In_Loan__c}"/>
+                        </lightning:layoutItem>
+                        <lightning:layoutItem padding="around-small">
+                            <lightning:formattedText value="Funded"/>
+                            <lightning:input type="checkbox-button" label="Funded" name="fundedLoan"
+                                             checked="{!v.Objaccount.Funded_Loan__c}"/>
+                        </lightning:layoutItem>
+                    </lightning:layout>
+                </div>
+            </div>
+        </aura:if>
+
+        <div class="slds">
+            <table class="slds-table slds-table--bordered slds-table--striped">
+                <thead>
+                <tr>
+                    <th scope="col"><span class="slds-truncate">Contact Name</span></th>
+                    <th scope="col"><span class="slds-truncate">Email</span></th>
+                    <th scope="col"><span class="slds-truncate">Role</span></th>
+                    <th scope="col"><span class="slds-truncate">Equipment Finance</span></th>
+                    <aura:if isTrue="{!v.Objaccount.Is_Broker__c}">
+                        <th scope="col"><span class="slds-truncate">Loan</span></th>
+                    </aura:if>
+                </tr>
+                </thead>
+                <tbody>
+                <aura:iteration items="{!v.ObjCon}" var="contact">
+                    <tr>
+                        <td>{!contact.ConName}</td>
+                        <td>{!contact.ConEmail}</td>
+                        <td>
+                            <ui:inputText value="{!contact.Role}"/>
+                        </td>
+                        <td>
+                            <ui:inputCheckbox value="{!contact.ReceiveAllNotifications}"
+                                              text="{!contact.ReceiveAllNotifications}"/>
+                        </td>
+                        <aura:if isTrue="{!v.Objaccount.Is_Broker__c}">
+                            <td>
+                                <ui:inputCheckbox value="{!contact.ReceiveLoanNotifications}"
+                                                  text="{!contact.ReceiveLoanNotifications}"/>
+                            </td>
+                        </aura:if>
+                    </tr>
+                </aura:iteration>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+        <Center>
+            <button class="slds-button slds-button_brand" onclick="{!c.UpdateContactRecord}">Save</button>
+        </Center>
+    </lightning:card>
+</aura:component>

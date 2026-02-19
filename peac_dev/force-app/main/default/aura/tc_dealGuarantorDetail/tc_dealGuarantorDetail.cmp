@@ -1,0 +1,304 @@
+<!--
+ - Created  on 1/1/18.
+ -->
+
+<aura:component description="tc_dealGuarantorDetail" controller="TC_LoanApplicationCtrl">
+    <aura:attribute name="guarantor" type="Object" />
+    <aura:attribute name="index" type="Integer"/>
+    <aura:attribute name="company" type="Account" access="global"/>
+
+    <aura:attribute name="isCCG" type="String" access="global"/>
+    <aura:attribute name="isLoan" type="Boolean" access="global"/>
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+    <aura:attribute name="ssn" type="String" access="global"/>
+    <aura:handler name="lookupChoose" event="c:tc_inputLookupChoose_evt" action="{!c.handleLookupChoose}"
+                  description="Event handler to get the selected record from LookupItem component."/>
+
+    <!-- CCG -->
+    <aura:if isTrue="{!v.isCCG == 'true'}">
+
+        <c:tc_accordionSection title="{!'Corporate Guarantor ' + (v.index + 1) + ' Details'
+    + (if (v.guarantor.FirstName || v.guarantor.LastName, ' - ' + v.guarantor.FirstName + ' ' + v.guarantor.LastName, ''))}">
+
+
+            <div class="slds-grid slds-wrap">
+
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                    <c:tc_lookupInput fieldLabel="Search CCG"
+                                      objectAPIName="Account"
+                                      subHeadingFieldsAPI="Business_City__c,Business_State__c"
+                                      showLabel="false"
+                                      placeholder="Search CCG"
+                                      chosenRecordLabel="{#v.guarantor.account.Name}"
+                                      chosenRecordId="{!v.guarantor.account.Id}"
+                                      aura:id="guarlookupid"
+                                      showCreateNew="false"
+                                      itemIndex="{!v.index}"
+
+                                      iconCategoryName="standard:account"/>
+                </div><!--filter="{!'Id=\'' + v.company.Id + '\''}"-->
+
+                <aura:if isTrue="{!v.guarantor.dupe}">
+                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                        <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                    </div>
+                </aura:if>
+
+                <lightning:input value="{!v.guarantor.account.Name}"  label="Company Name"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                <lightning:input value="{!v.guarantor.account.Business_Address__c}"  label="Address"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                <lightning:input value="{!v.guarantor.account.Business_City__c}"  label="City"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+
+                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                    <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Business_State__c"  label="State" value="{!v.guarantor.account.Business_State__c}" disabled="{!v.guarantor.readOnly}" required="true"/>
+                </div>
+                <lightning:input value="{!v.guarantor.account.Business_Zip__c}"  label="Zip"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                <lightning:input value="{!v.guarantor.account.Business_Phone__c}"  label="Phone"
+                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+            </div>
+        </c:tc_accordionSection>
+
+
+        <aura:set attribute="else">
+
+            <!-- PG -->
+            <c:tc_accordionSection title="{!'Personal Guarantor ' + (v.index + 1) + ' Details'
+    + (if (v.guarantor.contact.FirstName || v.guarantor.contact.LastName, ' - ' + v.guarantor.contact.FirstName + ' ' + v.guarantor.contact.LastName, ''))}">
+
+
+                <!-- Loan PG, Aura if because Home and Mailing address split and so many other fields are different -->
+
+                <aura:if isTrue="{!v.clientWrapper.recordTypeName == 'Loan'}">
+
+                    <div class="slds-grid slds-wrap">
+
+                        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                            <c:tc_lookupInput fieldLabel="Search PG"
+                                              objectAPIName="Contact"
+                                              subHeadingFieldsAPI="SSNMain__c,Phone,OtherCity,OtherStateCode"
+                                              showLabel="false"
+                                              placeholder="Search PG"
+                                              chosenRecordLabel="{#v.guarantor.contact.Name}"
+                                              chosenRecordId="{!v.guarantor.contact.Id}"
+                                              aura:id="guarlookupid"
+                                              showCreateNew="false"
+                                              itemIndex="{!v.index}"
+												filter="{!'Validity_Verify__Status__c != \'Invalid\' AND Validity_Verify__Status__c != null'}"
+                                              iconCategoryName="standard:contact"/>
+
+                            <!--filter="{!'AccountId=\'' + v.company.Id + '\''}"-->
+                        </div>
+
+                        <aura:if isTrue="{!v.guarantor.dupe}">
+                            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                            </div>
+                        </aura:if>
+
+                        <lightning:input value="{!v.guarantor.contact.FirstName}" name="FirstName" label="First Name" required="true"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}"/>
+                        <lightning:input value="{!v.guarantor.contact.LastName}" name="lastName" label="Last Name" required="true"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" />
+                        <lightning:input value="{!v.guarantor.contact.Title}" name="title" label="Title"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}"/>
+
+                        <lightning:input value="{!v.guarantor.contact.SSNMain__c}"  label="SSN"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                        <lightning:input value="{!v.guarantor.contact.OtherStreet}"  label="Address"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                        <lightning:input value="{!v.guarantor.contact.OtherCity}"  label="City"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+
+                        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                            <c:tc_inputSelect objInfo="{sobjectType : 'Contact'}" fldInfo="OtherStateCode"  label="State" value="{!v.guarantor.contact.OtherStateCode}" disabled="{!v.guarantor.readOnly}" required="true"/>
+                        </div>
+
+                        <!--<lightning:input value="{!v.guarantor.MailingStateCode}"  label="State"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"/>-->
+                        <lightning:input value="{!v.guarantor.contact.OtherPostalCode}"  label="Zip"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                        <!--<lightning:input value="{!v.guarantor.contact.Title}"  label="Title"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}"/>-->
+                        <lightning:input value="{!v.guarantor.contact.Email}"  label="Email"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                        <lightning:input value="{!v.guarantor.contact.Phone}"  label="Phone"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}"/>
+
+
+                            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                <label class="slds-form-element__label"><abbr class="slds-required" title="required">* </abbr>DOB</label>
+                                <div class="slds-form-element__control">
+                                    <ui:inputDate displayDatePicker="true" value="{!v.guarantor.contact.Birthdate}" format="MM/dd/yyyy" required="true" disabled="{!v.guarantor.readOnly}" />
+                                </div>
+                            </div>
+
+
+                        <lightning:input value="{!v.guarantor.contact.Ownership_Pct__c}"  label="% Ownership"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" disabled="{!v.guarantor.readOnly}" required="{!v.clientWrapper.recordTypeName == 'Loan'}"/>
+
+                        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                            <c:tc_inputSelect objInfo="{sobjectType : 'Contact'}" fldInfo="Dealer_Customer_Supplied_PG__c"  label="Dealer/Customer Supplied PG"
+                                              value="{!v.guarantor.contact.Dealer_Customer_Supplied_PG__c}" disabled="{!v.guarantor.readOnly}"/>
+                        </div>
+
+                        <!-- SAL-2384 when SSN is inputted, this field is required -->
+                        <lightning:input checked="{!v.guarantor.contact.OK_to_Pull_Credit__c}" label="OK to Pull Credit"
+                                         class="slds-p-left_x-small slds-p-top_x-large slds-large-size_1-of-3" type="checkbox"
+                                         disabled="{!v.guarantor.readOnly}"/>
+                        <!-- <lightning:input value="{!'PG'+(v.index + 1)}" label="PG Type"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="true"
+                                             /> -->
+                        <!-- <lightning:input value="{!v.guarantor.contact.SSN__c}"  label="SSN"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" disabled="{!v.guarantor.readOnly}" required="true"/>-->
+
+                        <!--<c:tc_inputTaxId value="{!v.guarantor.contact.SSN__c}" name="ssn" label="SSN__c" required="true"
+                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" entityType="person" disabled="{!v.guarantor.readOnly}"/>-->
+
+
+                    </div>
+
+
+                    <!-- Lease PG, Aura if because Home and Mailing address split -->
+                    <aura:set attribute="else">
+
+                        <div class="slds-grid slds-wrap">
+
+                            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                <c:tc_lookupInput fieldLabel="Search PG"
+                                                  objectAPIName="Contact"
+                                                  subHeadingFieldsAPI="SSNMain__c,MailingCity,MailingStateCode"
+                                                  showLabel="false"
+                                                  placeholder="Search PG"
+                                                  chosenRecordLabel="{#v.guarantor.contact.Name}"
+                                                  chosenRecordId="{!v.guarantor.contact.Id}"
+                                                  aura:id="guarlookupid"
+                                                  showCreateNew="false"
+                                                  itemIndex="{!v.index}"
+													filter="{!'Validity_Verify__Status__c != \'Invalid\' AND Validity_Verify__Status__c != null'}"
+                                                  iconCategoryName="standard:contact"/>
+
+                                <!--filter="{!'AccountId=\'' + v.company.Id + '\''}"-->
+                            </div>
+
+                            <aura:if isTrue="{!v.guarantor.dupe}">
+                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                    <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                                </div>
+                            </aura:if>
+
+                            <lightning:input value="{!v.guarantor.contact.FirstName}" name="FirstName" label="First Name" required="true"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}"/>
+                            <lightning:input value="{!v.guarantor.contact.LastName}" name="lastName" label="Last Name" required="true"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" />
+                            <lightning:input value="{!v.guarantor.contact.Title}" name="title" label="Title"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}"/>
+							
+                            <aura:if isTrue="{!v.guarantor.contact.Id}">
+                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                <lightning:recordEditForm  recordId="{!v.guarantor.contact.Id}" objectApiName="Contact">
+                                <lightning:inputField  class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" fieldName="SSNMain__c" disabled="{!v.guarantor.readOnly}" required="true"/>
+                                </lightning:recordEditForm>
+                                </div>
+                                    <!--<lightning:input value="{!v.ssn}"  label="SSN"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>-->
+                                <aura:set attribute="else">
+                                    <lightning:input value="{!v.guarantor.contact.SSNMain__c}"  label="SSN"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                                    
+                                </aura:set>
+                            </aura:if>
+                            <!--
+                            <lightning:input value="{!v.guarantor.contact.SSN__c}"  label="SSN"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+-->                            
+							<lightning:input value="{!v.guarantor.contact.MailingStreet}"  label="Address"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                            <lightning:input value="{!v.guarantor.contact.MailingCity}"  label="City"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                <c:tc_inputSelect objInfo="{sobjectType : 'Contact'}" fldInfo="MailingStateCode"  label="State" value="{!v.guarantor.contact.MailingStateCode}" disabled="{!v.guarantor.readOnly}" required="true"/>
+                            </div>
+                            <lightning:input value="{!v.guarantor.contact.MailingPostalCode}"  label="Zip"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                            <lightning:input value="{!v.guarantor.contact.Email}"  label="Email"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}" required="true"/>
+                            <lightning:input value="{!v.guarantor.contact.Phone}"  label="Phone"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="{!v.guarantor.readOnly}"/>
+
+                            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                <label class="slds-form-element__label">DOB</label> <!-- SAL-2754 -->
+                                <div class="slds-form-element__control">
+                                    <ui:inputDate displayDatePicker="true" value="{!v.guarantor.contact.Birthdate}" format="MM/dd/yyyy" required="true" disabled="{!v.guarantor.readOnly}" />
+                                </div>
+                            </div>
+
+                            <lightning:input value="{!v.guarantor.contact.Ownership_Pct__c}"  label="% Ownership"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" disabled="{!v.guarantor.readOnly}" required="{!v.clientWrapper.recordTypeName == 'Loan'}"/>
+
+                            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                <c:tc_inputSelect objInfo="{sobjectType : 'Contact'}" fldInfo="Dealer_Customer_Supplied_PG__c"  label="Dealer/Customer Supplied PG"
+                                                  value="{!v.guarantor.contact.Dealer_Customer_Supplied_PG__c}" disabled="{!v.guarantor.readOnly}"/>
+                            </div>
+
+                            <!-- SAL-2384 when SSN is inputted, this field is required -->
+                            <lightning:input checked="{!v.guarantor.contact.OK_to_Pull_Credit__c}" label="OK to Pull Credit"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="checkbox"
+                                             disabled="{!v.guarantor.readOnly}"/>
+
+                            <lightning:input value="{!'PG'+(v.index + 1)}" label="PG Number"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text" disabled="true"/>
+                      
+                        </div>
+
+                    </aura:set>
+
+                </aura:if>
+
+
+            </c:tc_accordionSection>
+
+        </aura:set>
+    </aura:if>
+
+    
+    <!--
+    <c:tc_accordionSection title="Location &amp; Contact Details">
+        <div class="slds-grid slds-wrap">
+
+            <c:tc_addressLookup class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_2-of-3"
+                                street="{!v.guarantor.MailingStreet}"
+                                city="{!v.guarantor.MailingCity}"
+                                stateCode="{!v.guarantor.MailingStateCode}"
+                                postalCode="{!v.guarantor.MailingPostalCode}"
+                                countryCode="{!v.guarantor.MailingCountryCode}"
+                                placeholder="Personal Guarantor Address"/>
+
+            <lightning:input aura:id="sameAsCompanyAddress" label="Same as Company Address" onchange="{!c.handleSameAddress}"
+                             class="slds-p-around_small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="checkbox"/>
+
+            <lightning:input value="{!v.guarantor.MailingStreet}" name="street" label="Street" required="true"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"/>
+            <lightning:input value="{!v.guarantor.MailingCity}" name="city" label="City" required="true"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"/>
+            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-8">
+                <c:tc_inputSelect objInfo="{!v.guarantor}" fldInfo="MailingStateCode" required="true" label="State" value="{!v.guarantor.MailingStateCode}"/>
+            </div>
+            <lightning:input value="{!v.guarantor.MailingPostalCode}" name="postalCode" label="Postal Code" required="true"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-8" type="text"/>
+
+
+            <lightning:input value="{!v.guarantor.Phone}" name="phone" label="Phone"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"/>
+            <lightning:input value="{!v.guarantor.MobilePhone}" name="mobilePhone" label="Mobile Phone" required="true"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="text"/>
+            <lightning:input value="{!v.guarantor.Email}" name="emailAddress" label="Email Address" required="true"
+                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" type="email"/>
+        </div>
+
+    </c:tc_accordionSection>-->
+
+    <lightning:spinner aura:id="spinner" class="slds-hide"/>
+</aura:component>

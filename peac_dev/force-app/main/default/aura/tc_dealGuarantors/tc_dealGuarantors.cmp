@@ -1,0 +1,107 @@
+<!--
+  @description       : 
+  @author            : Joseph Cadd
+  @group             : 
+  @last modified on  : 01-12-2021
+  @last modified by  : Joseph Cadd
+  Modifications Log 
+  Ver   Date         Author        Modification
+  1.0   01-12-2021   Joseph Cadd   Initial Version
+-->
+<aura:component description="Guarantor of Application" access="global" controller="TC_LoanApplicationCtrl"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome">
+
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+
+
+    <!--<aura:attribute name="guarantors" type="List" access="global" default="[]"/>
+    <aura:attribute name="ccgGuarantors" type="List" access="global" default="[]"/>
+    <aura:attribute name="company" type="Account" access="global"/>-->
+    <aura:attribute name="isCCG" type="Boolean" default="false"/>
+    <aura:attribute name="isLoan" type="Boolean"/>
+    <aura:html tag="style">
+        .toastMessage.forceActionsText{
+        white-space : pre-line !important;
+        }
+    </aura:html>
+
+    <aura:registerEvent name="appNavEvent" type="c:tc_applicationNavigation_evt"/>
+
+    <aura:handler value="{!this}" name="init" action="{!c.doInit}"/>
+
+    <div class=" slds-m-around_small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right" value="{!v.guarantors}"/>
+        <lightning:button label="Save and Quit" onclick="{!c.saveAndQuitGuarController}" variant="brand" iconName="utility:save"
+                          iconPosition="right" aura:id="nextButton"/>
+    </div>
+
+	<aura:if isTrue="{!v.clientWrapper.company.account.PG_Required__c}">
+		<div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+			<h3 style="color:red;">This Company requires a PG</h3>
+		</div>
+    </aura:if>
+    <div class="slds-m-around_small">
+        <lightning:tabset >
+
+
+
+
+            <lightning:tab >
+                <aura:set attribute="label">
+                    Personal Guarantors ({!v.clientWrapper.pgContacts.length})
+                </aura:set>
+                <lightning:button label="Add Personal Guarantor" iconName="utility:add" onclick="{!c.addGuarantor}" variant="neutral"/>
+                <aura:iteration var="guar" items="{!v.clientWrapper.pgContacts}" indexVar="i">
+                <span>
+                    <c:tc_dealGuarantorDetail guarantor="{!guar}" index="{!i}" company="{!v.clientWrapper.company.account}" isLoan="{!v.isLoan}" isCCG="false" clientWrapper="{!v.clientWrapper}"/>
+
+                    <div class="slds-p-around_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+                        <lightning:button label="{!'Clear PG ' + (i+1)}" iconName="utility:clear" onclick="{!c.clearPGItem}" value="{!i}" class="slds-m-left_small"/>
+                        <!--<aura:if isTrue="{!i!=0}">-->
+                            <lightning:button label="{!'Remove PG ' + (i+1)}" iconName="utility:delete" onclick="{!c.deleteItem}" value="{!i}" class="slds-m-left_small"/>
+                        <!--</aura:if>-->
+                    </div>
+                </span>
+                    </aura:iteration>
+            </lightning:tab>
+
+            <lightning:tab >
+                <aura:set attribute="label">
+                    Corporate Guarantors ({!v.clientWrapper.ccgAccounts.length})
+                </aura:set>
+
+                <lightning:button label="Add Corporate Guarantor" iconName="utility:add" onclick="{!c.addCCGuarantor}" variant="neutral"/>
+
+                <aura:iteration var="guar" items="{!v.clientWrapper.ccgAccounts}" indexVar="i">
+                <span>
+                    <c:tc_dealGuarantorDetail guarantor="{!guar}" index="{!i}" company="{!v.clientWrapper.company.account}" isLoan="{!v.isLoan}" isCCG="true" clientWrapper="{!v.clientWrapper}"/>
+
+                    <div class="slds-p-around_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+                        <lightning:button label="{!'Clear CCG ' + (i+1)}" iconName="utility:clear" onclick="{!c.clearCCGItem}" value="{!i}" class="slds-m-left_small"/>
+                        <!--<aura:if isTrue="{!i!=0}">-->
+                            <lightning:button label="{!'Remove CCG ' + (i+1)}" iconName="utility:delete" onclick="{!c.deleteCCGItem}" value="{!i}" class="slds-m-left_small"/>
+                        <!--</aura:if>-->
+                    </div>
+                </span>
+                </aura:iteration>
+            </lightning:tab>
+
+
+
+        </lightning:tabset>
+
+    </div>
+
+    <div class=" slds-m-around_small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right" value="{!v.guarantors}"/>
+    </div>
+    <lightning:spinner aura:id="spinner" class="slds-hide"/>
+
+
+
+
+
+
+
+
+</aura:component>

@@ -1,0 +1,24 @@
+<!--
+ - Created  on 12/30/17.
+ -->
+
+<aura:component description="tc_accordionSection">
+    <aura:attribute name="title" type="String" default=""/>
+    <aura:attribute name="isCollapsible" type="Boolean" default="{!false}"/>
+    <aura:attribute name="isOpen" type="Boolean" default="{!false}"/>
+
+
+
+    <div class="{!'slds-section slds-m-top_small ' + if (v.isOpen || !v.isCollapsible, 'slds-is-open', '')}">
+        <h3 class="slds-section__title">
+            <lightning:button class="slds-button slds-section__title-action" iconName="{!if (v.isCollapsible, if (v.isOpen, 'utility:chevrondown', 'utility:chevronright'), '')}"
+                              onclick="{!c.toggleSection}">
+                <span class="slds-truncate">{!v.title}</span>
+            </lightning:button>
+        </h3>
+        <div class="slds-section__content">
+            {!v.body}
+        </div>
+    </div>
+
+</aura:component>

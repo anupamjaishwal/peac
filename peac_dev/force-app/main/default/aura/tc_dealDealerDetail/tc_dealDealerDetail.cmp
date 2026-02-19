@@ -1,0 +1,337 @@
+<aura:component description="tc_dealDealerDetail" controller="TC_LoanApplicationCtrl" access="global">
+
+        <aura:attribute name="partner" type="Object" required="true" access="global"/>
+        <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+        <aura:attribute name="index" type="Integer"/>
+        <aura:attribute name="partnerType" type="String" access="global"/>
+        <aura:attribute name="contactFieldsRequired" type="Boolean" access="global" default="false" />
+    
+   
+    <aura:attribute name="selectedValues" type="List" default="" description="Selected value in Multi Select" />
+
+
+        <aura:handler name="lookupChoose" event="c:tc_inputLookupChoose_evt" action="{!c.handleChoosePartnerCTRL}"
+                  description="Event handler to get the selected record from LookupItem component."/>
+
+        <aura:if isTrue="{!v.partnerType == 'broker'}">
+            <!-- Begin Broker -->
+
+            <c:tc_accordionSection title="{!'Broker '  + (v.index + 1) + ' Details' + if (v.partner.account.Name, ' - ' + v.partner.account.Name, '')}">
+                <div>
+                    <div class="slds-grid slds-wrap">
+
+                        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                            <c:tc_lookupInput fieldLabel="Search Brokers"
+                                              objectAPIName="Account"
+                                              subHeadingFieldsAPI="Dealer_Number__c,Business_City__c,Business_State__c"
+                                              showLabel="false"
+                                              placeholder="Search Brokers"
+                                              chosenRecordLabel="{#v.partner.account.Name}"
+                                              chosenRecordId="{!v.partner.account.Id}"
+                                              aura:id="guarlookupid"
+                                              showCreateNew="false"
+                                              itemIndex="{!v.index}"
+                                              filter="{!'Is_Broker__c=true'}"
+                                              iconCategoryName="standard:account"/> <!-- 01261000000MK0g -->
+                        </div>
+
+                        <aura:if isTrue="{!v.partner.dupe}">
+                            <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                            </div>
+                        </aura:if>
+
+
+                        <lightning:input value="{!v.partner.account.Name}" label="Company Name"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}" />
+                        <aura:if isTrue="{!v.partner.readOnly == true}">
+                            <lightning:input value="{!v.partner.account.Dealer_Number__c}" label="Dealer Number"
+                                             class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false" disabled="{!true}"/>
+                        </aura:if>
+
+                        <lightning:input value="{!v.partner.account.Business_Address__c}" label="Address"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                        <lightning:input value="{!v.partner.account.Business_City__c}" label="City"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+
+                        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                            <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Business_State__c" required="true" label="State" value="{!v.partner.account.Business_State__c}" disabled="{!v.partner.readOnly}"/>
+                        </div>
+                        <lightning:input value="{!v.partner.account.Business_Zip__c}" label="Zip"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                        <lightning:input value="{!v.partner.account.Business_Phone__c}" label="Phone"
+                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+						
+                        
+                        
+                        <aura:if isTrue="{!v.partner.readOnly == true}">
+                                    <lightning:input  type="checkbox" value="{!v.partner.account.PG_Required__c}" label="PG Required?"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3 slds-m-top_medium" required="false" disabled="{!true}" checked="{!v.partner.account.PG_Required__c}"/>
+                        </aura:if>
+                    </div>
+                </div>
+            </c:tc_accordionSection>
+
+
+            <!-- End Broker -->
+            <aura:set attribute="else">
+                <aura:if isTrue="{!v.partnerType == 'dealer'}">
+
+                    <!-- Being Dealer -->
+                    <c:tc_accordionSection title="{!'Dealer '  + (v.index + 1) + ' Details' + if (v.partner.account.Name, ' - ' + v.partner.account.Name, '')}">
+                        <div>
+                            <div class="slds-grid slds-wrap">
+
+                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                    <c:tc_lookupInput fieldLabel="Search Dealers"
+                                                      objectAPIName="Account"
+                                                      subHeadingFieldsAPI="Dealer_Number__c,Business_City__c,Business_State__c"
+                                                      showLabel="false"
+                                                      placeholder="Search Dealers"
+                                                      chosenRecordLabel="{#v.partner.account.Name}"
+                                                      chosenRecordId="{!v.partner.account.Id}"
+                                                      aura:id="guarlookupid2"
+                                                      showCreateNew="false"
+                                                      itemIndex="{!v.index}"
+                                                      filter="{!'Is_Dealer__c=true'}"
+                                                      iconCategoryName="standard:account"/>
+                                </div>
+
+                                <aura:if isTrue="{!v.partner.dupe}">
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                        <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                                    </div>
+                                </aura:if>
+                                <aura:if isTrue="{!v.partner.account.PG_Required__c}">
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                        <h3 style="color:red;">This Dealer will require a PG to be added in the Guarantors tab</h3>
+                                    </div>
+                                </aura:if>
+
+
+                                <lightning:input value="{!v.partner.account.Name}" label="Name"
+                                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+
+                                <aura:if isTrue="{!v.partner.readOnly == true}">
+                                    <lightning:input value="{!v.partner.account.Dealer_Number__c}" label="Dealer Number"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false" disabled="{!true}"/>
+                                </aura:if>
+
+                                <lightning:input value="{!v.partner.account.Business_Phone__c}" label="Phone"
+                                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+
+                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                    <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Account_Dealer_Program__c"  label="Program" value="{!v.partner.account.Account_Dealer_Program__c}" disabled="{!v.partner.readOnly}" multiple="true"/>
+                                </div>
+
+                                <lightning:input value="{!v.partner.account.Business_Address__c}" label="Address"
+                                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                                <lightning:input value="{!v.partner.account.Business_City__c}" label="City"
+                                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                    <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Business_State__c" required="true" label="State" value="{!v.partner.account.Business_State__c}" disabled="{!v.partner.readOnly}"/>
+                                </div>
+                                <lightning:input value="{!v.partner.account.Business_Zip__c}" label="Zip"
+                                                 class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                                
+                                <!-- 5/6/20 dealer equipment type -->
+                                <aura:if isTrue="{!v.partner.readOnly == true}">
+                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                    <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Equipment_Type__c" multiple="true"  label="Equipment Type" value="{!v.partner.account.Equipment_Type__c}" disabled="{!v.partner.readOnly}" required="{!true}"/>
+                                </div>
+                                <aura:set attribute="else">
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                        <c:tc_MultiSelectCombobox objApi="Account" fieldName="Equipment_Type__c" value="{!v.partner.account.Equipment_Type__c}"  multiSelect="true" label="Equipment Type" disabled="{!v.partner.readOnly}" required="true"/>
+                                    </div>
+                                </aura:set>
+                            </aura:if>
+                                <!--div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                    <c:tc_MultiSelectPicklist objApi="Account" fieldName="Equipment_Type__c"   label="Equipment Type" value="{!v.partner.account.Equipment_Type__c}" disabled="{!v.partner.readOnly}" required="{!true}"/>
+                                </div-->
+                                <!--options="{!v.options2}"-->
+                                <!--values="{!v.selectedValues}"-->
+                                <!--aura:if isfalse="{!v.partner.readOnly }">
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                        <c:tc_MultiSelectCombobox objApi="Account" fieldName="Equipment_Type__c" value="{!v.partner.account.Equipment_Type__c}"  multiSelect="true" label="Equipment Type" disabled="{!v.partner.readOnly}" required="{!true}"/>
+                                    </div>
+                                </aura:if-->
+								<aura:if isTrue="{!v.partner.readOnly == true}">
+                                    <lightning:input  type="checkbox" value="{!v.partner.account.PG_Required__c}" label="PG Required?"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3 slds-m-top_medium" required="false" disabled="{!true}" checked="{!v.partner.account.PG_Required__c}"/>
+                                </aura:if>
+
+                            </div>
+                        </div>
+                    </c:tc_accordionSection>
+                    <!-- End Dealer -->
+
+                    <!-- Begin Dealer Contact -->
+
+                    <c:tc_accordionSection title="{!'Dealer Contact '  + (v.index + 1) + ' Details' + if (v.partner.subRecord.contact.FirstName + ' ' + v.partner.subRecord.contact.LastName, ' - ' + v.partner.subRecord.contact.FirstName + ' ' + v.partner.subRecord.contact.LastName, '')}">
+
+
+                        <div>
+                            <div class="slds-grid slds-wrap">
+
+                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                    <c:tc_lookupInput fieldLabel="Search Dealer Contacts"
+                                                      objectAPIName="Contact"
+                                                      subHeadingFieldsAPI="SSN__c,MobilePhone,MailingCity,MailingStateCode"
+                                                      showLabel="false"
+                                                      placeholder="Search Dealer Contacts"
+                                                      chosenRecordLabel="{#v.partner.subRecord.contact.Name}"
+                                                      chosenRecordId="{!v.partner.subRecord.contact.Id}"
+                                                      aura:id="guarlookupid2"
+                                                      showCreateNew="false"
+                                                      itemIndex="{!v.index}"
+                                                      filter="{!'AccountId=\'' + v.partner.account.Id + '\' AND Validity_Verify__Status__c != \'Invalid\' AND Validity_Verify__Status__c != null'}"
+                                                      iconCategoryName="standard:contact"/>
+                                </div>
+
+                                <aura:if isTrue="{!v.partner.subRecord.dupe}">
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                        <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                                    </div>
+                                </aura:if>
+
+								<!-- 5/6/20 change, require dealer primary contact except for DLG Lease, or Franchise Lease when Opportunity.Oppt_Project_Type__c = Working Capital -->
+                                <!-- Lease is DLG -->
+                                <aura:if isTrue="{!v.clientWrapper.recordTypeName == 'Lease' || (v.clientWrapper.recordTypeName == 'Franchise' &amp;&amp; v.clientWrapper.deal.opportunity.Oppt_Project_Type__c == 'Working Capital')}">
+                                	<!-- dont require dealer primary contact -->
+                                    <lightning:input value="{!v.partner.subRecord.contact.FirstName}" label="First Name"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                    <lightning:input value="{!v.partner.subRecord.contact.LastName}" label="Last Name"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.partner.subRecord.readOnly}" onchange="{!c.contactLastNameChanged}"/>
+    
+                                    <lightning:select label="Role" value="{!v.partner.subRecord.role}" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.partner.subRecord.roleSaved}">
+                                        <option value="">--Select--</option>
+                                        <option value="Dealer Primary Contact">Dealer Primary Contact</option>
+                                        <option value="Dealer Sales Contact">Dealer Sales Contact</option>
+                                    </lightning:select>
+    
+    
+                                    <lightning:input value="{!v.partner.subRecord.contact.MobilePhone}" label="Phone"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.partner.subRecord.readOnly}"/>
+    
+    
+    
+                                    <lightning:input value="{!v.partner.subRecord.contact.MailingStreet}" label="Address"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                    <lightning:input value="{!v.partner.subRecord.contact.MailingCity}" label="City"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                        <c:tc_inputSelect objInfo="{sobjectType : 'Contact'}" fldInfo="MailingStateCode" required="{!v.contactFieldsRequired}" label="State" value="{!v.partner.subRecord.contact.MailingStateCode}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                    </div>
+                                    <lightning:input value="{!v.partner.subRecord.contact.MailingPostalCode}" label="Zip"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                    <lightning:input value="{!v.partner.subRecord.contact.Email}" label="Email"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3"  disabled="{!v.partner.subRecord.readOnly}"/>
+                                    
+                                    <aura:set attribute="else">
+                                        <!-- require dealer primary contact -->
+                                        <lightning:input value="{!v.partner.subRecord.contact.FirstName}" label="First Name"
+                                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!true}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                        <lightning:input value="{!v.partner.subRecord.contact.LastName}" label="Last Name"
+                                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!true}" disabled="{!v.partner.subRecord.readOnly}" onchange="{!c.contactLastNameChanged}"/>
+        
+                                        <!--<lightning:select label="Role" value="{!v.partner.subRecord.role}" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!true}" disabled="{!v.partner.subRecord.roleSaved}">
+                                            <option value="">Select</option>
+                                            <option value="Dealer Primary Contact">Dealer Primary Contact</option>
+                                            <option value="Dealer Sales Contact">Dealer Sales Contact</option>
+                                        </lightning:select> Role is defaulted to Dealer Primary Contact --> 
+        
+        
+                                        <lightning:input value="{!v.partner.subRecord.contact.MobilePhone}" label="Phone"
+                                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!true}" disabled="{!v.partner.subRecord.readOnly}"/>
+        
+        
+        
+                                        <lightning:input value="{!v.partner.subRecord.contact.MailingStreet}" label="Address"
+                                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!true}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                        <lightning:input value="{!v.partner.subRecord.contact.MailingCity}" label="City"
+                                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!true}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                            <c:tc_inputSelect objInfo="{sobjectType : 'Contact'}" fldInfo="MailingStateCode" required="{!true}" label="State" value="{!v.partner.subRecord.contact.MailingStateCode}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                        </div>
+                                        <lightning:input value="{!v.partner.subRecord.contact.MailingPostalCode}" label="Zip"
+                                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!true}" disabled="{!v.partner.subRecord.readOnly}"/>
+                                        <lightning:input value="{!v.partner.subRecord.contact.Email}" label="Email"
+                                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3"  disabled="{!v.partner.subRecord.readOnly}"/>
+                                    </aura:set>
+                                </aura:if>
+                                
+                                
+
+
+
+                            </div>
+                        </div>
+                    </c:tc_accordionSection>
+                    <!-- End Dealer Contact -->
+
+                    <aura:set attribute="else">
+                        <!-- Start Franchisor -->
+
+                        <c:tc_accordionSection title="{!'Franchisor '  + (v.index + 1) + ' Details' + if (v.partner.account.Name, ' - ' + v.partner.account.Name, '')}">
+                            <div>
+                                <div class="slds-grid slds-wrap">
+
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                        <c:tc_lookupInput fieldLabel="Search Franchisors"
+                                                          objectAPIName="Account"
+                                                          subHeadingFieldsAPI="Dealer_Number__c,Tax_ID__c,Business_City__c,Business_State__c"
+                                                          showLabel="false"
+                                                          placeholder="Search Franchisors"
+                                                          chosenRecordLabel="{#v.partner.account.Name}"
+                                                          chosenRecordId="{!v.partner.account.Id}"
+                                                          aura:id="guarlookupid2"
+                                                          showCreateNew="false"
+                                                          itemIndex="{!v.index}"
+                                                          filter="{!'Is_Franchisor__c=true'}"
+                                                          iconCategoryName="standard:account"/>
+                                    </div>
+
+                                    <aura:if isTrue="{!v.partner.dupe}">
+                                        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                                            <h3 style="color:red;">Duplicate record found and pulled in.</h3>
+                                        </div>
+                                    </aura:if>
+
+
+                                    <lightning:input value="{!v.partner.account.Name}" label="Name"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                                    <aura:if isTrue="{!v.partner.readOnly == true}">
+                                        <lightning:input value="{!v.partner.account.Dealer_Number__c}" label="Dealer Number"
+                                                         class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="false" disabled="{!true}"/>
+                                    </aura:if>
+
+                                    <lightning:input value="{!v.partner.account.Business_Phone__c}" label="Phone"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                                    <lightning:input value="{!v.partner.account.Business_Address__c}" label="Address"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                                    <lightning:input value="{!v.partner.account.Business_City__c}" label="City"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                        <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Business_State__c" required="true" label="State" value="{!v.partner.account.Business_State__c}" disabled="{!v.partner.readOnly}"/>
+                                    </div>
+                                    <lightning:input value="{!v.partner.account.Business_Zip__c}" label="Zip"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
+									<aura:if isTrue="{!v.partner.readOnly == true}">
+                                    	<lightning:input  type="checkbox" value="{!v.partner.account.PG_Required__c}" label="PG Required?"
+                                                     class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3 slds-m-top_medium" required="false" disabled="{!true}" checked="{!v.partner.account.PG_Required__c}"/>
+                                	</aura:if>
+                                </div>
+                            </div>
+                        </c:tc_accordionSection>
+                        <!-- End Dealer -->
+                        <!-- End Franchisor -->
+                    </aura:set>
+                </aura:if>
+
+
+
+            </aura:set>
+        </aura:if>
+
+
+</aura:component>

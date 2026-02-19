@@ -1,0 +1,140 @@
+<!--
+ - Created  on 1/2/18.
+ -->
+
+<aura:component description="tc_lookupInput" controller="TC_LookupInputCtrl">
+
+    <aura:attribute name="objectAPIName"
+                    type="String"
+                    required="true"
+                    description="Object API name used for searching records"/>
+    <aura:attribute name="itemIndex"
+                    type="Integer"/>
+
+    <aura:attribute name="showLabel"
+                    type="Boolean"
+                    default="{!true}"
+                    description="Object API name used for searching records"/>
+
+    <aura:attribute name="showCreateNew"
+                    type="Boolean"
+                    default="{!false}"/>
+
+    <aura:attribute name="placeholder"
+                    type="String"
+                    default="Search..."
+                    description="Placeholder text for input search filed"/>
+
+    <aura:attribute name="fieldLabel"
+                    type="String"
+                    required="true"
+                    description="input search field Label"/>
+
+    <aura:attribute name="inputClass"
+                    type="String"
+
+                    description="class to apply to the element wrapper"/>
+
+    <aura:attribute name="filter"
+                    type="String[]"
+                    default="[]"
+                    description="Array of filter for SOSL query.
+                    All the filters should be given in this field separated by comma(,)
+                    Example: AccountId='001200000047KEdAAM' "/>
+
+    <aura:attribute name="chosenRecordId"
+                    type="String"
+                    description="Used to store the selected record id.
+                    While calling this component from other component,
+                    set this attribute to the lookup field API name"/>
+
+    <aura:attribute name="chosenRecordLabel"
+                    type="String"
+                    description="This is used to show the selected record Name in search input"/>
+
+    <aura:attribute name="subHeadingFieldsAPI"
+                    type="String[]"
+                    description="Field API for the fields to be shown under the record Name.
+                    Must be comma separated. Example: Email,Phone"/>
+
+    <aura:attribute name="iconCategoryName"
+                    type="String"
+                    required="true"/>
+
+    <aura:attribute name="matchingRecords"
+                    type="Object[]"
+                    access="private"
+                    description="List of records returned from server side call."/>
+
+
+
+    <aura:handler name="lookupChoose"
+                  event="c:tc_inputLookupChoose_evt"
+                  action="{!c.handleLookupChooseEvent}"
+                  description="Event handler to get the selected record Id and Name from LookupItem component"/>
+
+
+
+
+    <div class="slds-combobox_container">
+        <div aura:id="lookupdiv"
+             class="slds-combobox slds-dropdown-trigger slds-dropdown-trigger_click slds-combobox-lookup"
+             aria-expanded="false" aria-haspopup="listbox"
+             role="combobox">
+
+
+            <!-- using input type "search" to place the search icon input field-->
+            <!--<input type="search"
+                             class="{!v.inputClass + ' ' + if (v.showLabel, ' ', 'hideLabel') + ' slds-input '}"
+                             aura:id="searchinput"
+                             label="{!v.fieldLabel}"
+                             name="{!v.fieldLabel}"
+                             value="{!v.chosenRecordLabel}"
+                             onchange="{!c.searchRecords}"
+                             isLoading="false"
+                             placeholder="{!v.placeholder}"
+                             onfocus="{!c.searchRecords}"
+                             onblur="{!c.hideList}"
+                             autocomplete="off"
+
+            />-->
+
+            <lightning:input type="search"
+                   class="{!v.inputClass + ' ' + if (v.showLabel, ' ', 'hideLabel')}"
+                   aura:id="searchinput"
+                   label="{!v.fieldLabel}"
+                   name="{!v.fieldLabel}"
+                   value="{!v.chosenRecordLabel}"
+                   onchange="{!c.searchRecords}"
+                   isLoading="false"
+                   placeholder="{!v.placeholder}"
+                   onfocus="{!c.searchRecords}"
+                   onblur="{!c.hideList}"
+
+            />
+
+            <div role="listbox">
+                <ul class="slds-listbox slds-listbox_vertical slds-dropdown slds-dropdown_fluid"
+                    role="presentation">
+                    <aura:if isTrue="{!v.showCreateNew}">
+                        <c:tc_lookupItem subHeadingFieldsAPI="[]"
+                                         iconCategoryName="utility:add"
+                        />
+                    </aura:if>
+
+
+                    <!-- LookupItem component for creating record list -->
+                    <aura:iteration var="rec" items="{!v.matchingRecords}">
+                        <c:tc_lookupItem record="{!rec}"
+                                         objectAPIName="{!v.objectAPIName}"
+                                         subHeadingFieldsAPI="{!v.subHeadingFieldsAPI}"
+                                         iconCategoryName="{!v.iconCategoryName}"
+                                         itemIndex="{!v.itemIndex}"
+                        />
+                    </aura:iteration>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</aura:component>

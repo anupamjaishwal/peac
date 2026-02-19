@@ -35,15 +35,16 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
             guarantorIds.add(ocr.Contact__c);
         }
         List<OppContactWrapper> allContacts = new List<OppContactWrapper>();
-        for(Contact theContact : [SELECT Id, FirstName, LastName, Email, Phone, OtherAddress, OtherStreet, OtherCity, OtherStateCode, 
+        for(Contact theContact : [SELECT Id, FirstName, LastName, Email, Title, Phone, OtherAddress, OtherStreet, OtherCity, OtherStateCode, 
             OtherState, OtherPostalCode, OtherCountryCode, OtherCountry, MailingAddress, MailingCity, MailingCountryCode, 
-            MailingCountry, MailingStreet, MailingStateCode, MailingState, MailingPostalCode, OK_to_Pull_Credit__c, AccountId 
+            MailingCountry, MailingStreet, MailingStateCode, MailingState, MailingPostalCode, OK_to_Pull_Credit__c, SSN__c, SSNMain__c, AccountId 
             FROM Contact WHERE /*AccountId = :accountId OR*/ Id IN :oppContactIds]){
             OppContactWrapper theContactWrap = new OppContactWrapper();
             theContactWrap.contactId = theContact.Id;
             theContactWrap.FirstName = theContact.FirstName;
             theContactWrap.LastName = theContact.LastName;
             theContactWrap.Email = theContact.Email;
+            theContactWrap.Title = theContact.Title;
             theContactWrap.Phone = theContact.Phone;
             theContactWrap.OtherAddress = theContact.OtherAddress;
             theContactWrap.OtherStreet = theContact.OtherStreet;
@@ -62,13 +63,15 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
             theContactWrap.MailingState = theContact.MailingState;
             theContactWrap.MailingPostalCode = theContact.MailingPostalCode;
             theContactWrap.isOkToPullCredit = theContact.OK_to_Pull_Credit__c;
+            theContactWrap.SSN = theContact.SSN__c;
+            theContactWrap.SSNMain = theContact.SSNMain__c;
             theContactWrap.AccountId = theContact.AccountId;
             theContactWrap.isGuarantor = guarantorIds.contains(theContact.Id);
             allContacts.add(theContactWrap);
         }
         
         AllContactsWrapper resultWrap = new AllContactsWrapper(oppContactIds, allContacts);
-        result = JSON.serialize(resultWrap, true);
+        result = JSON.serialize(resultWrap, false);
         return result;
     }
 
@@ -76,7 +79,7 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
         String saveContactResult = 'success';
         // System.debug('contactObj: ' + contactObj);
         Contact theContact = (Contact)JSON.deserialize(contactObj, Contact.class);
-        // system.debug('theContact parsed: ' + theContact);
+        // System.debug('theContact parsed: ' + theContact);
         Boolean isGuarantor = Boolean.valueOf(isPG);
         Boolean isAddressDifferent = Boolean.valueOf(isAddressDif);
         Boolean isMailingDifferent = Boolean.valueOf(isMailingDif);
@@ -84,121 +87,140 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
         Id originalId = theContact.Id;
         List<Contact> resultList = SL_DealerPortalContactDupeCheck.EmailDuplicateCheck(new List<Contact>{theContact});
         theContact = resultList[0];
+        if(isGuarantor){
+            theContact.SSNMain__c = theContact.SSN__c;
+            theContact.SSN__c = null;
+        }
         Boolean isContactNewData = false;
         if(Test.isRunningTest() && SL_SCTestData.testDupeId != null){
             theContact.Id = SL_SCTestData.testDupeId;
         }
         if(theContact.Id != null){
-            if(originalId != theContact.Id){
+            if((originalId == null && originalId != theContact.Id) || originalId != null){
                 Contact existingContact = [SELECT Id, SSNMain__c, SSN__c, Title, Phone, OtherStreet, OtherCity, OtherStateCode, OtherPostalCode,
-                    MailingStreet, MailingCity, MailingStateCode, MailingPostalCode, AccountId
+                    MailingStreet, MailingCity, MailingStateCode, MailingPostalCode, AccountId, Account.isPartner
                     FROM Contact WHERE Id = :theContact.Id];
-                if(!isGuarantor){
-                    theContact.SSNMain__c = existingContact.SSNMain__c;
-                    theContact.SSN__c = existingContact.SSN__c;
+                if(!existingContact.Account.isPartner){
+                    if(!isGuarantor){
+                        theContact.SSNMain__c = existingContact.SSNMain__c;
+                        theContact.SSN__c = existingContact.SSN__c;
+                    }
+                    if(usedAccountPhone && String.isNotBlank(existingContact.Phone)){
+                        theContact.Phone = null;
+                    }
+                    theContact.AccountId = existingContact.AccountId;
+                    SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'Title', false);
+                    SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'Phone', false);
+                    theContact.Title = existingContact.Title;
+                    theContact.Phone = existingContact.Phone;
+                    if(!isAddressDifferent){
+                        theContact.OtherStreet = null;
+                        theContact.OtherCity = null;
+                        theContact.OtherStateCode = null;
+                        theContact.OtherPostalCode = null;
+                    }
+                    if(!isMailingDifferent){
+                        theContact.MailingStreet = null;
+                        theContact.MailingCity = null;
+                        theContact.MailingStateCode = null;
+                        theContact.MailingPostalCode = null;
+                    }
+                    isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'OtherStreet', false);
+                    isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'OtherCity', isContactNewData);
+                    isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'OtherStateCode', isContactNewData);
+                    isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'OtherPostalCode', isContactNewData);
+                    theContact.OtherStreet = existingContact.OtherStreet;
+                    theContact.OtherCity = existingContact.OtherCity;
+                    theContact.OtherStateCode = existingContact.OtherStateCode;
+                    theContact.OtherPostalCode = existingContact.OtherPostalCode;
+                    isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'MailingStreet', false);
+                    isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'MailingCity', isContactNewData);
+                    isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'MailingStateCode', isContactNewData);
+                    isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'MailingPostalCode', isContactNewData);
+                    theContact.MailingStreet = existingContact.MailingStreet;
+                    theContact.MailingCity = existingContact.MailingCity;
+                    theContact.MailingStateCode = existingContact.MailingStateCode;
+                    theContact.MailingPostalCode = existingContact.MailingPostalCode;
+                }else{
+                    saveContactResult = 'The Contact information entered cannot be used to enter an App, please enter a different Contact.';
                 }
-                if(usedAccountPhone && String.isNotBlank(existingContact.Phone)){
-                    theContact.Phone = null;
-                }
-                theContact.AccountId = existingContact.AccountId;
-                SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'Title', false);
-                SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'Phone', false);
-                theContact.Title = existingContact.Title;
-                theContact.Phone = existingContact.Phone;
-                if(!isAddressDifferent){
-                    theContact.OtherStreet = null;
-                    theContact.OtherCity = null;
-                    theContact.OtherStateCode = null;
-                    theContact.OtherPostalCode = null;
-                }
-                if(!isMailingDifferent){
-                    theContact.MailingStreet = null;
-                    theContact.MailingCity = null;
-                    theContact.MailingStateCode = null;
-                    theContact.MailingPostalCode = null;
-                }
-                isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'OtherStreet', false);
-                isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'OtherCity', isContactNewData);
-                isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'OtherStateCode', isContactNewData);
-                isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'OtherPostalCode', isContactNewData);
-                theContact.OtherStreet = existingContact.OtherStreet;
-                theContact.OtherCity = existingContact.OtherCity;
-                theContact.OtherStateCode = existingContact.OtherStateCode;
-                theContact.OtherPostalCode = existingContact.OtherPostalCode;
-                isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'MailingStreet', false);
-                isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'MailingCity', isContactNewData);
-                isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'MailingStateCode', isContactNewData);
-                isContactNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(existingContact, theContact, 'MailingPostalCode', isContactNewData);
-                theContact.MailingStreet = existingContact.MailingStreet;
-                theContact.MailingCity = existingContact.MailingCity;
-                theContact.MailingStateCode = existingContact.MailingStateCode;
-                theContact.MailingPostalCode = existingContact.MailingPostalCode;
             }
-            if(originalId != null && originalId != theContact.Id){
+            if(saveContactResult == 'success' && originalId != null && originalId != theContact.Id){
                 deleteOppContact(originalId, opportunityId, isPG);
             }
         }
-        Map<String, Schema.SObjectField> fieldsMap =Schema.getGlobalDescribe().get('Contact').getDescribe().Fields.getMap();
-        if(String.isNotBlank(theContact.OtherCountryCode)){
-            theContact.OtherCountry = getPicklistLabel(fieldsMap, 'OtherCountryCode', '', theContact.OtherCountryCode);
-        }
-        if(String.isNotBlank(theContact.MailingCountryCode)){
-            theContact.MailingCountry = getPicklistLabel(fieldsMap, 'MailingCountryCode', '', theContact.MailingCountryCode);
-        }
-        if(String.isNotBlank(theContact.OtherStateCode)){
-            theContact.OtherState = getPicklistLabel(fieldsMap, 'OtherStateCode', theContact.OtherCountryCode, theContact.OtherStateCode);
-        }
-        if(String.isNotBlank(theContact.MailingStateCode)){
-            theContact.MailingState = getPicklistLabel(fieldsMap, 'MailingStateCode', theContact.MailingCountryCode, theContact.MailingStateCode);
-        }
-        if(theContact.Id != null){
-            update theContact;
-        }
-        List<Contact> upsertList = SL_DealerPortalCAContact.upsertContactForApp(new List<Contact>{theContact});
-        theContact = upsertList[0];
-        
-        List<OpportunityContactRole> oppContactRoles = new List<OpportunityContactRole>();
-        Id currentUserContactId = [SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()].ContactId;
-        if(currentUserContactId != null){
-            OpportunityContactRole dealerOppContactRole = new OpportunityContactRole();
-            List<OpportunityContactRole> existingOcr = [SELECT Id, ContactId, OpportunityId, Role, IsPrimary FROM OpportunityContactRole 
-                WHERE ContactId = :currentUserContactId AND OpportunityId = :opportunityId];
-            if(existingOcr.size() > 0){
-                dealerOppContactRole.Id = existingOcr[0].Id;
+        if(saveContactResult == 'success'){
+            Map<String, Schema.SObjectField> fieldsMap =Schema.getGlobalDescribe().get('Contact').getDescribe().Fields.getMap();
+            if(theContact.OtherCountryCode == 'US'){
+                theContact.OtherCountry = 'United States';
             }else{
-                dealerOppContactRole.ContactId = currentUserContactId;
-                dealerOppContactRole.OpportunityId = opportunityId;
-                dealerOppContactRole.Role = 'Dealer Primary Contact';
-                oppContactRoles.add(dealerOppContactRole);
+                if(String.isNotBlank(theContact.OtherCountryCode)){
+                    theContact.OtherCountry = getPicklistLabel(fieldsMap, 'OtherCountryCode', '', theContact.OtherCountryCode);
+                }
             }
-        }
-        if(isGuarantor){
-            SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters parameters = new SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters();
-            parameters.theOpportunityId = opportunityId;
-            parameters.guarantorContact = theContact;
-            List<SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters> packagedParams = new List<SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters>();
-            packagedParams.add(parameters);
-            /* List<Guarantor__c> guarantorResult =*/ SL_DealerPortalCAGuarantor.createGuarantorContact(packagedParams);
-        }else{
-            OpportunityContactRole theOppContactRole = new OpportunityContactRole();
-            List<OpportunityContactRole> existingOcr = [SELECT Id, ContactId, OpportunityId, Role, IsPrimary FROM OpportunityContactRole 
-                WHERE ContactId = :theContact.Id AND OpportunityId = :opportunityId];
-            if(existingOcr.size() > 0){
-                theOppContactRole.Id = existingOcr[0].Id;
+            if(theContact.MailingCountryCode == 'US'){
+                theContact.MailingCountry = 'United States';
             }else{
-                theOppContactRole.ContactId = theContact.Id;
-                theOppContactRole.OpportunityId = opportunityId;
-                theOppContactRole.Role = 'Primary Contact';
-                theOppContactRole.IsPrimary = true;
-                oppContactRoles.add(theOppContactRole);
+                if(String.isNotBlank(theContact.MailingCountryCode)){
+                    theContact.MailingCountry = getPicklistLabel(fieldsMap, 'MailingCountryCode', '', theContact.MailingCountryCode);
+                }
             }
-            if(originalId != null){
-                removeGuarantor(originalId, opportunityId);
+            if(String.isNotBlank(theContact.OtherStateCode)){
+                theContact.OtherState = getPicklistLabel(fieldsMap, 'OtherStateCode', theContact.OtherCountryCode, theContact.OtherStateCode);
             }
-        }
-        
-        if(oppContactRoles.size() > 0){
-            insert oppContactRoles;
+            if(String.isNotBlank(theContact.MailingStateCode)){
+                theContact.MailingState = getPicklistLabel(fieldsMap, 'MailingStateCode', theContact.MailingCountryCode, theContact.MailingStateCode);
+            }
+            if(theContact.Id != null){
+                update theContact;
+                SL_DealerPortalCreateApp.shareAccountWithUser(theContact.AccountId);
+            }
+            List<Contact> upsertList = SL_DealerPortalCAContact.upsertContactForApp(new List<Contact>{theContact});
+            theContact = upsertList[0];
+            
+            List<OpportunityContactRole> oppContactRoles = new List<OpportunityContactRole>();
+            Id currentUserContactId = [SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()].ContactId;
+            if(currentUserContactId != null){
+                OpportunityContactRole dealerOppContactRole = new OpportunityContactRole();
+                List<OpportunityContactRole> existingOcr = [SELECT Id, ContactId, OpportunityId, Role, IsPrimary FROM OpportunityContactRole 
+                    WHERE ContactId = :currentUserContactId AND OpportunityId = :opportunityId];
+                if(existingOcr.size() > 0){
+                    dealerOppContactRole.Id = existingOcr[0].Id;
+                }else{
+                    dealerOppContactRole.ContactId = currentUserContactId;
+                    dealerOppContactRole.OpportunityId = opportunityId;
+                    dealerOppContactRole.Role = 'Dealer Primary Contact';
+                    oppContactRoles.add(dealerOppContactRole);
+                }
+            }
+            if(isGuarantor){
+                SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters parameters = new SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters();
+                parameters.theOpportunityId = opportunityId;
+                parameters.guarantorContact = theContact;
+                List<SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters> packagedParams = new List<SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters>();
+                packagedParams.add(parameters);
+                /* List<Guarantor__c> guarantorResult =*/ SL_DealerPortalCAGuarantor.createGuarantorContact(packagedParams);
+            }else{
+                OpportunityContactRole theOppContactRole = new OpportunityContactRole();
+                List<OpportunityContactRole> existingOcr = [SELECT Id, ContactId, OpportunityId, Role, IsPrimary FROM OpportunityContactRole 
+                    WHERE ContactId = :theContact.Id AND OpportunityId = :opportunityId];
+                if(existingOcr.size() > 0){
+                    theOppContactRole.Id = existingOcr[0].Id;
+                }else{
+                    theOppContactRole.ContactId = theContact.Id;
+                    theOppContactRole.OpportunityId = opportunityId;
+                    theOppContactRole.Role = 'Primary Contact';
+                    theOppContactRole.IsPrimary = true;
+                    oppContactRoles.add(theOppContactRole);
+                }
+                if(originalId != null){
+                    removeGuarantor(originalId, opportunityId);
+                }
+            }
+            
+            if(oppContactRoles.size() > 0){
+                insert oppContactRoles;
+            }
         }
         return saveContactResult;
     }
@@ -300,6 +322,7 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
         public String FirstName { get; set; }
         public String LastName { get; set; }
         public String Email { get; set; }
+        public String Title { get; set; }
 		public String Phone { get; set; }
 		public System.Address OtherAddress { get; set; }
         public String formattedAddress { get{
@@ -309,9 +332,9 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
                             + (String.isNotBlank(OtherAddress.postalCode)? ' ' + OtherAddress.postalCode: '')
                             + (String.isNotBlank(OtherAddress.countryCode)? ', ' + OtherAddress.countryCode: '');
         } set; }
-        public String OtherStreet { get; set; } 
-        public String OtherCity { get; set; } 
-        public String OtherStateCode { get; set; } 
+        public String OtherStreet { get; set; }
+        public String OtherCity { get; set; }
+        public String OtherStateCode { get; set; }
         public String OtherState { get; set; } 
         public String OtherPostalCode { get; set; } 
         public String OtherCountryCode { get; set; } 
@@ -325,6 +348,8 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
         public String MailingState { get; set; } 
         public String MailingPostalCode { get; set; }
         public Boolean isOkToPullCredit { get; set; }
+        public String SSN { get; set; }
+        public String SSNMain { get; set; }
 		public Id AccountId { get; set; }
         public Boolean isGuarantor { get; set; }
     }

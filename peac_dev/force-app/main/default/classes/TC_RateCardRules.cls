@@ -17,7 +17,7 @@ public without sharing class TC_RateCardRules {
       delete [SELECT Id FROM EF_Approved_Offers__c WHERE Opportunity__c = :objId AND RecordType.Name = 'System'];
       Opportunity opp = [SELECT Id, Terms__c, Max_Term_Approved__c, Purchase_Options__c, Dealer_Account__c, Dealer_User__c, Portal_User_ID__c FROM Opportunity WHERE Id = :objId];
 
-      TCRE.RuleEngine rateCardRE = new TCRE.RuleEngine();
+      SL_RuleEngine rateCardRE = new SL_RuleEngine();// SAL-6028 Misael Romero
       Set<Id> objIds = new Set<Id>();
       objIds.add(objId);
 
@@ -46,7 +46,7 @@ public without sharing class TC_RateCardRules {
           for (Rate_Card_Row__c rcr : [SELECT Row_Criteria__c FROM Rate_Card_Row__c WHERE Rate_Card__r.Entry_Criteria__c IN :trueRateCardIds])
               ruleConfigIds.add(rcr.Row_Criteria__c);
 
-          TCRE.RuleEngine rateRowRE = new TCRE.RuleEngine();
+          SL_RuleEngine rateRowRE = new SL_RuleEngine();// SAL-6028 Misael Romero
           rateRowRE.logicObjectIds = objIds;
           rateRowRE.ruleConfigIds = ruleConfigIds;
           rateRowRE.ruleObjectType = 'Rate_Card_Row__c';
@@ -94,7 +94,7 @@ public without sharing class TC_RateCardRules {
           for (Rate_Card_Column__c rcc : [SELECT Column_Criteria__c FROM Rate_Card_Column__c WHERE Rate_Card__r.Entry_Criteria__c IN :trueRateCardIds])
               ruleConfigIds.add(rcc.Column_Criteria__c);
 
-          TCRE.RuleEngine rateColRE = new TCRE.RuleEngine();
+          SL_RuleEngine rateColRE = new SL_RuleEngine();// SAL-6028 Misael Romero
           rateColRE.logicObjectIds = objIds;
           rateColRE.ruleConfigIds = ruleConfigIds;
           rateColRE.ruleObjectType = 'Rate_Card_Column__c';

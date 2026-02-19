@@ -1,0 +1,6 @@
+/**
+ * Created  on 12/28/17.
+ */
+.THIS .uiInput--select.select:not([multiple]){
+    background-image: none;
+}

@@ -1,0 +1,234 @@
+<aura:component description="Review All Details of Application" access="global"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome">
+
+    <aura:attribute name="docColumns" type="List" default="[]"/>
+    <aura:attribute name="quoteOptions" type="List" default="[]"/>
+    <aura:attribute name="company" type="Account" access="global" default="{}"/>
+    <aura:attribute name="guarantors" type="List" access="global" default="[]"/>
+    <aura:attribute name="equipmentList" type="List" access="global" default="[]"/>
+    <aura:attribute name="docs" type="List" access="global" default="[]"/>
+    <aura:attribute name="deal" type="Opportunity" access="global" default="{}"/>
+    <aura:attribute name="recordId" type="String" access="global"/>
+    <aura:attribute name="totalFinanceAmount" type="Decimal" access="global" default="0"/>
+
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+    <aura:attribute name="isLoan" type="Boolean" access="global"/>
+
+
+
+    <c:tc_accordionSection isCollapsible="false" title="Company">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-small-size_1-of-3 slds-x-small-size_1-of-1">
+                <dl class="slds-list_horizontal slds-wrap">
+
+                    <aura:if isTrue="{!v.clientWrapper.company.dupe}">
+                        <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
+                            <h3 style="color:red;">Duplicate Account record found and pulled in.</h3>
+                        </div>
+                    </aura:if>
+
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Company Name</dt>
+
+                    <dd class="slds-item_detail slds-truncate">
+                        <ui:outputText value="{!v.clientWrapper.company.account.Name}"/>
+                    </dd>
+
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate">DBA</dt>
+                    <dd class="slds-item_detail slds-truncate">
+                        <ui:outputText value="{!v.clientWrapper.company.account.DBA__c}"/>
+                    </dd>
+
+                    <aura:if isTrue="{!!v.isLoan}">
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Street</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.company.account.Business_Address__c}"/>
+                        </dd>
+
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">City</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.company.account.Business_City__c}"/>
+                        </dd>
+
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">State</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.company.account.Business_State__c}"/>
+                        </dd>
+
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Zip</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.company.account.Business_Zip__c}"/>
+                        </dd>
+
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Phone</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.company.account.Phone}"/>
+                        </dd>
+
+                    </aura:if>
+
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate">First Name</dt>
+                    <dd class="slds-item_detail slds-truncate">
+                        <ui:outputText value="{!v.clientWrapper.contact.contact.FirstName}"/>
+                    </dd>
+
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Last Name</dt>
+                    <dd class="slds-item_detail slds-truncate">
+                        <ui:outputText value="{!v.clientWrapper.contact.contact.LastName}"/>
+                    </dd>
+
+
+
+                    <!--<lightning:input value="{!v.clientWrapper.deal.opportunity.Sales_Comments__c}" label="Sales Comments" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3"/>-->
+
+                </dl>
+            </div>
+        </div>
+
+    </c:tc_accordionSection>
+
+
+        <c:tc_accordionSection isCollapsible="false" title="CCGs">
+            <aura:if isTrue="{!v.clientWrapper.dealerAccounts.length > 0}">
+                 <c:tc_dealGuarantorDataTable guarantors="{!v.clientWrapper.ccgAccounts}" isCCG="true"/>
+            </aura:if>
+            <aura:if isTrue="{!v.clientWrapper.ccgAccounts.length == 0}">
+                No CCGs
+            </aura:if>
+        </c:tc_accordionSection>
+
+
+
+    <c:tc_accordionSection isCollapsible="false" title="PGs">
+        <aura:if isTrue="{!v.clientWrapper.pgContacts.length > 0}">
+            <c:tc_dealGuarantorDataTable guarantors="{!v.clientWrapper.pgContacts}" isCCG="false"/>
+        </aura:if>
+        <aura:if isTrue="{!v.clientWrapper.pgContacts.length == 0}">
+            No PGs
+        </aura:if>
+
+    </c:tc_accordionSection>
+
+    <c:tc_accordionSection isCollapsible="false" title="Deal">
+        <div class="slds-grid slds-wrap">
+            <div class="slds-small-size_1-of-3 slds-x-small-size_1-of-1">
+                <dl class="slds-list_horizontal slds-wrap">
+
+                    <!--
+                    <dt class="slds-item_label slds-text-color_weak slds-truncate">Primary Source</dt>
+                    <dd class="slds-item_detail slds-truncate">
+                        <ui:outputText value="{!v.clientWrapper.deal.opportunity.Primary_Source__c}"/>
+                    </dd>-->
+
+
+                    <!-- Lease -->
+                    <aura:if isTrue="{!!v.isLoan}">
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Term</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.deal.opportunity.Terms__c}"/>
+                        </dd>
+
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Purchase Option</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.deal.opportunity.Purchase_Options__c}"/>
+                        </dd>
+
+                    </aura:if>
+
+
+
+                    <!-- Loan -->
+                    <aura:if isTrue="{!v.isLoan}">
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Use of Funds</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.deal.opportunity.Oppt_FS_Use_Of_Funds__c}"/>
+                        </dd>
+
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Requested Amount</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.deal.opportunity.Requested_Amount__c}"/>
+                        </dd>
+
+                        <dt class="slds-item_label slds-text-color_weak slds-truncate">Payment Frequency</dt>
+                        <dd class="slds-item_detail slds-truncate">
+                            <ui:outputText value="{!v.clientWrapper.deal.opportunity.Payment_Frequency__c}"/>
+                        </dd>
+
+                    </aura:if>
+
+
+
+                </dl>
+            </div>
+        </div>
+
+    </c:tc_accordionSection>
+
+
+
+    <aura:if isTrue="{!!v.isLoan}">
+
+        <c:tc_accordionSection isCollapsible="false" title="Equipment">
+            <c:tc_dealEquipmentDataTable equipmentList="{!v.clientWrapper.equipment}"/>
+        </c:tc_accordionSection>
+
+        <!--<aura:if isTrue="{!v.clientWrapper.recordTypeName == 'IFP'}">-->
+
+        <aura:if isTrue="{!!(v.clientWrapper.recordTypeName == 'Loan' &amp;&amp; (v.clientWrapper.curentUserProfileName == 'IFP Rep' || v.clientWrapper.curentUserProfileName ==  'Wholesale Rep')) }">
+            <c:tc_accordionSection isCollapsible="false" title="Dealers">
+                <aura:if isTrue="{!v.clientWrapper.dealerAccounts.length > 0}">
+                    <c:tc_dealDealerDataTable partners="{!v.clientWrapper.dealerAccounts}" partnerType="dealer"/>
+                </aura:if>
+                <aura:if isTrue="{!v.clientWrapper.dealerAccounts.length == 0}">
+                    No Dealers
+                </aura:if>
+
+            </c:tc_accordionSection>
+        </aura:if>
+
+
+        <aura:if isTrue="{!v.clientWrapper.recordTypeName == 'Franchise'}">
+            <c:tc_accordionSection isCollapsible="false" title="Franchisors">
+                <aura:if isTrue="{!v.clientWrapper.franchisorAccounts.length > 0}">
+                    <c:tc_dealDealerDataTable partners="{!v.clientWrapper.franchisorAccounts}" partnerType="franchisor"/>
+
+                </aura:if>
+                <aura:if isTrue="{!v.clientWrapper.franchisorAccounts.length == 0}">
+                    No Franchisors
+                </aura:if>
+
+            </c:tc_accordionSection>
+        </aura:if>
+
+    </aura:if>
+
+    <aura:if isTrue="{!v.clientWrapper.recordTypeName == 'IFP' || v.clientWrapper.recordTypeName == 'IFP ' || v.clientWrapper.curentUserProfileName == 'IFP Rep' || v.clientWrapper.curentUserProfileName ==  'Wholesale Rep'|| v.clientWrapper.recordTypeName == 'Wholesale' || v.clientWrapper.curentUserProfileName == 'HC BD Rep' || v.clientWrapper.curentUserProfileName == 'HC BD Manager'}">
+        <c:tc_accordionSection isCollapsible="false" title="Brokers">
+
+            <aura:if isTrue="{!v.clientWrapper.brokerAccounts.length > 0}">
+                <c:tc_dealDealerDataTable partners="{!v.clientWrapper.brokerAccounts}" partnerType="broker"/>
+            </aura:if>
+            <aura:if isTrue="{!v.clientWrapper.brokerAccounts.length == 0}">
+                No Brokers
+            </aura:if>
+
+        </c:tc_accordionSection>
+    </aura:if>
+
+
+
+
+    <aura:if isTrue="{!!v.isLoan}">
+        <c:tc_accordionSection isCollapsible="false" title="Sales Comments">
+            <div class="slds-grid slds-wrap">
+                <ui:inputTextArea value="{!v.clientWrapper.deal.opportunity.Sales_Comments__c}" label="Sales Comments" class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-2" rows="5"/>
+            </div>
+        </c:tc_accordionSection>
+    </aura:if>
+
+
+
+    
+
+
+
+</aura:component>

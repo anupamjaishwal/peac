@@ -1,0 +1,3 @@
+<aura:event type="APPLICATION" description="tc_bookMillionDollarLeaseConfirmation_evt" >
+    <aura:attribute name="message" type="String"/>
+</aura:event>

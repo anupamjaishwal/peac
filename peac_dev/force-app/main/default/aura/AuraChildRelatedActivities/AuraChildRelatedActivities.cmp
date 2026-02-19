@@ -1,0 +1,63 @@
+<aura:component description="AuraChildRelatedActivities" controller="ChildRecordCont" implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes">
+    <aura:attribute access="global" type="String" name="parentRecordField"
+                    description="This is the field on the parent record that will be queried against for the child records"/>
+    <aura:attribute access="global" type="String" name="childRelationshipName"
+                    description="This is the relationship name that will be queried against" />
+    <aura:attribute access="global" type="String" name="childObjToRelFldToFieldSet"
+                    description="This will be the child object and field set that will be displayed" />
+    <aura:attribute access="global" type="String" name="tileTitle"
+                    description="The title of the component" />
+    <aura:attribute access="private" type="List" name="childRecords"
+                    description="The list of records that will be displayed in the component" />
+    <aura:attribute access="global" name="numColumns" type="Integer" default="1"
+                    description="The number of columns to display" />
+    <aura:attribute access="global" name="fieldSetName" type="String"
+                    description="The field set name that will be displayed by the component"/>
+    <aura:attribute access="global" name="limit" type="Integer" default="5"
+                    description="The number of records that will be returned" />
+    <aura:attribute access="global" name="whereConds" type="String"
+                    description="The where conditions to be applied to the query" />
+    <aura:attribute access="global" name="orderByConds" type="String" default="CreatedDate DESC"
+                    description="The order in which the records should be returned" />
+    <aura:attribute access="global" name="parentRelationshipField" type="String"
+                    description="The name of the field that acts as the parent relationship" />
+    <aura:attribute access="global" name="sobjectIdToFieldListMap" type="Map"
+                    description="Map of the sobject id to the described fields" />
+    <aura:attribute name="childSObjType" type="String" description="The API Name of the child sobject type" />
+    <aura:attribute access="global" name="logo" type="String" description="The logo that will be displayed" />
+    <aura:attribute access="global" name="parentFieldToId" type="Object" description="The parent field and id pairing " />
+    <aura:attribute access="global" name="describedSObjectFields" type="List" description="The list of described sobject fields" default="[]" />
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+    <lightning:navigation aura:id="navService"/>
+
+    <lightning:card variant="narrow" class="{!'slds-theme_default slds-card_boundary '+if(v.hideTileTitle,'hide-title',' ')}">
+        <aura:set attribute="title" >
+            <lightning:icon iconName="{!'standard:'+v.logo}" size="small" />
+            &nbsp;{!v.tileTitle}
+        </aura:set>
+        <aura:set attribute="body">
+            <aura:if isTrue="{!and(not(empty(v.childRecords)),not(empty(v.childSObjType)), not(empty(v.describedSObjectFields)))}">
+                <lightning:accordion allowMultipleSectionsOpen="true" class="slds-border_top">
+                    <aura:iteration items="{!v.childRecords}" var="childRec" indexVar="i">
+                        <lightning:accordionSection label="{!childRec.Subject}" name="{!childRec.Id}" class="slds-border_top">
+                            <aura:set attribute="actions">
+                                <lightning:button name="{!childRec.Id}" iconName="utility:expand_alt" onclick="{!c.doActivityNav}" value="{!childRec.Id}"  label="Go To Task"  />
+                                <!--
+                                <lightning:buttonMenu aura:id="menu" alternativeText="Show menu" onselect="{!c.doActivityNav}" >
+                                    <lightning:menuItem value="{!childRec.Id}" label="Go To Task" iconName="utility:expand_alt" />
+                                </lightning:buttonMenu>
+                                -->
+                            </aura:set>
+                            <aura:if isTrue="{!not(empty(v.describedSObjectFields))}">
+                                <c:AuraRelatedActivityFieldDisplay describedSObjectFields="{!v.describedSObjectFields}" sobj="{#childRec}" index="{#i}" numColumns="{!v.numColumns}"/>
+                            </aura:if>
+                        </lightning:accordionSection>
+                    </aura:iteration>
+                </lightning:accordion>
+            </aura:if>
+            <aura:if isTrue="{!and(empty(v.childRecords), not(empty(v.childRelationshipName)))}">No {!v.childRelationshipName} were found for this record with the filters specified.</aura:if>
+        </aura:set>
+    </lightning:card>
+</aura:component>

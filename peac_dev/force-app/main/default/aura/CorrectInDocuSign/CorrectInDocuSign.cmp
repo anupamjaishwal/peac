@@ -1,0 +1,8 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="CorrectInDocuSignCLS">
+    <aura:attribute name="labelText" type="String" default="some string"/>
+    <aura:attribute name="showMe" type="Boolean" default="false" />
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:if isTrue="{!v.showMe}">
+    	<ui:outputText value="{!v.labelText}" aura:id="labelTextVal"/>
+    </aura:if>
+</aura:component>

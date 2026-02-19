@@ -1,0 +1,65 @@
+<aura:component access="global" description="ChildRecordDisplay" controller="ChildRecordCont" implements="flexipage:availableForRecordHome,force:hasRecordId,force:hasSObjectName,forceCommunity:availableForAllPageTypes">
+    <aura:attribute access="global" type="String" name="childObjToRelFldToFieldSet"
+                    description="This will be the child object and field set that will be displayed" />
+    <aura:attribute access="global" type="String" name="tileTitle"
+                    description="The title of the component" />
+    <aura:attribute access="private" type="List" name="childRecords"
+                    description="The list of records that will be displayed in the component" />
+    <aura:attribute access="global" name="numColumns" type="Integer" default="1"
+                    description="The number of columns to display" />
+    <aura:attribute access="global" name="fieldSetName" type="String"
+                    description="The field set name that will be displayed by the component"/>
+    <aura:attribute access="global" name="fields" type="List" description="The fields to be displayed by this comoneent"/>
+    <aura:attribute access="global" name="limit" type="Integer" default="5"
+                    description="The number of records that will be returned" />
+    <aura:attribute access="global" name="whereConds" type="String"
+                    description="The where conditions to be applied to the query" />
+    <aura:attribute access="global" name="orderByConds" type="String" default="CreatedDate DESC"
+                    description="The order in which the records should be retuned" />
+    <aura:attribute access="global" name="parentRelationshipField" type="String"
+                    description="The name of the field that acts as the parent relationship" />
+    <aura:attribute name="childSObjType" type="String" description="The API Name of the child sobject type" />
+    <aura:attribute access="global" name="recordMode" type="String" default="view"
+                    description="The mode to display the component, valid values are view, readonly and edit"  />
+    <aura:attribute access="global" name="logo" type="String" description="The logo that will be displayed" />
+    <aura:attribute access="global" name="parentFieldToId" type="Object" description="The parent field and id pairing " />
+
+    <aura:handler name="init" action="{!c.doInit}" value="{!this}" />
+    <aura:handler event="force:refreshView" action="{!c.doInit}" />
+
+    <lightning:card >
+        <aura:set attribute="title" >
+            <lightning:layout multipleRows="false">
+                <lightning:layoutItem size="1">
+                    <lightning:icon iconName="{!'standard:'+v.logo}" size="small" />
+                </lightning:layoutItem>
+                <lightning:layoutItem class="slds-card__header-title">
+                    &nbsp;{!v.tileTitle}
+                </lightning:layoutItem>
+            </lightning:layout>
+        </aura:set>
+        <aura:set attribute="body">
+            <aura:if isTrue="{!and(not(empty(v.childRecords)),not(empty(v.childSObjType)))}">
+                <aura:iteration items="{!v.childRecords}" var="cr">
+                    <c:AuraFieldSetDisplay
+                            fields="{!v.fields}"
+                            rec="{!cr}"
+                            recordMode="{!v.recordMode}"
+                            recordId="{!cr.Id}"
+                            recId="{!cr.Id}"
+                            numColumns="{!v.numColumns}"
+                            objType="{!v.childSObjType}"
+                            hideTileTitle="true"
+                            defaultVals="{!v.parentFieldToId}"
+                    />
+                    <hr/>
+                </aura:iteration>
+            </aura:if>
+        </aura:set>
+        <aura:set attribute="actions">
+            <aura:if isTrue="{!v.recordMode != 'readonly'}">
+                <lightning:button name="Add" iconName="action:new" onclick="{!c.addNewChildRecord}" />
+            </aura:if>
+        </aura:set>
+    </lightning:card>
+</aura:component>

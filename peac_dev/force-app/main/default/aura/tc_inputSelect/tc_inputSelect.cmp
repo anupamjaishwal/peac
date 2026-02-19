@@ -1,0 +1,25 @@
+<aura:component controller="TC_GetPicklistOptionsCtrl">
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <aura:attribute name="objInfo" type="sObject" default="{sobjectType : 'Contact'}"/>
+    <aura:attribute name="fldInfo" type="String"/>
+    <aura:attribute name="label" type="String" default="Select Label"/>
+    <aura:attribute name="class" type="String" default="slds-select_container"/>
+    <aura:attribute name="multiple" type="Boolean" default="false"/>
+    <aura:attribute name="value" type="String" default=" "/>
+    <aura:attribute name="change" type="String"/>
+    <aura:attribute name="required" type="Boolean" default="{!false}"/>
+    <aura:attribute name="disabled" type="Boolean" default="{!false}"/>
+
+    <div class="slds-form-element">
+        <label class="slds-form-element__label">
+            <aura:if isTrue="{!v.required}">
+                <abbr title="required" class="slds-required" lightning-input_input="">*</abbr>
+            </aura:if>
+            {!v.label}
+        </label>
+        <div class="{!v.class}">
+            <ui:inputSelect disabled="{!v.disabled}" required="{!v.required}" aura:id="fieldId" class="slds-select" multiple="{!v.multiple}" value="{!v.value}" />
+        </div>
+    </div>
+</aura:component>

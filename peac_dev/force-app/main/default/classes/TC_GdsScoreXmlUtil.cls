@@ -358,6 +358,7 @@ if there is no value, send it as same.
                 respBean.scoreReq.Credit_Strategy__c = xmlDecode(gdsNode.getText());
             }
         }
+        System.debug('respBean.scoreReq.Ud_Proof_of_License_Stip__c  ' + respBean.scoreReq.Ud_Proof_of_License_Stip__c);
     }
 
     // SAL-1861: Map CCG (Corp Guarantor) fields from XML to Gds_Score_Request_Company__c (respBean.cc) object
@@ -425,6 +426,8 @@ if there is no value, send it as same.
                     app.Ud_Equipment_Approval_Stip__c  = xmlDecode(extractNode.getText());
                 } else if (extractNode.getName() == 'UD_PROOF_OF_BUS_LOC') {
                     app.Ud_Proof_of_Business_Location_Stip__c = xmlDecode(extractNode.getText());
+                } else if (extractNode.getName() == 'UD_PROOF_OF_LICENSE') {
+                    app.Ud_Proof_of_License_Stip__c = xmlDecode(extractNode.getText());
                 } else if (extractNode.getName() == 'UD_RESIDUAL_STIP') {
                     app.Ud_Residual_Stip__c = xmlDecode(extractNode.getText());
                 } else if (extractNode.getName() == 'UD_OWNER_TO_SIGN') {
@@ -703,9 +706,12 @@ if there is no value, send it as same.
 
     private static void parseDataScoresFields (TC_GDSScoreReqRespBean respBean, Dom.XMLNode xmlNode) {
     //Gds_Score_Request_Company__c com, Gds_Score__c app,
-        if (!xmlNode.getChildren().isEmpty ()) {
+                System.debug('::::::: parseDataScoresFields');
 
+        if (!xmlNode.getChildren().isEmpty ()) {
             for (Dom.XMLNode dataScoreNode : xmlNode.getChildren()) {
+                            System.debug(dataScoreNode.getName() +' '+ xmlDecode(dataScoreNode.getText()));
+
                 if (dataScoreNode.getName () == 'TIB_NUM') {
                     //respBean.company1.Tib_Num__c = xmlDecode(dataScoreNode.getText()); not using anymore
                 } else if (dataScoreNode.getName () == 'APP1_RESPONSEDATA_VANTAGE_V3') {
@@ -714,6 +720,8 @@ if there is no value, send it as same.
                     if (!respBean.pgs.isEmpty() && respBean.pgs.size()>1) respBean.pgs[1].Vantage__c = xmlDecode(dataScoreNode.getText());
                 } else if (dataScoreNode.getName () == 'RESPONSEDATA_DNB_SBRILEASESCORE') {
                     if (respBean.company1 != null) respBean.company1.D_B_SBRI_Score__c = xmlDecode(dataScoreNode.getText());
+                } else if (dataScoreNode.getName() == 'UD_PROOF_OF_LICENSE') {
+                    respBean.scoreReq.Ud_Proof_of_License_Stip__c = xmlDecode(dataScoreNode.getText());
                 }
             }
         }

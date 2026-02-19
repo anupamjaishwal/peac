@@ -1,0 +1,81 @@
+<aura:component implements="flexipage:availableForRecordHome,lightning:actionOverride,force:hasRecordId" 
+                access="global"
+                controller="TC_LGTNExistingOppPayOffCTRL">
+    
+    <aura:attribute name="payOffs" type="List" access="global"/>
+    <aura:attribute name="rt" type="String" access="global"/>
+    <aura:attribute name="oppId" type="String" access="global"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    
+    <lightning:card>
+        <aura:set attribute="title">
+            <lightning:icon iconName="standard:custom" alternativeText="icon" size="small" class="slds-m-right_small"/><b>Payoffs ({!v.payOffs.length})</b>
+        </aura:set>
+        <aura:set attribute="actions">
+            <lightning:button label="Save" title="Save" onclick="{!c.saveButtonClicked}" />
+        </aura:set>
+        <aura:if isTrue="{!v.rt == 'loan'}">
+            <p class="slds-p-horizontal_small">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr>
+                                <th>Tie to Payment</th>
+                                <th>Contract #</th>
+                                <th>Payoff Amount</th>
+                                <th>3rd Party?</th>
+                                <th>Lender Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.payOffs}" var="p">
+        
+                                        <tr>
+                                            <td><lightning:input type="checkbox" checked="{!p.selected}" value="{!p.selected}"/></td>
+                                            <td><a href="{!'/' + p.payOffId}" target="_blank">{!p.contractNumber}</a></td>
+                                            <td><ui:outputCurrency value="{!p.paymentAmount}" format="$##,##,###,###.00"/></td>
+                                            <td><input type="checkbox" disabled="true" value="{!p.thirdParty}" checked="{!p.thirdParty}"/></td>
+                                            <td>{!p.lenderName}</td>
+                                        </tr>
+        
+                                
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <br/>
+                </p>
+        	<aura:set attribute="else">
+            	<p class="slds-p-horizontal_small">
+                    <table class="slds-table slds-table_bordered slds-table_cell-buffer">
+                        <thead>
+                            <tr>
+                                <th>Tie to Payment</th>
+                                <th>Contract #</th>
+                                <th>Payoff Amount</th>
+                                <th>Trade Up to Return?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <aura:iteration items="{!v.payOffs}" var="p">
+        
+                                        <tr>
+                                            <td><lightning:input type="checkbox" checked="{!p.selected}" value="{!p.selected}"/></td>
+                                            <td><a href="{!'/' + p.payOffId}" target="_blank">{!p.contractNumber}</a></td>
+                                            <td><ui:outputCurrency value="{!p.paymentAmount}" format="$##,##,###,###.00"/></td>
+                                            <td><input type="checkbox" disabled="true" value="{!p.tradeUpToReturn}" checked="{!p.tradeUpToReturn}"/></td>
+                                        </tr>
+        
+                                
+                            </aura:iteration>
+                        </tbody>
+                    </table>
+                    <br/>
+                </p>        
+        	</aura:set>
+        <!-- End QO Table -->
+        </aura:if>
+    </lightning:card>
+	
+</aura:component>

@@ -1,0 +1,29 @@
+.THIS .fUploadCus .slds-form-element__label, .THIS .hideIcon, .THIS .slds-file__icon
+{
+    display:none !important;
+}
+.THIS  .dateWrap{
+    white-space: initial !important;
+}
+.THIS .yearWdth{
+	max-width: 70px;
+}
+.THIS .textColor{
+	color: #706e6b !important;
+	text-decoration:none;
+}
+.THIS .thWidth{
+	max-width: 170px !important;
+}
+.THIS .upldFile .slds-file-selector__text{
+	/*padding-right: 0px !important;
+	padding-left: 0px !important;*/
+	display: none;
+}
+.THIS .upldfile1 .slds-file-selector__button {
+	padding-left: 0px !important;
+	padding-right: 0px !important;
+}
+.THIS .DivHight{
+	height: 30px !important;
+}

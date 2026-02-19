@@ -1,0 +1,46 @@
+<aura:component description="Equipment of Application" access="global" controller="TC_LoanApplicationCtrl"
+                implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome">
+
+    <aura:attribute name="equipmentList" type="List" access="global" default="[]"/>
+    <aura:attribute name="quoteOptions" type="List" access="global" default="[]"/>
+    <aura:attribute name="company" type="Account" access="global"/>
+    <aura:attribute name="deal" type="Object" access="global"/>
+    <aura:attribute name="picklists" type="Object" access="global"/>
+
+    <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
+
+    <aura:registerEvent name="appNavEvent" type="c:tc_applicationNavigation_evt"/>
+    <aura:handler value="{!this}" name="init" action="{!c.doInit}"/>
+    
+    <lightning:empApi aura:id="empApi"/>
+    <!-- Holds the streaming event subscription -->
+    <aura:attribute name="subscription" type="Map" />
+
+
+    <div class=" slds-m-around_small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <!--<lightning:button label="Add" iconName="utility:add" onclick="{!c.addEquipment}" variant="neutral"/>-->
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right"/>
+        <lightning:button label="Save and Quit" onclick="{!c.saveAndQuitEQController}" variant="brand" iconName="utility:save"
+                          iconPosition="right" aura:id="nextButton"/>
+    </div>
+
+    <aura:iteration items="{!v.clientWrapper.equipment}" var="equip" indexVar="i">
+            <span>
+                <c:tc_dealEquipmentDetail equipment="{!equip}" index="{!i}" picklists="{!v.picklists}" clientWrapper="{!v.clientWrapper}"/>
+                <div class="slds-p-around_x-small slds-small-size_1-of-1 slds-large-size_1-of-3">
+                    <lightning:button label="{!'Clear Equipment ' + (i+1)}" iconName="utility:clear" onclick="{!c.clearItem}" value="{!i}" class="slds-m-left_small"/>
+                    <aura:if isTrue="{!i!=0}">
+                        <lightning:button label="{!'Remove Equipment ' + (i+1)}" iconName="utility:delete" onclick="{!c.deleteItem}" value="{!i}" class="slds-m-left_small"/>
+                    </aura:if>
+                </div>
+            </span>
+    </aura:iteration>
+
+    <div class=" slds-m-around_small slds-small-size_1-of-1 slds-large-size_1-of-3">
+        <lightning:button label="Add" iconName="utility:add" onclick="{!c.addEquipment}" variant="neutral"/>
+        <!--<lightning:button label="Save" onclick="{!c.quickSave}" variant="brand" iconName="utility:save" iconPosition="left" value="{!v.guarantors}"/>
+        <lightning:button label="Next" onclick="{!c.goToNext}" variant="brand" iconName="utility:forward" iconPosition="right" aura:id="nextButton"/>-->
+        <lightning:button label="Save and Next" onclick="{!c.quickSave}" variant="brand" iconName="utility:forward" iconPosition="right"/>
+    </div>
+    <lightning:spinner aura:id="spinner" class="slds-hide"/>
+</aura:component>

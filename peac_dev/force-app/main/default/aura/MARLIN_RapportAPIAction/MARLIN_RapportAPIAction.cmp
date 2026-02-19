@@ -1,0 +1,43 @@
+<aura:component implements="force:lightningQuickActionWithoutHeader,force:hasRecordId" controller="MARLIN_RapportCallout" access="global">
+    <aura:attribute name="rapportResponse" type="String" default="Please wait..." />
+    <aura:attribute name="rapportProgress" type="String" default="Starting..." />
+    <aura:attribute name="validateAppResult" type="String" default="Not Started" />
+    <aura:attribute name="validatePGsResult" type="String" default="Not Started" />
+    <aura:attribute name="validateSubmitResult" type="String" default="Not Started" />
+    <aura:attribute name="ValidateRPMap" type="Map" default="{}" />
+
+    
+    <!-- Nirosha Changes-->
+    <aura:attribute name="validateDealerData" type="String" default="Not Started" />
+    <aura:attribute name="validateDealerSubmission" type="String" default="Not Started" />
+
+    
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+    <aura:handler event="aura:waiting" action="{!c.showSpinner}" />
+    <aura:handler event="aura:doneWaiting" action="{!c.hideSpinner}" />
+    
+     
+
+    <!-- Tam App Wizard Change -->
+    <aura:attribute name="fromWizard" type="Boolean" default="{!false}" access="global" />
+    <aura:attribute name="runGDS" type="Boolean" default="{!false}" access="global" />
+
+
+
+    <b>Opportunity Id: </b>{!v.recordId}	<br />
+    <b>Validate Application:</b>: {!v.validateAppResult}	<br />
+    <b>Validate Dealer:</b>: {!v.validateDealerData}	<br />
+    <b>Validate RPs in Rapport:</b>: {!v.validatePGsResult}	<br />
+    <b>Call Dealer API:</b>: {!v.validateDealerSubmission}  <br/>
+    <b>Submit Application to Rapport:</b>: {!v.validateSubmitResult}	<br />
+    
+    <!--  <ui:outputRichText aura:id="outputRT" value="{!v.rapportProgress}" /> -->
+    <br />
+        
+    <ui:spinner aura:id="spinner" />
+
+    <aura:if isTrue="{!!v.fromWizard}">
+        <ui:button label="Close" press="{!c.processClose}"/>
+    </aura:if>
+
+</aura:component>

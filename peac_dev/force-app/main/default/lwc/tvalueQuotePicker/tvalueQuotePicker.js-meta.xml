@@ -15,6 +15,7 @@
             <property name="recordId" type="String" label="Record ID" description="The ID of the record to fetch quotes for (optional)"/>
             <property name="selectedQuoteIds" type="String[]" label="Selected Quote IDs" description="Output: IDs of selected quotes" role="outputOnly"/>
             <property name="selectedQuoteRecords" type="@salesforce/schema/tval__TValue_Quote__c[]" label="Selected Quote Records" description="Output: Full records of selected quotes" role="outputOnly"/>
+            <property name="selectedQuoteId" type="String" label="Selected Quote ID" description="Output: ID of the first selected quote" role="outputOnly"/>
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>
