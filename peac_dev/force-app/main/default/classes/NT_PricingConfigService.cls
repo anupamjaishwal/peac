@@ -142,6 +142,7 @@ public without sharing class NT_PricingConfigService {
         if (q != null) {
             ctx.programId = q.Program__c;
             ctx.financedAmount = q.Total_Financed_Amount__c;
+            ctx.monthlyPayment = q.Payment__c;
             ctx.points = q.Points__c;
             ctx.downPayment = q.Down_Payment__c;
             ctx.buyDown = q.Buy_Down__c;

@@ -39,9 +39,12 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
     // AC Scenario 3: transactionId scopes which Pricing_Result__c records are used to create EF offers
     private String transactionId;
     private Decimal points;
-    
+    private Decimal monthlyPayment;
+
     /**
-     * @description Constructor with all pricing parameters
+     * @description Constructor with all pricing parameters (Payment Amount-only callers should
+     *              use the overload below that also accepts monthlyPayment). Retained for
+     *              backward compatibility with existing call sites/tests.
      * @param quoteId The parent Quote Id
      * @param opportunityId The Opportunity Id
      * @param templateId The TValue Template Id
@@ -73,6 +76,37 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         String transactionId,
         Decimal points
     ) {
+        this(
+            quoteId, opportunityId, templateId, pricingResultId, finalRate, financedAmount,
+            combinations, advancePayments, finalResidual, endOfTermOption, quoteName,
+            tvalueQuoteIds, transactionId, points, null
+        );
+    }
+
+    /**
+     * @description Constructor with all pricing parameters, including monthlyPayment for the
+     *              "solve for financed amount" path (user supplied Requested Payment Amount
+     *              instead of Financed Amount).
+     * @param monthlyPayment The requested payment amount, used to solve for financed amount
+     *                        when financedAmount is unavailable
+     */
+    public NT_TValueQueueable(
+        Id quoteId,
+        Id opportunityId,
+        Id templateId,
+        Id pricingResultId,
+        Decimal finalRate,
+        Decimal financedAmount,
+        List<TValueCombination> combinations,
+        Decimal advancePayments,
+        Decimal finalResidual,
+        String endOfTermOption,
+        String quoteName,
+        List<String> tvalueQuoteIds,
+        String transactionId,
+        Decimal points,
+        Decimal monthlyPayment
+    ) {
         this.tvalueQuoteIds = new List<String>();
         if (tvalueQuoteIds != null) {
             this.tvalueQuoteIds.addAll(tvalueQuoteIds);
@@ -90,6 +124,7 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         this.quoteName = quoteName;
         this.transactionId = transactionId;
         this.points = points;
+        this.monthlyPayment = monthlyPayment;
     }
     
     /**
@@ -154,7 +189,7 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
                 pricingResultId, finalRate, financedAmount,
                 combinations, advancePayments, finalResidual,
                 endOfTermOption, quoteName, tvalueQuoteIds,
-                transactionId, points
+                transactionId, points, monthlyPayment
             ));
         }
     }
@@ -200,9 +235,17 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         tvq.tval__Quote_Name__c = quoteName + ' - ' + mappedFrequency + ' - ' + combination.term.intValue() + ' mo';
         tvq.tval__Quote_Date__c = Date.today();
         
-        // Set financial amounts
-        tvq.tval__Quote_Amount__c = financedAmount;
-        tvq.tval__Amount_Financed__c = financedAmount;
+        // Set financial amounts. When Financed Amount is known, feed it to TValue and let it
+        // solve for the payment. Otherwise (user entered Requested Payment Amount instead),
+        // feed the payment and let TValue solve for the financed amount — previously this
+        // branch was missing entirely, so a payment-only quote always sent Amount Financed
+        // of 0/null and dropped the payment amount, which pricing could never resolve.
+        if (financedAmount != null && financedAmount > 0) {
+            tvq.tval__Quote_Amount__c = financedAmount;
+            tvq.tval__Amount_Financed__c = financedAmount;
+        } else if (monthlyPayment != null && monthlyPayment > 0) {
+            tvq.tval__Payment_Amount__c = monthlyPayment;
+        }
         
         // Set term
         tvq.tval__Term__c = combination.term;

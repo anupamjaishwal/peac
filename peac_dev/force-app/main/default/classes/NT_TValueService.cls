@@ -69,7 +69,8 @@ public without sharing class NT_TValueService {
                 parentQuote.Name,
                 new List<String>(),
                 ctx.transactionId,
-                ctx.points
+                ctx.points,
+                ctx.monthlyPayment
             );
             
             if (!Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
@@ -128,7 +129,8 @@ public without sharing class NT_TValueService {
                 ctx.opportunity.Name,
                 new List<String>(),
                 ctx.transactionId,
-                ctx.points
+                ctx.points,
+                ctx.monthlyPayment
             );
             
             if (!Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
@@ -152,11 +154,17 @@ public without sharing class NT_TValueService {
      *               Quote (New Quote tab) and Opportunity (Calculate Pricing) paths
      *               stay consistent. Floored at 0 to avoid a negative financed amount.
      * @param        ctx  The pricing context.
-     * @return       The net financed amount (gross financed − down − buydown − subsidy, min 0).
+     * @return       The net financed amount (gross financed − down − buydown − subsidy, min 0),
+     *               or null when no financed amount was provided (Payment Amount-only path) —
+     *               callers must not coerce that to 0, since 0 would incorrectly suppress the
+     *               "solve for financed amount" branch in NT_TValueQueueable.buildTValueQuote.
      */
     @TestVisible
     private Decimal computeNetFinancedAmount(NT_PricingContext ctx) {
-        Decimal net = ctx.financedAmount != null ? ctx.financedAmount : 0;
+        if (ctx.financedAmount == null) {
+            return null;
+        }
+        Decimal net = ctx.financedAmount;
         if (ctx.downPayment != null && ctx.downPayment > 0) {
             net -= ctx.downPayment;
         }
