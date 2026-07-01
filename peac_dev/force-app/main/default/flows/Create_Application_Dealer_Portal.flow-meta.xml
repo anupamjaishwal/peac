@@ -396,7 +396,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>call_Share_Opp_with_User</targetReference>
+            <targetReference>Set_Opp_Id_on_Quote</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -610,7 +610,7 @@
             <assignToReference>theAsset.Total_Cost__c</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>varQueriedTValueQuote.tval__Quote_Amount__c</elementReference>
+                <elementReference>varRelatedQuote.Total_Financed_Amount__c</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -1060,6 +1060,7 @@ Added TradeUp to Keep &amp; Return Message</description>
         <queriedFields>Program__c</queriedFields>
         <queriedFields>OpportunityId</queriedFields>
         <queriedFields>Dealer__c</queriedFields>
+        <queriedFields>Total_Financed_Amount__c</queriedFields>
     </recordLookups>
     <recordLookups>
         <name>Get_TValue_Quote</name>

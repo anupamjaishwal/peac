@@ -604,7 +604,16 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                 Decimal sourcePoints = (clientSideData.deal.opportunity != null && clientSideData.deal.opportunity.Points__c != null)
                     ? clientSideData.deal.opportunity.Points__c
                     : 0;
-                Opportunity opp = new Opportunity(Name = clientSideData.company.account.Name, CloseDate = Date.today () + 7, AccountId = clientSideData.company.account.Id, StageName = 'Quote', Terms__c = clientSideData.deal.opportunity.Terms__c != null ? clientSideData.deal.opportunity.Terms__c : 60, Program_Lookup__c = clientSideData.deal.opportunity.Program_Lookup__c, Payment_Frequency__c = clientSideData.recordTypeName != 'Loan' ? 'Monthly' : 'Daily', Points__c = sourcePoints, of_Payments__c = 0, Created_via_App_Wizard__c = true, Pre_Approval__c = clientSideData.deal.opportunity.Pre_Approval__c, Purchase_Options__c = clientSideData.deal.opportunity.Purchase_Options__c, Dealer_Account__c = clientSideData.deal.opportunity.Dealer_Account__c);
+                // SAL-6322 — carry the source quote's rate onto the new
+                // Opportunity. The client wrapper's Estimated_IRR__c is
+                // pre-populated by tc_loanApplicationGuestHelper.fetchAndPopulateQuotes
+                // (from the T-Value nominal annual rate, or PEAC Yield as a
+                // fallback). It was previously dropped here because the
+                // constructor omitted the field, leaving Estimated IRR blank on
+                // every Quick App conversion for both quote types. Assigned
+                // as-is (no unit conversion) to match NT_TValueQueueable and the
+                // Create_Application_Dealer_Portal flow.
+                Opportunity opp = new Opportunity(Name = clientSideData.company.account.Name, CloseDate = Date.today () + 7, AccountId = clientSideData.company.account.Id, StageName = 'Quote', Terms__c = clientSideData.deal.opportunity.Terms__c != null ? clientSideData.deal.opportunity.Terms__c : 60, Program_Lookup__c = clientSideData.deal.opportunity.Program_Lookup__c, Payment_Frequency__c = clientSideData.recordTypeName != 'Loan' ? 'Monthly' : 'Daily', Points__c = sourcePoints, of_Payments__c = 0, Created_via_App_Wizard__c = true, Pre_Approval__c = clientSideData.deal.opportunity.Pre_Approval__c, Purchase_Options__c = clientSideData.deal.opportunity.Purchase_Options__c, Dealer_Account__c = clientSideData.deal.opportunity.Dealer_Account__c, Estimated_IRR__c = clientSideData.deal.opportunity.Estimated_IRR__c, Payment_Amount__c = clientSideData.deal.opportunity.Payment_Amount__c, Residual__c = clientSideData.deal.opportunity.Residual__c);
                 
                 // get the record type id
                 List <ProductType> productTypes = getAvailableRecordTypes ();
@@ -624,36 +633,18 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                     }
                 }
                 
-                // SAL-7243 — capture the Quote's dealer BEFORE insert. The
-                // Dealer_Account__c field on Opportunity is owned by the
-                // existing addDealerAcc trigger: it nulls the field on insert
-                // when no Primary_Dealer__c junction exists yet, then stamps
-                // it back from whichever Dealer__c junction is marked Primary.
-                // Per Sripriya on SAL-7243: "There is no need to make changes
-                // on this trigger" — so we feed it the input instead.
-                Id sourceDealerAccountId = clientSideData.deal.opportunity.Dealer_Account__c;
-
+                // SAL-7243 (revised) — the Quote's dealer is intentionally NOT
+                // mapped to the Opportunity in this transaction. Inserting a
+                // Dealer__c junction here cascades into ~4 full Opportunity-
+                // trigger re-runs (~63 SOQL for a single junction; insert+touch
+                // ≈ 74), which pushed saveCompany past the 100-query governor
+                // limit and intermittently blocked Opportunity creation. The
+                // dealer now flows through the normal Partners-tab path instead:
+                // tc_dealDealerTable prefills the dealer from the linked source
+                // Quote (getDealerAccountsForOpp) and savePartners creates the
+                // junction in its own, lighter transaction — exactly as for a
+                // dealer the user adds by hand.
                 insert clientSideData.deal.opportunity;
-
-                // SAL-7243 — make Dealer flow from New Quote → Opportunity.
-                // Insert a Dealer__c junction with Primary_Dealer__c=true, then
-                // touch the Opp so TC_OpportunityTriggerHandler picks up the
-                // new junction, auto-sets opp.Primary_Dealer__c, and
-                // SL_OpportunityTriggerHandler.addDealerAcc copies the dealer
-                // Id into Dealer_Account__c. No-op when the source Quote had
-                // no dealer.
-                if (sourceDealerAccountId != null) {
-                    Dealer__c primaryDealerJunction = new Dealer__c(
-                        Opportunity__c = clientSideData.deal.opportunity.Id,
-                        Dealer__c = sourceDealerAccountId,
-                        Primary_Dealer__c = true
-                    );
-                    insert primaryDealerJunction;
-                    update new Opportunity(
-                        Id = clientSideData.deal.opportunity.Id,
-                        StageName = clientSideData.deal.opportunity.StageName
-                    );
-                }
 
                 // SAL-7168 — link the source Quote (the standalone Quote behind
                 // the selected TValue Quote(s) from the New Quote tab) to the
@@ -1648,8 +1639,10 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                 for (TC_DatabaseUtil.TC_RecordWrapper wr : dealerAccountInserts) {
                     dealerAccounts.add (wr.account);
                 }
-                
+                System.debug('****1633');
                 if (!dealerAccounts.isEmpty() || test.isrunningtest()) {
+                                    System.debug('****1635');
+
                     // check for existing guarantor records
                     List <Dealer__c> queriedDealerss = new List <Dealer__c> ([SELECT Id, Dealer__c FROM Dealer__c WHERE Opportunity__c = :clientSideData.deal.opportunity.Id AND Dealer__c != null]);
                     System.debug ('>>>>> queriedDealerss: ' + queriedDealerss);
@@ -1668,19 +1661,41 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                     }
                     
                     for (TC_DatabaseUtil.TC_RecordWrapper wr : clientSideData.dealerAccounts) {
+                                                    System.debug('DEALER PROGRAM ' + wr.dealer.Program__c );
+
                         Account acc = wr.account;
-                        if (noDealerMap == null || noDealerMap.get(acc.Id) == null) {
+                        if (noDealerMap == null || noDealerMap.get (acc.Id) == null) {
                             Dealer__c dealer = new Dealer__c(
                                 Dealer__c      = acc.Id,
                                 Opportunity__c = clientSideData.deal.opportunity.Id,
                                 Program__c     = wr.dealer != null ? wr.dealer.Program__c : null
                             );
-                            dealers.add(dealer);
+                            dealers.add (dealer);
                         }
                     }
                 }
             } else if (clientSideData.deal.opportunity.Id != null){
-                dealerDeletes = new List <Dealer__c> ([SELECT Id, Dealer__c FROM Dealer__c WHERE Opportunity__c = :clientSideData.deal.opportunity.Id AND Dealer__c != null]);
+                // SAL-7243 — when the Partners tab is submitted with no dealer
+                // rows, do NOT delete a Dealer__c junction that came from the
+                // source Quote (the dealer chosen on the New Quote tab). Those
+                // junctions are inserted by saveCompany with Primary_Dealer__c =
+                // true and drive Opportunity.Dealer_Account__c via the Opp
+                // trigger; blindly deleting them here was wiping the mapped
+                // dealer and leaving the Partners tab blank. Junctions for any
+                // other (non quote-sourced) dealer are still cleaned up.
+                Set <Id> quoteDealerIds = new Set <Id> ();
+                for (Quote q : [SELECT Dealer__c FROM Quote
+                                WHERE OpportunityId = :clientSideData.deal.opportunity.Id
+                                AND Dealer__c != null]) {
+                    quoteDealerIds.add (q.Dealer__c);
+                }
+                for (Dealer__c dealer : [SELECT Id, Dealer__c FROM Dealer__c
+                                         WHERE Opportunity__c = :clientSideData.deal.opportunity.Id
+                                         AND Dealer__c != null]) {
+                    if (!quoteDealerIds.contains (dealer.Dealer__c)) {
+                        dealerDeletes.add (dealer);
+                    }
+                }
             }
             
             if (!dealerAccountUpdates.isEmpty()) {
@@ -1743,7 +1758,10 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                             //5/6/20 require primary dealer contact for all but franchise working capital
                             //8/25/20 removing project and franchise check: https://marlinbusiness.atlassian.net/browse/SAL-1757
                             //if (clientSideData.recordTypeName == 'Franchise' && clientSideData.deal.opportunity.Oppt_Project_Type__c == 'Working Capital' && (wr.subRecord.role == null || wr.subRecord.role == '')) missingFields.add ('Role'); //4-16
-                            if (wr.subRecord.contact.MobilePhone == null || wr.subRecord.contact.MobilePhone == '') missingFields.add ('Phone');
+                            // The dealer-contact "Phone" field maps to Contact.Phone (the
+                            // Must_have_phone_number validation requires Phone, not MobilePhone),
+                            // so validate the same field the form populates.
+                            if (wr.subRecord.contact.Phone == null || wr.subRecord.contact.Phone == '') missingFields.add ('Phone');
                             if (wr.subRecord.contact.MailingStreet == null || wr.subRecord.contact.MailingStreet == '') missingFields.add ('Address');
                             if (wr.subRecord.contact.MailingCity == null || wr.subRecord.contact.MailingCity == '') missingFields.add ('City');
                             if (wr.subRecord.contact.MailingStateCode == null || wr.subRecord.contact.MailingStateCode == '') missingFields.add ('State');
@@ -1767,6 +1785,13 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                             // exception sceneraio on saving role
                             wr.subRecord.roleSaved = true;
                             
+                            // The dealer-contact "Phone" field now maps to Contact.Phone
+                            // (required by the Must_have_phone_number validation). Also
+                            // populate MobilePhone from it when blank, so the mobile phone
+                            // is preserved if it was already there and captured otherwise.
+                            if (String.isBlank(wr.subRecord.contact.MobilePhone) && String.isNotBlank(wr.subRecord.contact.Phone)) {
+                                wr.subRecord.contact.MobilePhone = wr.subRecord.contact.Phone;
+                            }
                             
                             if (wr.subRecord.contact.Id == null) {
                                 wr.subRecord.contact.AccountId = wr.account.Id;
@@ -2276,6 +2301,64 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         }
     }
     
+    /**
+     * @description  SAL-7243 — return the dealer Account(s) linked to an
+     *               Opportunity, so the Quick App Partners tab
+     *               (tc_dealDealerTable) can display the dealer that came from a
+     *               New Quote instead of rendering "Dealers (0)". The dealer is
+     *               sourced from (a) the Opportunity's linked source Quote
+     *               (Quote.OpportunityId, set by SAL-7168 at saveCompany) and
+     *               (b) any Dealer__c junctions already on the Opportunity. The
+     *               two are unioned and de-duplicated by Account Id so the row
+     *               shows whether or not a junction exists yet. saveCompany no
+     *               longer creates the junction (it caused a SOQL-101 governor
+     *               failure); savePartners creates it from this prefilled row.
+     *               Read-only display source; the wizard still owns edits.
+     * @param        opportunityId  The Opportunity to load the dealer(s) for.
+     * @return       The dealer Accounts (display + required fields) to show on
+     *               the Partners tab.
+     */
+    @AuraEnabled
+    public static List<Account> getDealerAccountsForOpp (Id opportunityId) {
+        List<Account> dealerAccounts = new List<Account> ();
+        if (opportunityId == null) return dealerAccounts;
+        try {
+            Set<Id> dealerAccountIds = new Set<Id> ();
+
+            // (a) Dealer from the linked source Quote (New Quote → Quick App).
+            for (Quote q : [
+                SELECT Dealer__c FROM Quote
+                WHERE OpportunityId = :opportunityId AND Dealer__c != null
+            ]) {
+                dealerAccountIds.add (q.Dealer__c);
+            }
+
+            // (b) Any dealer already added to the Opportunity as a junction.
+            for (Dealer__c d : [
+                SELECT Dealer__c FROM Dealer__c
+                WHERE Opportunity__c = :opportunityId AND Dealer__c != null
+            ]) {
+                dealerAccountIds.add (d.Dealer__c);
+            }
+
+            if (dealerAccountIds.isEmpty ()) return dealerAccounts;
+
+            for (Account a : [
+                SELECT Id, Name, Equipment_Type__c, Business_Phone__c,
+                       Business_Address__c, Business_City__c, Business_State__c,
+                       Business_Zip__c, Dealer_Number__c, PG_Required__c
+                FROM Account WHERE Id IN :dealerAccountIds
+            ]) {
+                dealerAccounts.add (a);
+            }
+            return dealerAccounts;
+        } catch (Exception ex) {
+            System.debug(ex);
+            System.debug(ex.getStackTraceString());
+            throw new AuraHandledException (ex.getMessage());
+        }
+    }
+
     @AuraEnabled
     public static Contact selectGuarantor (String guarantorId) {
         try {
@@ -2525,10 +2608,23 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         // when a New Quote is converted via Quick App. The helper already
         // assigns these fields client-side, but they were resolving to
         // undefined because the SOQL didn't return them.
+        // SAL-6322 — also return tval__Nominal_Annual_Rate__c (the T-Value rate)
+        // so the helper can source Estimated_IRR__c from it. Quote.Rate__c
+        // (PEAC Yield) is only populated for Quote-Pricing quotes, so T-Value
+        // quotes need the nominal annual rate as their IRR source.
+        // SAL-6543 — also return Quote.Payment__c and Quote.Residual__c so the
+        // helper can pre-populate the Opportunity's Payment_Amount__c and
+        // Residual__c when a New Quote is converted via Quick App. (APR is not
+        // propagated — there is no APR field on Opportunity.)
+        // Quote.Total_Financed_Amount__c is returned so the helper can
+        // pre-populate Equipment Cost with the gross financed amount the
+        // dealer entered, rather than tval__Quote_Amount__c (which is net of
+        // Down Payment and is only meant for the TValue amortization calc).
         List<tval__TValue_Quote__c> tqs = [
             SELECT Id, Quote__c, Quote__r.Equipment_Type__c, tval__Quote_Amount__c, Quote__r.Description, tval__Term__c,
-            tval__Period__c, tval__Purchase_Option__c, Quote__r.Program__c,
-            Quote__r.Dealer__c, Quote__r.Points__c, Quote__r.End_of_Term_Option__c, Quote__r.Rate__c
+            tval__Period__c, tval__Purchase_Option__c, tval__Nominal_Annual_Rate__c, Quote__r.Program__c,
+            Quote__r.Dealer__c, Quote__r.Points__c, Quote__r.End_of_Term_Option__c, Quote__r.Rate__c,
+            Quote__r.Payment__c, Quote__r.Residual__c, Quote__r.Total_Financed_Amount__c
             FROM tval__TValue_Quote__c
             WHERE Id IN :ids
             LIMIT 1
@@ -2549,6 +2645,16 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
      *               parent record's selected-quote relationship is single-
      *               valued and consistent with the wizard's downstream
      *               assumptions (saveCompany, Quick App flow).
+     *
+     *               SAL-6543 — also write the chosen quote's pricing values
+     *               back onto the parent Quote (Payment, Rate, Residual) so the
+     *               Quote record itself reflects the selected pricing and those
+     *               values can subsequently flow into the Opportunity via the
+     *               Quick App. Payment and Rate come straight off the TValue
+     *               Quote; Residual is sourced from the most recent successful
+     *               Pricing_Result__c for the parent Quote (the TValue Quote
+     *               carries only a purchase option, not a residual amount). APR
+     *               is intentionally not written (no reliable source today).
      * @param        tvalueQuoteId  The TValue Quote the user chose.
      */
     @AuraEnabled
@@ -2556,7 +2662,7 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         if (tvalueQuoteId == null) return;
 
         List<tval__TValue_Quote__c> chosen = [
-            SELECT Id, Quote__c
+            SELECT Id, Quote__c, tval__Payment_Amount__c, tval__Nominal_Annual_Rate__c
             FROM tval__TValue_Quote__c
             WHERE Id = :tvalueQuoteId
             LIMIT 1
@@ -2583,6 +2689,30 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         }
 
         update toUpdate;
+
+        // SAL-6543 — write-back of the selected pricing onto the parent Quote.
+        if (parentQuoteId != null) {
+            Quote parentQuote = new Quote(Id = parentQuoteId);
+            parentQuote.Payment__c = chosen[0].tval__Payment_Amount__c;
+            parentQuote.Rate__c = chosen[0].tval__Nominal_Annual_Rate__c;
+
+            // Residual lives on the Pricing_Result__c, not the TValue Quote.
+            // Take the most recent successful run for this Quote; leave
+            // Residual__c untouched if none exists.
+            List<Pricing_Result__c> results = [
+                SELECT Total_Residual__c
+                FROM Pricing_Result__c
+                WHERE Quote__c = :parentQuoteId
+                  AND Status__c = 'Success'
+                ORDER BY CreatedDate DESC
+                LIMIT 1
+            ];
+            if (!results.isEmpty() && results[0].Total_Residual__c != null) {
+                parentQuote.Residual__c = results[0].Total_Residual__c;
+            }
+
+            update parentQuote;
+        }
     }
 
     /**
@@ -2628,7 +2758,15 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                 FROM Quote
                 WHERE Id IN :quoteIds AND OpportunityId = null
             ]) {
-                toUpdate.add(new Quote(Id = q.Id, OpportunityId = opportunityId));
+                // SAL-6543 — also record the created Opportunity on the custom
+                // Converted_Opportunity__c lookup so the Quote → Opportunity
+                // linkage is explicit (the standard OpportunityId master-detail
+                // is set in the same write to fire the back-stamp trigger).
+                toUpdate.add(new Quote(
+                    Id = q.Id,
+                    OpportunityId = opportunityId,
+                    Converted_Opportunity__c = opportunityId
+                ));
             }
             if (!toUpdate.isEmpty()) update toUpdate;
         } catch (Exception ex) {

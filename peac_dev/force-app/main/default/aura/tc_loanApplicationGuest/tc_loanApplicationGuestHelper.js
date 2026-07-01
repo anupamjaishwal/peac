@@ -50,8 +50,10 @@
 
                         var eqWrapper = { equipment: {} };
                         eqWrapper.equipment.Description__c = quoteData.Quote__r.Description || null;
-                        // Use Cost__c on the Asset wrapper to hold the quoted total cost
-                        eqWrapper.equipment.Cost__c = quoteData.tval__Quote_Amount__c || null;
+                        // Use Cost__c on the Asset wrapper to hold the gross financed
+                        // amount (Equipment Cost should match Financed Amount, not the
+                        // tval__Quote_Amount__c net of Down Payment used for TValue calc)
+                        eqWrapper.equipment.Cost__c = quoteData.Quote__r.Total_Financed_Amount__c || null;
                         eqWrapper.equipment.Equipment_Code__c = quoteData.Quote__r.Equipment_Type__c || null;
 
                         // Insert populated equipment: replace an empty placeholder if present, otherwise append
@@ -80,18 +82,29 @@
                         if (clientWrapper.deal && clientWrapper.deal.opportunity) {
                             clientWrapper.deal.opportunity.Equipment_Description__c = quoteData.Quote__r.Description;
                             clientWrapper.deal.opportunity.Equipment_Code__c = quoteData.Quote__r.Equipment_Type__c;
-                            clientWrapper.deal.opportunity.Equipment_Cost__c = quoteData.tval__Quote_Amount__c;
+                            clientWrapper.deal.opportunity.Equipment_Cost__c = quoteData.Quote__r.Total_Financed_Amount__c;
                             clientWrapper.deal.opportunity.Terms__c = quoteData.tval__Term__c;
                             //clientWrapper.deal.opportunity.Purchase_Options__c = quoteData.tval__Purchase_Option__c;
                             clientWrapper.deal.opportunity.Payment_Frequency__c = quoteData.tval__Period__c;
                             clientWrapper.deal.opportunity.Program_Lookup__c = quoteData.Quote__r.Program__c;
-                            clientWrapper.deal.opportunity.Estimated_IRR__c = quoteData.Quote__r.Rate__c;
+                            // SAL-6322 — prefer the T-Value nominal annual rate;
+                            // fall back to Quote.Rate__c (PEAC Yield) for
+                            // Quote-Pricing quotes, which leave the T-Value rate
+                            // blank. Previously sourced only from Quote.Rate__c,
+                            // so T-Value quotes landed with a blank Estimated IRR.
+                            clientWrapper.deal.opportunity.Estimated_IRR__c = quoteData.tval__Nominal_Annual_Rate__c || quoteData.Quote__r.Rate__c;
                             clientWrapper.deal.opportunity.Purchase_Options__c = quoteData.Quote__r.End_of_Term_Option__c;
                             clientWrapper.deal.opportunity.Dealer_Account__c = quoteData.Quote__r.Dealer__c;
                             // SAL-7243 — also propagate Points so the converted
                             // Opportunity carries the quote's points value
                             // instead of the hardcoded 0 default in saveCompany.
                             clientWrapper.deal.opportunity.Points__c = quoteData.Quote__r.Points__c;
+                            // SAL-6543 — carry the Quote's payment and residual
+                            // onto the Opportunity so they are no longer blank
+                            // after a Quick App conversion. saveCompany reads
+                            // these off the wrapper when it builds the Opp.
+                            clientWrapper.deal.opportunity.Payment_Amount__c = quoteData.Quote__r.Payment__c;
+                            clientWrapper.deal.opportunity.Residual__c = quoteData.Quote__r.Residual__c;
                         }
 
                         // Persist changes back to component attributes so child components receive them
