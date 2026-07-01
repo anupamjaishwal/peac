@@ -3,7 +3,7 @@
  -->
 
 <aura:component description="Loan Application" access="global"
-				implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome,force:appHostable, lightning:isUrlAddressable"
+				implements="forceCommunity:availableForAllPageTypes,force:hasRecordId,flexipage:availableForRecordHome,force:appHostable,lightning:isUrlAddressable"
 				controller="TC_LoanApplicationCtrl">
 	<aura:attribute name="isGuest" type="Boolean" access="global" default="{!true}"/>
 	<aura:attribute name="isButtonNavigation" type="Boolean" access="global" default="{!false}"/>
@@ -46,6 +46,8 @@
 	
 	<lightning:overlayLibrary aura:id="overlayLib"/>
     <aura:attribute name="quoteIds" type="String" />
+	<aura:attribute name="showQuoteTab" type="Boolean" access="global" default="{!true}"/>
+
 
 	<!--v.clientWrapper.recordTypeName: {!v.clientWrapper.recordTypeName}, v.clientWrapper.curentUserProfileName: {!v.clientWrapper.curentUserProfileName}
 -->
@@ -230,7 +232,8 @@
 												<lightning:progressStep label="Equipment" value="step_3" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
 												<lightning:progressStep label="Partners" value="step_4" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
 												<lightning:progressStep label="Guarantors" value="step_5" onclick="{!c.handleStepClick}" class="slds-no-flex slds-truncate"/>
-                                                <lightning:progressStep label="Quote" value="step_6" class="slds-no-flex slds-truncate"/>
+												<lightning:progressStep label="Quote" value="step_6" 
+													class="{!if(v.clientWrapper.isRiskBasedPricing, 'slds-no-flex slds-truncate', 'slds-hide')}"/>
 												<lightning:progressStep label="Review/Submit" value="step_7" class="slds-no-flex slds-truncate"/>
 											</lightning:progressIndicator>
 										</div>
@@ -239,9 +242,14 @@
 										</div>
 									</div>
 
+									    <!-- Add the style always in DOM, no aura:if -->
+									<style>
+										.quoteTabHide li[title="Quote"] {
+											display: none !important;
+										}
+									</style>
 
-
-									<div class="slds-m-around_small">
+    								<div class="{!if(v.showQuoteTab, 'slds-m-around_small', 'slds-m-around_small quoteTabHide')}">
 										<lightning:tabset aura:id="navTabSet" selectedTabId="{!v.currentStep}" onselect="{!c.handleTabSelect}">
 
 											<lightning:tab label="Customer" id="step_1">
@@ -263,7 +271,8 @@
 											<lightning:tab label="Guarantors" id="step_5" onactive="{!c.refreshDealGuarantorsComponent}">
 												<c:tc_dealGuarantors aura:id="dealGuarantorsComp" clientWrapper="{!v.clientWrapper}" isLoan="true"/>
 											</lightning:tab>
-                                            <lightning:tab label="Quote" id="step_6" onactive="{!c.refreshDealQuotesComponent}">
+											<!-- Only show Quote tab if dealer IS risk based -->
+											<lightning:tab label="Quote" id="step_6" onactive="{!c.refreshDealQuotesComponent}">
 												<c:tc_dealQuote aura:id="dealQuotesComp" clientWrapper="{!v.clientWrapper}"/>
 											</lightning:tab>
 

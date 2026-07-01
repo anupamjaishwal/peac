@@ -162,11 +162,28 @@ public with sharing class SL_UserTriggerHandler extends SL_Trigger.baseHandler {
         List<Id> userIdsToUngroup = new List<Id>();
         Map<Id,Id> userWithAccountIdMap = new Map<Id,Id>();
         Map<Id,Id> removeUserWithAccountIdMap = new Map<Id,Id>();
+        
+        // PEAC Change - Auto assign Field Tracker Object Access permission set
+        List<Id> fieldTrackerUserIds = new List<Id>();
         for(SObject obj :newMap.values()){
             User theUser = (User)obj;
             Contact userContact = this.contacts.get(theUser.ContactId);
             UserRole theRole = this.userRoles.get(theUser.UserRoleId);
             Profile theProfile = this.profiles.get(theUser.ProfileId);
+            
+            // PEAC Change - Auto assign Field Tracker Object Access permission set
+            if(theUser.IsActive && theProfile != null
+                && (theProfile.Name.containsIgnoreCase('Dealer')
+                    || theProfile.Name.containsIgnoreCase('Rep')
+                    || theProfile.Name.containsIgnoreCase('CMS') 
+                    || theProfile.Name.containsIgnoreCase('Booking') 
+                    || theProfile.Name.containsIgnoreCase('Credit') 
+                    || theProfile.Name.containsIgnoreCase('DataAdmin')
+                    || theProfile.Name.containsIgnoreCase('Partner Ambassador')
+                    || theProfile.Name.containsIgnoreCase('GDS'))){
+                fieldTrackerUserIds.add(theUser.Id);
+            }
+            // End PEAC Change
             List<String> fieldsChanged = fieldsChangedById.get(theUser.Id);
             User oldUser ;// modified by Rajesh(Mindtree)
             if(!isNew){
@@ -221,6 +238,11 @@ public with sharing class SL_UserTriggerHandler extends SL_Trigger.baseHandler {
             }
             removeInactiveDealerUser(theUser, isNew, fieldsChanged);
         }
+        // PEAC Change - Auto assign Field Tracker Object Access permission set
+        if(fieldTrackerUserIds.size() > 0 && !Test.isRunningTest()){
+            System.enqueueJob(new FieldTrackerPermissionSetAssignmentQ(fieldTrackerUserIds));
+        }
+        // End PEAC Change
         for(AccountShare accountShareWithUser : [SELECT Id, AccountId, UserOrGroupId, AccountAccessLevel, RowCause FROM AccountShare 
             WHERE AccountId IN :dealerAccounts AND UserOrGroupId IN :newMap.keySet()]){
             SL_SharingCustomRecord.checkAddOrRemove(accountShareWithUser, sharesToInsert, sharestoDelete, sharestoDeleteForReal,
@@ -288,6 +310,48 @@ public with sharing class SL_UserTriggerHandler extends SL_Trigger.baseHandler {
         //End
     }
 	
+
+    // Auto assign Field Tracker Object Access permission set
+    @TestVisible
+    private class FieldTrackerPermissionSetAssignmentQ implements Queueable {
+        private List<Id> userIds;
+
+        @TestVisible
+        FieldTrackerPermissionSetAssignmentQ(List<Id> userIds){
+            this.userIds = userIds;
+        }
+
+        public void execute(QueueableContext context){
+            if(userIds == null || userIds.isEmpty()){
+                return;
+            }
+
+            List<PermissionSet> permissionSets = [SELECT Id FROM PermissionSet WHERE Name = 'Field_Tracker_Object_Access' LIMIT 1];
+            if(permissionSets.isEmpty()){
+                return;
+            }
+
+            Id permissionSetId = permissionSets[0].Id;
+            Set<Id> userIdsSet = new Set<Id>(userIds);
+            Set<Id> assignedUserIds = new Set<Id>();
+
+            for(PermissionSetAssignment existingPSA : [SELECT AssigneeId FROM PermissionSetAssignment WHERE AssigneeId IN :userIdsSet AND PermissionSetId = :permissionSetId]){
+                assignedUserIds.add(existingPSA.AssigneeId);
+            }
+
+            List<PermissionSetAssignment> permissionSetAssignmentsToInsert = new List<PermissionSetAssignment>();
+            for(Id userId :userIdsSet){
+                if(!assignedUserIds.contains(userId)){
+                    permissionSetAssignmentsToInsert.add(new PermissionSetAssignment(AssigneeId = userId, PermissionSetId = permissionSetId));
+                }
+            }
+
+            if(permissionSetAssignmentsToInsert.size() > 0){
+                Database.insert(permissionSetAssignmentsToInsert, false);
+            }
+        }
+    }
+    // End PEAC Change
 
     public static Map<String, List<Id>> addUserToGroup(String groupDevName, Id userId, Map<String, List<Id>> userIdsByGroup){
         List<Id> memberIds = userIdsByGroup.get(groupDevName);

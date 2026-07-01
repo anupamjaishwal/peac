@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>51.0</apiVersion>
+    <assignments>
+        <name>Set_Authority_to_Clear_to_Credit</name>
+        <label>Set Authority to Clear to Credit</label>
+        <locationX>50</locationX>
+        <locationY>1223</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.TC_Origination__Authority_to_Clear__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Credit</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_if_Internal_External_is_null</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Checklist_s_Opportunity</name>
+        <label>Set Checklist&apos;s Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>551</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.TC_Origination__Checklist_s_Opportunity__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.TC_Origination__Checklist__r.TC_Origination__Opportunity__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Stage_Null</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Internal_External_to_External</name>
+        <label>Set Internal External to External</label>
+        <locationX>50</locationX>
+        <locationY>1559</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.TC_Origination__Internal_External__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>External</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_if_Simple_Complex_is_null</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Simple_Complex_to_Simple</name>
+        <label>Set Simple/Complex to Simple</label>
+        <locationX>50</locationX>
+        <locationY>1895</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.TC_Origination__Simple_Complex__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Simple</stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <description>Default set per SAL-2931</description>
+        <name>Set_Stage_to_Default_of_Funding</name>
+        <label>Set Stage to Default of Funding</label>
+        <locationX>50</locationX>
+        <locationY>887</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.TC_Origination__Stage_to_Clear__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Funding</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Authority_to_Clear_is_null</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Check_Authority_to_Clear_is_null</name>
+        <label>Check Authority to Clear is null</label>
+        <locationX>182</locationX>
+        <locationY>1103</locationY>
+        <defaultConnector>
+            <targetReference>Check_if_Internal_External_is_null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Authority_to_Clear_is_null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.TC_Origination__Authority_to_Clear__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Authority_to_Clear_to_Credit</targetReference>
+            </connector>
+            <label>If Authority to Clear is null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_if_Checklist_s_Opportunity_is_null</name>
+        <label>Check if Checklist&apos;s Opportunity is null</label>
+        <locationX>182</locationX>
+        <locationY>431</locationY>
+        <defaultConnector>
+            <targetReference>Check_Stage_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Update_Checklist_s_opportunity</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.TC_Origination__Checklist_s_Opportunity__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Checklist_s_Opportunity</targetReference>
+            </connector>
+            <label>Update Checklist&apos;s opportunity</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_if_Internal_External_is_null</name>
+        <label>Check if Internal/External is null</label>
+        <locationX>182</locationX>
+        <locationY>1439</locationY>
+        <defaultConnector>
+            <targetReference>Check_if_Simple_Complex_is_null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Internal_External_is_null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.TC_Origination__Internal_External__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Internal_External_to_External</targetReference>
+            </connector>
+            <label>If Internal/External is null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_if_Simple_Complex_is_null</name>
+        <label>Check if Simple/Complex is null</label>
+        <locationX>182</locationX>
+        <locationY>1775</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>If_Simple_Complex_is_null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.TC_Origination__Simple_Complex__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Simple_Complex_to_Simple</targetReference>
+            </connector>
+            <label>If Simple/Complex is null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Checks if stage is null and updates to default if it is. For SAL-2931</description>
+        <name>Check_Stage_Null</name>
+        <label>Check Stage Null</label>
+        <locationX>182</locationX>
+        <locationY>767</locationY>
+        <defaultConnector>
+            <targetReference>Check_Authority_to_Clear_is_null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Check_Stage_Is_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.TC_Origination__Stage_to_Clear__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Stage_to_Default_of_Funding</targetReference>
+            </connector>
+            <label>Check Stage Is Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Is the Name of the Checklist &quot;Loan Credit Stips&quot; or &quot;Credit Stips&quot;?</description>
+        <name>Is_This_a_Credit_Checklist</name>
+        <label>Is This a Credit Checklist?</label>
+        <locationX>380</locationX>
+        <locationY>311</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Credit</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.TC_Origination__Checklist__r.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Credit Stips</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Check_if_Checklist_s_Opportunity_is_null</targetReference>
+            </connector>
+            <label>Is Credit</label>
+        </rules>
+    </decisions>
+    <description>This flow was created as a solution to populate some of the new checklist item picklists. Added for SAL-2931. Updated in SAL-3157.</description>
+    <interviewLabel>Checklist Populate Default Picklist Options {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Checklist Populate Default Picklist Options</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>254</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Is_This_a_Credit_Checklist</targetReference>
+        </connector>
+        <filterLogic>or</filterLogic>
+        <filters>
+            <field>TC_Origination__Stage_to_Clear__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>TC_Origination__Authority_to_Clear__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>TC_Origination__Internal_External__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>TC_Origination__Simple_Complex__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>TC_Origination__Checklist_s_Opportunity__c</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>TC_Origination__Checklist_Item_with_Attachments__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>CreditStipsName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <stringValue>Credit Stips</stringValue>
+        </value>
+    </variables>
+</Flow>

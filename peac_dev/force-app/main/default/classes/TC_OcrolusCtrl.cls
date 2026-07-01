@@ -23,25 +23,33 @@ public with sharing class TC_OcrolusCtrl  {
         }
 
         String pk;
-        List<Opportunity> oppList = new List<Opportunity>([SELECT Pk__c FROM Opportunity WHERE Id =: oppId]);
-        if (!oppList.isEmpty() && oppList[0].Pk__c != null) {
-            pk = oppList[0].Pk__c;
-        } else {
-            pk = TC_OcrolusService.addBookCallout(oppId);
-            if (String.isEmpty(pk)) {
-                return;
-            }
-        }
+        List<Opportunity> oppList = new List<Opportunity>([SELECT Pk__c, CaseCenter__c, Loan_Record_Type__c, IsClosed FROM Opportunity WHERE Id =: oppId]);
+        // SAL-6464 Misael Romero
+        if(!oppList.isEmpty()){
+            if(oppList[0].Loan_Record_Type__c && oppList[0].IsClosed){
+                errorMessage = '"' + oppList[0].CaseCenter__c + '" is already Closed. No Bank Statements uploaded to Ocrolus';
+                Marlin_IntegrationLog.LogException('Ocrolus File Upload', oppList[0].Id, 'Error', '', '', '', errorMessage);
+            }else{
+                if(oppList[0].Pk__c != null) {
+                    pk = oppList[0].Pk__c;
+                } else {
+                    pk = TC_OcrolusService.addBookCallout(oppId);
+                    if (String.isEmpty(pk)) {
+                        return;
+                    }
+                }
 
-        for (Opportunity_Attachment__c oppAttachment : originalAttachmentList) {
-            if(oppAttachment.Type__c.contains(Label.TC_BankStatementFileType) && !oppAttachment.Type__c.contains(Label.TC_MTDFileType)) {
-                //system.debug('>>>>>?????: Heap size is ' + limits.getHeapSize() + ' enforced is ' + limits.getLimitHeapSize());
-                sendAttachmentToOcrolus(oppAttachment, pk);
-            } else {
-                errorMessage = '"' + oppAttachment.Name + '" is not a bank statement. Not uploaded to Ocrolus';
-                Marlin_IntegrationLog.LogException('Ocrolus File Upload', oppAttachment.Id, 'Error', '', '', '', errorMessage);
-            }
+                for (Opportunity_Attachment__c oppAttachment : originalAttachmentList) {
+                    if(oppAttachment.Type__c.contains(Label.TC_BankStatementFileType) && !oppAttachment.Type__c.contains(Label.TC_MTDFileType)) {
+                        //system.debug('>>>>>?????: Heap size is ' + limits.getHeapSize() + ' enforced is ' + limits.getLimitHeapSize());
+                        sendAttachmentToOcrolus(oppAttachment, pk);
+                    } else {
+                        errorMessage = '"' + oppAttachment.Name + '" is not a bank statement. Not uploaded to Ocrolus';
+                        Marlin_IntegrationLog.LogException('Ocrolus File Upload', oppAttachment.Id, 'Error', '', '', '', errorMessage);
+                    }
 
+                }
+            }
         }
 
     }

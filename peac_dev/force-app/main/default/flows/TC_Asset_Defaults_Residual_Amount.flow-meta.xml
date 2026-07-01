@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <assignments>
+        <name>myVariable_waitStartTimeAssignment</name>
+        <label>myVariable_waitStartTimeAssignment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>myVariable_waitStartTimeVariable</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Flow.CurrentDateTime</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>myDecision</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision</name>
+        <label>myDecision</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision3</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_1</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_1_A1</targetReference>
+            </connector>
+            <label>Residual % changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision3</name>
+        <label>myDecision3</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_4</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_4</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_4_A1</targetReference>
+            </connector>
+            <label>Reset % to 0 if not possible to have %</label>
+        </rules>
+    </decisions>
+    <description>Default residual amount when resid % is changed</description>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>[Asset__c].Residual_Percentage__c * [Asset__c].List_Price__c </stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_2_myRule_1_A1_6993725993</name>
+        <dataType>Currency</dataType>
+        <expression>{!myVariable_current.Residual_Percentage__c} * {!myVariable_current.List_Price__c}</expression>
+        <scale>18</scale>
+    </formulas>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>TEXT([Asset__c].Opportunity__r.Purchase_Options__c) &lt;&gt; &quot;1.00 Out&quot;
+&amp;&amp;
+TEXT([Asset__c].Opportunity__r.Purchase_Options__c) &lt;&gt; &quot;Assign Resid No Renewal&quot;
+&amp;&amp;
+TEXT([Asset__c].Opportunity__r.Purchase_Options__c) &lt;&gt; &quot;Assigned Residual&quot;
+&amp;&amp;
+TEXT( [Asset__c].Opportunity__r.Purchase_Options__c) &lt;&gt; &quot;Customer Owned&quot;
+&amp;&amp;
+(
+  (
+	 ISNEW()
+	 &amp;&amp;
+	 [Asset__c].Residual_Percentage__c &gt;= 0
+	 &amp;&amp;
+	 [Asset__c].List_Price__c &gt;= 0
+  )
+  ||
+  (
+	 [Asset__c].Residual_Percentage__c &gt;= 0
+	 &amp;&amp;
+	 [Asset__c].List_Price__c &gt;= 0
+	 &amp;&amp;
+	 (
+		ISCHANGED([Asset__c].Residual_Percentage__c)
+		||
+		ISCHANGED([Asset__c].List_Price__c)
+	 )		 
+  )	  
+
+)</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_1</name>
+        <dataType>Boolean</dataType>
+        <expression>TEXT({!myVariable_current.Opportunity__r.Purchase_Options__c}) &lt;&gt; &quot;1.00 Out&quot;
+&amp;&amp;
+TEXT({!myVariable_current.Opportunity__r.Purchase_Options__c}) &lt;&gt; &quot;Assign Resid No Renewal&quot;
+&amp;&amp;
+TEXT({!myVariable_current.Opportunity__r.Purchase_Options__c}) &lt;&gt; &quot;Assigned Residual&quot;
+&amp;&amp;
+TEXT( {!myVariable_current.Opportunity__r.Purchase_Options__c}) &lt;&gt; &quot;Customer Owned&quot;
+&amp;&amp;
+(
+  (
+	 ISNEW()
+	 &amp;&amp;
+	 {!myVariable_current.Residual_Percentage__c} &gt;= 0
+	 &amp;&amp;
+	 {!myVariable_current.List_Price__c} &gt;= 0
+  )
+  ||
+  (
+	 {!myVariable_current.Residual_Percentage__c} &gt;= 0
+	 &amp;&amp;
+	 {!myVariable_current.List_Price__c} &gt;= 0
+	 &amp;&amp;
+	 (
+		ISCHANGED({!myVariable_current.Residual_Percentage__c})
+		||
+		ISCHANGED({!myVariable_current.List_Price__c})
+	 )		 
+  )	  
+
+)</expression>
+    </formulas>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>AND (
+	[Asset__c].Residual_Percentage__c &gt; 0, 
+	OR(
+		TEXT([Asset__c].Opportunity__r.Purchase_Options__c) = &quot;1.00 Out&quot;,
+		TEXT([Asset__c].Opportunity__r.Purchase_Options__c) = &quot;Assign Resid No Renewal&quot;,
+		TEXT([Asset__c].Opportunity__r.Purchase_Options__c) = &quot;Assigned Residual&quot;,
+	    TEXT([Asset__c].Opportunity__r.Purchase_Options__c) = &quot;Customer Owned&quot;
+	)
+)</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_4</name>
+        <dataType>Boolean</dataType>
+        <expression>AND (
+	{!myVariable_current.Residual_Percentage__c} &gt; 0, 
+	OR(
+		TEXT({!myVariable_current.Opportunity__r.Purchase_Options__c}) = &quot;1.00 Out&quot;,
+		TEXT({!myVariable_current.Opportunity__r.Purchase_Options__c}) = &quot;Assign Resid No Renewal&quot;,
+		TEXT({!myVariable_current.Opportunity__r.Purchase_Options__c}) = &quot;Assigned Residual&quot;,
+	    TEXT({!myVariable_current.Opportunity__r.Purchase_Options__c}) = &quot;Customer Owned&quot;
+	)
+)</expression>
+    </formulas>
+    <interviewLabel>TC_Asset_Defaults_Residual_Amount-21_InterviewLabel</interviewLabel>
+    <label>TC: Asset Defaults - Residual Amount</label>
+    <processMetadataValues>
+        <name>ObjectType</name>
+        <value>
+            <stringValue>Asset__c</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>ObjectVariable</name>
+        <value>
+            <elementReference>myVariable_current</elementReference>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OldObjectVariable</name>
+        <value>
+            <elementReference>myVariable_old</elementReference>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>TriggerType</name>
+        <value>
+            <stringValue>onAllChanges</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Workflow</processType>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[Asset__c]</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_1_A1</name>
+        <label>Update Residual Amount</label>
+        <locationX>100</locationX>
+        <locationY>200</locationY>
+        <connector>
+            <targetReference>myDecision3</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Currency</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Residual Amount</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue></stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Formula</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Residual_Amount__c</field>
+            <value>
+                <elementReference>formula_2_myRule_1_A1_6993725993</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Asset__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[Asset__c]</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>myRule_4_A1</name>
+        <label>Update Resid % to 0</label>
+        <locationX>400</locationX>
+        <locationY>200</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Number</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Residual Percentage</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue></stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Number</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Residual_Percentage__c</field>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </inputAssignments>
+        <object>Asset__c</object>
+    </recordUpdates>
+    <startElementReference>myVariable_waitStartTimeAssignment</startElementReference>
+    <status>Active</status>
+    <variables>
+        <name>myVariable_current</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Asset__c</objectType>
+    </variables>
+    <variables>
+        <name>myVariable_old</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Asset__c</objectType>
+    </variables>
+    <variables>
+        <name>myVariable_waitStartTimeVariable</name>
+        <dataType>DateTime</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <elementReference>$Flow.CurrentDateTime</elementReference>
+        </value>
+    </variables>
+</Flow>

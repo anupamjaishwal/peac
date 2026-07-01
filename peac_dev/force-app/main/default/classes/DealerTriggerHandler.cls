@@ -157,7 +157,7 @@ public class DealerTriggerHandler extends SL_Trigger.baseHandler{
                 System.debug('optyProgram---->'+optyProgram);
                 
                 if(optyProgram.size()>0) {
-                    insert optyProgram;
+                    SL_DPImperative.adminInsert(optyProgram);// DP-2181 Misael Romero
                 }
             }  
             
@@ -214,13 +214,13 @@ public class DealerTriggerHandler extends SL_Trigger.baseHandler{
     public static void populateFieldsOnOpportunity(List<Dealer__c> newdealList){
         Set<id> idopportunitySet=new Set<id>();
         List<Opportunity> updateOpptyList = new List<Opportunity>();
-        Integer lCounter = 1;
+        
         for(Dealer__c deal:newdealList ){
             idopportunitySet.add(deal.Opportunity__c);
         }
        List<Opportunity> dealerOpportunityList=[select id, Name,(select id,Dealer__r.Name,Dealer__r.Business_Phone__c,Dealer__r.Business_Address__c,Dealer__r.Business_City__c,Dealer__r.Business_State__c,Dealer__r.Business_Zip__c from Brokers__r) from Opportunity where id in:idopportunitySet];
         for(Opportunity opps:dealerOpportunityList){
-            
+            Integer lCounter = 1;// SAL-6887 Misael Romero
             opps.Put('Dealer_Name' + String.ValueOf(lCounter) +'__c',null);
             opps.Put('Dealer_Phone' + String.ValueOf(lCounter) +'__c',null);
             opps.Put('Dealer_Address' + String.ValueOf(lCounter) +'__c',null);
@@ -236,9 +236,14 @@ public class DealerTriggerHandler extends SL_Trigger.baseHandler{
            updateOpptyList.add(opps);
         } 
         system.debug('updateOpptyList----'+updateOpptyList);
-         try{
-            if(updateOpptyList.Size() > 0)
-                update updateOpptyList;      
+         try{//SAL-6949: Manish
+            if(updateOpptyList.Size() > 0){
+                if(!System.isQueueable() && !System.isBatch() && !System.isFuture()){
+                    System.enqueueJob(new PEAC_GenericUpdateQueueable(updateOpptyList));
+                }else{
+                    update updateOpptyList;// SAL-6887 Misael Romero
+                }
+            }
         }
         catch(Exception e){
             System.debug(e.getMessage());
@@ -264,7 +269,6 @@ public class DealerTriggerHandler extends SL_Trigger.baseHandler{
         Set<id> idopportunitySet=new Set<id>();
 		Set<id> nameset=new Set<id>();
         List<Opportunity> updateOpptyList = new List<Opportunity>();
-        Integer lCounter = 1;
         for(Dealer__c deal:newdealList ){
             idopportunitySet.add(deal.Opportunity__c);
 			nameset.add(deal.id);
@@ -275,6 +279,7 @@ public class DealerTriggerHandler extends SL_Trigger.baseHandler{
        FROM Opportunity WHERE id in:idopportunitySet];
         for(Opportunity opps:dealerOpportunityList){
             //deleteDealerinfoOnOpportunity
+            Integer lCounter = 1;// SAL-6887 Misael Romero
             opps.Vendor_Name__c='';
             opps.Vendor_Address__c='';
             for(Integer i=1;i<=5;i++){

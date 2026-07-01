@@ -1,0 +1,114 @@
+/* Container and table visuals */
+:host {
+  display: block;
+}
+
+/* Contained scroll with sticky header */
+.table-container {
+  max-height: 420px; /* adjust as needed */
+  overflow: auto;
+  border-radius: 0.25rem;
+  background: var(--lwc-colorBackgroundAlt, #ffffff);
+}
+
+/* Table look: consistent density, sticky header, subtle borders */
+.il-table {
+  table-layout: auto;
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.il-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--lwc-colorBackground, #f3f3f3);
+  border-bottom: 1px solid var(--lwc-colorBorder, #dddbda);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.il-table tbody tr > td {
+  height: 2.25rem; /* compact, readable */
+  vertical-align: middle;
+}
+
+.il-table td,
+.il-table th {
+  white-space: nowrap;
+}
+
+/* Numeric/text alignment helpers */
+.mono {
+  font-variant-numeric: tabular-nums;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Status badge palette for high contrast.
+   Avoids INTERNAL design tokens by using safe fallbacks only. */
+.slds-badge.slds-theme_success {
+  background: #e3fcef; /* fallback only */
+  color: #0a5746;      /* fallback only */
+}
+.slds-badge.slds-theme_warning {
+  background: #fff3e0; /* fallback only */
+  color: #8a3d00;      /* fallback only */
+}
+.slds-badge.slds-theme_error {
+  background: #fde7e9; /* fallback only */
+  color: #ba0517;      /* fallback only */
+}
+
+/* Tighten cell padding slightly for dense data */
+.slds-table_cell-buffer tr > th:first-child,
+.slds-table_cell-buffer tr > td:first-child {
+  padding-left: 0.75rem;
+}
+.slds-table_cell-buffer tr > th,
+.slds-table_cell-buffer tr > td {
+  padding-top: 0.375rem;
+  padding-bottom: 0.375rem;
+}
+
+/* Subtle hover to aid scanability */
+.il-table tbody tr:hover > td {
+  background: var(--lwc-colorBackgroundRowHover, #f7f9fb);
+}
+
+/* Deprecated legacy row/col styles removed and superseded by table layout */
+/* .peac-row, .peac-col-qbt, .peac-col-status, .peac-col-link { } */
+
+@media (max-width: 48rem) {
+  .table-container {
+    max-height: 360px;
+  }
+}
+
+.peac-scroll {
+    max-height: 10rem;           /* ~4 rows visible; scroll beyond */
+    overflow-y: auto;
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+}
+
+.peac-header {
+    background: #f3f2f2;         /* classic SLDS gray */
+    color: #181818;              /* dark header text */
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    position: sticky;            /* sticky header for scroll */
+    top: 0;
+    z-index: 1;
+    border-bottom: 1px solid #dddbda;
+}
+
+.peac-row {
+    align-items: center;
+    background: #ffffff;
+}
+
+.peac-row:hover {
+    background: #f9f9f9;
+}

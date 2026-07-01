@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <description>If true is passed in, changes bypass to true to avoid validations. If false is passed in, turns off the bypass.</description>
+    <interviewLabel>TC Update Bypass {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>TC Update Bypass</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Change_Bypass</name>
+        <label>Change Bypass</label>
+        <locationX>228</locationX>
+        <locationY>50</locationY>
+        <inputAssignments>
+            <field>Bypass__c</field>
+            <value>
+                <elementReference>varTurnOnBypass</elementReference>
+            </value>
+        </inputAssignments>
+        <object>ORE__c</object>
+    </recordUpdates>
+    <startElementReference>Change_Bypass</startElementReference>
+    <status>Active</status>
+    <variables>
+        <description>True turns on bypass, false turns off bypass</description>
+        <name>varTurnOnBypass</name>
+        <dataType>Boolean</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <value>
+            <booleanValue>false</booleanValue>
+        </value>
+    </variables>
+</Flow>

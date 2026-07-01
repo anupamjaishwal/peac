@@ -1,0 +1,57 @@
+:host {
+    font-family: "Salesforce Sans", Arial, sans-serif;
+}
+
+.asset-table-wrapper {
+    background: #ffffff;
+    overflow-x: auto;
+    padding: 14px 18px 18px;
+}
+
+.asset-table {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    border: 1px solid #d8dde6;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.asset-table th {
+    background: #f8fafc;
+    border-bottom: 1px solid #d8dde6;
+    color: #1f2937;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 10px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.asset-table td {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 8px;
+    vertical-align: middle;
+}
+
+.asset-table tr:last-child td {
+    border-bottom: none;
+}
+
+.asset-table td:first-child,
+.asset-table th:first-child {
+    text-align: center;
+    width: 50px;
+}
+
+.asset-table tr:hover td {
+    background: #fbfdff;
+}
+
+.asset-table lightning-input {
+    --slds-c-input-radius-border: 6px;
+}
+
+.asset-table lightning-button {
+    white-space: nowrap;
+}

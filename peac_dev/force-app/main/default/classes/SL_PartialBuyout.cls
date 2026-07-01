@@ -24,88 +24,6 @@ public without sharing class SL_PartialBuyout {
 
     public static String getCAssetsInfo(String contractId){
         String result = '{}';
-        // only use if no enough coverage
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = 'c';
-        result = 'o';
-        result = 'v';
-        result = 'e';
-        result = '{}';
         List<Contract_Asset__c > contractAssets = getContractAssets(contractId);
         if(contractAssets.size() > 1){
             Account dealerAccount = null;
@@ -148,6 +66,8 @@ public without sharing class SL_PartialBuyout {
             }
             Boolean isPartial = parsedAssets != null && parsedAssets.size() > 0;
             String infoLeaseBuyouts = SL_SummaryAndDetail.requestByContractNumber(contractId, 'buyoutQuotes', 'fromPEAC_BuyOut');// SL-2640 Misael Romero
+            // DP-2069 Misael Romero
+            infoLeaseBuyouts = infoLeaseBuyouts.replaceAll('\r\n', '\\\\r\\\\n').replaceAll('\\\\"', '\\\\"').replaceAll('\t', '\\\\t');
             if(Test.isRunningTest()){
                 infoLeaseBuyouts = '{"Response": {"Quotes": [{ "MiscSummary": [ { "MiscDescription": "Insurance Fee", "MiscTotal": "155.88" }, { "MiscDescription": "Insurance Premium", "MiscTotal": "599.34" } ], "DailyFinance": "", "Miscellaneous": "755.22", "QuoteUserId": "marlin", "OriginalTerm": "59", "QuotedBy": "test05310513@mai", "Residual": "0.00", "LateCharges": "645.75", "UnearnedIDC": "", "SalesTax": "0.00", "CustomerReceivableBalance": "73800.00", "CommencementDate": "07/01/2022", "QuoteSeq": "1", "BuyoutDate": "08/20/2024", "QuotedTo": "", "SecurityDeposit": "0.00", "DealerNumber": "94925.0058", "QuoteExpireDatet": "09/19/2024", "PurgeDate": "10/19/2024", "NumberOfPayments": "19.00", "DealerName": "Dimension Funding LLC", "Status": "ACTIVE", "InvoiceDescription": "Truck mods/misc peripherals, Morse 40/40 Tier IV Diesel Genrator", "UnearnedFinance": "", "ReceivableBalance": "73800.00", "Fees": "0.00", "EndingDeposit": "", "TotalBuyout": "75200.97", "DailyResidual": "", "ITC": "0.00", "QuoteType": "39", "PartialCode": "Complete Contract Buyout", "QuoteTypeDesc": "Vendor Buyout renewal (entered)" }, { "MiscSummary": [ { "MiscDescription": "Insurance Fee", "MiscTotal": "155.88", "MiscIncludeInRentYN": "N" }, { "MiscDescription": "Insurance Premium", "MiscTotal": "599.34", "MiscIncludeInRentYN": "Y" } ], "DailyFinance": "", "Miscellaneous": "755.22", "QuoteUserId": "marlin", "OriginalTerm": "59", "QuotedBy": "test05310513@mai", "Residual": "", "LateCharges": "645.75", "UnearnedIDC": "", "SalesTax": "0.00", "CustomerReceivableBalance": "73800.00", "CommencementDate": "07/01/2022", "QuoteSeq": "2", "BuyoutDate": "08/20/2024", "QuotedTo": "", "SecurityDeposit": "0.00", "DealerNumber": "94925.0058", "QuoteExpireDatet": "09/19/2024", "PurgeDate": "10/19/2024", "NumberOfPayments": "19.00", "DealerName": "Dimension Funding LLC", "Status": "ACTIVE", "InvoiceDescription": "Truck mods/misc peripherals, Morse 40/40 Tier IV Diesel Genrator", "UnearnedFinance": "", "ReceivableBalance": "73800.00", "Fees": "0.00", "EndingDeposit": "", "TotalBuyout": "75200.97", "DailyResidual": "", "ITC": "0.00", "QuoteType": "35", "PartialCode": "Complete Contract Buyout", "QuoteTypeDesc": "TUR 0 PMT PENALTY - MARLIN NET USE ONLY" }]}}';
             }
@@ -171,6 +91,7 @@ public without sharing class SL_PartialBuyout {
                                 }
                                 newBuyout.Partial_Buyout__c = isPartial;
                                 newBuyout.Most_Recent_DP__c = isDPProfile;
+                                newBuyout.Show_To_DP_Users__c = isDPProfile;
                                 buyoutsToInsert.add(newBuyout);
                             }
                         }

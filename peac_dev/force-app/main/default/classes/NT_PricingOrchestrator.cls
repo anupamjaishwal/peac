@@ -4,7 +4,7 @@
  *              audit logging, and TValue API invocation.
  * @author Northteq
  */
-public class NT_PricingOrchestrator {
+public without sharing class NT_PricingOrchestrator {
     
     // Service instances
     private NT_PricingConfigService configService;
@@ -34,6 +34,7 @@ public class NT_PricingOrchestrator {
      */
     @InvocableMethod(label='Run Pricing Orchestrator' description='Runs the pricing orchestrator for Opportunities or Quotes')
     public static void runPricingOrchestrator(List<Id> recordIds) {
+        System.debug('runPricingOrchestrator recordIds: ' + recordIds);
         if (recordIds == null || recordIds.isEmpty()) {
             return;
         }
@@ -44,12 +45,18 @@ public class NT_PricingOrchestrator {
         
         // Enqueue for async processing
         Set<Id> recordIdSet = new Set<Id>(recordIds);
-        
+
+        // Mark all records as In Progress before enqueuing so status updates immediately
+        NT_PricingOrchestrator orchestrator = new NT_PricingOrchestrator();
+        for (Id recordId : recordIdSet) {
+            orchestrator.markInProgress(recordId, parentType);
+        }
+
         if (!Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
+
             System.enqueueJob(new NT_PricingOrchestratorQueueable(recordIdSet, parentType));
         } else {
             // Synchronous execution for tests or when queueable limit reached
-            NT_PricingOrchestrator orchestrator = new NT_PricingOrchestrator();
             for (Id recordId : recordIds) {
                 try {
                     orchestrator.executePricing(recordId, parentType);
@@ -69,7 +76,9 @@ public class NT_PricingOrchestrator {
     public NT_PricingContext executePricing(Id recordId, String parentType) {
         // Initialize context
         NT_PricingContext ctx = new NT_PricingContext(recordId);
-        
+
+        publishEvent(recordId, 'Starting');
+
         try {
             // Step 1: Load configuration
             ctx = configService.loadConfiguration(ctx);
@@ -81,18 +90,31 @@ public class NT_PricingOrchestrator {
                 handleError(ctx);
                 return ctx;
             }
-            
-            // Step 2: Validate Program constraints
-            ctx = validationService.validateProgramConstraints(ctx);
-            System.debug('ctx.hasError() after validateProgramConstraints: ' + ctx.hasError());
-            if (ctx.hasError()) {
-                handleError(ctx);
-                return ctx;
-            }
-            
-            // Step 3: Evaluate Rate Cards
+
+            // Lease products normally require a Program_Residual__c record, but AC
+            // does not call this out as a hard gate. Uncomment if AC is updated to require it.
+            //
+            // ctx = validationService.validateResidualConfiguration(ctx);
+            // if (ctx.hasError()) {
+            //     handleError(ctx);
+            //     return ctx;
+            // }
+
+            // Step 2: Evaluate Rate Cards
             ctx = rateCardService.evaluateRateCards(ctx);
             System.debug('ctx.hasError() after rateCardService: ' + ctx.hasError());
+            
+            // Fallback: if program rate cards yielded no match, retry with generic rate cards
+            if ((ctx.hasError() || !ctx.hasSelectedRateCard()) && ctx.hasProgram) {
+                System.debug('Program rate cards failed, falling back to generic rate cards');
+                ctx.status = NT_PricingContext.STATUS_SUCCESS;
+                ctx.errorMessage = null;
+                ctx.selectedRateCard = null;
+                ctx.selectedRate = null;
+                ctx = configService.loadGenericFallback(ctx);
+                ctx = rateCardService.evaluateRateCards(ctx);
+            }
+            
             if (ctx.hasError() || !ctx.hasSelectedRateCard()) {
                 handleError(ctx);
                 return ctx;
@@ -108,26 +130,39 @@ public class NT_PricingOrchestrator {
             
             // Step 5: Create Pricing Result
             resultService.createPricingResult(ctx);
-            
-            // Step 6: Get Quote for TValue invocation (no updates - user selects TValue quote later)
-            Quote parentQuote = ctx.quote;
-            
-            // Link Pricing Result to Quote if available
-            if (ctx.pricingResult != null && parentQuote != null) {
-                ctx.pricingResult.Quote__c = parentQuote.Id;
-                update ctx.pricingResult;
+
+            if(ctx.hasError()) {
+                handleError(ctx);
+                return ctx;
             }
             
-            // Step 7: Invoke TValue asynchronously to generate quote options
-            if (parentQuote != null) {
-                List<String> missingFields = new List<String>();
-                if (validationService.isTValueReady(ctx, missingFields)) {
+            // Step 5a: Create per-modifier Pricing Result records
+            resultService.createModifierResults(ctx);
+            if(ctx.hasError()) {
+                handleError(ctx);
+                return ctx;
+            }
+            // Step 5b: Mark run-level result as Error if any modifier failed
+            if (!ctx.modifierErrors.isEmpty()) {
+                resultService.markModifierErrors(ctx);
+            }
+
+            // Step 6: Invoke TValue asynchronously
+            // Quote__c is already linked inside createPricingResult; no extra update needed.
+            List<String> missingFields = new List<String>();
+            if (validationService.isTValueReady(ctx, missingFields)) {
+                System.debug('TValue is ready');
+                Quote parentQuote = ctx.quote;
+                if (parentQuote != null) {
                     tvalueService.invokeTValue(ctx, parentQuote);
-                } else {    
-                    ctx.setError('TValue skipped - missing fields: ' + String.join(missingFields, ', '));
-                    handleError(ctx);
-                    return ctx;
+                } else if (ctx.isOpportunity()) {
+                    tvalueService.invokeTValue(ctx);
                 }
+            } else {    
+                System.debug('TValue is not ready');
+                ctx.setError('TValue skipped - missing fields: ' + String.join(missingFields, ', '));
+                handleError(ctx);
+                return ctx;
             }
             
             // Final status update
@@ -138,9 +173,10 @@ public class NT_PricingOrchestrator {
             }
             
             // Update Quote with Pricing_Status__c lookup for status tracking
-            updateQuotePricingStatus(ctx);
+            updatePricingStatus(ctx);
             
         } catch (Exception e) {
+            System.debug('Unexpected error: ' + e.getMessage());
             ctx.setError('Unexpected error: ' + e.getMessage());
             handleException(ctx, e);
         }
@@ -148,6 +184,23 @@ public class NT_PricingOrchestrator {
         return ctx;
     }
     
+    /**
+     * @description Sets Pricing_Status__c = 'In Progress' on the Opportunity or Quote
+     * @param recordId The record Id
+     * @param parentType 'Opportunity' or 'Quote'
+     */
+    private void markInProgress(Id recordId, String parentType) {
+        try {
+            if (NT_PricingContext.PARENT_TYPE_OPPORTUNITY.equals(parentType)) {
+                update new Opportunity(Id = recordId, Pricing_Status__c = 'In Progress');
+            } else if (NT_PricingContext.PARENT_TYPE_QUOTE.equals(parentType)) {
+                update new Quote(Id = recordId, Pricing_Status__c = 'In Progress');
+            }
+        } catch (DmlException e) {
+            System.debug('Failed to set Pricing_Status__c to In Progress: ' + e.getMessage());
+        }
+    }
+
     /**
      * @description Handles errors during pricing execution
      * @param ctx The pricing context
@@ -161,7 +214,9 @@ public class NT_PricingOrchestrator {
         }
         
         // Update Quote with Pricing_Status__c lookup
-        updateQuotePricingStatus(ctx);
+        updatePricingStatus(ctx);
+
+        publishEvent(ctx.quote != null ? ctx.quote.Id : ctx.parentId, 'Error');
     }
     
     /**
@@ -178,24 +233,72 @@ public class NT_PricingOrchestrator {
         }
         
         // Update Quote with Pricing_Status__c lookup
-        updateQuotePricingStatus(ctx);
+        updatePricingStatus(ctx);
+
+        publishEvent(ctx.quote != null ? ctx.quote.Id : ctx.parentId, 'Error');
     }
-    
-    /**
-     * @description Updates Quote with Pricing_Result__c lookup and Pricing_Status__c text
-     * @param ctx The pricing context
-     */
-    private void updateQuotePricingStatus(NT_PricingContext ctx) {
-        if (ctx.quote != null && ctx.pricingResult != null) {
-            try {
-                ctx.quote.Pricing_Status__c = ctx.hasError() ? 'Error' : 'Success';
-                update ctx.quote;
-            } catch (DmlException e) {
-                System.debug('Failed to update Quote with Pricing Result: ' + e.getMessage());
+
+    private static void publishEvent(Id recordId, String status) {
+        try {
+            NT_TValue_Event__e event = new NT_TValue_Event__e();
+            event.RecordId__c = recordId;
+            event.Status__c = status;
+            event.UserId__c = UserInfo.getUserId();
+            List<Database.SaveResult> results = EventBus.publish(new List<NT_TValue_Event__e>{ event });
+            for (Database.SaveResult result : results) {
+                if (!result.isSuccess()) {
+                    System.debug('Failed to publish pricing event (' + status + '): ' + result.getErrors()[0].getMessage());
+                }
             }
+        } catch (Exception e) {
+            System.debug('Error publishing pricing event (' + status + '): ' + e.getMessage());
         }
     }
     
+    /**
+     * @description Updates Quote or Opportunity with Pricing_Status__c text
+     * @param ctx The pricing context
+     */
+    private void updatePricingStatus(NT_PricingContext ctx) {
+        if (ctx.pricingResult == null) {
+            return;
+        }
+        
+        String status;
+        if (!ctx.hasError()) {
+            status = 'Success';
+        } else if (NT_PricingContext.STATUS_PRICING_ERROR.equals(ctx.status)) {
+            status = 'Pricing Error';
+        } else {
+            status = 'Error';
+        }
+        
+        try {
+            if (ctx.quote != null) {
+                ctx.quote.Pricing_Status__c = status;
+                update ctx.quote;
+                
+            } else if (ctx.isOpportunity() && ctx.opportunity != null) {
+                ctx.opportunity.Pricing_Status__c = status;
+                update ctx.opportunity;
+                
+                if (status == 'Success') {
+                    PEAC_LeaseFieldsTrackingHandler.clearLeasePricingTracking(
+                        new Set<Id>{ ctx.opportunity.Id }
+                    );
+                } else {
+                    NT_TValueQueueable.sendPricingNotification(status, 'Please review the Pricing Results.', ctx.opportunity.Id);
+                }
+            }
+        } catch (Exception e) {
+            System.debug('Failed to update Pricing Status: ' + e.getMessage());
+            if(ctx.isOpportunity() && ctx.opportunity != null) {
+                NT_TValueQueueable.sendPricingNotification('Error', e.getMessage(), ctx.opportunity.Id);
+            } else if(ctx.quote != null) {
+                NT_TValueQueueable.sendPricingNotification('Error', e.getMessage(), ctx.quote.Id);
+            }
+        }
+    }
     /**
      * @description Determines parent type from record Id
      * @param recordId The record Id

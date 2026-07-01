@@ -4,15 +4,17 @@
  * can be called by after opportunity trigger or before ef approved offer
  */
 //Deferral_Payments__c
-public with sharing class TC_EfOfferRateFactorCalculator {
+public without sharing class TC_EfOfferRateFactorCalculator {
   private static String FMV_VALUE = 'FMV';
   public static List <EF_Approved_Offers__c> calculate(List <EF_Approved_Offers__c> efs, Map <Id, Opportunity> relatedOpp) {
     //=(1+21.75/12)^1*(21.75%/12)/(1-(1+(21.75/12))^-24)
     // =(1+yield/12)^Deferral*(yield/12)/(1-(1+(yield/12))^-term)
     List<EF_Approved_Offers__c> lstEfsUpdated = new List<EF_Approved_Offers__c>();
     for (EF_Approved_Offers__c ef : efs) {
-      Boolean IS_PORTAL_APP = TC_CreateApprovedOffers.isPortalOpp(relatedOpp.get(ef.Opportunity__c));
-      if(relatedOpp.get(ef.Opportunity__c).Purchase_Options__c == FMV_VALUE && IS_PORTAL_APP){
+      Opportunity opp = relatedOpp.get(ef.Opportunity__c);
+      if (opp == null) continue;
+      Boolean IS_PORTAL_APP = TC_CreateApprovedOffers.isPortalOpp(opp);
+      if(opp.Purchase_Options__c == FMV_VALUE && IS_PORTAL_APP){
         CONTINUE;
       }
 
@@ -28,11 +30,11 @@ public with sharing class TC_EfOfferRateFactorCalculator {
           term = term - 2;
         }
 
-        Double deferral = relatedOpp.get(ef.Opportunity__c).Deferral_Payments__c != null ? deferralMapping.get (relatedOpp.get(ef.Opportunity__c).Deferral_Payments__c) : 0;
+        Double deferral = opp.Deferral_Payments__c != null ? deferralMapping.get(opp.Deferral_Payments__c) : 0;
         //Double rateFactor = Math.pow((1+yield/12),deferral)*(yield/12)/(1-Math.pow((1+(yield/12)),-term));
         //DP-214
         Double rateFactor = 0;
-        if(relatedOpp.get(ef.Opportunity__c).Required_Adv_Payments__c == 1 && IS_PORTAL_APP){
+        if(opp.Required_Adv_Payments__c == 1 && IS_PORTAL_APP){
           rateFactor = Math.abs(
                         ((yield / 12) * (-1 / (1 + (yield / 12)) * (Math.pow(1 + (yield / 12), term))))
                         / (Math.pow(1 + (yield / 12), term) -1)
@@ -58,9 +60,10 @@ public with sharing class TC_EfOfferRateFactorCalculator {
   public static List<EF_Approved_Offers__c> calculateFMV(List<EF_Approved_Offers__c> efs, Map <Id, Opportunity> relatedOpp) {
     List<EF_Approved_Offers__c> lstEfsUpdated = new List<EF_Approved_Offers__c>();
     for (EF_Approved_Offers__c ef : efs) {
-      Boolean IS_PORTAL_APP = TC_CreateApprovedOffers.isPortalOpp(relatedOpp.get(ef.Opportunity__c));
-      //FMV is only needed for Portal Apps so if the current opp is not a portal app we are going to the next record in the list. DP-214
-      if(!IS_PORTAL_APP || relatedOpp.get(ef.Opportunity__c).Purchase_Options__c != FMV_VALUE ){
+      Opportunity opp = relatedOpp.get(ef.Opportunity__c);
+      if (opp == null) continue;
+      Boolean IS_PORTAL_APP = TC_CreateApprovedOffers.isPortalOpp(opp);
+      if(!IS_PORTAL_APP || opp.Purchase_Options__c != FMV_VALUE ){
         CONTINUE;
       }
       // both yield and term are required.
@@ -76,7 +79,7 @@ public with sharing class TC_EfOfferRateFactorCalculator {
         //Double rateFactor = Math.abs( ( (yield /12) * (-1 * (1 + Math.pow((yield/12),term)) + residual  ) ) / ( Math.pow((1 + yield / 12), term) -1 ));
         //DP-214
         Double rateFactor = 0;
-        if(relatedOpp.get(ef.Opportunity__c).Required_Adv_Payments__c == 1){
+        if(opp.Required_Adv_Payments__c == 1){
           rateFactor = Math.abs( 
                         ( (yield /12) * ( (-1 / (1 + (yield/12))) * (Math.pow(1 + (yield/12),term)) + (residual * ( 1 - (yield/12)) )  ) )
                         / ( Math.pow(1 + (yield / 12), term) -1 )

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Flow Lookup Input</masterLabel>
+    <description>A specialized lookup input field component for use in Flow screens. Provides a streamlined interface for selecting records with built-in validation and Flow integration.</description>
+    <targets>
+        <target>lightning__FlowScreen</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__FlowScreen">
+            <!-- Core lookup properties -->
+            <property name="value" label="Selected Record ID" type="String" 
+                      description="The ID of the selected record. This value is updated when a user selects a record." />
+            
+            <property name="sobjectType" label="Object API Name" type="String" required="true"
+                      description="The API name of the object to search (e.g., Account, Contact, CustomObject__c)" />
+            
+            <!-- Field properties -->
+            <property name="label" label="Field Label" type="String" required="true"
+                      description="The label displayed above the lookup field" />
+            
+            <property name="fieldName" label="Field API Name" type="String" 
+                      description="The API name of the field. Used in change events for identifying which field was modified. If not provided, defaults to 'value'." />
+            
+            <property name="helpText" label="Help Text" type="String" 
+                      description="Helpful text that appears when users hover over the help icon" />
+            
+            <!-- Field behavior -->
+            <property name="required" label="Required" type="Boolean" default="false"
+                      description="Makes the field required. Users must select a record before proceeding." />
+            
+            <property name="disabled" label="Disabled" type="Boolean" default="false"
+                      description="Disables the lookup field, preventing user interaction" />
+            
+            <property name="readOnly" label="Read Only" type="Boolean" default="false"
+                      description="Makes the field read-only. Similar to disabled but with different styling." />
+            
+            <!-- Context -->
+            <property name="recordId" label="Record ID" type="String" 
+                      description="Optional: The ID of the record that provides context for the form. Used when the lookup should be aware of the parent record context." />
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

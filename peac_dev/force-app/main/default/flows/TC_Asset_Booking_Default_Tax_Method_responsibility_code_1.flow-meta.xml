@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <decisions>
+        <name>myRule_1</name>
+        <label>Upfront Tax Code is null</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_3</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Upfront Tax Code is null</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_1_A1</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>TRUE_Upfront Tax Code is null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_14</name>
+        <label>Tax Code is not null California $101</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_19</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Tax Code is not null California $101</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_14</name>
+            <conditionLogic>1 AND 2 AND 3 AND 4 AND (5 OR 6 OR (7 AND 8))</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Equipment_Location_State__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>CALIFORNIA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__r.Purchase_Options__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>$101 Purchase Option</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Equipment_Location_State__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_14_A1</targetReference>
+            </connector>
+            <label>TRUE_Tax Code is not null California $101</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_19</name>
+        <label>Tax code is not null Maine $1 or $101</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_24</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Tax code is not null Maine $1 or $101</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_19</name>
+            <conditionLogic>1 AND 2 AND 3 AND (4 OR 5) AND (6 OR 7 OR (8 AND 9))</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Equipment_Location_State__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>MAINE</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__r.Purchase_Options__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>$101 Purchase Option</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__r.Purchase_Options__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>1.00 Out</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Equipment_Location_State__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_19_A1</targetReference>
+            </connector>
+            <label>TRUE_Tax code is not null Maine $1 or $101</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_24</name>
+        <label>Tax Code is not null and Maine FMV</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_29</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Tax Code is not null and Maine FMV</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_24</name>
+            <conditionLogic>1 AND 2 AND 3 AND 4 AND (5 OR 6 OR (7 AND 8))</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Equipment_Location_State__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>MAINE</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__r.Purchase_Options__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>FMV</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Equipment_Location_State__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_24_A1</targetReference>
+            </connector>
+            <label>TRUE_Tax Code is not null and Maine FMV</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_29</name>
+        <label>Set Recalc to false</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>FALSE_Set Recalc to false</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_29</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_29_A1</targetReference>
+            </connector>
+            <label>TRUE_Set Recalc to false</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_3</name>
+        <label>Upfront Tax Code is not null and not CA or Maine</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_5</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Upfront Tax Code is not null and not CA or Maine</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_3</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_3_A1</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>TRUE_Upfront Tax Code is not null and not CA or Maine</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_5</name>
+        <label>Upfront Tax Code is not null PPM State</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_7</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Upfront Tax Code is not null PPM State</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_5</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_5</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_5_A1</targetReference>
+            </connector>
+            <label>TRUE_Upfront Tax Code is not null PPM State</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_7</name>
+        <label>Upfront Tax Code is not null and GRM State</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_9</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Upfront Tax Code is not null and GRM State</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_7</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_7</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_7_A1</targetReference>
+            </connector>
+            <label>TRUE_Upfront Tax Code is not null and GRM State</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_9</name>
+        <label>Tax Code is not null California</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_14</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Tax Code is not null California</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_9</name>
+            <conditionLogic>1 AND 2 AND 3 AND 4 AND (5 OR 6 OR (7 AND 8))</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Equipment_Location_State__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>CALIFORNIA</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__r.Purchase_Options__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>1.00 Out</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Equipment_Location_State__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Upfront_Tax_Code__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Trigger_Asset_PB__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_9_A1</targetReference>
+            </connector>
+            <label>TRUE_Tax Code is not null California</label>
+        </rules>
+    </decisions>
+    <description>Migrated from the TC Asset Booking Default - Tax Method &amp; responsibility code process using multiple criteria.</description>
+    <formulas>
+        <name>formula_TRUE_myRule_5</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+   !ISBLANK(TEXT({!$Record.Upfront_Tax_Code__c})),
+   OR(
+      ISCHANGED({!$Record.Equipment_Location_State__c}),
+      ISCHANGED({!$Record.Upfront_Tax_Code__c})
+   )
+  ,OR( 
+	TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Alabama&quot;),
+	TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Idaho&quot;),
+	TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Illinois&quot;),
+	TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Nevada&quot;),
+	TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Tennessee&quot;)
+   )
+)</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_7</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+   !ISBLANK(TEXT({!$Record.Upfront_Tax_Code__c})),
+   OR(
+      ISCHANGED({!$Record.Equipment_Location_State__c}),
+      ISCHANGED({!$Record.Upfront_Tax_Code__c})
+   )
+  ,OR( 
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;District of Columbia&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Florida&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Georgia&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Hawaii&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Indiana&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Iowa&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Kansas&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Kentucky&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Louisiana&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Massachusetts&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Michigan&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Minnesota&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Nebraska&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;New Jersey&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;New Mexico&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;North Carolina&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;North Dakota&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Ohio&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Oklahoma&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Rhode Island&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;South Dakota&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Texas&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Utah&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Vermont&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Wisconsin&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;Washington&quot;),
+TEXT({!$Record.Equipment_Location_State__c}) = UPPER(&quot;West Virginia&quot;)
+   )
+)</expression>
+    </formulas>
+    <label>TC Asset Booking Default - Tax Method &amp; responsibility code_1</label>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>myRule_14_A1</name>
+        <label>Update to GRM</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_19</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Upfront_Tax_Method__c</field>
+            <value>
+                <stringValue>GRM</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_19_A1</name>
+        <label>Update to GRM</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_24</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Upfront_Tax_Method__c</field>
+            <value>
+                <stringValue>GRM</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_1_A1</name>
+        <label>Null Tax Method and Responsibility</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_3</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Responsibility_Code__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Upfront_Responsibility_Code__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Upfront_Tax_Method__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_24_A1</name>
+        <label>Update Tax Method to PPM</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_29</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Upfront_Tax_Method__c</field>
+            <value>
+                <stringValue>PPM</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_29_A1</name>
+        <label>Set to false</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Trigger_Asset_PB__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_3_A1</name>
+        <label>Update Responsibility Code</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_5</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Responsibility_Code__c</field>
+            <value>
+                <stringValue>L</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Upfront_Responsibility_Code__c</field>
+            <value>
+                <stringValue>L</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_5_A1</name>
+        <label>Update Tax Method to PPM</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_7</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Upfront_Tax_Method__c</field>
+            <value>
+                <stringValue>PPM</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_7_A1</name>
+        <label>Update Tax Method to GRM</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_9</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Upfront_Tax_Method__c</field>
+            <value>
+                <stringValue>GRM</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_9_A1</name>
+        <label>Update to PPM</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_14</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Upfront_Tax_Method__c</field>
+            <value>
+                <stringValue>PPM</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_1</targetReference>
+        </connector>
+        <object>Asset__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

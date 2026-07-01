@@ -3,8 +3,10 @@
  *              Processes records one at a time and chains to next record.
  * @author Northteq
  */
-public class NT_PricingOrchestratorQueueable implements Queueable, Database.AllowsCallouts {
-    
+public without sharing class NT_PricingOrchestratorQueueable implements Queueable, Database.AllowsCallouts {
+
+    @TestVisible private static Boolean forceException = false;
+
     private Set<Id> recordIds;
     private String parentType;
     
@@ -23,6 +25,7 @@ public class NT_PricingOrchestratorQueueable implements Queueable, Database.Allo
      * @param context The queueable context
      */
     public void execute(QueueableContext context) {
+        System.debug('execute recordIds: ' + recordIds);
         if (recordIds == null || recordIds.isEmpty()) {
             return;
         }
@@ -31,6 +34,9 @@ public class NT_PricingOrchestratorQueueable implements Queueable, Database.Allo
         Id currentRecordId = recordIds.iterator().next();
         
         try {
+            if (forceException) {
+                throw new IllegalArgumentException('Forced test exception');
+            }
             // Execute pricing orchestration
             NT_PricingOrchestrator orchestrator = new NT_PricingOrchestrator();
             orchestrator.executePricing(currentRecordId, parentType);

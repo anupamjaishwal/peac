@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>54.0</apiVersion>
+    <decisions>
+        <name>Booked_Date</name>
+        <label>Booked Date</label>
+        <locationX>182</locationX>
+        <locationY>323</locationY>
+        <defaultConnector>
+            <targetReference>Commencement_Date</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Opportunity_Booked_Is_Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Opportunity_Booked_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Assets</targetReference>
+            </connector>
+            <label>Opportunity Booked Is Not Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Commencement_Date</name>
+        <label>Commencement Date</label>
+        <locationX>182</locationX>
+        <locationY>623</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Commencement_Date_Is_Not_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Commencement_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Aseets</targetReference>
+            </connector>
+            <label>Commencement Date Is Not Null</label>
+        </rules>
+    </decisions>
+    <description>To fix asset bulkification.</description>
+    <environments>Default</environments>
+    <interviewLabel>TC Opportunity: Booking Rules - Depreciation Dates Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>TC Opportunity: Booking Rules - Depreciation Dates Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Aseets</name>
+        <label>Set Begin Date</label>
+        <locationX>50</locationX>
+        <locationY>731</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Opportunity__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Begin_Date__c</field>
+            <value>
+                <elementReference>$Record.Commencement_Date__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Blended_Income_Item__c</object>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Assets</name>
+        <label>Update Assets</label>
+        <locationX>50</locationX>
+        <locationY>431</locationY>
+        <connector>
+            <targetReference>Commencement_Date</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Opportunity__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Begin_Depreciation_Date__c</field>
+            <value>
+                <elementReference>$Record.Opportunity_Booked_Date__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>State_Begin_Depreciation_Date__c</field>
+            <value>
+                <elementReference>$Record.Opportunity_Booked_Date__c</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Asset__c</object>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Booked_Date</targetReference>
+        </connector>
+        <filterFormula>(ISNEW() &amp;&amp; NOT(CONTAINS(UPPER({!$Record.RecordType.Name}), &apos;LOAN&apos;) )
+                 &amp;&amp; NOT(ISBLANK({!$Record.Opportunity_Booked_Date__c}) ) 
+                 &amp;&amp; NOT(ISBLANK({!$Record.Commencement_Date__c}))
+                  &amp;&amp; NOT({!$Record.IsClosed}) )
+                  || ( (ISCHANGED({!$Record.Opportunity_Booked_Date__c})) ||
+                   ISCHANGED({!$Record.Commencement_Date__c}) )</filterFormula>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

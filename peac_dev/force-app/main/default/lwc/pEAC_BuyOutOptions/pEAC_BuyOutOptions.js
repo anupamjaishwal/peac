@@ -61,7 +61,7 @@ export default class PEAC_BuyOutOptions extends LightningElement {
     get isSummary(){ return this.currentMode == "summary"; }
     get isDetail(){ return this.currentMode == "detail"; }
     buyoutSort = {column: "BuyoutDate", isAscending: false};
-    todaysDate = new Date();
+    quoteDate = new Date();// DP-2088
     purchaseOption = "";
     quoteDescriptions = [];
 
@@ -109,6 +109,11 @@ export default class PEAC_BuyOutOptions extends LightningElement {
                 { name: "TotalBuyout", label: "Total Buyout", isCurrency: true,rows: [] }
             ];
             let cnt =1;
+            if(this.buyouts.length){// DP-2088
+                let dateString = this.buyouts[0].Date_Quoted__c.toString() + " " + new Date().getHours() + ":" + new Date().getMinutes() + ":000";
+                let theDate = new Date(dateString);
+                this.quoteDate = theDate;
+            }
             result.forEach(res => {
                 if(res.Name && res.Name.indexOf('Trade Up to Return') != -1){
                     this.showTradeReturn = true;

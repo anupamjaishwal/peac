@@ -66,4 +66,8 @@ public without sharing class SL_DPImperative {
     public static void updateDealerAccounts(List<Account> accLst){
         update accLst;
     }
+    // DP-2181 Misael Romero
+    public static void adminInsert(List<SObject> objs){
+        insert objs;
+    }
 }

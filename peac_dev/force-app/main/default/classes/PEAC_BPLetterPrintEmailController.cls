@@ -4,7 +4,7 @@ public class PEAC_BPLetterPrintEmailController{
     public integer maxRecSize {get; set;}
     public Contract__c ContractRec {get; set;}
     public Double totalAmt {get; set;}
-    public Date next30Days {get; set;}
+    public Date quoteDate {get; set;}
     public string action {get; set;}
     Set<String> labels = new Set<String>();
     public Double buyoutreceivableTotal = 0;
@@ -21,7 +21,6 @@ public class PEAC_BPLetterPrintEmailController{
 
     public PEAC_BPLetterPrintEmailController(){
         
-        next30Days = system.today().addDays(30);
         // this.setFields(ApexPages.currentPage().getParameters().get('rows'));
         // if(this.fields.size() > 0 && this.fields[0].Rows.size() > 0){
         //      maxRecSize = this.fields[0].Rows.size();
@@ -68,6 +67,7 @@ public class PEAC_BPLetterPrintEmailController{
             }
              if(Buyouts.size() > 0){
                  totalAmt = Buyouts[0].Total_Buyout__c;
+                 quoteDate = Buyouts[0].Date_Quoted__c;// DP-2088 Misael Romero
              }
         }
         List<FieldWrapper> allFields = new List<FieldWrapper>();

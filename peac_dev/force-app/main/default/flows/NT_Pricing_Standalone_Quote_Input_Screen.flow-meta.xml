@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <actionCalls>
+        <description>Calls NT_QuoteScreenUtil.getDealerPrograms to retrieve Program__c records linked to the dealer via Account_Program__c</description>
+        <name>Get_Dealer_Programs</name>
+        <label>Get Dealer Programs</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <actionName>NT_QuoteScreenUtil</actionName>
+        <actionType>apex</actionType>
+        <connector>
+            <targetReference>Quote_Input</targetReference>
+        </connector>
+        <flowTransactionModel>Automatic</flowTransactionModel>
+        <inputParameters>
+            <name>dealerAccountId</name>
+            <value>
+                <elementReference>varFinalDealerIdFormula</elementReference>
+            </value>
+        </inputParameters>
+        <outputParameters>
+            <assignToReference>varFilteredPrograms</assignToReference>
+            <name>output</name>
+        </outputParameters>
+    </actionCalls>
+    <actionCalls>
         <name>Run_Pricing_Orchestrator_Calculate_Payment</name>
         <label>Run Pricing Orchestrator Calculate Payment</label>
         <locationX>0</locationX>
@@ -38,6 +61,29 @@
     </actionCalls>
     <apiVersion>66.0</apiVersion>
     <assignments>
+        <name>Assign_Quote_Variables</name>
+        <label>Assign Quote Variables</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>tvalueQuoteRecord.Id</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>selectedQuoteId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>tvalueQuoteRecord.tval__Selected__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_TValue_Quote_Record</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
         <description>Converts Points picklist text value to numeric value using VALUE() function</description>
         <name>Convert_Points_to_Number</name>
         <label>Convert Points to Number</label>
@@ -60,20 +106,6 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <assignmentItems>
-            <assignToReference>varShowBuyDown</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Get_Input_Dealer_by_Internal_User.Show_Buy_Down_in_Dealer_Portal__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
-            <assignToReference>varShowPoints</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>Get_Input_Dealer_by_Internal_User.Show_Yield_in_Dealer_Portal__c</elementReference>
-            </value>
-        </assignmentItems>
-        <assignmentItems>
             <assignToReference>varDefaultPointsPicklist</assignToReference>
             <operator>Assign</operator>
             <value>
@@ -82,7 +114,21 @@
         </assignmentItems>
         <connector>
             <isGoTo>true</isGoTo>
-            <targetReference>Quote_Input</targetReference>
+            <targetReference>Reset_Program_Loop_Variables</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Resets program variables before each program lookup so re-entry from dealer selection doesn&apos;t carry stale data</description>
+        <name>Reset_Program_Loop_Variables</name>
+        <label>Reset Program Loop Variables</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>varFilteredPrograms</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <connector>
+            <targetReference>Get_Dealer_Programs</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -101,7 +147,7 @@
             <assignToReference>varShowPoints</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>varDefaultedDealerAccount.Show_Yield_in_Dealer_Portal__c</elementReference>
+                <elementReference>varDefaultedDealerAccount.Show_Points_in_Dealer_Portal__c</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -112,7 +158,7 @@
             </value>
         </assignmentItems>
         <connector>
-            <targetReference>Quote_Input</targetReference>
+            <targetReference>Reset_Program_Loop_Variables</targetReference>
         </connector>
     </assignments>
     <assignments>
@@ -173,7 +219,7 @@
             <assignToReference>varDealerAccountId</assignToReference>
             <operator>Assign</operator>
             <value>
-                <elementReference>Get_Current_User.Contact.AccountId</elementReference>
+                <elementReference>selectChildDealer.dealerAccountId</elementReference>
             </value>
         </assignmentItems>
         <assignmentItems>
@@ -248,7 +294,7 @@
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Set_Portal_Context</targetReference>
+                <targetReference>Select_Dealer_Account</targetReference>
             </connector>
             <label>Portal User</label>
         </rules>
@@ -281,7 +327,7 @@
         <locationX>0</locationX>
         <locationY>0</locationY>
         <defaultConnector>
-            <targetReference>Quote_Input</targetReference>
+            <targetReference>Reset_Program_Loop_Variables</targetReference>
         </defaultConnector>
         <defaultConnectorLabel>No Default Dealer Account</defaultConnectorLabel>
         <rules>
@@ -313,11 +359,11 @@
                 <leftValueReference>Get_Current_User.IsPartner</leftValueReference>
                 <operator>EqualTo</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Open_Dealer_Portal_Flow</targetReference>
+                <targetReference>Assign_Quote_Variables</targetReference>
             </connector>
             <label>Yes</label>
         </rules>
@@ -328,7 +374,7 @@
                 <leftValueReference>Get_Current_User.Contact.Id</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
-                    <booleanValue>false</booleanValue>
+                    <booleanValue>true</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
@@ -381,7 +427,11 @@
             <label>Solve Financed Amount</label>
         </rules>
     </decisions>
-    <description>Luke  - changing to system access for testing</description>
+    <description>DP-2180.
+Added show points
+3-26-26: adding update to set select flag on tvalue quote record
+4-16-26: changing End of Term Option label to Purchase Option
+4-20-26: set default for Payment Frequency to Monthly</description>
     <dynamicChoiceSets>
         <name>EndOfTermOption</name>
         <dataType>Picklist</dataType>
@@ -406,6 +456,14 @@
         <picklistField>Points__c</picklistField>
         <picklistObject>Account</picklistObject>
         <sortOrder>Asc</sortOrder>
+    </dynamicChoiceSets>
+    <dynamicChoiceSets>
+        <name>ProgramChoices</name>
+        <collectionReference>varFilteredPrograms</collectionReference>
+        <dataType>String</dataType>
+        <displayField>Program_Code__c</displayField>
+        <object>Program__c</object>
+        <valueField>Id</valueField>
     </dynamicChoiceSets>
     <dynamicChoiceSets>
         <name>Requested_Payment_Frequency</name>
@@ -455,6 +513,11 @@ TEXT({!counterNumber} + 1)</expression>
         <dataType>Number</dataType>
         <expression>VALUE({!Points})</expression>
         <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>varTodayDate</name>
+        <dataType>Date</dataType>
+        <expression>{!$Flow.CurrentDate}</expression>
     </formulas>
     <interviewLabel>NT - Pricing Standalone Quote Input Screen {!$Flow.CurrentDateTime}</interviewLabel>
     <label>NT - Pricing Standalone Quote Input Screen</label>
@@ -547,6 +610,12 @@ TEXT({!counterNumber} + 1)</expression>
             </value>
         </inputAssignments>
         <inputAssignments>
+            <field>Program__c</field>
+            <value>
+                <elementReference>Program</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
             <field>Requested_Payment_Frequency__c</field>
             <value>
                 <elementReference>Requested_Payment_Frequency_Multi</elementReference>
@@ -631,7 +700,18 @@ TEXT({!counterNumber} + 1)</expression>
         <queriedFields>Show_Buy_Down_in_Dealer_Portal__c</queriedFields>
         <queriedFields>Show_Yield_in_Dealer_Portal__c</queriedFields>
         <queriedFields>Points__c</queriedFields>
+        <queriedFields>Show_Points_in_Dealer_Portal__c</queriedFields>
     </recordLookups>
+    <recordUpdates>
+        <name>Update_TValue_Quote_Record</name>
+        <label>Update TValue Quote Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Open_Dealer_Portal_Flow</targetReference>
+        </connector>
+        <inputReference>tvalueQuoteRecord</inputReference>
+    </recordUpdates>
     <runInMode>SystemModeWithoutSharing</runInMode>
     <screens>
         <name>Input_Dealer</name>
@@ -770,6 +850,9 @@ TEXT({!counterNumber} + 1)</expression>
             <name>Requested_Payment_Frequency_Multi</name>
             <choiceReferences>Requested_Payment_Frequency</choiceReferences>
             <dataType>String</dataType>
+            <defaultValue>
+                <stringValue>Monthly</stringValue>
+            </defaultValue>
             <fieldText>Payment_Frequency</fieldText>
             <fieldType>MultiSelectPicklist</fieldType>
             <isRequired>true</isRequired>
@@ -779,11 +862,11 @@ TEXT({!counterNumber} + 1)</expression>
             <dataType>Currency</dataType>
             <fieldText>Down Payment</fieldText>
             <fieldType>InputField</fieldType>
-            <isRequired>true</isRequired>
+            <isRequired>false</isRequired>
             <scale>2</scale>
             <validationRule>
                 <errorMessage>&lt;p&gt;&lt;span style=&quot;font-size: 14px; font-family: sans-serif; color: rgb(255, 0, 0);&quot;&gt;Down Payment must be greater than or equal to 0 and cannot exceed Financed Amount&lt;/span&gt;&lt;/p&gt;</errorMessage>
-                <formulaExpression>({!Down_Payment} &gt;= 0) &amp;&amp; (ISNULL({!Financed_Amount}) || {!Down_Payment} &lt;= {!Financed_Amount})</formulaExpression>
+                <formulaExpression>ISBLANK({!Down_Payment}) || (({!Down_Payment} &gt;= 0) &amp;&amp; (ISNULL({!Financed_Amount}) || {!Down_Payment} &lt;= {!Financed_Amount}))</formulaExpression>
             </validationRule>
         </fields>
         <fields>
@@ -822,7 +905,7 @@ TEXT({!counterNumber} + 1)</expression>
             <name>End_of_Term_Option</name>
             <choiceReferences>EndOfTermOption</choiceReferences>
             <dataType>String</dataType>
-            <fieldText>End-of-Term Option</fieldText>
+            <fieldText>Purchase Option</fieldText>
             <fieldType>DropdownBox</fieldType>
             <isRequired>false</isRequired>
         </fields>
@@ -846,12 +929,19 @@ TEXT({!counterNumber} + 1)</expression>
             <isRequired>false</isRequired>
             <scale>0</scale>
             <visibilityRule>
-                <conditionLogic>and</conditionLogic>
+                <conditionLogic>or</conditionLogic>
                 <conditions>
                     <leftValueReference>varShowBuyDown</leftValueReference>
                     <operator>EqualTo</operator>
                     <rightValue>
                         <booleanValue>true</booleanValue>
+                    </rightValue>
+                </conditions>
+                <conditions>
+                    <leftValueReference>Get_Current_User.IsPartner</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
                     </rightValue>
                 </conditions>
             </visibilityRule>
@@ -867,7 +957,7 @@ TEXT({!counterNumber} + 1)</expression>
             <fieldType>DropdownBox</fieldType>
             <isRequired>false</isRequired>
             <visibilityRule>
-                <conditionLogic>and</conditionLogic>
+                <conditionLogic>or</conditionLogic>
                 <conditions>
                     <leftValueReference>varShowPoints</leftValueReference>
                     <operator>EqualTo</operator>
@@ -875,9 +965,53 @@ TEXT({!counterNumber} + 1)</expression>
                         <booleanValue>true</booleanValue>
                     </rightValue>
                 </conditions>
+                <conditions>
+                    <leftValueReference>Get_Current_User.IsPartner</leftValueReference>
+                    <operator>EqualTo</operator>
+                    <rightValue>
+                        <booleanValue>false</booleanValue>
+                    </rightValue>
+                </conditions>
             </visibilityRule>
         </fields>
+        <fields>
+            <name>Program</name>
+            <choiceReferences>ProgramChoices</choiceReferences>
+            <dataType>String</dataType>
+            <fieldText>Program</fieldText>
+            <fieldType>DropdownBox</fieldType>
+            <isRequired>false</isRequired>
+        </fields>
         <nextOrFinishButtonLabel>Create Quote</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Select_Dealer_Account</name>
+        <label>Select Dealer Account</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <connector>
+            <targetReference>Set_Portal_Context</targetReference>
+        </connector>
+        <fields>
+            <name>selectChildDealer</name>
+            <extensionName>c:sL_SelectChildDealer</extensionName>
+            <fieldType>ComponentInstance</fieldType>
+            <inputParameters>
+                <name>currentContactId</name>
+                <value>
+                    <elementReference>$User.ContactId</elementReference>
+                </value>
+            </inputParameters>
+            <inputsOnNextNavToAssocScrn>UseStoredValues</inputsOnNextNavToAssocScrn>
+            <isRequired>true</isRequired>
+            <storeOutputAutomatically>true</storeOutputAutomatically>
+        </fields>
+        <nextOrFinishButtonLabel>Next</nextOrFinishButtonLabel>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
     </screens>
@@ -927,7 +1061,7 @@ TEXT({!counterNumber} + 1)</expression>
             <targetReference>Get_Current_User</targetReference>
         </connector>
     </start>
-    <status>Obsolete</status>
+    <status>Active</status>
     <subflows>
         <name>Open_Dealer_Portal_Flow</name>
         <label>Open Dealer Portal Flow</label>
@@ -1007,6 +1141,14 @@ TEXT({!counterNumber} + 1)</expression>
         <objectType>tval__TValue_Quote__c</objectType>
     </variables>
     <variables>
+        <name>tvalueQuoteRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>tval__TValue_Quote__c</objectType>
+    </variables>
+    <variables>
         <name>varCreatedQuoteId</name>
         <dataType>String</dataType>
         <isCollection>false</isCollection>
@@ -1047,6 +1189,15 @@ TEXT({!counterNumber} + 1)</expression>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
         <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Holds the collection of Program__c records for the dealer, used to drive the Program picklist on the Quote Input screen</description>
+        <name>varFilteredPrograms</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Program__c</objectType>
     </variables>
     <variables>
         <description>Final Dealer Account ID to use for Quote creation</description>

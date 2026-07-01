@@ -3,7 +3,7 @@
  *              Holds all context needed throughout the pricing orchestration process.
  * @author Northteq
  */
-public class NT_PricingContext {
+public without sharing class NT_PricingContext {
     
     // Parent record information
     public Id parentId { get; set; }
@@ -30,6 +30,11 @@ public class NT_PricingContext {
     // Modifier configuration
     public List<Modifier__c> eligibleModifiers { get; set; }
     public List<Modifier__c> appliedModifiers { get; set; }
+    public Map<Id, Decimal> modifierRateAdjustments { get; set; }    // modifier Id → rate adjustment
+    public Map<Id, Decimal> modifierResidualAdjustments { get; set; } // modifier Id → residual adjustment
+    public Map<Id, String> modifierErrors { get; set; }               // modifier Id → error message
+    public Decimal totalModifierRateAdjustment { get; set; }
+    public Decimal totalModifierResidualAdjustment { get; set; }
     
     // Final calculated values
     public Decimal finalRate { get; set; }
@@ -43,11 +48,15 @@ public class NT_PricingContext {
     public Decimal equipmentCost { get; set; }
     public Decimal points { get; set; }
     public Decimal downPayment { get; set; }
+    public Decimal buyDown { get; set; }
     public Decimal advancePayments { get; set; }
     public List<String> paymentFrequencies { get; set; }
     public String endOfTermOption { get; set; }
     public String equipmentType { get; set; }
     
+    // Transaction tracking
+    public String transactionId { get; set; }
+
     // TValue configuration
     public Id templateId { get; set; }
     
@@ -56,6 +65,9 @@ public class NT_PricingContext {
     public List<Pricing_Result__c> modifierResults { get; set; }
     public String status { get; set; } // 'Success', 'Error', 'Pricing Error'
     public String errorMessage { get; set; }
+    
+    // Per-term pricing results (Quote context only)
+    public Map<Decimal, TermPricingResult> termPricingResults { get; set; }
     
     // Constants
     public static final String PARENT_TYPE_OPPORTUNITY = 'Opportunity';
@@ -72,9 +84,14 @@ public class NT_PricingContext {
         this.programResiduals = new List<Program_Residual__c>();
         this.eligibleModifiers = new List<Modifier__c>();
         this.appliedModifiers = new List<Modifier__c>();
+        this.modifierRateAdjustments = new Map<Id, Decimal>();
+        this.modifierResidualAdjustments = new Map<Id, Decimal>();
+        this.modifierErrors = new Map<Id, String>();
         this.modifierResults = new List<Pricing_Result__c>();
         this.requestedTerms = new List<Decimal>();
         this.paymentFrequencies = new List<String>();
+        this.termPricingResults = new Map<Decimal, TermPricingResult>();
+        this.transactionId = UUID.randomUUID().toString();
         this.hasProgram = false;
         this.status = STATUS_SUCCESS;
     }
@@ -156,5 +173,27 @@ public class NT_PricingContext {
      */
     public Boolean hasSelectedRateCard() {
         return this.selectedRateCard != null;
+    }
+    
+    /**
+     * @description Checks if per-term pricing results are available (Quote context)
+     * @return Boolean true if per-term results exist
+     */
+    public Boolean hasTermPricingResults() {
+        return this.termPricingResults != null && !this.termPricingResults.isEmpty();
+    }
+    
+    /**
+     * @description Holds rate/residual data for a single term within a multi-term Quote pricing run
+     */
+    public class TermPricingResult {
+        public Decimal term;
+        public Decimal baseRate;
+        public Decimal finalRate;
+        public Decimal baseRateFactor;
+        public Decimal finalRateFactor;
+        public Decimal baseResidual;
+        public Decimal finalResidual;
+        public Rate_Card_Rate__c selectedRate;
     }
 }

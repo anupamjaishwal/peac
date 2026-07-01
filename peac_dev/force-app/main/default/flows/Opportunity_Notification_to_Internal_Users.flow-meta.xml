@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>Send notification to opportunity owner, SAM and Ambassabor users.</description>
+        <name>Send_Custom_Notification_Action</name>
+        <label>Send notification to opportunity owner, SAM and Ambassabor users.</label>
+        <locationX>182</locationX>
+        <locationY>1571</locationY>
+        <actionName>customNotificationAction</actionName>
+        <actionType>customNotificationAction</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>customNotifTypeId</name>
+            <value>
+                <elementReference>Get_Notification.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>recipientIds</name>
+            <value>
+                <elementReference>UserList</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderId</name>
+            <value>
+                <elementReference>$Record.CreatedById</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>title</name>
+            <value>
+                <stringValue>Opportunity Notification</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>body</name>
+            <value>
+                <elementReference>NotificationBody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>targetId</name>
+            <value>
+                <elementReference>Get_Opportunity.Id</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <apiVersion>63.0</apiVersion>
+    <assignments>
+        <description>Assign Ambassador user</description>
+        <name>Ambassador_Assignment</name>
+        <label>Ambassador Assignment</label>
+        <locationX>50</locationX>
+        <locationY>1271</locationY>
+        <assignmentItems>
+            <assignToReference>UserList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Dealer.Ambassador__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Set_User_Ids</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Assign SAM user</description>
+        <name>SAM</name>
+        <label>SAM</label>
+        <locationX>50</locationX>
+        <locationY>971</locationY>
+        <assignmentItems>
+            <assignToReference>UserList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Dealer.SAM__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Ambassador_is_Empty</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_User_Ids</name>
+        <label>Set User Ids</label>
+        <locationX>182</locationX>
+        <locationY>1463</locationY>
+        <assignmentItems>
+            <assignToReference>UserList</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>Get_Opportunity.OwnerId</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Send_Custom_Notification_Action</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Check in Ambassador user is there in dealer account or not.</description>
+        <name>Ambassador_is_Empty</name>
+        <label>Ambassador is Empty</label>
+        <locationX>182</locationX>
+        <locationY>1163</locationY>
+        <defaultConnector>
+            <targetReference>Set_User_Ids</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Ambassador</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Dealer.Ambassador__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Ambassador_Assignment</targetReference>
+            </connector>
+            <label>Ambassador</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Check_for_partner_user</name>
+        <label>Check for partner user</label>
+        <locationX>336</locationX>
+        <locationY>431</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>is_Partner_User</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_current_user_info.IsPartner</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Notification</targetReference>
+            </connector>
+            <label>is Partner User</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Check in SAM user is there in dealer account or not.</description>
+        <name>SAM_User_is_Empty</name>
+        <label>SAM User is Empty</label>
+        <locationX>182</locationX>
+        <locationY>863</locationY>
+        <defaultConnector>
+            <targetReference>Ambassador_is_Empty</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>SAM_is_not_empty</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Dealer.SAM__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>SAM</targetReference>
+            </connector>
+            <label>SAM is not empty</label>
+        </rules>
+    </decisions>
+    <description>Opportunity Notification to Internal Users</description>
+    <environments>Default</environments>
+    <interviewLabel>Opportunity Notification to Internal Users {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity Notification to Internal Users</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_current_user_info</name>
+        <label>Get current user info</label>
+        <locationX>336</locationX>
+        <locationY>323</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_for_partner_user</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.CreatedById</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get Dealer record</description>
+        <name>Get_Dealer</name>
+        <label>Get Dealer</label>
+        <locationX>182</locationX>
+        <locationY>755</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>SAM_User_is_Empty</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Get_Opportunity.Dealer_Account__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Account</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get custom notification Id</description>
+        <name>Get_Notification</name>
+        <label>Get Notification</label>
+        <locationX>182</locationX>
+        <locationY>539</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Opportunity</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Opportunity_Chatter_Notification</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>CustomNotificationType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <description>Get Opportunity Record</description>
+        <name>Get_Opportunity</name>
+        <label>Get Opportunity</label>
+        <locationX>182</locationX>
+        <locationY>647</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Dealer</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Parent:Opportunity.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>210</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_current_user_info</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>ParentId</field>
+            <operator>StartsWith</operator>
+            <value>
+                <stringValue>006</stringValue>
+            </value>
+        </filters>
+        <object>FeedItem</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <description>Opportunity Notification Body</description>
+        <name>NotificationBody</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>Opportunity {!Get_Opportunity.Name} has a seen new Chatter activity.</text>
+    </textTemplates>
+    <variables>
+        <name>UserList</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+    </variables>
+</Flow>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <description>Migrated from the TC Asset: Calculate State Tax Amount process using Tax Percentage Changes criteria.
+Set tax amount when corresponding percentage changes.</description>
+    <formulas>
+        <name>formula_1_myRule_1_A1_7505799512</name>
+        <dataType>Currency</dataType>
+        <expression>{!$Record.State_Tax_Percentage__c} * {!$Record.Total_Cost__c}</expression>
+        <scale>18</scale>
+    </formulas>
+    <label>TC Asset: Calculate State Tax Amount_1</label>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>myRule_1_A1</name>
+        <label>Update Tax Amount</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>State_Tax_Amount__c</field>
+            <value>
+                <elementReference>formula_1_myRule_1_A1_7505799512</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_1_A1</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>State_Tax_Percentage__c</field>
+            <operator>IsChanged</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>State_Tax_Code__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>028</stringValue>
+            </value>
+        </filters>
+        <object>Asset__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

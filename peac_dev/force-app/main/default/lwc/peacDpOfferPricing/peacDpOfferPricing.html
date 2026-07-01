@@ -1,0 +1,238 @@
+<template>
+    <div class="offer-shell">
+        <template if:true={showPricingResultBanner}>
+            <div class={pricingResultBannerClass}>
+                <strong>{pricingResultTitle}</strong>
+
+                <template if:true={pricingResultUrl}>
+                    &nbsp; Pricing Result:
+                    <a href={pricingResultUrl} target="_blank">
+                        {latestPricingResult.pricingResultName}
+                    </a>
+                </template>
+
+                <template if:true={latestPricingResult.pricingErrorMessage}>
+                    <div>{latestPricingResult.pricingErrorMessage}</div>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={isLoading}>
+            <div class="peac-spinner">
+                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:false={isLoading}>
+            <template if:true={showRateFactorMsg}>
+                <div class="rate-warning">{rateFactorMsg}</div>
+            </template>
+
+            <section class="offer-card">
+                <div class="offer-card-header">
+                    <div>
+                        <h2>Current Offer</h2>
+                        <p class="sub-text">Review and update details.</p>
+                    </div>
+
+                    <div class="header-actions">
+                        <template if:false={isEditMode}>
+                            <lightning-button variant="brand" label="Edit Offer" onclick={handleEditOffer}>
+                            </lightning-button>
+                        </template>
+                        <lightning-button label="Refresh" onclick={handleRefresh}></lightning-button>
+                    </div>
+                </div>
+
+                <div class="offer-grid">
+                    <div class="field-block">
+                        <label>Monthly Payment</label>
+                        <lightning-formatted-number value={draftOffer.monthlyPayment} format-style="currency"
+                            currency-code="USD"></lightning-formatted-number>
+                    </div>
+
+                    <div class="field-block">
+                        <label>Rate Factor</label>
+                        <span>{rateFactorDisplay}</span>
+                    </div>
+
+                    <div class="field-block">
+                        <label>Purchase Option</label>
+                        <span>{purchaseOptionDisplay}</span>
+                    </div>
+
+                    <div class="field-block">
+                        <label>Equipment Cost</label>
+                        <lightning-formatted-number value={draftOffer.equipmentCost} format-style="currency"
+                            currency-code="USD"></lightning-formatted-number>
+                    </div>
+
+                    <div class="field-block">
+                        <label>Required Adv Payments</label>
+                        <lightning-input variant="label-hidden" type="number" value={draftOffer.requiredAdvancePayments}
+                            onchange={handleOpportunityChange} data-field="Required_Adv_Payments__c"
+                            disabled={isReadOnly}>
+                        </lightning-input>
+                    </div>
+
+                    <div class="field-block">
+                        <label>Term</label>
+                        <lightning-input variant="label-hidden" type="number" value={draftOffer.term}
+                            onchange={handleOpportunityChange} data-field="Terms__c" disabled={isReadOnly}>
+                        </lightning-input>
+                    </div>
+                </div>
+            </section>
+
+            <section class="offer-card asset-card">
+                <div class="offer-card-header">
+                    <div>
+                        <h2>Equipment Assets</h2>
+                        <p class="sub-text">Use New Asset for full asset creation. Existing row edits are saved using
+                            Save All Changes.</p>
+                    </div>
+
+                    <lightning-button variant="brand" label="New Asset" onclick={handleOpenNewAssetModal}>
+                    </lightning-button>
+                </div>
+
+                <c-peac-dp-offer-asset-editor assets={draftAssets} is-read-only={isReadOnly}
+                    onassetchange={handleAssetChange} onassetdelete={handleAssetDelete}>
+                </c-peac-dp-offer-asset-editor>
+            </section>
+
+            <template if:true={isEditMode}>
+                <div class="global-action-bar">
+                    <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+                    <lightning-button variant="brand" label="Save All Changes" onclick={handleSave} disabled={isSaving}>
+                    </lightning-button>
+                </div>
+            </template>
+        </template>
+
+        <template if:true={showNewAssetModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container asset-modal">
+                    <header class="slds-modal__header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={handleCloseNewAssetModal}>
+                            <lightning-icon icon-name="utility:close" alternative-text="Close" variant="inverse" size="small"></lightning-icon>
+                            <span class="slds-assistive-text">Close</span>
+                        </button>
+                        <h2 class="slds-text-heading_medium slds-hyphenate">New Asset</h2>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium modal-content">
+                        <lightning-record-edit-form object-api-name="Asset__c" onsuccess={handleNewAssetSuccess}
+                            onsubmit={handleNewAssetSubmit} onerror={handleNewAssetError}>
+
+                            <lightning-layout multiple-rows="true">
+                                <lightning-layout-item size="12">
+                                    <h2 class="section-title">Information</h2>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="Name"></lightning-input-field>
+                                    <lightning-input-field field-name="Quantity__c" value="1"></lightning-input-field>
+                                    <lightning-input-field field-name="Equipment_Code__c" required>
+                                    </lightning-input-field>
+                                    <lightning-input-field field-name="Serial_Number__c"></lightning-input-field>
+                                    <lightning-input-field field-name="Model__c"></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="Opportunity__c" value={recordId} disabled>
+                                    </lightning-input-field>
+                                    <lightning-input-field field-name="Description__c"></lightning-input-field>
+                                    <lightning-input-field field-name="Cost__c" required></lightning-input-field>
+                                    <lightning-input-field field-name="Manufacturer__c"></lightning-input-field>
+                                    <lightning-input-field field-name="Other_Manufacturer__c"></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12">
+                                    <h2 class="section-title">Equipment Location</h2>
+                                    <div class="section-body">
+                                        <lightning-input-field field-name="End_User_Billing_Address__c">
+                                        </lightning-input-field>
+                                    </div>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12">
+                                    <h2 class="section-title">Alternative Address</h2>
+                                    <div class="section-body">
+                                        <lightning-input-field field-name="Equipment_Street__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Equipment_City__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Equipment_State__c"></lightning-input-field>
+                                        <lightning-input-field field-name="Equipment_Zip__c"></lightning-input-field>
+                                    </div>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12">
+                                    <h2 class="section-title">Vehicle</h2>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="Vehicle_year__c"></lightning-input-field>
+                                    <lightning-input-field field-name="Vehicle_Type__c"></lightning-input-field>
+                                    <lightning-input-field field-name="Mileage__c"></lightning-input-field>
+                                    <lightning-input-field field-name="Owner_Operator__c"></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="6" padding="around-small">
+                                    <lightning-input-field field-name="Vehicle_Make__c"></lightning-input-field>
+                                    <lightning-input-field field-name="Other_Vehicle_Make__c"></lightning-input-field>
+                                    <lightning-input-field field-name="New_Used__c"></lightning-input-field>
+                                    <lightning-input-field field-name="Sleeper_Day_Cab__c"></lightning-input-field>
+                                </lightning-layout-item>
+
+                                <lightning-layout-item size="12">
+                                    <template if:true={isAssetSaving}>
+                                        <div class="asset-save-spinner">
+                                            <lightning-spinner alternative-text="Saving Asset..." size="small"
+                                                variant="brand"></lightning-spinner>
+                                        </div>
+                                    </template>
+
+                                    <template if:false={isAssetSaving}>
+                                        <div class="modal-footer">
+                                            <lightning-button type="button" label="Cancel"
+                                                onclick={handleCloseNewAssetModal}></lightning-button>
+                                            <lightning-button type="submit" variant="brand" label="Save">
+                                            </lightning-button>
+                                        </div>
+                                    </template>
+                                </lightning-layout-item>
+                            </lightning-layout>
+                        </lightning-record-edit-form>
+                    </div>
+                </div>
+            </section>
+
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <template if:true={isDisclaimerOpen}>
+            <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container peac-disclaimer-modal">
+                    <header class="slds-modal__header peac-disclaimer-header">
+                        <h2 class="slds-text-heading_medium">{labels.disclaimerTitle}</h2>
+                    </header>
+
+                    <div class="slds-modal__content slds-p-around_medium peac-disclaimer-content">
+                        <p>{disclaimerMessage}</p>
+                    </div>
+
+                    <footer class="slds-modal__footer peac-disclaimer-footer">
+                        <lightning-button label={labels.cancel} onclick={handleDisclaimerCancel}
+                            class="slds-var-p-right_medium"></lightning-button>
+                        <lightning-button variant="brand" label={labels.saveAndCalculate}
+                            onclick={handleDisclaimerConfirm}></lightning-button>
+                    </footer>
+                </div>
+            </section>
+
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template> 
+
+        
+    </div>
+</template>

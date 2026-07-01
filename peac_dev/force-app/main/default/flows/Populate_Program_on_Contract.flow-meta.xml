@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>61.0</apiVersion>
+    <assignments>
+        <description>Assign The Program, Fund and Follow and Fund and Follow Comments Values from the Opportunity to the Contract If the Contract record type is &apos;Lease&apos;.</description>
+        <name>Assign_Program</name>
+        <label>Assign Program</label>
+        <locationX>50</locationX>
+        <locationY>503</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Program__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Opportunity.Program__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Fund_and_Follow__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Opportunity.Fund_and_Follow__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Fund_and_Follow_Comments__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Opportunity.Fund_and_Follow_Comments__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <description>Checks if the  Contract&apos;s Record Type is &apos;Lease&apos;</description>
+        <name>Check_Contract_Record_Type</name>
+        <label>Check Contract Record Type</label>
+        <locationX>182</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Not Lease</defaultConnectorLabel>
+        <rules>
+            <name>Is_Lease</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.RecordType.Name</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lease</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Opportunity</targetReference>
+            </connector>
+            <label>Is Lease</label>
+        </rules>
+    </decisions>
+    <description>Populate Program field value of Opportunity on Contract Program Field. SL-2093
+Populate &apos;Fund and Follow&apos; and &apos;Fund and Follow Comments&apos; fields value of Opportunity on Contract &apos;Fund and Follow&apos; and &apos;Fund and Follow Comments&apos; Fields.  SAL-5259</description>
+    <environments>Default</environments>
+    <interviewLabel>Populate Program on Contract {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Populate Program on Contract</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description>Retrieves the parent Opportunity record based on the contract&apos;s Opportunity Id.</description>
+        <name>Get_Opportunity</name>
+        <label>Get Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Program</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Opportunity__c</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Program__c</queriedFields>
+        <queriedFields>Fund_and_Follow__c</queriedFields>
+        <queriedFields>Fund_and_Follow_Comments__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_Contract_Record_Type</targetReference>
+        </connector>
+        <object>Contract__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

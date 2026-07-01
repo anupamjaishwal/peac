@@ -1,0 +1,457 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>54.0</apiVersion>
+    <assignments>
+        <name>Assign_Income_Method</name>
+        <label>Assign Income Method</label>
+        <locationX>50</locationX>
+        <locationY>734</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.Income_Method__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>E</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity_Income_Method</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Invoice_Code</name>
+        <label>Assign Invoice Code</label>
+        <locationX>50</locationX>
+        <locationY>1190</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.Invoice_Code__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>A</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity_Invoice_Code</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Late_Charge_Rate</name>
+        <label>Assign Late Charge Rate</label>
+        <locationX>50</locationX>
+        <locationY>1646</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.Late_Charge_Rate__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>15.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity_Late_Charge_Rate</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Grace_Period_0</name>
+        <label>Grace Period = 0</label>
+        <locationX>50</locationX>
+        <locationY>278</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.Grace_Period__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_Lead_Invoice_Days_to_22</name>
+        <label>Set Lead Invoice Days to 22</label>
+        <locationX>50</locationX>
+        <locationY>2102</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.Lead_Invoice_Days__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <numberValue>22.0</numberValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity_Lead_Invoice_Days</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_to_Marlin_Leasing_Corp</name>
+        <label>Set to Marlin Leasing Corp</label>
+        <locationX>50</locationX>
+        <locationY>3014</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.Remit_to_Window__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>0001</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity_Remit_To_Window</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Set_to_Normal</name>
+        <label>Set to Normal</label>
+        <locationX>50</locationX>
+        <locationY>2558</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.Payment_Option__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>N</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity_Payment_Options</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Update_Residual_Method</name>
+        <label>Update Residual Method</label>
+        <locationX>50</locationX>
+        <locationY>3470</locationY>
+        <assignmentItems>
+            <assignToReference>opportunityRecord.Residual_Method__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>opportunityRecord.Income_Method__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity_Residual_Method</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Grace_Period_Is_Null</name>
+        <label>Grace Period Is Null</label>
+        <locationX>182</locationX>
+        <locationY>158</locationY>
+        <defaultConnector>
+            <targetReference>Income_Method_Is_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Grace_Period_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>opportunityRecord.Grace_Period__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Grace_Period_0</targetReference>
+            </connector>
+            <label>Grace Period Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Income_Method_Is_Null</name>
+        <label>Income Method Is Null</label>
+        <locationX>182</locationX>
+        <locationY>614</locationY>
+        <defaultConnector>
+            <targetReference>Invoice_Code_Is_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Income_Method_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>opportunityRecord.Income_Method__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Income_Method</targetReference>
+            </connector>
+            <label>Income Method Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Invoice_Code_Is_Null</name>
+        <label>Invoice Code Is Null</label>
+        <locationX>182</locationX>
+        <locationY>1070</locationY>
+        <defaultConnector>
+            <targetReference>Late_Charge_Rate</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Invoice_Code_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>opportunityRecord.Invoice_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Invoice_Code</targetReference>
+            </connector>
+            <label>Invoice Code Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Late_Charge_Rate</name>
+        <label>Late Charge Rate</label>
+        <locationX>182</locationX>
+        <locationY>1526</locationY>
+        <defaultConnector>
+            <targetReference>Lead_Invoice_Days_Is_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Late_Charge_Rate_Null</name>
+            <conditionLogic>or</conditionLogic>
+            <conditions>
+                <leftValueReference>opportunityRecord.Late_Charge_Rate__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>opportunityRecord.Late_Charge_Rate__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Late_Charge_Rate</targetReference>
+            </connector>
+            <label>Late Charge Rate Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Lead_Invoice_Days_Is_Null</name>
+        <label>Lead Invoice Days Is Null</label>
+        <locationX>182</locationX>
+        <locationY>1982</locationY>
+        <defaultConnector>
+            <targetReference>Payment_Option_Is_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Lead_Invoice_Days_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>opportunityRecord.Lead_Invoice_Days__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Lead_Invoice_Days_to_22</targetReference>
+            </connector>
+            <label>Lead Invoice Days Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Payment_Option_Is_Null</name>
+        <label>Payment Option Is Null</label>
+        <locationX>182</locationX>
+        <locationY>2438</locationY>
+        <defaultConnector>
+            <targetReference>Remit_to_Window_Is_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Payment_Option_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>opportunityRecord.Payment_Option__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_to_Normal</targetReference>
+            </connector>
+            <label>Payment Option Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Remit_to_Window_Is_Null</name>
+        <label>Remit to Window Is Null</label>
+        <locationX>182</locationX>
+        <locationY>2894</locationY>
+        <defaultConnector>
+            <targetReference>Residual_Method_Is_Null</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Remit_to_Window_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>opportunityRecord.Remit_to_Window__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_to_Marlin_Leasing_Corp</targetReference>
+            </connector>
+            <label>Remit to Window Null</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Residual_Method_Is_Null</name>
+        <label>Residual Method Is Null</label>
+        <locationX>182</locationX>
+        <locationY>3350</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Residual_Method_Null</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>opportunityRecord.Residual_Method__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>opportunityRecord.Income_Method__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Residual_Method</targetReference>
+            </connector>
+            <label>Residual Method Null</label>
+        </rules>
+    </decisions>
+    <interviewLabel>TC Booking Defaults Set on Funding Actions Sub Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>TC Booking Defaults Set on Funding Actions Sub Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Opportunity</name>
+        <label>Update Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>398</locationY>
+        <connector>
+            <targetReference>Income_Method_Is_Null</targetReference>
+        </connector>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Opportunity_Income_Method</name>
+        <label>Update Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>854</locationY>
+        <connector>
+            <targetReference>Invoice_Code_Is_Null</targetReference>
+        </connector>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Opportunity_Invoice_Code</name>
+        <label>Update Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>1310</locationY>
+        <connector>
+            <targetReference>Late_Charge_Rate</targetReference>
+        </connector>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Opportunity_Late_Charge_Rate</name>
+        <label>Update Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>1766</locationY>
+        <connector>
+            <targetReference>Lead_Invoice_Days_Is_Null</targetReference>
+        </connector>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Opportunity_Lead_Invoice_Days</name>
+        <label>Update Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>2222</locationY>
+        <connector>
+            <targetReference>Payment_Option_Is_Null</targetReference>
+        </connector>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Opportunity_Payment_Options</name>
+        <label>Update Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>2678</locationY>
+        <connector>
+            <targetReference>Remit_to_Window_Is_Null</targetReference>
+        </connector>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Opportunity_Remit_To_Window</name>
+        <label>Update Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>3134</locationY>
+        <connector>
+            <targetReference>Residual_Method_Is_Null</targetReference>
+        </connector>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Opportunity_Residual_Method</name>
+        <label>Update Opportunity</label>
+        <locationX>50</locationX>
+        <locationY>3590</locationY>
+        <inputReference>opportunityRecord</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Grace_Period_Is_Null</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>opportunityRecord</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Opportunity</objectType>
+    </variables>
+</Flow>

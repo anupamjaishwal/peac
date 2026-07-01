@@ -9,7 +9,7 @@
         
         empApi.onError($A.getCallback(error => {
             // Error can be any type of error (subscribe, unsubscribe...)
-            alert('EMP API error: ' + JSON.stringify(error));
+            console.error('EMP API error: ', error);
         }));
             
         

@@ -23,4 +23,15 @@
 
             	
             },
+
+        handleProgramChange : function(component, event, helper) {
+            var recordId = event.getParam('value');
+            var partner  = component.get('v.partner');
+
+            // partner.dealer holds the Dealer__c junction fields
+            if (!partner.dealer) partner.dealer = {};
+            partner.dealer.Program__c = recordId;
+
+            component.set('v.partner', partner);
+        },
 })

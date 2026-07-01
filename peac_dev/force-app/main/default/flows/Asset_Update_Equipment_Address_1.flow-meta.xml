@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <description>Migrated from the Asset: Update Equipment Address process using Use Opp. Billing Address? criteria.
+Update equipment address if to ship to address on opportunity</description>
+    <label>Asset: Update Equipment Address_1</label>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>myRule_1_A1</name>
+        <label>Update Equipment Address</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Equipment_State__c</field>
+            <value>
+                <elementReference>$Record.Opportunity__r.Account_Business_State_Province__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_1_A1</targetReference>
+        </connector>
+        <filterFormula>AND(
+   OR(
+      ISNEW(),
+      ISCHANGED({!$Record.End_User_Billing_Address__c})
+   ),
+    {!$Record.End_User_Billing_Address__c} = true
+)</filterFormula>
+        <object>Asset__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

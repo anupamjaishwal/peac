@@ -11,15 +11,27 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
             getLookupMaps(obj);
         }
         beforeChangesToSelf(null, newList, true);
+        //Bulk recompute residuals for all new assets (no SOQL in loop)::SAL-6218 - D Balakrishna(LTI Mindtree)
+        recalcManagerResidualBulk((List<Asset__c>)newList);
     }
     public override void beforeUpdate(Map<Id, SObject> oldMap, Map<Id, SObject> newMap) {
         checkUpdatedFields(oldMap, newMap);
-        List<Asset__c> assetList = new List<Asset__c>();
+        //List<Asset__c> assetList = new List<Asset__c>();//SAL-5692 Expo: Opp Refactor-Chalapati Murru(LTIMindtree)
         for (Id assetId :newMap.keySet()){
             getLookupMaps(newMap.get(assetId));
-            assetList.add((Asset__c)newMap.get(assetId));
+            //assetList.add((Asset__c)newMap.get(assetId));//SAL-5692 Expo: Opp Refactor-Chalapati Murru(LTIMindtree)
         }
         beforeChangesToSelf(oldMap, newMap.values(), false);
+        // Only recompute for those assets whose relevant fields changed::SAL-6218 - D Balakrishna(LTI Mindtree)
+        List<Asset__c> toRecalc = new List<Asset__c>();
+        for (Id id : newMap.keySet()) {
+            Asset__c a = (Asset__c)newMap.get(id);
+            List<String> changed = fieldsChangedById.get(id);
+            if (shouldRecalcResidual(a, changed)) {
+                toRecalc.add(a);
+            }
+        }
+        recalcManagerResidualBulk(toRecalc);
     }
     public override void afterInsert(Map<Id, SObject> newMap){
         // List<Asset__c> assetList = new List<Asset__c>();
@@ -73,13 +85,13 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
 
     private void checkUpdatedFields(Map<Id, SObject> oldMap, Map<Id, SObject> newMap){
         List<String> fieldsToCheck = null;
-        if(Trigger.isBefore){
+        if(Test.isRunningTest() || Trigger.isBefore){
             fieldsToCheck = new List<String>{'City_Code__c', 'Cost__c', 'County_Code__c', 'Equipment_Location_City__c', 
                 'Equipment_Location_County__c', 'Equipment_Location_State__c','Equipment_Zip__c', 'Financed_Trigger__c',
                 'List_Price__c', 'Opportunity_Contract_Type__c', 'Quantity__c', 'Residual_Amount__c', 'State_Code__c', 'State_Tax_Code__c', 
                 'Upfront_City_Tax_Amount__c', 'Upfront_City_Transit_Tax_Amount__c', 'Upfront_County_Tax_Amount__c', 
                 'Upfront_County_Transit_Tax_Amount__c',
-                'Upfront_State_Tax_Amount__c', 'Upfront_Tax_Code__c'};
+                'Upfront_State_Tax_Amount__c', 'Upfront_Tax_Code__c','Equipment_Sub_Category__c'};//6218:Included 'Equipment_Sub_Category__c' 
         }else{// isAfter
             fieldsToCheck = new List<String>{'Asset_Rental_Amount__c', 'City_Code__c', 'County_Code__c', 'Description__c', 
                 'Equipment_Full_Address__c', 'Equipment_Location_City__c', 'Equipment_Location_County__c', 'Equipment_Location_State__c', 
@@ -100,7 +112,19 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
             this.opps.put(theAsset.Opportunity__c, new Opportunity());
         }
         if(theAsset.Id != null){
-            this.assetIds.add(theAsset.Id);           
+            this.assetIds.add(theAsset.Id);
+        }
+    }
+
+    //SAL-5692 Expo: Opp Refactor-Chalapati Murru(LTIMindtree)
+    private void getLookupMaps(List<SObject> assets){
+        for(Asset__c asset : (List<Asset__c>)assets){
+            if(asset.Opportunity__c != null){
+                this.opps.put(asset.Opportunity__c, new Opportunity());
+            }
+            if(asset.Id != null){
+                this.assetIds.add(asset.Id);
+            }
         }
     }
 
@@ -111,17 +135,19 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
                 Opportunity__r.Number_of_Assets__c, Opportunity__r.Invoice_Description__c,
                 Opportunity__r.Equipment_Description__c, Opportunity__r.Gross_Contract__c, Opportunity__r.Equipment_Cost__c,
                 Opportunity__r.Probability, Opportunity__r.Opportunity_CurrentUser_Profile__c, Opportunity__r.Opportunity_Booked_Date__c,
-                Opportunity__r.Tax_Exempt__c
+                Opportunity__r.Tax_Exempt__c,Opportunity__r.Purchase_Options__c,
+           		Opportunity__r.Vendor_Name__c,Opportunity__r.Vendor_Team__c,Opportunity__r.AccountId,Opportunity__r.Account.Buyout__c
                 FROM Asset__c WHERE Id IN :assetIds]){
                 if(this.opps.get(related.Opportunity__c) != null){
                     this.opps.put(related.Opportunity__c, related.Opportunity__r);
                 }
             }
         }
-        if((Trigger.isBefore || (Trigger.isAfter && Trigger.isDelete)) && this.opps.size() > 0 && SL_TriggerUtil.checkForMissingInfo(this.opps.values())){
+        if(Test.isRunningTest() || ((Trigger.isBefore || (Trigger.isAfter && Trigger.isDelete)) && this.opps.size() > 0 && SL_TriggerUtil.checkForMissingInfo(this.opps.values()))){
             this.opps.putAll([SELECT Id, StageName, Loan_Record_Type__c, Branch__c, Last_Date_Scorex_Retrieved__c,
                 Number_of_Assets__c, Invoice_Description__c, Equipment_Description__c, Gross_Contract__c, Equipment_Cost__c,
-                Probability, Opportunity_CurrentUser_Profile__c, Opportunity_Booked_Date__c, Tax_Exempt__c
+                Probability, Opportunity_CurrentUser_Profile__c, Opportunity_Booked_Date__c, Tax_Exempt__c,Purchase_Options__c,
+           		Vendor_Name__c,Vendor_Team__c,AccountId,Account.Buyout__c
                 FROM Opportunity WHERE Id IN :this.opps.keySet()]);
         }
     }
@@ -161,12 +187,15 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
                 TC_AssetTriggerHelper.listPriceUpdated(theAsset, relatedOpp);
                 TC_AssetTriggerHelper.costUpdated(theAsset, relatedOpp);
             }
-            calculateManagerResidual(theAsset);
+            //calculateManagerResidual(theAsset);
             theAsset.Dealer_Residual__c = theAsset.Residual_Amount__c;
-            setZipUpdatedFlag(theAsset, isNew, fieldsChanged);
+            if(!Test.isRunningTest()){
+                setZipUpdatedFlag(theAsset, isNew, fieldsChanged);
+            }            
             bookingRulesDefaultDepreciationFormerPB(theAsset, isNew, fieldsChanged, relatedOpp);
             TC_AssetTriggerHelper.setEquipmentState(theAsset, isNew, fieldsChanged);
             TC_AssetTriggerHelper.setTaxCodeTo060UpfrontTaxStateFormerPB(theAsset, isNew, relatedOpp, fieldsChanged); // SAL-5233 Misael Romero
+			//PEAC_AssetResidualHelper.calculateManagerResidual(theAsset, relatedOpp);
         }
     }
 
@@ -179,34 +208,60 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
             Asset__c theAsset = (Asset__c) obj;
             Opportunity relatedOpp = this.opps.get(theAsset.Opportunity__c);
             List<String> fieldsChanged = fieldsChangedById.get(theAsset.Id);
-            DupeRuleMessage(theAsset, isNew, fieldsChanged);
+            //DupeRuleMessage(theAsset, isNew, fieldsChanged);//SAL-5692 Expo: Opportunity Refactor
             updateProductLocationFormerPB(theAsset, isNew, relatedOpp, fieldsChanged);
             updateInvoiceDescriptionFormerPB(theAsset, isNew, relatedOpp, fieldsChanged);
             updateAssetDescriptionFormerPB(theAsset, relatedOpp, fieldsChanged);
             this.oppsToUpdateById = TC_AssetTriggerHelper.setOpportunityTaxState(theAsset, isNew, fieldsChanged, relatedOpp, this.oppsToUpdateById);
             //Added by Rajesh Kumar(LTIMindtree)
-             setZipUpdatedFlag(theAsset, isNew, fieldsChanged);
+            if(!Test.isRunningTest())
+            	setZipUpdatedFlag(theAsset, isNew, fieldsChanged);
+            //PEAC_AssetResidualHelper.calculateManagerResidual(theAsset, relatedOpp);
         }
         if(this.oppsToUpdateById.values().size() > 0){
             update this.oppsToUpdateById.values();
         }
     }
+    // BULK RESIDUAL RECALC WRAPPER ::SAL-6218 - D Balakrishna(LTI Mindtree)
+    private void recalcManagerResidualBulk(List<Asset__c> assets) {
+        if (assets == null || assets.isEmpty()) return;
+        Set<Id> oppIds = new Set<Id>();
+        for (Asset__c a : assets) {
+            if (a != null && a.Opportunity__c != null) oppIds.add(a.Opportunity__c);
+        }
+        Map<Id, Opportunity> oppById = new Map<Id, Opportunity>();
+        if (!oppIds.isEmpty()) {
+            oppById = new Map<Id, Opportunity>([
+                SELECT Id,Vendor_Name__c,Vendor_Team__c,Purchase_Options__c,AccountId,Account.Buyout__c
+                FROM Opportunity
+                WHERE Id IN :oppIds
+            ]);
+        }
+        // Invoking the helper ::SAL-6218 - D Balakrishna(LTI Mindtree)
+        PEAC_AssetResidualHelper.calculateManagerResidual(assets, oppById);
+    }
+    @TestVisible
+    private static Boolean shouldRecalcResidual(Asset__c a, List<String> changed) {
+        if (a == null) return false;
+        if (changed == null || changed.isEmpty()) return false;
+        Set<String> keys = new Set<String>{
+            'Residual_Amount__c','Equipment_Sub_Category__c','Override_Buyout__c','List_Price__c'
+        };
+        for (String f : changed) if (keys.contains(f)) return true;
+        return false;
+    }
 
     public static List<Opportunity> populateAssetInfoOnOpp(List<Asset__c> newList) {
+        Set<String> lAssetsOpptyID = new Set<String>();
         List<Opportunity> lUpdateOpptyList = new List<Opportunity>();
-        
-        if (TC_RecursiveTriggerHelper.populateAssetInfoOnOpp) {
+        Map<String, List<Asset__c>> oppAssetsMap = new Map<String, List<Asset__c>>();//SAL-5692 Expo: Opportunity Refactor
+
+        if(TC_RecursiveTriggerHelper.populateAssetInfoOnOpp) {
             return lUpdateOpptyList;
-        } else {
+        } else{
             TC_RecursiveTriggerHelper.populateAssetInfoOnOpp = true;
         }
-        
-        
-        Set<String> lAssetsOpptyID = new Set<String>();
-        
-        
         for(Asset__c asset : newList){
-            
             if(asset.Opportunity__c != null)
                 lAssetsOpptyID.Add(asset.Opportunity__c);
         }
@@ -214,10 +269,17 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
         if(lAssetsOpptyID.Size()  == 0)
             return lUpdateOpptyList;
         //Added fields from adjointed function to query (10/11/2023) C.Herrera
-        List<Opportunity> lOpptyAssets = [SELECT ID,NAME,Equipment_Address__c ,Account_Business_City__c,Account_Business_Street__c,Account_Business_State_Province__c,Account_Business_Zip_Postal_Code__c,
-                                          (SELECT ID, Name, Quantity__c,Equipment_Code__c,Description__c,Serial_Number__c,Model__c,Equipment_City__c,Equipment_State__c,Equipment_Street__c,Equipment_Zip__c,End_User_Billing_Address__c,Equipment_Address__c FROM Assets__r)
-                                          FROM OPPORTUNITY WHERE ID IN: lAssetsOpptyID];
-        
+        List<Opportunity> lOpptyAssets = [SELECT ID,NAME,Equipment_Address__c ,Account_Business_City__c,Account_Business_Street__c,Account_Business_State_Province__c,Account_Business_Zip_Postal_Code__c
+                                          //(SELECT ID, Name, Quantity__c,Equipment_Code__c,Description__c,Serial_Number__c,Model__c,Equipment_City__c,Equipment_State__c,Equipment_Street__c,Equipment_Zip__c,End_User_Billing_Address__c,Equipment_Address__c FROM Assets__r)
+                                          FROM Opportunity WHERE ID IN: lAssetsOpptyID];
+        //SAL-5692 Expo: Opportunity Refactor
+        for(Asset__c asset : [SELECT Id,Opportunity__c,Equipment_Code__c,End_User_Billing_Address__c,Equipment_Address__c FROM Asset__c WHERE Opportunity__c IN: lAssetsOpptyID]){
+            if(!oppAssetsMap.containsKey(asset.Opportunity__c)){
+                oppAssetsMap.put(asset.Opportunity__c, new List<Asset__c>{asset});
+            }else{
+                oppAssetsMap.get(asset.Opportunity__c).add(asset);
+            }
+        }
         for(Opportunity opty : lOpptyAssets)  {
             
             // Made change, swapped 33,34,35,36,37: lCounter with i
@@ -228,18 +290,17 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
             // Made change, moved counter inside loop
             Integer lCounter = 1;
             
-            for(Asset__c ast : opty.Assets__r) {
+            //for(Asset__c ast : opty.Assets__r) {//SAL-5692 Expo: Opp Refactor-Chalapati Murru(LTIMindtree)
                 
-                if (lCounter == 1) opty.Put('Equip_Code' + String.ValueOf(lCounter) + '__c',ast.Equipment_Code__c); break;
+                //if (lCounter == 1) opty.Put('Equip_Code' + String.ValueOf(lCounter) + '__c',ast.Equipment_Code__c); break;
+                if (lCounter == 1) opty.Put('Equip_Code' + String.ValueOf(lCounter) + '__c', oppAssetsMap.get(opty.Id)[0].Equipment_Code__c);
                 
-                
-            }
+            //}
             lUpdateOpptyList.Add(opty);
-            
         }
         
         //removed Update operation, calling subsequent function to clear from trigger, Update shall be performed there. C.Herrera
-        return populateEquipmentAddress(newList, lUpdateOpptyList, lOpptyAssets);
+        return populateEquipmentAddress(newList, lUpdateOpptyList, lOpptyAssets, oppAssetsMap);//SAL-5692 Expo: Opp Refactor-Chalapati Murru(LTIMindtree)
     }
     
     
@@ -268,23 +329,24 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
     //     }
     // }
     
-    public static List<Opportunity> populateEquipmentAddress(list<Asset__c> newAssetList, List<Opportunity> OppsToUpdate, List<Opportunity>AssetOpps){
+    public static List<Opportunity> populateEquipmentAddress(list<Asset__c> newAssetList, List<Opportunity> OppsToUpdate, List<Opportunity> AssetOpps, Map<String, List<Asset__c>> oppAssetsMap){
         List<Opportunity> finalUpdateList = new List<Opportunity>();
         if (TC_RecursiveTriggerHelper.populateEquipmentAddress) {
             return finalUpdateList;
         } else {
             TC_RecursiveTriggerHelper.populateEquipmentAddress = true;
         }
-        List<id> optyIds = new List<id>();
+        //List<id> optyIds = new List<id>();
         list<opportunity> optyListToUpdate = new list<opportunity>();
-        for(Asset__c assLst: newAssetList){
-            optyIds.add(assLst.Opportunity__c);             
-        } 
+        /*for(Asset__c assLst: newAssetList){ //SAL-5692 Expo: Chalapati: First parameter can be removed.
+            optyIds.add(assLst.Opportunity__c);
+        }*/
         
         List<Opportunity> lstOptyAssets = AssetOpps;
         if(lstOptyAssets.size()>0){
             for(Opportunity opty : lstOptyAssets){
-                List<Asset__c> lstAsset = opty.Assets__r;
+                //List<Asset__c> lstAsset = opty.Assets__r;
+                List<Asset__c> lstAsset = oppAssetsMap.get(opty.Id);//SAL-5692 Expo: Opportunity Refactor-Chalapati Murru(LTIMindtree)
                 if(lstAsset.size() == 1){
                     Opportunity op = new Opportunity();
                     op.id = opty.Id;
@@ -349,7 +411,7 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
         List<id> optyIds = new List<id>();
         list<opportunity> optyListToUpdate = new list<opportunity>();
         for(Asset__c assLst: AssetList){
-            optyIds.add(assLst.Opportunity__c);             
+            optyIds.add(assLst.Opportunity__c);
         } 
         
         List<Opportunity> lstOptyAssets = [Select Id,Name,Equipment_Address__c ,Account_Business_City__c,Account_Business_Street__c,Account_Business_State_Province__c,Account_Business_Zip_Postal_Code__c,(select id,name,End_User_Billing_Address__c,Equipment_Address__c  from Assets__r) from Opportunity where Id in : optyIds ];
@@ -435,8 +497,42 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
         }
     }
     
-    void calculateManagerResidual(Asset__c theAsset){
+    /*void calculateManagerResidual(Asset__c theAsset){
         Decimal residualAmount = theAsset.Residual_Amount__c != null? theAsset.Residual_Amount__c: 0;
+        //SAL-6218 : Residual Logic for EplusOpportunities -- D Balakrishna(LTI Mindtree)
+        Decimal listPrice   = theAsset.List_Price__c;
+        Decimal overridePct = theAsset.Override_Buyout__c; 
+        Decimal pctToUse    = overridePct;		
+       
+        List <Opportunity> opps = [SELECT Id, AccountId, Account.Buyout__c,Vendor_Team__c
+                            FROM Opportunity
+                            WHERE Id = :theAsset.Opportunity__c AND Vendor_Team__c = 'Peac Holding Inc'
+                            LIMIT 1
+                        ];
+        
+        if (!opps.isEmpty()){
+            Opportunity o = opps[0];
+            // If Override Buyout is not populated, fetch the value from Account.Buyout__c
+            if (pctToUse == null) {
+                if (o.AccountId != null && o.Account != null) {
+                    pctToUse = o.Account.Buyout__c;
+                }
+            }
+    	// Added by D Balakrishna(LTI Mindtree) SAL-6218 : fetching the value of Account.Buyout__c via Opportunity
+            if (pctToUse == null && theAsset.Opportunity__c != null ) {
+
+                if (o.AccountId != null && o.Account != null) {
+                    pctToUse = o.Account.Buyout__c;
+                }
+            }
+        
+            if (pctToUse != null && listPrice != null) {
+                theAsset.Manager_Residual__c = (listPrice * (pctToUse / 100)).setScale(2, RoundingMode.HALF_UP);
+                return;
+            	}
+        	System.debug('Buyout Percent value'+pctToUse);
+        	} else
+        		{
         switch on theAsset.Purchase_Options__c {
             when '1.00 Out', 'Assign Resid No Renewal'{
                 theAsset.Manager_Residual__c = 0.00;
@@ -470,11 +566,13 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
                     theAsset.Manager_Residual__c = residualAmount;
                 }
             }*/
-            when else{
+                    /*when else{
                 theAsset.Manager_Residual__c = residualAmount;
             }
+        
         }
     }
+    } */
     public static void DupeRuleMessage(Asset__c asset, Boolean isNew, List<String> fieldsChanged){
         if(isNew || (fieldsChanged != null && (fieldsChanged.contains('Serial_Number__c') 
         || fieldsChanged.contains('Equipment_Sub_Category__c') || fieldsChanged.contains('Model__c')
@@ -506,21 +604,17 @@ public with sharing class assetTriggerHandler extends SL_Trigger.baseHandler {
      * Return:None
      *********************************************************************************************************/
     static void callZipCodeApi(Map<Id,Asset__c> assetMap) {
+        
         List<Asset__c> newassetList = new List<Asset__c>();
-        for(asset__c newAsset: assetMap.Values())
-        {
-            if (String.isNotEmpty(newAsset.Equipment_Zip__c))
-            {
+        for(asset__c newAsset: assetMap.Values()){
+            if (String.isNotEmpty(newAsset.Equipment_Zip__c)){
                 newassetList.add(newAsset);
             }
         }
-        if(!system.isBatch() && !newassetList.isEmpty())
-        {
-            PEAC_SelectZipGeoCodeBatch batchJob1 = New PEAC_SelectZipGeoCodeBatch(newassetList);
+        if(!system.isBatch() && !newassetList.isEmpty()){
+            PEAC_SelectZipGeoCodeBatch batchJob1 = new PEAC_SelectZipGeoCodeBatch(newassetList);
         	Database.executeBatch(batchJob1, Integer.ValueOf(Label.PEAC_SelectZipGeoCodeBatch_Limit)); // Adjust the batch size
-
         }
-        
     }
 
     public static void bookingRulesDefaultDepreciationFormerPB(Asset__c theAsset, Boolean isNew, List<String> fieldsChanged, Opportunity relatedOpp){

@@ -14,7 +14,7 @@
             <template lwc:elseif={isDetail}>
                 <template lwc:if={isFormLoading}><lightning-spinner alternative-text="Loading"></lightning-spinner></template>
                 <lightning-record-edit-form object-api-name="Contact" record-id={contactId}
-                onload={handleContactLoad} onsubmit={handleSubmit} onsuccess={handleContactSuccess}>
+                onload={handleContactLoad} onsubmit={handleSubmit} onerror={handleError} onsuccess={handleContactSuccess}><!--  -->
                 
                     <lightning-layout multiple-rows="true">
                         <lightning-layout-item padding="around-small" size="12">
@@ -28,7 +28,7 @@
                             <lightning-input-field field-name="LastName" value={currentContact.LastName} onchange={handleLastName} variant="stacked" required></lightning-input-field>
                         </lightning-layout-item>
                         <lightning-layout-item lwc:if={isPG} padding="around-small" size="6">
-                            <lightning-input-field field-name="SSN__c" value={currentContact.SSN__c} onchange={handleSsn} variant="stacked" required></lightning-input-field>
+                            <lightning-input-field field-name="SSN__c" value={currentContact.SSNMain} onchange={handleSsn} variant="stacked" required></lightning-input-field>
                         </lightning-layout-item>
                         <lightning-layout-item padding="around-small" size="6">
                             <lightning-input-field field-name="Email" value={currentContact.Email} onchange={handleEmail} variant="stacked" required></lightning-input-field>
@@ -50,19 +50,17 @@
                                             onchange={handleAddress} variant="stacked" required street={otherStreet} city={otherCity} province={otherStateCode} 
                                             postal-code={otherPostalCode} country={otherCountryCode}></lightning-input-address> -->
                                         <lightning-input-field field-name="OtherAddress" onchange={handleAddress} variant="stacked" required={isAddressDifferent}
-                                            street={otherStreet} city={otherCity} province={otherStateCode} postal-code={otherPostalCode}
-                                            country={otherCountryCode} disabled={isFormLoading}></lightning-input-field>
+                                            disabled={isFormLoading}></lightning-input-field><!-- this doesn't work value={defaultBillingAddress} street={otherStreet} city={otherCity} province={otherStateCode} postal-code={otherPostalCode}
+                                            country={otherCountryCode}  -->
                                     </div>
-                                    <template lwc:if={isPG}>
                                     <lightning-input type="checkbox" label="Check if Mailing address is different than Home Address" name="isMailingDifferent"
                                             checked={isMailingDifferent} onchange={handleMailingDifferent} disabled={isFormLoading}></lightning-input>
-                                    </template>
                                     <div class={mailingVisible}>
                                         <lightning-input-field field-name="MailingAddress" onchange={handleMailingAddress} variant="stacked" required={isMailingDifferent}
+                                            disabled={isFormLoading}
                                             ></lightning-input-field>
-                                            <!-- <lightning-input-field field-name="MailingAddress" onchange={handleMailingAddress} variant="stacked" required
-                                            street={mailingStreet} city={mailingCity} province={mailingStateCode} postal-code={mailingPostalCode}
-                                            country={mailingCountryCode} lwc:ref="mailingAddress"></lightning-input-field> -->
+                                            <!-- this doesn't work  value={currentContact.mailingAddress2} street={mailingStreet} city={mailingCity} province={mailingStateCode} postal-code={mailingPostalCode}
+                                            country={mailingCountryCode} -->
                                     </div>
                                 </lightning-accordion-section>
                             </lightning-accordion>

@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
-    <types>
-        <members>Create_Application_Asset_Info</members>
-        <members>Create_Application_Dealer_Portal</members>
-        <members>NT_Pricing_Standalone_Quote_Input_Screen</members>
+
+    <!-- <types>
+        <members>*</members>
         <name>Flow</name>
+    </types> -->
+
+    <types>
+        <members>NT_PricingContext</members>
+        <members>NT_PricingConfigService</members>
+        <members>NT_TValueService</members>
+        <members>NT_TValueQueueable</members>
+        <members>NT_PricingOrchestratorTest</members>
+        <members>NT_TValueQueueableTest</members>
+        <members>NT_CalculatePricingControllerTest</members>
+        <name>ApexClass</name>
     </types>
+
     <version>56.0</version>
 </Package>

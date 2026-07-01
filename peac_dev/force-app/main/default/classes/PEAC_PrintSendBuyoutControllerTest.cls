@@ -5,7 +5,10 @@ public class PEAC_PrintSendBuyoutControllerTest {
     static void testSendEmailSuccess() {
         SL_SCTestData.createAccountAndContracts(1, 1);
         Contract__c contract = [SELECT Id FROM Contract__c];
-        List<EmailTemplate> emailTemplateList = PEAC_PrintSendBuyoutController.getEmailTemplates(contract.Id);
+        //List<EmailTemplate> emailTemplateList = PEAC_PrintSendBuyoutController.fetchDetails(contract.Id);
+        PEAC_PrintSendBuyoutController.DataWrapper data = PEAC_PrintSendBuyoutController.fetchDetails(contract.Id);
+        List<EmailTemplate> emailTemplateList = data.emailTemplates;
+        System.assert(!emailTemplateList.isEmpty(), 'No email templates found');
         
         // Create EmailWrapper
         PEAC_PrintSendBuyoutController.EmailWrapper emailWrap = new PEAC_PrintSendBuyoutController.EmailWrapper();

@@ -3,7 +3,11 @@
  *              Modifiers are additive/subtractive point adjustments - order does not affect results.
  * @author Northteq
  */
-public class NT_ModifierService {
+public without sharing class NT_ModifierService {
+
+    @TestVisible private static Decimal testResidualOverride = null;
+    @TestVisible private static Boolean forceEvaluationException = false;
+    @TestVisible private static Decimal testModifierGridRateOverride = null;
     
     /**
      * @description Evaluates and applies all applicable modifiers
@@ -11,9 +15,6 @@ public class NT_ModifierService {
      * @return NT_PricingContext The updated context with applied modifiers
      */
     public NT_PricingContext applyModifiers(NT_PricingContext ctx) {
-        // Initialize final values from base values
-        ctx.finalRate = ctx.baseRate;
-        ctx.finalRateFactor = ctx.baseRateFactor;
         ctx.finalResidual = ctx.baseResidual;
         
         if (ctx.eligibleModifiers.isEmpty()) {
@@ -35,28 +36,34 @@ public class NT_ModifierService {
         // Evaluate and apply each modifier (additive)
         for (Modifier__c modifier : relevantModifiers) {
             try {
+                if (forceEvaluationException) { throw new IllegalArgumentException('Forced test exception'); }
                 if (isModifierApplicable(modifier, ctx)) {
                     // Get rate adjustment
                     Decimal modRate = getModifierRate(modifier, ctx);
                     if (modRate != null) {
                         rateAdjustment += modRate;
                     }
-                    
+
                     // Get residual adjustment
                     Decimal modResidual = getResidualAdjustment(modifier, ctx);
                     if (modResidual != null) {
                         residualAdjustment += modResidual;
                     }
-                    
+
                     ctx.appliedModifiers.add(modifier);
+                    ctx.modifierRateAdjustments.put(modifier.Id, modRate != null ? modRate : 0);
+                    ctx.modifierResidualAdjustments.put(modifier.Id, modResidual != null ? modResidual : 0);
                 }
             } catch (Exception e) {
-                // Log warning but continue processing other modifiers
+                // Track error and continue processing other modifiers
                 System.debug('Warning: Error evaluating modifier ' + modifier.Name + ': ' + e.getMessage());
+                ctx.modifierErrors.put(modifier.Id, modifier.Name + ': ' + e.getMessage());
             }
         }
         
-        // Apply cumulative adjustments
+        ctx.totalModifierRateAdjustment = rateAdjustment;
+        ctx.totalModifierResidualAdjustment = residualAdjustment;
+
         if (ctx.finalRate != null) {
             ctx.finalRate = ctx.finalRate + rateAdjustment;
         } else if (rateAdjustment != 0) {
@@ -71,6 +78,29 @@ public class NT_ModifierService {
             ctx.finalResidual = ctx.finalResidual + residualAdjustment;
         } else if (residualAdjustment != 0) {
             ctx.finalResidual = residualAdjustment;
+        }
+        
+        // Apply the same modifier adjustments to each per-term result (Quote context)
+        if (ctx.hasTermPricingResults()) {
+            for (NT_PricingContext.TermPricingResult tpr : ctx.termPricingResults.values()) {
+                if (tpr.finalRate != null) {
+                    tpr.finalRate = tpr.finalRate + rateAdjustment;
+                } else if (rateAdjustment != 0) {
+                    tpr.finalRate = rateAdjustment;
+                }
+                
+                if (tpr.finalRateFactor != null) {
+                    tpr.finalRateFactor = tpr.finalRateFactor + rateAdjustment;
+                }
+                
+                if (tpr.finalResidual != null) {
+                    tpr.finalResidual = tpr.finalResidual + residualAdjustment;
+                } else if (tpr.baseResidual != null) {
+                    tpr.finalResidual = tpr.baseResidual + residualAdjustment;
+                } else if (residualAdjustment != 0) {
+                    tpr.finalResidual = residualAdjustment;
+                }
+            }
         }
         
         return ctx;
@@ -101,65 +131,204 @@ public class NT_ModifierService {
      * @return Boolean true if modifier should be applied
      */
     private Boolean isModifierApplicable(Modifier__c modifier, NT_PricingContext ctx) {
-        // If modifier has no entry criteria on its rate card, it's always applicable
-        if (modifier.Rate_Card__r == null || modifier.Rate_Card__r.Entry_Criteria__c == null) {
+        if (modifier.Modifier_Rate_Card__c == null) {
             return true;
         }
-        
-        // Evaluate the modifier's rate card entry criteria
-        Set<Id> logicObjectIds = new Set<Id>();
-        logicObjectIds.add(ctx.parentId);
-        
-        Set<Id> ruleConfigIds = new Set<Id>();
-        ruleConfigIds.add(modifier.Rate_Card__r.Entry_Criteria__c);
-        
+
+        Id entryCriteria = ctx.isQuote()
+            ? modifier.Modifier_Rate_Card__r.Quote_Entry_Config__c
+            : modifier.Modifier_Rate_Card__r.Entry_Criteria__c;
+
+        if (entryCriteria == null) {
+            return true;
+        }
+
         TCRE.RuleEngine modRE = new TCRE.RuleEngine();
-        modRE.logicObjectIds = logicObjectIds;
-        modRE.ruleConfigIds = ruleConfigIds;
-        modRE.ruleObjectType = 'Modifier__c';
-        
+        modRE.logicObjectIds = new Set<Id>{ ctx.parentId };
+        modRE.ruleConfigIds = new Set<Id>{ entryCriteria };
+        modRE.ruleObjectType = 'RateCard__c';
         try {
             modRE.testRuleConditions();
-            
             for (Map<Id, Boolean> ruleResult : modRE.ruleResults.values()) {
                 for (Id ruleConfigId : ruleResult.keySet()) {
-                    if (ruleResult.get(ruleConfigId) == true) {
-                        return true;
-                    }
+                    if (ruleResult.get(ruleConfigId) == true) { return true; }
                 }
             }
         } catch (Exception e) {
-            // Log error but assume applicable
             System.debug('Error evaluating modifier criteria: ' + e.getMessage());
-            return true;
+            return false;
         }
-        
         return false;
     }
     
     
     /**
-     * @description Gets the rate adjustment from the modifier's rate card
+     * @description Gets the rate adjustment from the modifier's rate card.
+     *              Returns Base_Rate__c plus the grid rate matched by row/column criteria
+     *              (e.g. credit risk score row × term column intersection).
      * @param modifier The modifier
      * @param ctx The pricing context
      * @return Decimal The rate adjustment value
      */
     private Decimal getModifierRate(Modifier__c modifier, NT_PricingContext ctx) {
-        // Query rates from the modifier's rate card
-        // Use same row/column matching logic as base rate card
-        List<Rate_Card_Rate__c> rates = [
-            SELECT Id, Rate__c
-            FROM Rate_Card_Rate__c
-            WHERE Rate_Card_Row__r.Rate_Card__c = :modifier.Rate_Card__c
-            ORDER BY Rate_Card_Column__r.Order__c, Rate_Card_Row__r.Order__c
-            LIMIT 1
-        ];
-        
-        if (!rates.isEmpty()) {
-            return rates[0].Rate__c;
+        if (modifier.Modifier_Rate_Card__c == null) {
+            return null;
         }
-        
-        return null;
+        Decimal baseRate = modifier.Modifier_Rate_Card__r.Base_Rate__c != null
+            ? modifier.Modifier_Rate_Card__r.Base_Rate__c
+            : 0;
+        Decimal gridRate = getModifierGridRate(modifier.Modifier_Rate_Card__c, ctx);
+        return baseRate + (gridRate != null ? gridRate : 0);
+    }
+
+    /**
+     * @description Evaluates the modifier rate card's row/column grid to find the
+     *              contextual rate adjustment (e.g. credit risk score lookup).
+     * @param modRateCardId The modifier rate card Id
+     * @param ctx The pricing context
+     * @return Decimal The grid rate, or null if no matching row/column found
+     */
+    private Decimal getModifierGridRate(Id modRateCardId, NT_PricingContext ctx) {
+        if (testModifierGridRateOverride != null) {
+            return testModifierGridRateOverride;
+        }
+        Boolean useQuoteField = ctx.isQuote();
+
+        // Collect row criteria IDs for this modifier rate card
+        Set<Id> rowCriteriaIds = new Set<Id>();
+        for (Rate_Card_Row__c row : [
+            SELECT Id, Row_Criteria__c, Quote_Row_Criteria__c
+            FROM Rate_Card_Row__c
+            WHERE Rate_Card__c = :modRateCardId
+        ]) {
+            Id criteriaId = useQuoteField ? row.Quote_Row_Criteria__c : row.Row_Criteria__c;
+            if (criteriaId != null) {
+                rowCriteriaIds.add(criteriaId);
+            }
+        }
+
+        if (rowCriteriaIds.isEmpty()) {
+            return null;
+        }
+
+        // Evaluate row criteria via TCRE
+        Set<Id> matchingRowCriteriaIds = new Set<Id>();
+        TCRE.RuleEngine rowRE = new TCRE.RuleEngine();
+        rowRE.logicObjectIds = new Set<Id>{ ctx.parentId };
+        rowRE.ruleConfigIds = rowCriteriaIds;
+        rowRE.ruleObjectType = 'Rate_Card_Row__c';
+        try {
+            rowRE.testRuleConditions();
+            Map<Id, Map<Id, Boolean>> rowResults = rowRE.ruleResults;
+            for (Map<Id, Boolean> ruleResult : rowResults.values()) {
+                for (Id ruleConfigId : ruleResult.keySet()) {
+                    if (ruleResult.get(ruleConfigId) == true) {
+                        matchingRowCriteriaIds.add(ruleConfigId);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            System.debug('Error evaluating modifier row criteria: ' + e.getMessage());
+            return null;
+        }
+
+        if (matchingRowCriteriaIds.isEmpty()) {
+            return null;
+        }
+
+        // Collect column criteria IDs for this modifier rate card
+        Set<Id> columnCriteriaIds = new Set<Id>();
+        for (Rate_Card_Column__c col : [
+            SELECT Id, Column_Criteria__c, Quote_Column_Criteria__c
+            FROM Rate_Card_Column__c
+            WHERE Rate_Card__c = :modRateCardId
+        ]) {
+            Id criteriaId = useQuoteField ? col.Quote_Column_Criteria__c : col.Column_Criteria__c;
+            if (criteriaId != null) {
+                columnCriteriaIds.add(criteriaId);
+            }
+        }
+
+        // A modifier rate card may have a single catch-all column (e.g. "All term lengths")
+        // with no criteria configured. In that case we match on row only. When column
+        // criteria DO exist, we require a column match (strict, mirrors NT_RateCardService).
+        Boolean hadColumnCriteria = !columnCriteriaIds.isEmpty();
+
+        // Evaluate column criteria if any exist
+        Set<Id> matchingColumnCriteriaIds = new Set<Id>();
+        if (hadColumnCriteria) {
+            TCRE.RuleEngine colRE = new TCRE.RuleEngine();
+            colRE.logicObjectIds = new Set<Id>{ ctx.parentId };
+            colRE.ruleConfigIds = columnCriteriaIds;
+            colRE.ruleObjectType = 'Rate_Card_Column__c';
+            try {
+                colRE.testRuleConditions();
+                Map<Id, Map<Id, Boolean>> colResults = colRE.ruleResults;
+                for (Map<Id, Boolean> ruleResult : colResults.values()) {
+                    for (Id ruleConfigId : ruleResult.keySet()) {
+                        if (ruleResult.get(ruleConfigId) == true) {
+                            matchingColumnCriteriaIds.add(ruleConfigId);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.debug('Error evaluating modifier column criteria: ' + e.getMessage());
+            }
+        }
+
+        // Column criteria existed but none matched — no valid intersection, skip this modifier's grid
+        if (hadColumnCriteria && matchingColumnCriteriaIds.isEmpty()) {
+            return null;
+        }
+
+        // Query Rate_Card_Rate__c at the row/column intersection
+        List<Rate_Card_Rate__c> rates;
+        if (matchingColumnCriteriaIds.isEmpty()) {
+            // No column criteria configured — match on row only (catch-all column)
+            if (useQuoteField) {
+                rates = [
+                    SELECT Id, Rate__c
+                    FROM Rate_Card_Rate__c
+                    WHERE Rate_Card_Row__r.Rate_Card__c = :modRateCardId
+                    AND Rate_Card_Row__r.Quote_Row_Criteria__c IN :matchingRowCriteriaIds
+                    ORDER BY Rate_Card_Column__r.Order__c
+                    LIMIT 1
+                ];
+            } else {
+                rates = [
+                    SELECT Id, Rate__c
+                    FROM Rate_Card_Rate__c
+                    WHERE Rate_Card_Row__r.Rate_Card__c = :modRateCardId
+                    AND Rate_Card_Row__r.Row_Criteria__c IN :matchingRowCriteriaIds
+                    ORDER BY Rate_Card_Column__r.Order__c
+                    LIMIT 1
+                ];
+            }
+        } else {
+            if (useQuoteField) {
+                rates = [
+                    SELECT Id, Rate__c
+                    FROM Rate_Card_Rate__c
+                    WHERE Rate_Card_Row__r.Rate_Card__c = :modRateCardId
+                    AND Rate_Card_Row__r.Quote_Row_Criteria__c IN :matchingRowCriteriaIds
+                    AND Rate_Card_Column__r.Quote_Column_Criteria__c IN :matchingColumnCriteriaIds
+                    ORDER BY Rate_Card_Column__r.Order__c
+                    LIMIT 1
+                ];
+            } else {
+                rates = [
+                    SELECT Id, Rate__c
+                    FROM Rate_Card_Rate__c
+                    WHERE Rate_Card_Row__r.Rate_Card__c = :modRateCardId
+                    AND Rate_Card_Row__r.Row_Criteria__c IN :matchingRowCriteriaIds
+                    AND Rate_Card_Column__r.Column_Criteria__c IN :matchingColumnCriteriaIds
+                    ORDER BY Rate_Card_Column__r.Order__c
+                    LIMIT 1
+                ];
+            }
+        }
+
+        return rates.isEmpty() ? null : rates[0].Rate__c;
     }
     
     /**
@@ -169,20 +338,15 @@ public class NT_ModifierService {
      * @return Decimal The residual adjustment value
      */
     private Decimal getResidualAdjustment(Modifier__c modifier, NT_PricingContext ctx) {
-        // Get residual from linked Program_Residual
-        if (modifier.Residual_Balloon_Table__c != null) {
-            List<Program_Residual__c> residuals = [
-                SELECT Id, Residual_Balloon_Table__r.Base_Rate__c
-                FROM Program_Residual__c
-                WHERE Id = :modifier.Residual_Balloon_Table__c
-                LIMIT 1
-            ];
-            
-            if (!residuals.isEmpty() && residuals[0].Residual_Balloon_Table__r != null) {
-                return residuals[0].Residual_Balloon_Table__r.Base_Rate__c;
-            }
+        if (testResidualOverride != null) {
+            return testResidualOverride;
         }
-        
+        // Get residual from linked Program_Residual
+        if (modifier.Residual_Balloon_Table__c == null) { return null; }
+        List<Program_Residual__c> residuals = [SELECT Id, Residual_Balloon_Table__r.Base_Rate__c FROM Program_Residual__c WHERE Id = :modifier.Residual_Balloon_Table__c LIMIT 1];
+        if (!residuals.isEmpty() && residuals[0].Residual_Balloon_Table__r != null) {
+            return residuals[0].Residual_Balloon_Table__r.Base_Rate__c;
+        }
         return null;
     }
     

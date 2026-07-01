@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <assignments>
+        <name>Set_Opportunity_Stage</name>
+        <label>Set Opportunity Stage</label>
+        <locationX>1035</locationX>
+        <locationY>144</locationY>
+        <assignmentItems>
+            <assignToReference>Get_Opportunity.StageName</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Decision</stringValue>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Is_Stage_Lost</name>
+        <label>Is Stage Lost?</label>
+        <locationX>358</locationX>
+        <locationY>497</locationY>
+        <defaultConnector>
+            <targetReference>Stage_is_Not_Lost_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Stage is Not Lost</defaultConnectorLabel>
+        <rules>
+            <name>Stage_is_Lost</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Opportunity.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Lost</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Running_User</targetReference>
+            </connector>
+            <label>Stage is Lost</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_User_a_Channel_Approver</name>
+        <label>Is User a Channel Approver?</label>
+        <locationX>754</locationX>
+        <locationY>286</locationY>
+        <defaultConnector>
+            <targetReference>User_is_Not_Channel_Approver_Screen</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>User is Not Channel Approver</defaultConnectorLabel>
+        <rules>
+            <name>User_is_Channel_Approver</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_Running_User.Doc_Fee_Exception_Approver__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Opportunity_Stage</targetReference>
+            </connector>
+            <label>User is Channel Approver</label>
+        </rules>
+    </decisions>
+    <description>Move an opportunity from Lost to Decision.</description>
+    <formulas>
+        <name>var15CharId</name>
+        <dataType>String</dataType>
+        <expression>LEFT({!$Flow.CurrentRecord}, 15)</expression>
+    </formulas>
+    <formulas>
+        <name>varCurrentUserId</name>
+        <dataType>String</dataType>
+        <expression>{!$User.Id}</expression>
+    </formulas>
+    <interviewLabel>TC Opportunity - Re-activate Lost {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>TC Opportunity - Re-activate Lost</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <recordLookups>
+        <name>Get_Opportunity</name>
+        <label>Get Opportunity</label>
+        <locationX>197</locationX>
+        <locationY>586</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_Stage_Lost</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Get_Opportunity_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>recordId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Opportunity</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>StageName</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Running_User</name>
+        <label>Get Running User</label>
+        <locationX>590</locationX>
+        <locationY>377</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_User_a_Channel_Approver</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Get_Running_User_Fault</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varCurrentUserId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>User</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Doc_Fee_Exception_Approver__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordUpdates>
+        <name>Update_Opportunity</name>
+        <label>Update Opportunity</label>
+        <locationX>1233</locationX>
+        <locationY>144</locationY>
+        <connector>
+            <targetReference>Finished_Screen</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Error_Screen</targetReference>
+        </faultConnector>
+        <inputReference>Get_Opportunity</inputReference>
+    </recordUpdates>
+    <screens>
+        <name>Error_Screen</name>
+        <label>Error Screen</label>
+        <locationX>1388</locationX>
+        <locationY>233</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Error_Message</name>
+            <fieldText>&lt;p&gt;There was an error when attempting to re-activate this lost opportunity. Please remediate this error and try again.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;{!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Finished_Screen</name>
+        <label>Finished Screen</label>
+        <locationX>1390</locationX>
+        <locationY>50</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Success_Text</name>
+            <fieldText>&lt;p&gt;The stage has been moved to Decision.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Please click Finish, then refresh the page.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Get_Opportunity_Fault</name>
+        <label>Get Opportunity Fault</label>
+        <locationX>369</locationX>
+        <locationY>704</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>GetOpportunityFaultText</name>
+            <fieldText>&lt;p&gt;An error occurred when executing this flow:&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;{!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Get_Running_User_Fault</name>
+        <label>Get Running User Fault</label>
+        <locationX>759</locationX>
+        <locationY>465</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>GetRunningUserFaultText</name>
+            <fieldText>&lt;p&gt;An error occurred when executing this flow:&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;{!$Flow.FaultMessage}&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>Stage_is_Not_Lost_Screen</name>
+        <label>Stage is Not Lost Screen</label>
+        <locationX>587</locationX>
+        <locationY>609</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>Stage_Not_Lost_Screen_Display_Text</name>
+            <fieldText>&lt;p&gt;Stage must be Lost in order to move back to Decision.&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <screens>
+        <name>User_is_Not_Channel_Approver_Screen</name>
+        <label>User is Not Channel Approver Screen</label>
+        <locationX>1032</locationX>
+        <locationY>370</locationY>
+        <allowBack>false</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <fields>
+            <name>User_is_Not_Channel_Approver_Screen_Display_Text</name>
+            <fieldText>&lt;p&gt;You must be a channel approver to move an opportunity from Lost to Decision stage!&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+        </fields>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>50</locationX>
+        <locationY>586</locationY>
+        <connector>
+            <targetReference>Get_Opportunity</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>recordId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

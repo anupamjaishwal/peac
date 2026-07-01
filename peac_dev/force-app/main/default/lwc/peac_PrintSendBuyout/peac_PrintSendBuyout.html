@@ -54,6 +54,19 @@
                             </td>
 
                         </tr>
+                        <tr if:true={showEndOfTermPDF}>
+                            <td scope="col" style="width:10px;">
+                                <lightning-input type="checkbox" data-pdfname="End of Term PDF" variant="label-hidden"
+                                    name="input2" onchange={handleeEndOfTermSelect}></lightning-input>
+                            </td>
+                            <td scope="col">End of Term PDF</td>
+                            <td scope="col">
+                                <lightning-button-icon icon-name="utility:preview" variant="brand"
+                                    alternative-text="preview" onclick={handleEndOfTermPdf}>
+                                </lightning-button-icon>
+                            </td>
+
+                        </tr>
 
                     </tbody>
                 </table>

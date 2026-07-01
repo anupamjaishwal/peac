@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <assignments>
+        <description>Assign without mask account to number mask account number</description>
+        <name>Update_masked_account_number</name>
+        <label>Update masked account number</label>
+        <locationX>176</locationX>
+        <locationY>287</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Bank_Account_Number__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Bank_Account_Number_No_Masking__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>Assign Mask Account Number-SAL-5446</description>
+    <environments>Default</environments>
+    <interviewLabel>Assign Mask Account Number {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Assign Mask Account Number</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Update_masked_account_number</targetReference>
+        </connector>
+        <filterFormula>isnew() || ISCHANGED({!$Record.Bank_Account_Number_No_Masking__c})</filterFormula>
+        <object>Financial_Bank_Information__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

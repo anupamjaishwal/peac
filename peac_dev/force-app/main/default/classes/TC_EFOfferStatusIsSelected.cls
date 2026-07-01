@@ -32,12 +32,22 @@ public with sharing class TC_EFOfferStatusIsSelected implements TC_TriggerAction
                         , of_Payments__c = offer.Term_in_Months__c
                         , EF_Approved_Offers__c = offer.Id));
                 */
+                /*
+                    Scenario 4: Populate Estimated IRR with Yield
+                    Given an EF_Approved_Offers__c record with Yield__c populated
+                    When Offer_Selected__c changes to 'Selected' or 'Exception Approved'
+                    Then TC_EFOfferStatusIsSelected copies EF_Approved_Offers__c.Yield__c
+                    to BOTH:
+                    Opportunity.Yield__c (existing - no change)
+                    Opportunity.Estimated_IRR__c (NEW - add to trigger)
+                */
                 Opportunity opp = new Opportunity (
                     Id = offer.Opportunity__c, 
                     Payment_Amount__c = offer.Monthly_Payment__c, 
                     Terms__c = offer.Term_in_Months__c, 
                     X_Rate_Factor__c = offer.Rate_Factor__c, 
                     Yield__c = offer.Yield__c, 
+                    Estimated_IRR__c = offer.Yield__c,
                     of_Payments__c = offer.Term_in_Months__c, 
                     EF_Approved_Offers__c = offer.Id
                 );

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <decisions>
+        <name>myRule_1</name>
+        <label>Residual % changed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_4</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Residual % changed</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_1</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_1_A1</targetReference>
+            </connector>
+            <label>TRUE_Residual % changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_4</name>
+        <label>Reset % to 0 if not possible to have %</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>FALSE_Reset % to 0 if not possible to have %</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_4</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_4</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_4_A1</targetReference>
+            </connector>
+            <label>TRUE_Reset % to 0 if not possible to have %</label>
+        </rules>
+    </decisions>
+    <description>Migrated from the TC: Asset Defaults - Residual Amount process using multiple criteria.
+Default residual amount when resid % is changed</description>
+    <formulas>
+        <name>formula_1_myRule_1_A1_1558745944</name>
+        <dataType>Currency</dataType>
+        <expression>{!$Record.Residual_Percentage__c} * {!$Record.List_Price__c}</expression>
+        <scale>18</scale>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_1</name>
+        <dataType>Boolean</dataType>
+        <expression>TEXT({!$Record.Opportunity__r.Purchase_Options__c}) &lt;&gt; &quot;1.00 Out&quot;
+&amp;&amp;
+TEXT({!$Record.Opportunity__r.Purchase_Options__c}) &lt;&gt; &quot;Assign Resid No Renewal&quot;
+&amp;&amp;
+TEXT({!$Record.Opportunity__r.Purchase_Options__c}) &lt;&gt; &quot;Assigned Residual&quot;
+&amp;&amp;
+TEXT( {!$Record.Opportunity__r.Purchase_Options__c}) &lt;&gt; &quot;Customer Owned&quot;
+&amp;&amp;
+(
+  (
+	 ISNEW()
+	 &amp;&amp;
+	 {!$Record.Residual_Percentage__c} &gt;= 0
+	 &amp;&amp;
+	 {!$Record.List_Price__c} &gt;= 0
+  )
+  ||
+  (
+	 {!$Record.Residual_Percentage__c} &gt;= 0
+	 &amp;&amp;
+	 {!$Record.List_Price__c} &gt;= 0
+	 &amp;&amp;
+	 (
+		ISCHANGED({!$Record.Residual_Percentage__c})
+		||
+		ISCHANGED({!$Record.List_Price__c})
+	 )		 
+  )	  
+
+)</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_4</name>
+        <dataType>Boolean</dataType>
+        <expression>AND (
+	{!$Record.Residual_Percentage__c} &gt; 0, 
+	OR(
+		TEXT({!$Record.Opportunity__r.Purchase_Options__c}) = &quot;1.00 Out&quot;,
+		TEXT({!$Record.Opportunity__r.Purchase_Options__c}) = &quot;Assign Resid No Renewal&quot;,
+		TEXT({!$Record.Opportunity__r.Purchase_Options__c}) = &quot;Assigned Residual&quot;,
+	    TEXT({!$Record.Opportunity__r.Purchase_Options__c}) = &quot;Customer Owned&quot;
+	)
+)</expression>
+    </formulas>
+    <label>TC: Asset Defaults - Residual Amount_1</label>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>myRule_1_A1</name>
+        <label>Update Residual Amount</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_4</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Residual_Amount__c</field>
+            <value>
+                <elementReference>formula_1_myRule_1_A1_1558745944</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_4_A1</name>
+        <label>Update Resid % to 0</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Residual_Percentage__c</field>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_1</targetReference>
+        </connector>
+        <object>Asset__c</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

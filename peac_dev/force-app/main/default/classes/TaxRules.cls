@@ -159,7 +159,7 @@ global without sharing class TaxRules {
         re.ruleConfigIds = ruleConfigIds;
         re.ruleObjectType = Tax_Rule__c.getSObjectType().getDescribe().getName();
         re.TestRuleConditions();
-	
+
         for (Id recId : re.ruleResults.keySet()) {
             List<Id> trueRuleIds = new List<Id>();
             Map<Id, Boolean> ruleResults = re.ruleResults.get(recId);

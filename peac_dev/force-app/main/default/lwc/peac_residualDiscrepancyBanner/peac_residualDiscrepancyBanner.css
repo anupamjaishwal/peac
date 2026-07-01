@@ -1,0 +1,14 @@
+/* Developed by Suraj Harichandan(LTIMindtree) as a part of BugFix for SAL-5654 */
+.banner-container {
+    background-color: #c23934;
+    color: #ffffff;
+    border-radius: 4px;
+    padding: 12px 16px;
+}
+
+.banner-message {
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.4;
+    color: #ffffff;
+}

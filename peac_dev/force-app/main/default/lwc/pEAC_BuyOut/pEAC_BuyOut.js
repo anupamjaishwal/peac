@@ -6,7 +6,6 @@ import getBuyOuts from '@salesforce/apex/pEAC_BuyOutController.getBuyOuts';
 import toggleLockContract from '@salesforce/apex/SL_SummaryAndDetail.toggleLockContract';
 import buyoutCreationV2 from '@salesforce/apex/SL_SummaryAndDetail.buyoutCreationV2';
 import requestByContractNumber from '@salesforce/apex/SL_SummaryAndDetail.requestByContractNumber';
-import processBuyouts from '@salesforce/apex/pEAC_BuyOutController.processBuyouts';
 import updateContractAssets from '@salesforce/apex/SL_ReturnAuthorizationHelper.updateContractAssets';
 import checkReturnAuthorizationContractAssets from '@salesforce/apex/SL_ReturnAuthorizationHelper.checkReturnAuthorizationContractAssets';
 import hubExecute from '@salesforce/apex/SL_PartialBuyout.hubExecute';
@@ -43,14 +42,14 @@ export default class PEAC_BuyOut extends LightningElement {
     errorOccurred = false;
     firstCreateError = "";
 
-
     // PAGINATION PROPERTIES
     pageSize = 10;
     pageNumber = 1;
     totalRecords = 0;
     isPartialChecked = false;
+    totalContractAssets = 0;
 
-    /*@wire(getRecord, { recordId: userId, fields: [USER_EMAIL]}) 
+    /*@wire(getRecord, { recordId: userId, fields: [USER_EMAIL]})
     userDetails({error, data}){
       if(data){
         if(!this.emailAddresses){
@@ -68,7 +67,7 @@ export default class PEAC_BuyOut extends LightningElement {
     }
 
      
-    get buyoutOptionDisable() { 
+    get buyoutOptionDisable() {
         return !(this.buyoutList.length>0);
     }
 
@@ -110,7 +109,6 @@ export default class PEAC_BuyOut extends LightningElement {
         this.isPartialBuyout = event.detail.isPartial;
     }
 
-
     handlePartialBuyout(event) {
         if (!this.validateEmail()) {
             this.isPartialOn = true;
@@ -138,8 +136,9 @@ export default class PEAC_BuyOut extends LightningElement {
             contractId: this.recordId
         }).then(response => {
             console.log('fetchBuyOut::response', response);
-            if (response && response.length > 0) {
-                response.forEach(res => {
+            let obj = JSON.parse(response);// DP-2069 Misael Romero
+            if (obj && obj.length > 0) {
+                obj.forEach(res => {
 
                     if (res.Most_Recent_DP__c) {
                         if (res.Partial_Buyout__c) {
@@ -155,8 +154,8 @@ export default class PEAC_BuyOut extends LightningElement {
                     }
 
                 });
-                this.buyoutList = response;
-                this.originalBuyoutList = response;
+                this.buyoutList = obj;
+                this.originalBuyoutList = obj;
                 this.totalRecords = this.originalBuyoutList.length;
                 this.showBuyOutTable = true;
                 this.message = '';
@@ -170,7 +169,6 @@ export default class PEAC_BuyOut extends LightningElement {
             this.isLoading = false;
         });
     }
-
 
 
     handleGenerateBuyout() {
@@ -234,6 +232,7 @@ export default class PEAC_BuyOut extends LightningElement {
                     }
                 })
         } else if (this.buyouts.length) {
+            this.quotes = [];
             this.generateBuyout();
         } else {
             if (!justRetrieve) {
@@ -246,6 +245,17 @@ export default class PEAC_BuyOut extends LightningElement {
     }
 
     generateBuyout() {
+            // To display a Prompt message also to prevent server error + spinner buffering
+            if (this.isDealerPortal && !this.isPartialOn && this.totalContractAssets > 200) {
+                this.showToast(
+                'Error',
+                'This contract contains large number of assets, Please reach out to your PEAC Lease Admin to generate Buyout.',
+                'error'
+                );
+                this.isLoading = false;
+                return;
+            }
+
         console.log('this.buyouts:', this.buyouts);
         if (this.buyouts.length > 0) {
             let quoteType = this.buyouts.splice(0, 1).toString().replace(/^0+/, "");
@@ -258,116 +268,76 @@ export default class PEAC_BuyOut extends LightningElement {
                         console.log('generateBuyout response:', responseObj);
                         if (responseObj.Success.toLowerCase() == "true") {
                             this.successes.push(quoteType);
-                            //this.createdBuyOuts.push({Buyout_Type__c: quoteType, Quote_Sequence__c: responseObj.QuoteSeq });
+                            // DP-2069 Misael Romero
+                            this.quotes.push({Buyout_Type__c: quoteType, Quote_Sequence__c: responseObj.QuoteSeq });
                         } else {
                             let currentError = responseObj.Errors.join(',');
                             if (this.firstCreateError != currentError) {
                                 this.showToast('Error!', currentError, 'error');
                                 this.firstCreateError = currentError;
                             }
+                            
+                            // stop recursion on failure (prevents endless buffering)
+                            this.buyouts = [];
+                            this.errorOccurred = true
+
                         }
                     } else {
                         this.showToast('Error!', JSON.stringify(obj), 'error');
+                        // stop recursion on failure (prevents endless buffering)
+                        this.buyouts = [];
+                        this.errorOccurred = true;
+
                     }
                     this.generateBuyout();
                 })
                 .catch((error) => {
                     console.log('generateBuyout response error:', error);
-                    this.showToast('Error!', error, 'error');
+                    //this.showToast('Error!', error, 'error');
+                 
+                    //show meaningful error and stop spinner
+                    this.showToast('Error!', error?.body?.message || error?.message || error, 'error');
+
                     this.errorOccurred = true;
-                    //this.putLockBack();
+                    this.isLoading = false;
+                    
+                    // stop recursion
+                    this.buyouts = [];
+
                 })
                 .finally(() => {
                     /*this.isLoading = false;*/
                 });
         } else {
             if (this.successes.length > 0) {
-                // this.dispatchEvent(
-                //     new ShowToastEvent({
-                //         title: "Success",
-                //         message: "The following Buyout Quotes were successfully sent: " + this.successes,
-                //         variant: 'success'
-                //     })
-                // );
                 this.successes = [];
-                this.getBuyoutQuotes();
+                this.processBuyouts();
             } else {
                 this.errorOccurred = true;
-                //this.putLockBack();
+                this.isLoading = false;
             }
         }
     }
 
-    getBuyoutQuotes() {
-        console.log('I am being called getBuyoutQuotes::');
-        this.isLoading = true;
-        requestByContractNumber({ recordId: this._recordId, nitroApiOption: "buyoutQuotes", additionalKeys: "fromPEAC_BuyOut" })
-            .then(result => {
-                let envelope = JSON.parse(result);
-                console.log('envelope::' + JSON.stringify(envelope));
-                //this.response = envelope;
-                let obj = envelope.response || envelope;
-                if (obj.Response && obj.Response.Success == "True" && obj.Response.Quotes) {
-                    this.quotes = [];
-                    let qBTypes = this.quoteBuyoutTypes.split(';');
-                    console.log('qBTypes::' + JSON.stringify(qBTypes));
-                    let foundQBTypes = [];
-                    let isError = false;
-                    for (let i = obj.Response.Quotes.length - 1; i >= 0; i--) {
-                        let row = obj.Response.Quotes[i];
-                         if (row.TotalBuyout < 0) {
-                             isError = true;
-                             this.quotes = [];
-                             this.showToast('Error!', 'To process your request, please contact customer service at buyouts@peacsolutions.com. Thank you.', 'error');
-                             break;
-                         }
-                        let currentQuoteType = row.QuoteType.toString()/*.padStart(2,"0")*/;
-                        if (qBTypes.includes(currentQuoteType) && !foundQBTypes.includes(currentQuoteType)) {
-                            this.quotes.push({ showIt: true, ...row });
-                            foundQBTypes.push(currentQuoteType);
-                            if (this.quotes.length == qBTypes.length) {
-                                break;
-                            }
-                        }
-                    }
-                    console.log('this.quotes::' + JSON.stringify(this.quotes));//3
-                    if (!isError) {
-                        this.processBuyouts();
-                    }
-
-                } else {
-                    if (obj.Response.Errors) {
-                    } else {
-                    }
-                }
-            })
-            .catch(error => {
-                this.isLoading = false;
-                this.showToast('Error!', 'Technical Error occured, while fetching buyouts.', 'error');
-                console.log('this.quotes::' + JSON.stringify(error));//3
-            })
-            .finally(() => {
-                this.isLoading = false;
-            });
-    }
     processBuyouts() {
         this.isLoading = true;
-        processBuyouts({
-            wrapList: this.quotes,
-            contractId: this._recordId
-        }).then(result => {
+        // DP-2069 Misael Romero
+        let parameters = [this._recordId, JSON.stringify(this.quotes), "[]"];
+        hubExecute({methodName: "saveBuyouts", parameters: parameters})
+        .then(result => {
             console.log('this.processBuyouts::', JSON.stringify(result));
-            if (result == 'Success') {
-                this.showToast('Success!', 'The buyouts has been generated successfully.', 'success');
-                this.putLockBack();
-
-                    //this.sendCreationEmail();
+            if (result == 'success') {
+                this.showToast('Success!', 'The buyouts have been generated successfully.', 'success');
             } else {
                 this.showToast('Error!', 'Technical Error occured, while fetching buyouts.', 'error');
+                console.log('processBuyouts error:', JSON.stringify(error));
             }
             this.isLoading = false;
         }).catch(error => {
             this.showToast('Error!', 'Technical Error occured, while fetching buyouts.', 'error');
+            console.log('processBuyouts error:', JSON.stringify(result));
+        }).finally(()=> {
+            this.putLockBack();
         });
     }
     putLockBack() {
@@ -388,7 +358,6 @@ export default class PEAC_BuyOut extends LightningElement {
                 this.successes = [];
             });
     }
-
 
     handleBack(event) {
         this.firstScreen = true;
@@ -427,14 +396,11 @@ export default class PEAC_BuyOut extends LightningElement {
             this.isLoading = false;
         });
 
-
     }
-
 
     hideModal() {
         this.showModal = false;
     }
-
 
     handleKeyUp(evt) {
         const isEnterKey = evt.keyCode === 13;
@@ -460,7 +426,6 @@ export default class PEAC_BuyOut extends LightningElement {
     handleClear() {
         this.buyoutList = this.originalBuyoutList;
     }
-
 
     showToast(title, message, variant) {
         const event = new ShowToastEvent({
@@ -511,6 +476,10 @@ export default class PEAC_BuyOut extends LightningElement {
             .then((result) => {
                 let obj = JSON.parse(result);
                 this.isPartialBuyout = obj.isPartialBuyout && obj.isIL10;
+                
+                //To ensure that generateBuyout can enforce >200 rule for FB
+                this.totalContractAssets = (obj.contractAssets || []).length;
+
                 console.log("this.isPartialBuyout: ", JSON.stringify(this.isPartialBuyout));
             })
             .catch((error) => {

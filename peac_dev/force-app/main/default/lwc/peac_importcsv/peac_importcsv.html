@@ -1,28 +1,171 @@
+<!-- 
+    @description LWC template for CSV asset import with discrepant assets resolution
+    Developed by Suraj Harichandan (LTIMindtree) for SAL-6285 Project Expo - RF: Asset Selection Screen for Multi-County Listings
+    @author Rajesh Kumar (LTIMindtree) - Original implementation (SAL-5080)
+    @author Suraj Harichandan (LTIMindtree) - Discrepant assets UI with SLDS Tab Set (SAL-6285)
+    @date December 19, 2025
+-->
 <template>
     <template if:true={showspinner}>
         <lightning-spinner alternative-text={label.loadingMessage}></lightning-spinner>
     </template>
-    <div class="slds-var-m-top_medium">
-        <a href={staticResourceURL} target="_blank" class="slds-button slds-button_brand">Download a sample CSV file.</a>
-    </div>
-    <br/>
-    <lightning-card>
+    
+    <!-- SAL-6285: SLDS Tab Set for Asset Upload and Multi-County Assets - Suraj Harichandan (LTIMindtree) -->
+    <lightning-tabset variant="scoped">
+        <!-- Tab 1: Asset Upload - Suraj Harichandan (LTIMindtree) SAL-6285 -->
+        <lightning-tab label="Asset Upload" icon-name="utility:upload">
+            <div class="slds-p-around_xx-small">
+                <!-- Download Sample CSV Link -->
+                {label.infoMsg} {label.maxCount}.<br></br>
+                Assets assigned to multiple counties will appear under the <b>Multi‑County Assets</b> tab after batch processing completes.<br></br>
 
+                <div class="slds-var-m-bottom_xx-small">
+                    <a href={staticResourceURL} target="_blank" class="slds-button slds-button_brand">Download a sample CSV file.</a>
+                </div>
+                <!-- Download Assets-->
+                <c-peac_downloadcsvfile 
+                    objectsapiname = "Asset__c"
+                    record-id = {recordId} 
+                    uploadtitle = {uploadtitle} 
+                    fieldlist = {fieldlist}>
+                </c-peac_downloadcsvfile>
+                <!-- File Uploader Card -->
+                <lightning-card>
+                    <div class="file-uploader">
+                        <lightning-input label="" accept=".csv" name="file uploader" onchange={handleFilesChange} type="file" multiple="false"></lightning-input>
+                        <br/><div class="error-message">{fileName}</div><br/>
+                        <div class="slds-var-m-top_xx-small">
+                            <template if:true={isTrue}>
+                                <lightning-button class="upload-button" label={UploadFile} onclick={handleSave} variant="brand"></lightning-button>
+                            </template>
+                        </div>
+                    </div>
+                </lightning-card>
+            </div>
+        </lightning-tab>
         
-        <div class="file-uploader">
-        
-            <lightning-input label="" accept=".csv" name="file uploader" onchange={handleFilesChange} type="file" multiple="false "></lightning-input>
-            
-            <div class="error-message">{fileName}</div>
-            <div class="slds-var-m-top_medium">
-                <template if:true={isTrue}>
-                    <lightning-button class="upload-button" label={UploadFile} onclick={handleSave} variant="brand" ></lightning-button>
+        <!-- Tab 2: Multi-County Assets - Suraj Harichandan (LTIMindtree) SAL-6285 -->
+        <lightning-tab label="Multi-County Assets" icon-name="utility:warning" onactive={handleMultiCountyTabActive}>
+            <div class="slds-p-around_medium">
+                <!-- Loading Spinner for Multi-County Assets -->
+                <template if:true={isLoadingDiscrepant}>
+                    <div class="slds-align_absolute-center slds-p-around_large">
+                        <lightning-spinner alternative-text="Loading multi-county assets..." size="medium"></lightning-spinner>
+                    </div>
                 </template>
                 
+                <template if:false={isLoadingDiscrepant}>
+                    <!-- No Discrepant Assets Message -->
+                    <template if:false={hasDiscrepantAssets}>
+                        <div class="slds-illustration slds-illustration_small slds-align_absolute-center">
+                            <div class="slds-text-heading_medium slds-text-color_success">
+                                <lightning-icon icon-name="utility:success" variant="success" size="large"></lightning-icon>
+                                <p class="slds-p-top_medium">All assets have been resolved. No multi-county assets found.</p>
+                            </div>
+                        </div>
+                    </template>
+                    
+                    <!-- Discrepant Assets List -->
+                    <template if:true={hasDiscrepantAssets}>
+                        <p class="slds-text-body_regular slds-p-bottom_medium">
+                            The following assets have multiple tax jurisdictions for their zip code. 
+                            Please select the correct jurisdiction for each asset.
+                        </p>
+                        
+                        <!-- SAL-6285: Assets Table with dynamic scroll - Suraj Harichandan (LTIMindtree) - January 29, 2026 -->
+                        <div class="table-scroll-container">
+                            <table class="slds-table slds-table_bordered slds-table_striped slds-table_cell-buffer">
+                                <thead>
+                                    <tr class="slds-line-height_reset">
+                                        <th scope="col"><div class="slds-truncate">Asset Name</div></th>
+                                        <th scope="col"><div class="slds-truncate">Serial #</div></th>
+                                        <!--<th scope="col"><div class="slds-truncate">Model</div></th>-->
+                                        <th scope="col"><div class="slds-truncate">Zip</div></th>
+                                        <th scope="col"><div class="slds-truncate">City</div></th>
+                                        <th scope="col"><div class="slds-truncate">State</div></th>
+                                        <th scope="col" style="min-width: 250px;"><div class="slds-truncate">Select Jurisdiction</div></th>
+                                        <th scope="col" style="min-width: 100px;"><div class="slds-truncate">Action</div></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={discrepantAssets} for:item="asset">
+                                        <tr key={asset.Id} class="slds-hint-parent">
+                                            <!-- SAL-6285: Asset Name hyperlink - Suraj Harichandan (LTIMindtree) - January 29, 2026 -->
+                                            <td data-label="Asset Name">
+                                                <div class="slds-truncate" title={asset.Name}>
+                                                    <a href={asset.recordUrl} target="_blank">{asset.Name}</a>
+                                                </div>
+                                            </td>
+                                            <td data-label="Serial #">
+                                                <div class="slds-truncate" title={asset.Serial_Number__c}>{asset.Serial_Number__c}</div>
+                                            </td>
+                                            <!--<td data-label="Model">
+                                                <div class="slds-truncate" title={asset.Model__c}>{asset.Model__c}</div>
+                                            </td>-->
+                                            <td data-label="Zip">
+                                                <div class="slds-truncate" title={asset.Equipment_Zip__c}>
+                                                    <strong>{asset.Equipment_Zip__c}</strong>
+                                                </div>
+                                            </td>
+                                            <td data-label="City">
+                                                <div class="slds-truncate" title={asset.Equipment_City__c}>{asset.Equipment_City__c}</div>
+                                            </td>
+                                            <td data-label="State">
+                                                <div class="slds-truncate" title={asset.Equipment_State__c}>{asset.Equipment_State__c}</div>
+                                            </td>
+                                            <td data-label="Select Jurisdiction">
+                                                <lightning-combobox
+                                                    data-asset-id={asset.Id}
+                                                    data-zip-code={asset.Equipment_Zip__c}
+                                                    label=""
+                                                    placeholder={asset.placeholderText}
+                                                    options={asset.jurisdictionOptions}
+                                                    value={asset.selectedJurisdiction}
+                                                    onfocus={handleJurisdictionFocus}
+                                                    onchange={handleJurisdictionChange}
+                                                    disabled={asset.isLoadingOptions}
+                                                    variant="label-hidden">
+                                                </lightning-combobox>
+                                            </td>
+                                            <td data-label="Action">
+                                                <lightning-button
+                                                    data-asset-id={asset.Id}
+                                                    label={asset.saveButtonLabel}
+                                                    onclick={handleSaveJurisdiction}
+                                                    variant="brand"
+                                                    disabled={asset.isSaving}>
+                                                </lightning-button>
+                                            </td>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <!-- Pagination Controls -->
+                        <div class="slds-p-top_medium slds-grid slds-grid_align-center slds-grid_vertical-align-center">
+                            <lightning-button 
+                                label="Previous" 
+                                onclick={handlePreviousPage} 
+                                disabled={isPreviousDisabled}
+                                icon-name="utility:chevronleft"
+                                class="slds-m-right_x-small">
+                            </lightning-button>
+                            <span class="slds-p-horizontal_medium slds-text-body_regular">
+                                {paginationInfo}
+                            </span>
+                            <lightning-button 
+                                label="Next" 
+                                onclick={handleNextPage} 
+                                disabled={isNextDisabled}
+                                icon-name="utility:chevronright"
+                                icon-position="right"
+                                class="slds-m-left_x-small">
+                            </lightning-button>
+                        </div>
+                    </template>
+                </template>
             </div>
-        </div>
-        
-    </lightning-card>
-    
-    
+        </lightning-tab>
+    </lightning-tabset>
 </template>

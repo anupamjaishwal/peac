@@ -96,4 +96,74 @@ public with sharing class TC_CreateApprovedOffersTest {
         UPDATE newMap.values();
        
     }
+
+    @IsTest
+    public static void testBypassWhenProgramLookupPopulated() {
+        Program__c prog = new Program__c(
+            Name = 'Test Program',
+            Start_Date__c = Date.today().addDays(-1)
+        );
+        insert prog;
+
+        Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
+        opp.Program_Lookup__c = prog.Id;
+        update opp;
+
+        Map<Id, Opportunity> oldMap = new Map<Id, Opportunity>([
+            SELECT Id, Purchase_Options__c, Equipment_Cost__c, StageName,
+                   Credit_Risk_Grade__c, Payment_Frequency__c, Advance_Rental_Amount__c,
+                   Required_Adv_Payments__c, Loan_Record_Type__c, Program_Lookup__c
+            FROM Opportunity
+        ]);
+        Map<Id, Opportunity> newMap = new Map<Id, Opportunity>();
+        for (Id key : oldMap.keyset()) {
+            Opportunity o = new Opportunity(
+                Id = key,
+                StageName = 'Proposal',
+                Lessor__c = 422,
+                Equipment_Cost__c = 999,
+                Program_Lookup__c = prog.Id
+            );
+            newMap.put(key, o);
+        }
+
+        Integer efCountBefore = [SELECT COUNT() FROM EF_Approved_Offers__c
+                                 WHERE Opportunity__c = :opp.Id AND RecordType.Name = 'System'];
+
+        Test.startTest();
+        TC_CreateApprovedOffers.createApprovedOffers(oldMap, newMap.values());
+        Test.stopTest();
+
+        Integer efCountAfter = [SELECT COUNT() FROM EF_Approved_Offers__c
+                                WHERE Opportunity__c = :opp.Id AND RecordType.Name = 'System'];
+        System.assertEquals(efCountBefore, efCountAfter,
+            'No new System EF offers should be created when Program_Lookup__c is populated');
+    }
+
+    @IsTest
+    public static void testLegacyPathWhenNoProgramLookup() {
+        Opportunity opp = [SELECT Id, Program_Lookup__c FROM Opportunity LIMIT 1];
+        System.assertEquals(null, opp.Program_Lookup__c,
+            'Test data should not have Program_Lookup__c set');
+
+        Map<Id, Opportunity> oldMap = new Map<Id, Opportunity>([
+            SELECT Id, Purchase_Options__c, Equipment_Cost__c, StageName,
+                   Credit_Risk_Grade__c, Loan_Record_Type__c, Program_Lookup__c
+            FROM Opportunity
+        ]);
+        Map<Id, Opportunity> newMap = new Map<Id, Opportunity>();
+        for (Id key : oldMap.keyset()) {
+            Opportunity o = new Opportunity(
+                Id = key,
+                StageName = 'Proposal',
+                Lessor__c = 422,
+                Equipment_Cost__c = 400
+            );
+            newMap.put(key, o);
+        }
+
+        Test.startTest();
+        TC_CreateApprovedOffers.createApprovedOffers(oldMap, newMap.values());
+        Test.stopTest();
+    }
 }

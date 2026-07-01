@@ -1,17 +1,19 @@
 public with sharing class SL_PrintDetailedBuyout {
+    
     public List<FieldWrapper> headers{get;set;}
     public List<FieldWrapper> fields{get;set;}
     public Contract__c thisContract{get;set;}
     public string logoResourceName{get;set;}
     public string serialNumbers{get;set;}
     public boolean showAddress{get;set;}
+    public Buyout__c buyout{get;set;}
     
     public void setHeaders(String contractId, string quoteSeq){
         
         List<FieldWrapper> allHeaders = new List<FieldWrapper>();
-        thisContract = [SELECT Name, Customer__r.Name, AR_Address_1__c, 
-                        AR_Address_2__c, AR_Address_3__c, AR_City__c, 
-                        AR_State__c,AR_Zip_Code__c, Program__c,Is_Blind__c,IsXBS__c, Remit_To_City__c,Remit_To_Address__c,Remit_To_State__c,Remit_To_Zip_Code__c 
+        thisContract = [SELECT Name, Customer__r.Name, AR_Address_1__c, Address_1__c, Purchase_Option__c, Customer__r.Master_Lease_Agreement__c, Opportunity__r.Schedule_Number__c, Branch_Code__c,
+                        AR_Address_2__c, AR_Address_3__c, AR_City__c, State__c,Zip_Code__c, City__c,
+                        AR_State__c,AR_Zip_Code__c,Legacy_Contract_Id__c, Program__c,Is_Blind__c,IsXBS__c, Remit_To_City__c,Remit_To_Address__c,Remit_To_State__c,Remit_To_Zip_Code__c 
                         FROM Contract__c 
                         WHERE Id =:contractId 
                         LIMIT 1];
@@ -32,9 +34,10 @@ public with sharing class SL_PrintDetailedBuyout {
             logoResourceName ='PeacSolutionsLogo';
         } 
         if(quoteSeq != null) {
-            List<Buyout__c> thisBuyoutList = [select Id,Name,Partial_Buyout__c,Date_Quoted__c FROM Buyout__c WHERE Quote_Sequence__c = :quoteSeq AND Contract__c =: contractId];
+            List<Buyout__c> thisBuyoutList = [select Id,Name,Partial_Buyout__c,Date_Quoted__c,Expiration_Date__c, Total_Buyout__c FROM Buyout__c WHERE Quote_Sequence__c = :quoteSeq AND Contract__c =: contractId];
             if(thisBuyoutList.size() > 0) {
                 Buyout__c thisBuyout = thisBuyoutList.get(0);
+                buyout = thisBuyout;
                 System.debug('ThisBuyout::'+thisBuyout);
                 allHeaders.add(new FieldWrapper('Buyout Type', thisBuyout.Name, false, true));
                 showAddress = true;
@@ -59,6 +62,15 @@ public with sharing class SL_PrintDetailedBuyout {
     public List<FieldWrapper> getHeaders(){
         return this.headers;
     }
+    
+    public String getBuyoutTypeLabel() {
+        if (buyout != null && buyout.Partial_Buyout__c == true) {
+            return 'Partial';
+        }
+        return 'Full';
+    }
+    
+    
     
     public void setFields(String incoming, String contractId){
         List<FieldWrapper> allFields = new List<FieldWrapper>();
@@ -108,4 +120,6 @@ public with sharing class SL_PrintDetailedBuyout {
             this.isPlain = isPlain;
         }
     }
+    
+    
 }

@@ -8,6 +8,9 @@ import getSessionId from '@salesforce/apex/tvalueQuotePickerController.getSessio
 import isPortalUser from '@salesforce/apex/tvalueQuotePickerController.isPortalUser';
 import getQuoteData from '@salesforce/apex/tvalueQuotePickerController.getQuoteData';
 import getTValueQuotesByIds from '@salesforce/apex/tvalueQuotePickerController.getTValueQuotesByIds';
+// SAL-7243 — set tval__Selected__c on the chosen TValue Quote (and clear
+// siblings under the same parent Quote) when the user clicks "Use this quote".
+import markSelectedTValueQuote from '@salesforce/apex/TC_LoanApplicationCtrl.markSelectedTValueQuote';
 import WAITING_LABEL from '@salesforce/label/c.TvalueQuotePicker_Waiting';
 import QUOTES_NOT_GENERATED_LABEL from '@salesforce/label/c.TvalueQuotePicker_QuotesNotGenerated';
 import SELECT_LABEL from '@salesforce/label/c.TvalueQuotePicker_Select';
@@ -45,7 +48,7 @@ export default class TvalueQuotePicker extends LightningElement {
     // Waiting-for-quotes state (used when no recordId provided)
     @track waitingForQuotes = false;
     waitingTimer = null;
-    waitingTimeoutMs = 10000; // 10 seconds
+    waitingTimeoutMs = 30000; // 30 seconds
     @track waitingError = false;
 
     label = {
@@ -71,10 +74,6 @@ export default class TvalueQuotePicker extends LightningElement {
     connectedCallback() {
         this.loadQuotes();
         this.initEventSubscription();
-        // If no recordId provided, show waiting state while we await platform events
-        if (!this.recordId) {
-            this.startWaitingForQuotes();
-        }
     }
 
     disconnectedCallback() {
@@ -171,24 +170,33 @@ export default class TvalueQuotePicker extends LightningElement {
     }
 
     handlePlatformEvent(message) {
-        const eventData = message && message.data && message.data.payload ? message.data.payload : null;
+        // Extract event payload
+        const eventData = message?.data?.payload;
 
         if (!eventData) {
             console.warn('Platform event payload missing or malformed');
             return;
         }
 
-        // Received an event - cancel any waiting timer and clear waiting error
+        // Cancel waiting timer since we received an event
         this.cancelWaitingForQuotes();
         this.waitingError = false;
 
-        // If the event contains explicit TValue quote ids, prefer fetching those directly
+        // Validate RecordId match if this component has one
+        if (this.recordId && eventData.RecordId__c && this.recordId !== eventData.RecordId__c) {
+            console.warn(
+                `Platform event RecordId (${eventData.RecordId__c}) does not match component recordId (${this.recordId}) — ignoring event`
+            );
+            return;
+        }
+
+        // Prioritize TValue quote IDs if present
         if (eventData.TvalueQuoteIds__c && String(eventData.TvalueQuoteIds__c).trim().length > 0) {
             this.loadTValueQuotesByIds(eventData.TvalueQuoteIds__c);
             return;
         }
 
-        // Otherwise, if the event targets a record and it matches this component's record, reload quotes for the record
+        // Otherwise, load quotes by RecordId
         if (eventData.RecordId__c) {
             this.recordId = eventData.RecordId__c;
             this.loadQuotes();
@@ -317,6 +325,7 @@ export default class TvalueQuotePicker extends LightningElement {
 
     loadQuotes() {
         this.isLoading = true;
+        // We'll decide to show a waiting UI after the server call if no quotes are returned.
         // Call the new Apex method
         getQuoteData({ recordId: this.recordId })
             .then(result => {
@@ -324,12 +333,21 @@ export default class TvalueQuotePicker extends LightningElement {
                 this.showYieldColumn = result.showYield;
                 this.initializeColumns(); // Initialize columns now that we have the flag
                 this.error = undefined;
+                // If no quotes were returned, start waiting for the platform event
+                if (!this.quotes || this.quotes.length === 0) {
+                    console.log('tvalueQuotePicker: no quotes returned; starting waiting for platform event');
+                    this.startWaitingForQuotes();
+                } else {
+                    this.cancelWaitingForQuotes();
+                }
             })
             .catch(error => {
                 console.error('Imperative call failed. Error:', error);
                 this.error = error;
                 this.quotes = [];
                 this.initializeColumns(); // Also initialize in case of error to show headers
+                console.log('tvalueQuotePicker: error fetching quotes; starting/waiting for quotes');
+                this.startWaitingForQuotes();
             })
             .finally(() => {
                 this.isLoading = false;
@@ -388,6 +406,17 @@ export default class TvalueQuotePicker extends LightningElement {
         //const selectedRecords = this.quotes.filter(q => this.selectedRows.includes(q.id));
         this.updateFlowOutputs();
 
+        // SAL-7243 — stamp tval__Selected__c on the chosen TValue Quote (and
+        // clear siblings) before navigating. Failures here are non-blocking:
+        // we still advance the flow so the user isn't stuck if the update
+        // hits a sharing/validation edge case; the toast surfaces the error.
+        const chosenId = this.selectedRows[0];
+        markSelectedTValueQuote({ tvalueQuoteId: chosenId })
+            .catch((error) => {
+                console.error('markSelectedTValueQuote failed:', error);
+                this.showToast('Warning', 'Could not mark this TValue Quote as selected.', 'warning');
+            });
+
         //Dispatch event to move Flow forward
         const navigateNextEvent = new FlowNavigationNextEvent();
         this.dispatchEvent(navigateNextEvent);
@@ -420,6 +449,7 @@ export default class TvalueQuotePicker extends LightningElement {
 
     // Start a waiting state when there is no recordId and we're awaiting platform events.
     startWaitingForQuotes() {
+        console.log('tvalueQuotePicker: startWaitingForQuotes()');
         this.waitingForQuotes = true;
         this.waitingError = false;
         if (this.waitingTimer) {
@@ -427,6 +457,7 @@ export default class TvalueQuotePicker extends LightningElement {
         }
         this.waitingTimer = setTimeout(() => {
             // No events received within timeout
+            console.log('tvalueQuotePicker: waiting timed out — showing error');
             this.waitingForQuotes = false;
             this.waitingError = true;
             this.waitingTimer = null;
@@ -434,6 +465,7 @@ export default class TvalueQuotePicker extends LightningElement {
     }
 
     cancelWaitingForQuotes() {
+        console.log('tvalueQuotePicker: cancelWaitingForQuotes()');
         if (this.waitingTimer) {
             clearTimeout(this.waitingTimer);
             this.waitingTimer = null;

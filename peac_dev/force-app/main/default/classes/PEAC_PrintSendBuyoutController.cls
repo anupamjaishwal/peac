@@ -67,6 +67,8 @@ public class PEAC_PrintSendBuyoutController {
                     pdf = Page.SL_PrintDetailedBuyout;                    
                 } else if(pdfWrap.apexVFPageName == 'PEAC_BPCustomerBuyoutLetter') {
                     pdf = Page.PEAC_BPCustomerBuyoutLetter;                    
+                } else if(pdfWrap.apexVFPageName == 'PEAC_PrintEndOfTermBuyout') {
+                    pdf = Page.PEAC_PrintEndOfTermBuyout;                    
                 }
                 for(PDFAttributeWrapper attribute : pdfWrap.pdfAttributeList) {
                     pdf.getParameters().put(attribute.key,attribute.value);
@@ -128,21 +130,46 @@ public class PEAC_PrintSendBuyoutController {
             System.debug('attachDocumentOnTask::' + ex.getMessage());
         }
     }
-    
+
     @AuraEnabled
-    public static List<EmailTemplate> getEmailTemplates(string recordId) {
+    public static DataWrapper fetchDetails(string recordId) {
+        DataWrapper data = new DataWrapper();
         List<EmailTemplate> emailTemplates = new List<EmailTemplate>();
         if(recordId != null) {
             try {
-                Contract__c con = [select Id, IsXBS__c from Contract__c where Id = :recordId limit 1];
+                Contract__c con = [select Id, IsXBS__c,Originating_Business__c  from Contract__c where Id = :recordId limit 1];
+                data.originatingBusiness = con.Originating_Business__c;
                 string folderName = con.IsXBS__c ? 'XBSDelayedBuyouts' : 'DelayedBuyouts';
-                emailTemplates = [SELECT Id, Name, DeveloperName, Subject, HtmlValue, foldername, folderid FROM EmailTemplate WHERE Folder.DeveloperName=:folderName];
+                data.emailTemplates = [SELECT Id, Name, DeveloperName, Subject, HtmlValue, foldername, folderid FROM EmailTemplate WHERE Folder.DeveloperName=:folderName];
             } catch(Exception ex) {
                 System.debug('getEmailTemplates::' + ex.getMessage());
             }
         }
-        return emailTemplates;
+        return data;
     }
+
+    public class DataWrapper {
+        @AuraEnabled 
+        public string originatingBusiness {get; set;}        
+        @AuraEnabled 
+        public List<EmailTemplate> emailTemplates {get; set;}
+        
+    }
+    
+    // @AuraEnabled
+    // public static List<EmailTemplate> getEmailTemplates(string recordId) {
+    //     List<EmailTemplate> emailTemplates = new List<EmailTemplate>();
+    //     if(recordId != null) {
+    //         try {
+    //             Contract__c con = [select Id, IsXBS__c from Contract__c where Id = :recordId limit 1];
+    //             string folderName = con.IsXBS__c ? 'XBSDelayedBuyouts' : 'DelayedBuyouts';
+    //             emailTemplates = [SELECT Id, Name, DeveloperName, Subject, HtmlValue, foldername, folderid FROM EmailTemplate WHERE Folder.DeveloperName=:folderName];
+    //         } catch(Exception ex) {
+    //             System.debug('getEmailTemplates::' + ex.getMessage());
+    //         }
+    //     }
+    //     return emailTemplates;
+    // }
     
     
     public class EmailWrapper {

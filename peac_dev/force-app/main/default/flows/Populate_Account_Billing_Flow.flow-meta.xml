@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>54.0</apiVersion>
+    <assignments>
+        <name>Assign_Account_Billing_City</name>
+        <label>Assign Account Billing City</label>
+        <locationX>50</locationX>
+        <locationY>803</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account_Billing_City__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account_Business_City__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Account_Billing_State_Province</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Account_Billing_State_Province</name>
+        <label>Assign Account Billing State/Province</label>
+        <locationX>50</locationX>
+        <locationY>1103</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account_Billing_State_Province__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account_Business_State_Province__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Account_Billing_Zip_Postal_Code</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Account_Billing_Street</name>
+        <label>Assign Account Billing Street</label>
+        <locationX>50</locationX>
+        <locationY>503</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account_Billing_Street__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account_Business_Street__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Account_Billing_City</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Account_Billing_Zip_Postal_Code</name>
+        <label>Assign Account Billing Zip/Postal Code</label>
+        <locationX>50</locationX>
+        <locationY>1403</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account_Billing_Zip_Postal_Code__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account_Business_Zip_Postal_Code__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Account_Business_Street_2</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Assign_Account_Business_Street_2</name>
+        <label>Assign Account Business Street 2</label>
+        <locationX>50</locationX>
+        <locationY>1703</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account_Billing_Street2__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>$Record.Account_Business_Street2__c</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Account_Billing_City</name>
+        <label>Account Billing City</label>
+        <locationX>182</locationX>
+        <locationY>695</locationY>
+        <defaultConnector>
+            <targetReference>Account_Billing_State_Province</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Account_Billing_City</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account_Billing_City__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Account_Billing_City</targetReference>
+            </connector>
+            <label>Is Account Billing City</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Account_Billing_State_Province</name>
+        <label>Account Billing State/Province</label>
+        <locationX>182</locationX>
+        <locationY>995</locationY>
+        <defaultConnector>
+            <targetReference>Account_Billing_Zip_Postal_Code</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Account_Billing_State_Province</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account_Billing_State_Province__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Account_Billing_State_Province</targetReference>
+            </connector>
+            <label>Is Account Billing State/Province</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Account_Billing_Street</name>
+        <label>Account Billing Street</label>
+        <locationX>182</locationX>
+        <locationY>395</locationY>
+        <defaultConnector>
+            <targetReference>Account_Billing_City</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>is_Account_Billing_Street</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account_Billing_Street__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Account_Billing_Street</targetReference>
+            </connector>
+            <label>is Account Billing Street</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Account_Billing_Zip_Postal_Code</name>
+        <label>Account Billing Zip/Postal Code</label>
+        <locationX>182</locationX>
+        <locationY>1295</locationY>
+        <defaultConnector>
+            <targetReference>Account_Business_Street_2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Account_Billing_Zip_Postal_Code</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account_Billing_Zip_Postal_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Account_Billing_Zip_Postal_Code</targetReference>
+            </connector>
+            <label>Is Account Billing Zip/Postal Code</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Account_Business_Street_2</name>
+        <label>Account Business Street 2</label>
+        <locationX>182</locationX>
+        <locationY>1595</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Is_Account_Business_Street_2</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account_Business_Street2__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Account_Business_Street_2</targetReference>
+            </connector>
+            <label>Is Account Business Street 2</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Decision</name>
+        <label>Decision</label>
+        <locationX>380</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Docs_Requested_and_no_billing</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>DocsRequestedandnobilling</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Account_Billing_Street</targetReference>
+            </connector>
+            <label>Docs Requested and no billing</label>
+        </rules>
+    </decisions>
+    <description>Copy Account Billing Address from Business address. SAL-4431</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>DocsRequestedandnobilling</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+   OR(
+    ISBLANK({!$Record.Account_Billing_State_Province__c}),
+    ISBLANK({!$Record.Account_Billing_Zip_Postal_Code__c}),
+	ISBLANK({!$Record.Account_Billing_Street__c}),
+	ISBLANK({!$Record.Account_Billing_City__c})
+   ),
+   OR(
+	!ISBLANK({!$Record.Account_Business_State_Province__c}),
+	!ISBLANK({!$Record.Account_Business_Street__c}),
+	!ISBLANK({!$Record.Account_Business_Zip_Postal_Code__c}),
+    !ISBLANK({!$Record.Account_Business_City__c})	
+   ) ,
+   OR(
+CONTAINS( {!$Label.PEAC_Copy_Billing_Address_Stages},TEXT({!$Record.StageName})) 
+)
+)</expression>
+    </formulas>
+    <interviewLabel>Populate Account Billing {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Populate Account Billing Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>254</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Decision</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

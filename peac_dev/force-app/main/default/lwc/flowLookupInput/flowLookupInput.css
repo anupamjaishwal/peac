@@ -1,0 +1,38 @@
+/* Keep custom help text visible and properly positioned */
+.custom-help-text {
+    display: inline-block !important;
+    vertical-align: middle;
+    margin-left: var(--lwc-spacingXxSmall);
+}
+
+/* Style for form element icon/help text alignment */
+.slds-form-element__icon {
+    padding-top: var(--lwc-spacingXxSmall);
+}
+
+/* Ensure proper spacing for the form element */
+.slds-form-element {
+    margin-bottom: var(--lwc-spacingMedium);
+}
+
+/* Make label inline-flex for proper alignment with help text */
+.slds-form-element__label {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Style adjustments for the lookup field */
+.lookup-field {
+    width: 100%;
+}
+
+/* Error box styling */
+.slds-box.slds-theme_alert-texture {
+    border: 1px solid var(--lwc-colorBorderError);
+}
+
+/* Ensure the required asterisk is properly styled */
+.slds-required {
+    color: var(--lwc-colorTextError);
+    margin-right: var(--lwc-spacingXxxSmall);
+}

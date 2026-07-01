@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>53.0</apiVersion>
+    <assignments>
+        <name>Update_Account</name>
+        <label>Update Account</label>
+        <locationX>408</locationX>
+        <locationY>339</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Account_Dealer_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Rejected</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.Review_For__c</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Is_Dealer_Account_Source_c_Inbound_Call_OR_Marlin_Website_Inquiry_AND_RecordType</name>
+        <label>Is Dealer_Account_Source__c =&apos;Inbound Call&apos; OR ‘Marlin Website Inquiry’ AND  RecordType = ‘Dealer Account’</label>
+        <locationX>176</locationX>
+        <locationY>337</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Dealer_Account_Source_c_Inbound_Call_OR_Marlin_Website_Inquiry_AND_RecordType_De</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>iDealerAccountSourceInBoundCall</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Account</targetReference>
+            </connector>
+            <label>Dealer_Account_Source__c =&apos;Inbound Call&apos; OR ‘Marlin Website Inquiry’ AND  RecordType = ‘Dealer Account’</label>
+        </rules>
+    </decisions>
+    <description>TC Account - Dealer Account Source Rejection</description>
+    <formulas>
+        <name>iDealerAccountSourceInBoundCall</name>
+        <dataType>Boolean</dataType>
+        <expression>{!$Record.RecordType.DeveloperName} = &apos;Dealer_Vendor&apos; &amp;&amp; (ISPICKVAL({!$Record.Dealer_Account_Source__c}, &apos;Inbound Call&apos;) || ISPICKVAL({!$Record.Dealer_Account_Source__c}, &apos;Marlin Website Inquiry&apos;)) &amp;&amp; (ISNEW() || ISCHANGED({!$Record.RecordTypeId}) || ISCHANGED({!$Record.Dealer_Account_Source__c}))</expression>
+    </formulas>
+    <interviewLabel>TC Account - Dealer Account Source Rejection Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>TC Account - Dealer Account Source Rejection Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Is_Dealer_Account_Source_c_Inbound_Call_OR_Marlin_Website_Inquiry_AND_RecordType</targetReference>
+        </connector>
+        <object>Account</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

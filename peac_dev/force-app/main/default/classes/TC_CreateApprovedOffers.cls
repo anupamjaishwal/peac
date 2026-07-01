@@ -46,13 +46,24 @@ public class TC_CreateApprovedOffers {
 
   public static void setOfferMadeByDealer(Map<Id, Opportunity> oldMap, List<Opportunity> newList) {
     for (Opportunity opp : newList) {
-      if (criteriaToCreateOffer(opp, oldMap) && opp.Dealer_User__c != null) {
+      if (criteriaToCreateOffer(opp, oldMap) && !opp.Portal_User_ID__c.contains('SF-')) {
         opp.Offer_Made_By__c = 'Dealer';
+      }
+      else{
+        if(criteriaToCreateOffer(opp, oldMap) && opp.Portal_User_ID__c.contains('SF-')) opp.Offer_Made_By__c = 'Marlin Sales';
       }
     }
   }
 
   private static Boolean criteriaToCreateOffer(Opportunity opp, Map<Id, Opportunity> oldMap){
+    /*
+      Scenario 2: Legacy EF Approved Offer creation is bypassed for orchestrator-priced Opportunities
+      Given an Opportunity where Program_Lookup__c is populated (indicating it was priced by the new Pricing Orchestrator)
+      When the Opportunity reaches StageName = 'Proposal'
+      Then TC_CreateApprovedOffers does NOT invoke TC_RateCardRules to create legacy EF_Approved_Offers__c records for that Opportunity
+      And Opportunities where Program_Lookup__c is NULL continue to use the legacy TC_RateCardRules path unchanged
+    */
+    if (opp.Program_Lookup__c != null) return false;
     return (
             opp.StageName == 'Proposal'
             && (String.isNotEmpty(opp.Credit_Risk_Grade__c)
@@ -69,7 +80,7 @@ public class TC_CreateApprovedOffers {
   }
 
   public static Boolean isPortalOpp(Opportunity opp){
-    return ( opp.Portal_User_ID__c != null && opp.Portal_User_ID__c.containsIgnoreCase('DP-') );
+    return ( true );
   }
 
   /*public static void dispatchEventResult(String message, String status, String recordId){

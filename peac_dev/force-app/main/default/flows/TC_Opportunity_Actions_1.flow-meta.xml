@@ -1,0 +1,1013 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <decisions>
+        <name>Manual_Funding_Is_changed</name>
+        <label>Manual Funding Is changed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Trigger_Update_to_Funded_Amount</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Manual_Funding_TRUE</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Manual_Funding__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Manual_Funding__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Manual_Funding_Stamps</targetReference>
+            </connector>
+            <label>Manual Funding = TRUE</label>
+        </rules>
+        <rules>
+            <name>Manual_Funding_False</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Manual_Funding__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Manual_Funding__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Null_out_stamps</targetReference>
+            </connector>
+            <label>Manual Funding = False</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_1</name>
+        <label>Booked Date is not null and Booked Date is changed</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Manual_Funding_Is_changed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Booked Date is not null and Booked Date is changed</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Opportunity_Booked_Date__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Opportunity_Booked_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_1_A1</targetReference>
+            </connector>
+            <label>TRUE_Booked Date is not null and Booked Date is changed</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_10</name>
+        <label>Trigger Multiple Address Check</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_14</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Trigger Multiple Address Check</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_10</name>
+            <conditionLogic>(1 AND 2) OR (3 AND 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Proposal</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Ready_to_Doc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Yes</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Ready_to_Doc__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_10_A1</targetReference>
+            </connector>
+            <label>TRUE_Trigger Multiple Address Check</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_14</name>
+        <label>Trigger Update to Funded Amount Loan</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_17</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Trigger Update to Funded Amount Loan</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_14</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Loan_Record_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Total_Payment_Sent_Loan__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_14_A1</targetReference>
+            </connector>
+            <label>TRUE_Trigger Update to Funded Amount Loan</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_17</name>
+        <label>Commencement Date Changes</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_20</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Commencement Date Changes</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_17</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Commencement_Date__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Number_of_Blended_Income_Items__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_17_A1</targetReference>
+            </connector>
+            <label>TRUE_Commencement Date Changes</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_20</name>
+        <label>Bank Account and Bank Routing entered with null bank code and type</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_22</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Bank Account and Bank Routing entered with null bank code and type</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_20</name>
+            <conditionLogic>(1 OR 2) AND (3 OR 4)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Bank_Account_Number__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Bank_Number__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Bank_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Bank_Account_Type__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_20_A1</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>TRUE_Bank Account and Bank Routing entered with null bank code and type</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_22</name>
+        <label>Doc Fee (DISABLED with condition 8)</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_26</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Doc Fee (DISABLED with condition 8)</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_22</name>
+            <conditionLogic>8 AND 1 AND 2 AND 4 AND 5 AND 7 AND 9 AND (3 OR 6)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Loan_Record_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Misc_Invoice_Records_Auto_Created__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Booking</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Documentation_Fee__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Documentation_Fee__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Documentation_Fee__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Id</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>1</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Documentation_Fee__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_22_A1</targetReference>
+            </connector>
+            <label>TRUE_Doc Fee (DISABLED with condition 8)</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_26</name>
+        <label>Auto Create Fl Tax Misc Invoice</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_28</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Auto Create Fl Tax Misc Invoice</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_26</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_26</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_26_A1</targetReference>
+            </connector>
+            <label>TRUE_Auto Create Fl Tax Misc Invoice</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_28</name>
+        <label>Update FL Tax Misc Invoice</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_30</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Update FL Tax Misc Invoice</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_28</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_28</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_28_A1</targetReference>
+            </connector>
+            <label>TRUE_Update FL Tax Misc Invoice</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_30</name>
+        <label>Clear Bank Code and and Bank Account Type</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_32</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Clear Bank Code and and Bank Account Type</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_30</name>
+            <conditionLogic>(1 OR 2) AND ( (3 OR 4) AND (5 OR 6) )</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Bank_Code__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Bank_Account_Type__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Bank_Number__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Bank_Number__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue></stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Bank_Account_Number__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue></stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Bank_Account_Number__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_30_A1</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>TRUE_Clear Bank Code and and Bank Account Type</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_32</name>
+        <label>Create Security Deposit Misc Invoice</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_36</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Create Security Deposit Misc Invoice</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_32</name>
+            <conditionLogic>1 AND 2 AND 3 AND 5 AND 7 AND (4 OR 6)</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Loan_Record_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Misc_Invoice_Sec_Deposit_Auto_Created__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Booking</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.StageName</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Security_Deposit__c</leftValueReference>
+                <operator>GreaterThan</operator>
+                <rightValue>
+                    <numberValue>0.0</numberValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Security_Deposit__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Security_Deposit__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_32_A1</targetReference>
+            </connector>
+            <label>TRUE_Create Security Deposit Misc Invoice</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_36</name>
+        <label>Move Loan to Funded/Booked</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_38</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>FALSE_Move Loan to Funded/Booked</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_36</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_36</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_36_A1</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>TRUE_Move Loan to Funded/Booked</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>myRule_38</name>
+        <label>Move Lon to Funded/Booked bypass on</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>FALSE_Move Lon to Funded/Booked bypass on</defaultConnectorLabel>
+        <rules>
+            <name>TRUE_myRule_38</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_TRUE_myRule_38</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_38_A1</targetReference>
+            </connector>
+            <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+            <label>TRUE_Move Lon to Funded/Booked bypass on</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Trigger_Update_to_Funded_Amount</name>
+        <label>Trigger Update to Funded Amount</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myRule_10</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Total_Payments_Sent_Changed</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Total_Payments_Sent__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Loan_Record_Type__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Funding_to_Total_Payment_Sent</targetReference>
+            </connector>
+            <label>Total Payments Sent Changed</label>
+        </rules>
+    </decisions>
+    <description>Migrated from the !TC Opportunity Actions process using multiple criteria.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formula_TRUE_myRule_26</name>
+        <dataType>Boolean</dataType>
+        <expression>(
+   ISCHANGED({!$Record.StageName} )
+   ||
+   ISCHANGED({!$Record.Purchase_Options__c})
+   ||
+   ISCHANGED({!$Record.FL_Doc_St_Tax_Misc_Invoice__c})
+   ||
+   ISCHANGED({!$Record.Sum_of_Florida_Asset_Rental_Amounts__c})
+)
+&amp;&amp;
+TEXT({!$Record.StageName} ) = &quot;Booking&quot;
+&amp;&amp;
+!{!$Record.Loan_Record_Type__c} 
+&amp;&amp;
+!CONTAINS(TEXT({!$Record.Purchase_Options__c}), &quot;FMV&quot;)
+&amp;&amp;
+TEXT({!$Record.Purchase_Options__c}) &lt;&gt; &quot;Customer Owned&quot;
+&amp;&amp;
+ISBLANK({!$Record.FL_Doc_St_Tax_Misc_Invoice__c})
+&amp;&amp;
+{!$Record.Sum_of_Florida_Asset_Rental_Amounts__c} &gt; 0</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_28</name>
+        <dataType>Boolean</dataType>
+        <expression>!ISBLANK({!$Record.FL_Doc_St_Tax_Misc_Invoice__c})
+&amp;&amp;
+{!$Record.FL_Doc_St_Tax_Misc_Invoice__c.Amount__c}  &lt;&gt; {!$Record.Sum_of_Florida_Asset_Rental_Amounts__c} 
+&amp;&amp;
+ISCHANGED({!$Record.Sum_of_Florida_Asset_Rental_Amounts__c} )</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_36</name>
+        <dataType>Boolean</dataType>
+        <expression>{!$Record.Loan_Record_Type__c}
+&amp;&amp;
+{!$Record.No_Pymts_Released_or_Acknowledged__c} &gt; 0
+&amp;&amp;
+{!$Record.No_Pymts_Not_Released_or_Acknowledged__c} = 0
+&amp;&amp;
+TEXT({!$Record.StageName}) = &quot;Funding (Loan)&quot;
+&amp;&amp;
+$Setup.ORE__c.Bypass__c = false</expression>
+    </formulas>
+    <formulas>
+        <name>formula_TRUE_myRule_38</name>
+        <dataType>Boolean</dataType>
+        <expression>{!$Record.Loan_Record_Type__c}
+&amp;&amp;
+{!$Record.No_Pymts_Released_or_Acknowledged__c} &gt; 0
+&amp;&amp;
+{!$Record.No_Pymts_Not_Released_or_Acknowledged__c} = 0
+&amp;&amp;
+TEXT({!$Record.StageName}) = &quot;Funding (Loan)&quot;
+&amp;&amp;
+$Setup.ORE__c.Bypass__c = true</expression>
+    </formulas>
+    <formulas>
+        <name>now</name>
+        <dataType>DateTime</dataType>
+        <expression>NOW()</expression>
+    </formulas>
+    <interviewLabel>!TC Opportunity Actions_1 {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>!TC Opportunity Actions_1</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>myRule_22_A1</name>
+        <label>Create 0003 Record</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_22_A2</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>GL_Code__c</field>
+            <value>
+                <stringValue>0003 - OneTime Documentation Fee</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Opportunity__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Miscellaneous_Invoice_Item__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>myRule_32_A1</name>
+        <label>Create Security Deposit</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_32_A2</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>GL_Code__c</field>
+            <value>
+                <stringValue>0005 - Security Deposit</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Opportunity__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Miscellaneous_Invoice_Item__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordUpdates>
+        <name>myRule_14_A1</name>
+        <label>Update Funded Amount</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_17</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Funded_Amount__c</field>
+            <value>
+                <elementReference>$Record.Total_Payment_Sent_Loan__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_17_A1</name>
+        <label>Update Blended Income Begin Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_20</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Begin_Date__c</field>
+            <value>
+                <elementReference>$Record.Commencement_Date__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Blended_Income_Items__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_1_A1</name>
+        <label>Update Blended Income Item Booked Date = Opportunity Booked Date</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Manual_Funding_Is_changed</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Booking_Date__c</field>
+            <value>
+                <elementReference>$Record.Opportunity_Booked_Date__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.Blended_Income_Items__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_20_A1</name>
+        <label>Update Bank Code and Bank Account Type</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_22</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Bank_Account_Type__c</field>
+            <value>
+                <stringValue>C</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Bank_Code__c</field>
+            <value>
+                <stringValue>100</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_22_A2</name>
+        <label>Update opp flag</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_26</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Misc_Invoice_Records_Auto_Created__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_28_A1</name>
+        <label>Update Misc Invoice Amount</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_30</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Amount__c</field>
+            <value>
+                <elementReference>$Record.Flordia_Doc_Stamp_Tax_Amount__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record.FL_Doc_St_Tax_Misc_Invoice__r</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_30_A1</name>
+        <label>Clear Bank Code and Type</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_32</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Bank_Account_Type__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Bank_Code__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_32_A2</name>
+        <label>Update Security deposit flag</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_36</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Misc_Invoice_Sec_Deposit_Auto_Created__c</field>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_36_A2</name>
+        <label>Update Stage to Funded/Booked</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_36_A3</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>StageName</field>
+            <value>
+                <stringValue>Funded/Booked</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>myRule_38_A1</name>
+        <label>Update Stage</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>StageName</field>
+            <value>
+                <stringValue>Funded/Booked</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Null_out_stamps</name>
+        <label>Null out stamps</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Trigger_Update_to_Funded_Amount</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Manual_Funding_Date__c</field>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Manual_Funding_User__c</field>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Set_Funding_to_Total_Payment_Sent</name>
+        <label>Set Funding to Total Payment Sent</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_10</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Funded_Amount__c</field>
+            <value>
+                <elementReference>$Record.Total_Payments_Sent__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <recordUpdates>
+        <name>Update_Manual_Funding_Stamps</name>
+        <label>Update Manual Funding Stamps</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Trigger_Update_to_Funded_Amount</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Manual_Funding_Date__c</field>
+            <value>
+                <elementReference>now</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Manual_Funding_User__c</field>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_1</targetReference>
+        </connector>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <subflows>
+        <name>myRule_10_A1</name>
+        <label>Update Multiple Addresses</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_14</targetReference>
+        </connector>
+        <flowName>TC_Set_Multiple_Addresses_Checkbox</flowName>
+        <inputAssignments>
+            <name>varOpportunityId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>myRule_26_A1</name>
+        <label>Create Misc Invoice</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_28</targetReference>
+        </connector>
+        <flowName>FL_Tax_Misc_Invoice_Create_and_Update_Lookup</flowName>
+        <inputAssignments>
+            <name>varFlTaxAmount</name>
+            <value>
+                <elementReference>$Record.Flordia_Doc_Stamp_Tax_Amount__c</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <name>varOpportunityId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>myRule_36_A1</name>
+        <label>Turn on Bypass</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_36_A2</targetReference>
+        </connector>
+        <flowName>TC_Update_Bypass</flowName>
+        <inputAssignments>
+            <name>varTurnOnBypass</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+    <subflows>
+        <name>myRule_36_A3</name>
+        <label>Turn off Bypass</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_38</targetReference>
+        </connector>
+        <flowName>TC_Update_Bypass</flowName>
+        <inputAssignments>
+            <name>varTurnOnBypass</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+    </subflows>
+</Flow>

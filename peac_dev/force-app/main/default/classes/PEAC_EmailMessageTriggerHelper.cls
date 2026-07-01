@@ -27,7 +27,7 @@ public without sharing class PEAC_EmailMessageTriggerHelper {
             
         }//end of for block
         caseList = PEAC_UtilsClass.getCaseList(caseIdSet); // Get case record with child email message with email sent from salesforce
-        List<Case> casesToUpdate = New List<Case>();
+        
         if(!caseList.isEmpty())
         {
             for(Case emailCase: caseList)
@@ -37,18 +37,9 @@ public without sharing class PEAC_EmailMessageTriggerHelper {
                     emailCase.Initial_Response_Sent__c = emailCase.EmailMessages[0].MessageDate;// assign intial response sent as message date
                     //set the respose time based on business hours of the company , case created date and message date
                     emailCase.Response_Time__c = PEAC_UtilsClass.calculateIntialResporseTime(defaultBH.Id, emailCase.CreatedDate, emailCase.Initial_Response_Sent__c);
-                    // SL-2793 Misael Romero
-                    if(!TC_RecursiveTriggerHelper.casesAlreadyInitialResponseTime.contains(emailCase.Id)){
-                        casesToUpdate.add(emailCase);
-                        TC_RecursiveTriggerHelper.casesAlreadyInitialResponseTime.add(emailCase.Id);
-                    }
                 }//end of if block           
             }//end of for block
-            // update caseList;// Update Case list
-        }
-        // SL-2793 Misael Romero
-        if(casesToUpdate.size() > 0){
-            update casesToUpdate;
+            update caseList;// Update Case list
         }
     }//end of the method
     /**************************************************************************************************************
@@ -74,7 +65,7 @@ public without sharing class PEAC_EmailMessageTriggerHelper {
                 caseIdSet.add(caseId);// add case id into set
             }//end of if block
         }//end of for block
-        List<Case> casesToUpdate = New List<Case>();
+        
         if(!caseIdSet.isEmpty())
         {
             caseList = PEAC_UtilsClass.getCaseList(caseIdSet);// get the case records with email message on case closed
@@ -85,18 +76,9 @@ public without sharing class PEAC_EmailMessageTriggerHelper {
                 {
                     //get the response time as minutes from the businesshour class
                     emailCase.Response_Time__c = PEAC_UtilsClass.calculateIntialResporseTime(defaultBH.Id, newCaseMap.get(emailCase.Id).CreatedDate, newCaseMap.get(emailCase.Id).ClosedDate);
-                    // SL-2793 Misael Romero
-                    if(!TC_RecursiveTriggerHelper.casesAlreadyInitialResponseTime.contains(emailCase.Id)){
-                        casesToUpdate.add(emailCase);
-                        TC_RecursiveTriggerHelper.casesAlreadyInitialResponseTime.add(emailCase.Id);
-                    }
                 }//end of if block
             }//end of for block
-            // update caseList;//update list of case records
+            update caseList;//update list of case records
         }//end of If block
-        // SL-2793 Misael Romero
-        if(casesToUpdate.size() > 0){
-            update casesToUpdate;
-        }
     }//end of the method
 }

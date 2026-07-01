@@ -83,6 +83,7 @@ export default class SL_OppContactsGuarantors extends LightningElement {
 
     handleGoToEdit(row){
         this.currentContact = row;// load data on inputs
+        // console.log('this.currentContact: ', JSON.parse(JSON.stringify(this.currentContact)));
         this.contactId = row.contactId;
         this.isPG = row.isGuarantor;
         this.isAddressDifferent = true;
@@ -231,9 +232,7 @@ export default class SL_OppContactsGuarantors extends LightningElement {
                 this.theContact.MailingPostalCode = this.theContact.OtherPostalCode;
                 this.theContact.MailingCountryCode = this.theContact.OtherCountryCode;
             }
-            if(this.isPG){
-                this.theContact.SSNMain__c = fields.SSN__c;
-            }else{
+            if(!this.isPG){
                 this.theContact.SSN__c = null;
                 this.theContact.SSNMain__c = null;
             }
@@ -248,12 +247,12 @@ export default class SL_OppContactsGuarantors extends LightningElement {
             this.isFormLoading = true;
             hubExecute({ methodName: "saveOppContact", parameters: sentParams })
             .then((result) => {
-                if(result){
+                if(result == "success"){
                     this.isLoading = true
                     this.handleGoToList();
                     this.loadExisting();
                 }else{
-                    this.handleError("Error while saving Contact, please contact your administrator.");
+                    this.handleError(result);
                 }
             })
             .catch((error) => {
@@ -294,6 +293,7 @@ export default class SL_OppContactsGuarantors extends LightningElement {
     handleError(message){
         showError(this, message);
         this.isLoading = false;
+        this.isFormLoading = false;
     }
 
     // reRender(){

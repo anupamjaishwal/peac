@@ -2,13 +2,20 @@
 
 public class TC_LGHTNSendPaymentsCTRLTest {
     @testSetup public static void testSetup () {
-        Account dealer = new Account (Name = 'dealer', RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Dealer Account').getRecordTypeId(), Equipment_Type__c = 'A/V (General)');
-        Account acc = new Account (Name = 'test', RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Franchisee Account').getRecordTypeId());
+        // SAL-6664 Misael Romero
+        SL_SCTestData.createAccountAndContracts(2, 1);
+        Account dealer = SL_SCTestData.testAccounts[0];
+        Account acc = SL_SCTestData.testAccounts[1];
+        dealer.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Dealer Account').getRecordTypeId();
+        dealer.Equipment_Type__c = 'A/V (General)';
+        dealer.Waiting_To_Be_Sent_To_Bridgeware__c = true;// this stops calls we don't need in the test
+        acc.RecordTypeId = Schema.SObjectType.Account.getRecordTypeInfosByName().get('Franchisee Account').getRecordTypeId();
+        acc.Waiting_To_Be_Sent_To_Bridgeware__c = true;
 
-        List<Account> accountsToInsert = new List<Account>();
-        accountsToInsert.add(dealer);
-        accountsToInsert.add(acc);
-        insert accountsToInsert; // SAL-2913 bulk insert accounts to avoid SOQL query limit
+        List<Account> accountsToUpdate = new List<Account>();
+        accountsToUpdate.add(dealer);
+        accountsToUpdate.add(acc);
+        update accountsToUpdate; // SAL-2913 bulk insert accounts to avoid SOQL query limit
 
         Payee__c payee = new Payee__c (Dealer__c = dealer.Id, Address1__c = 'test', City__c = 'test', State__c = 'MN', Zip__c = '11111', Email__c = 'test@test.com', SL_Vendor_ID__c = 'test');
         insert payee;

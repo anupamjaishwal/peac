@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>54.0</apiVersion>
+    <assignments>
+        <name>DisbursementAmount</name>
+        <label>DisbursementAmount</label>
+        <locationX>50</locationX>
+        <locationY>791</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Disbursement_Amount__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>DisbursementAmountcal</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Check_Stage_Review_for_Booking</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Repayment_Amount</name>
+        <label>Repayment Amount</label>
+        <locationX>50</locationX>
+        <locationY>455</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Repayment_Amount__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>RepaymentAmountCal</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Loan_Amount_or_Max_Rate_changes_0</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Update_True_Disbursement</name>
+        <label>Update True Disbursement</label>
+        <locationX>50</locationX>
+        <locationY>1127</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Disbursement_Amount__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>DisburseAmountCal</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Update_Opportunity</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <name>Check_Stage_Review_for_Booking</name>
+        <label>Check Stage &gt;= &apos;Review for Booking&apos;</label>
+        <locationX>182</locationX>
+        <locationY>1007</locationY>
+        <defaultConnector>
+            <targetReference>Update_Opportunity</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Review_for_Booking</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>reviewforBooking</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_True_Disbursement</targetReference>
+            </connector>
+            <label>Review for Booking</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Loan_Amount_or_Max_Rate_changes</name>
+        <label>Loan Amount or Max Rate changes</label>
+        <locationX>182</locationX>
+        <locationY>335</locationY>
+        <defaultConnector>
+            <targetReference>Loan_Amount_or_Max_Rate_changes_0</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Loan_Amount_or_Max_Ratechanges</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>LoanAmountMax</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Repayment_Amount</targetReference>
+            </connector>
+            <label>Loan Amount or Max Ratechanges</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Loan_Amount_or_Max_Rate_changes_0</name>
+        <label>Loan Amount or Max Rate changes</label>
+        <locationX>182</locationX>
+        <locationY>671</locationY>
+        <defaultConnector>
+            <targetReference>Check_Stage_Review_for_Booking</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Recalc_disbursement_amount_Pre_Review_Booking</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>RecalcDisbursement</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>DisbursementAmount</targetReference>
+            </connector>
+            <label>Recalc disbursement amount (Pre-Review Booking)</label>
+        </rules>
+    </decisions>
+    <environments>Default</environments>
+    <formulas>
+        <name>DisburseAmountCal</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.Loan_Amount__c} - (IF(!ISBLANK({!$Record.Origination_Amount__c}), {!$Record.Origination_Amount__c}, 0)) - (IF(!ISBLANK({!$Record.Renewal_Payoff_Amount__c}), {!$Record.Renewal_Payoff_Amount__c}, 0)) - (IF(!ISBLANK({!$Record.Competitor_Payoff_Amount__c}), {!$Record.Competitor_Payoff_Amount__c}, 0))</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>DisbursementAmountcal</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.Loan_Amount__c} - (IF(!ISBLANK({!$Record.Origination_Amount__c}), {!$Record.Origination_Amount__c}, 0))</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>LoanAmountMax</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+   AND(
+      ISNEW(),
+     !ISBLANK({!$Record.Loan_Amount__c}),
+     !ISBLANK({!$Record.Max_Rate__c}),
+     {!$Record.Loan_Amount__c} &gt; 0,
+     {!$Record.Loan_Record_Type__c} = TRUE
+   ),
+   AND(
+     !ISBLANK({!$Record.Loan_Amount__c}),
+     !ISBLANK({!$Record.Max_Rate__c}),
+     {!$Record.Loan_Amount__c} &gt; 0,
+     {!$Record.Loan_Record_Type__c} = TRUE,
+     OR(
+        ISCHANGED({!$Record.Loan_Amount__c}),
+        ISCHANGED({!$Record.Max_Rate__c}),
+        ISBLANK({!$Record.Repayment_Amount__c})
+     )
+   )
+)</expression>
+    </formulas>
+    <formulas>
+        <name>RecalcDisbursement</name>
+        <dataType>Boolean</dataType>
+        <expression>OR(
+   AND(
+      ISNEW(),
+     !ISBLANK({!$Record.Loan_Amount__c}),
+     !ISBLANK({!$Record.Origination_Amount__c}),
+     !ISBLANK({!$Record.Renewal_Payoff_Amount__c}), 
+     {!$Record.Loan_Amount__c} &gt; 0,
+     {!$Record.Loan_Record_Type__c} = TRUE
+   ),
+   AND(
+     !ISBLANK({!$Record.Loan_Amount__c}),
+     {!$Record.Loan_Amount__c} &gt; 0,
+     {!$Record.Loan_Record_Type__c} = TRUE,
+     OR(
+        ISCHANGED({!$Record.Loan_Amount__c}),
+        ISCHANGED({!$Record.Competitor_Payoff_Amount__c}),
+        ISCHANGED({!$Record.Renewal_Payoff_Amount__c}),
+        ISCHANGED({!$Record.Origination_Amount__c}),
+        ISBLANK({!$Record.Disbursement_Amount__c}) 
+     )
+   )
+)</expression>
+    </formulas>
+    <formulas>
+        <name>RepaymentAmountCal</name>
+        <dataType>Number</dataType>
+        <expression>{!$Record.Loan_Amount__c} * {!$Record.Max_Rate__c}</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>reviewforBooking</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(CASE({!$Record.StageName},
+   &quot;Review for Booking&quot;, 1, 
+   &quot;Funding&quot;,1,
+   &quot;Booking&quot;,1,
+   &quot;Booking (Loan)&quot;,1,
+   &quot;Funding (Loan)&quot;,1,
+   &quot;Funded/Booked&quot;,1,
+   &quot;Lost&quot;,1,0)=1,
+ OR(
+   AND(
+      ISNEW(),
+     !ISBLANK({!$Record.Loan_Amount__c}),
+     !ISBLANK({!$Record.Origination_Amount__c}),
+     !ISBLANK({!$Record.Renewal_Payoff_Amount__c}), 
+     {!$Record.Loan_Amount__c} &gt; 0,
+     {!$Record.Loan_Record_Type__c} = TRUE
+   ),
+   AND(
+     !ISBLANK({!$Record.Loan_Amount__c}),
+     {!$Record.Loan_Amount__c} &gt; 0,
+     {!$Record.Loan_Record_Type__c} = TRUE,
+     OR(
+        ISCHANGED({!$Record.StageName}),
+        ISCHANGED({!$Record.Loan_Amount__c}),
+        ISCHANGED({!$Record.Competitor_Payoff_Amount__c}),
+        ISCHANGED({!$Record.Renewal_Payoff_Amount__c}),
+        ISCHANGED({!$Record.Origination_Amount__c}),
+        ISBLANK({!$Record.Disbursement_Amount__c}) 
+     )
+   )
+ )
+)</expression>
+    </formulas>
+    <formulas>
+        <name>StageName</name>
+        <dataType>String</dataType>
+        <expression>CASE({!$Record.StageName},   &quot;Review for Booking&quot;, &quot;1&quot;, 
+   &quot;Funding&quot;,&quot;1&quot;,
+   &quot;Booking&quot;,&quot;1&quot;,
+   &quot;Booking (Loan)&quot;,&quot;1&quot;,
+   &quot;Funding (Loan)&quot;,&quot;1&quot;,
+   &quot;Funded/Booked&quot;,&quot;1&quot;,
+   &quot;Lost&quot;,&quot;1&quot;,&quot;0&quot;)</expression>
+    </formulas>
+    <interviewLabel>TC Opp Defaults - Set Repayment Amount &amp; Disbursement Amount {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>TC Opp Defaults - Set Repayment Amount &amp; Disbursement Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Update_Opportunity</name>
+        <label>Update Opportunity</label>
+        <locationX>182</locationX>
+        <locationY>1343</locationY>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Loan_Amount_or_Max_Rate_changes</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Loan_Record_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

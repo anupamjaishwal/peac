@@ -16,7 +16,7 @@ public class PEAC_SuperUsersContractShareBatch implements Database.Batchable<sOb
     public Map<Id,Set<Id>> dealerSuperUserIdMap = new Map<Id,Set<Id>>();
     Map<Id,Id> newContAccountMap = new Map<Id,Id>();
     Map<Id,Id> oldContAccountMap = new Map<Id,Id>();
-    Map<Id,Set<Id>> childAccountMap = new Map<Id,Set<Id>>();
+    // Map<Id,Set<Id>> childAccountMap = new Map<Id,Set<Id>>(); // SAL-6887 Misael Romero
     List<String> allErrors = new List<String>();
     String calledFrom = 'User';
     //Call this constructor from Super partner user creation
@@ -70,14 +70,14 @@ public class PEAC_SuperUsersContractShareBatch implements Database.Batchable<sOb
     public void prepareData()
     {
         Map<Id, User> userMap = new Map<Id, User>();
-        if(!dealerAccountIdList.isEmpty())
-        {
-            childAccountMap = PEAC_ContractShareHelperBatch.getDealerChildAccounts(dealerAccountIdList);
-            for(Id childDealer : childAccountMap.keySet())
-            {
-              dealerAccountIdList.addall(childAccountMap.get(childDealer));
-            }
-        }
+        // if(!dealerAccountIdList.isEmpty()) // SAL-6887 Misael Romero
+        // {
+        //     childAccountMap = PEAC_ContractShareHelperBatch.getDealerChildAccounts(dealerAccountIdList);
+        //     for(Id childDealer : childAccountMap.keySet())
+        //     {
+        //       dealerAccountIdList.addall(childAccountMap.get(childDealer));
+        //     }
+        // }
         if(!newContAccountMap.isEmpty())
         {
             userMap = new Map<Id, User>([SELECT Id, Contact.AccountId FROM User WHERE IsActive = True AND IsPrmSuperUser = true AND ContactId IN: newContAccountMap.keySet()]); 
@@ -123,18 +123,18 @@ public class PEAC_SuperUsersContractShareBatch implements Database.Batchable<sOb
                         contractUserIDMap.get(contractRec.id).add(userId) ;// add contract id and dealer user into map
                 
                     }
-                    for (Id dealerID: childAccountMap.keySet()) {
+                    // for (Id dealerID: childAccountMap.keySet()) { // SAL-6887 Misael Romero
                 
-                        for (Id childDealerId : childAccountMap.get(dealerID)) {
-                            if ( !contractUserIDMap.get(contractRec.id).contains(userId) && childDealerId == contractRec.Dealer_Name__c) {
-                                //Pass the below parameters in the method and add contract__share into list
-                                contractShareList.add(contractShare(contractRec.id, userId,editAccess,contractRowCause));
-                                contractUserIDMap.get(contractRec.id).add(userId) ;// add contract id and dealer user into map
-                                system.debug(LoggingLevel.Error, 'childDealerId....'+childDealerId+'Count...'+contractUserIDMap.size());
+                    //     for (Id childDealerId : childAccountMap.get(dealerID)) {
+                    //         if ( !contractUserIDMap.get(contractRec.id).contains(userId) && childDealerId == contractRec.Dealer_Name__c) {
+                    //             //Pass the below parameters in the method and add contract__share into list
+                    //             contractShareList.add(contractShare(contractRec.id, userId,editAccess,contractRowCause));
+                    //             contractUserIDMap.get(contractRec.id).add(userId) ;// add contract id and dealer user into map
+                    //             system.debug(LoggingLevel.Error, 'childDealerId....'+childDealerId+'Count...'+contractUserIDMap.size());
            
-                            }
-                        }
-                    }  
+                    //         }
+                    //     }
+                    // }  
                     system.debug(LoggingLevel.Error, 'contractUserIDMap....'+contractUserIDMap+'Count...'+contractUserIDMap.size());
            
                 }

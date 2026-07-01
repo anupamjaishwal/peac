@@ -40,8 +40,10 @@ public with sharing class SL_EmailAlertsFormerWorkFlowsQ implements Queueable {
                 for(String templateDevName :emailTemplateNames){
                     Messaging.SingleEmailMessage renderedEmail = null;
                     if(emailTemplatesToRender.contains(templateDevName)){
-                        Id templateId = EmailTemplateMap.get(templateDevName).Id;
-                        renderedEmail = Messaging.renderStoredEmailTemplate(templateId, opp.OwnerId, opp.Id);    
+                        Id templateId = EmailTemplateMap.get(templateDevName)?.Id;
+                        if(templateId != null){
+                            renderedEmail = Messaging.renderStoredEmailTemplate(templateId, opp.OwnerId, opp.Id);    
+                        }
                     }
                     if(renderedEmail != null){
                         renderedEmail.setOrgWideEmailAddressId(noreplyId);

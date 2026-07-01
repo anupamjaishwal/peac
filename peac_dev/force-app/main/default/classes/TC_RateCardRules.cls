@@ -2,20 +2,22 @@ public without sharing class TC_RateCardRules {
   private static String FMV_VALUE = 'FMV';
 
     public static void createApprovedOffers(List<Opportunity> opps) {
-      // Rajesh (LTIMindtree)
-        if(!system.isBatch()){
+        //Rajesh (LTIMindtree)
+        
           for (Opportunity opp : opps){
-       
+            if(!System.isBatch() && !System.isFuture()){
             createApprovedOffers(opp.Id);
+            }else{
+                synchronouslyCreateOffers(opp.Id);
+            }
           }  
-        }
+        
         
     }
-
-    @Future
-    private static void createApprovedOffers(Id objId){
+    // DP-2093 Misael Romero
+    public static void synchronouslyCreateOffers(Id objId){
       delete [SELECT Id FROM EF_Approved_Offers__c WHERE Opportunity__c = :objId AND RecordType.Name = 'System'];
-      Opportunity opp = [SELECT Id, Terms__c, Max_Term_Approved__c, Purchase_Options__c, Dealer_Account__c, Dealer_User__c, Portal_User_ID__c FROM Opportunity WHERE Id = :objId];
+        Opportunity opp = [SELECT Id, Terms__c, Lessor__c, Risk_Based_Pricing__c,  Max_Term_Approved__c, Purchase_Options__c, Dealer_Account__c, Dealer_User__c, Portal_User_ID__c FROM Opportunity WHERE Id = :objId];
 
       SL_RuleEngine rateCardRE = new SL_RuleEngine();// SAL-6028 Misael Romero
       Set<Id> objIds = new Set<Id>();
@@ -193,12 +195,24 @@ public without sharing class TC_RateCardRules {
               }
               if( (
                     (term <= opp.Max_Term_Approved__c || opp.Max_Term_Approved__c == null) && 
-                    !TC_CreateApprovedOffers.isPortalOpp(opp)
+                        (opp.Risk_Based_Pricing__c || opp.Lessor__c == 421 || opp.Lessor__c == 422 || opp.Lessor__c == 423 || opp.Lessor__c == 424)
+                        //!opp.Portal_User_ID__c != null && opp.Portal_User_ID__c.containsIgnoreCase('DP-')
                   )  ||
                   (
                     term == opp.Terms__c && TC_CreateApprovedOffers.isPortalOpp(opp)
                   )
                 ){
+                     
+                     Boolean selectedOffer = false;   
+                     if(opp.Portal_User_ID__c == 'DP-'){
+                        if(opp.Dealer_User__c != null) selectedOffer = true;
+                     }
+                     else{
+                         if(opp.Portal_User_ID__c != 'SF-'){
+                            selectedOffer = true;
+                         }
+                     }
+
                   offers.add(new EF_Approved_Offers__c(Opportunity__c = objId,
                           Term_in_Months__c = term,
                           RecordTypeId = Schema.SObjectType.EF_Approved_Offers__c.getRecordTypeInfosByName().get('System').getRecordTypeId(),
@@ -207,7 +221,7 @@ public without sharing class TC_RateCardRules {
                           Max_Equipment_Cost__c = maxEquipmentCost,
                           //DP-153 Mapping Residual value only for Rates FMV.
                           Residual__c = opp.Purchase_Options__c == FMV_VALUE ? rcr.Rate_Card_Column__r.Residual__c : null,
-                          Is_Selected_Offer__c = opp.Dealer_User__c != null ? true : false
+                            Is_Selected_Offer__c = selectedOffer
                   ));
               }
           }
@@ -228,5 +242,76 @@ public without sharing class TC_RateCardRules {
       }
   }
 
+    @Future
+    public static void createApprovedOffers(Id objId){
+      synchronouslyCreateOffers(objId);
+    }
+
+  
+        public static String rewriteLogic(String logic, Map<Integer, Integer> reindexMap, Set<Integer> deletedPositions) {
+        // Tokenize: split into runs of digits vs everything else
+        List<String> tokens = new List<String>();
+        String current = '';
+        Boolean inNum = false;
+
+        for (Integer i = 0; i < logic.length(); i++) {
+            String ch = logic.substring(i, i + 1);
+            Boolean isDigit = (ch >= '0' && ch <= '9');
+            if (isDigit != inNum) {
+                if (current != '') tokens.add(current);
+                current = ch;
+                inNum = isDigit;
+            } else {
+                current += ch;
+            }
+        }
+        if (current != '') tokens.add(current);
+
+        // Replace number tokens; collect which ones are deleted so we can clean
+        // up their adjacent AND/OR connectors in a second pass.
+        List<String> replaced = new List<String>();
+        for (String tok : tokens) {
+            if (tok.isNumeric()) {
+                Integer oldN = Integer.valueOf(tok);
+                if (deletedPositions.contains(oldN)) {
+                    replaced.add('__DELETED__');
+                } else if (reindexMap.containsKey(oldN)) {
+                    replaced.add(String.valueOf(reindexMap.get(oldN)));
+                } else {
+                    replaced.add(tok); // unchanged (shouldn't happen in a healthy config)
+                }
+            } else {
+                replaced.add(tok);
+            }
+        }
+
+        // Join back and clean up orphaned AND/OR operators left by deleted numbers.
+        // All regex matches use (?i) flag to handle lowercase and/or/AND/OR.
+        String result = String.join(replaced, '');
+
+        // Remove deleted number with its following operator (e.g. "3 AND ", "3 and ", "3 OR ")
+        result = result.replaceAll('(?i)__DELETED__\\s+(AND|OR)\\s+', '');
+        // Remove deleted number with its preceding operator (e.g. " AND 3", " and 3", " OR 3")
+        result = result.replaceAll('(?i)\\s+(AND|OR)\\s+__DELETED__', '');
+        // Any lone __DELETED__ still remaining (e.g. only element inside parens)
+        result = result.replaceAll('__DELETED__', '');
+
+        // Clean up parens that now contain only operators/spaces (e.g. "( or or )", "( and )")
+        // Loop because cleaning one layer may expose another
+        String prev = '';
+        while (prev != result) {
+            prev = result;
+            result = result.replaceAll('(?i)\\(\\s*(and\\s+|or\\s+|\\s)*\\)', '');
+        }
+
+        // Clean up leading/trailing AND|OR left at the start or end of the full string
+        result = result.replaceAll('(?i)^\\s*(AND|OR)\\s+', '');
+        result = result.replaceAll('(?i)\\s+(AND|OR)\\s*$', '');
+
+        // Collapse multiple spaces
+        result = result.replaceAll('\\s{2,}', ' ').trim();
+
+        return result;
+    }
   
 }

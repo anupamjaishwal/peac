@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>60.0</apiVersion>
+    <isExposed>true</isExposed>
+
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+    </targets>
+
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage">
+            <property name="pfEventName" type="String" label="Platform Event Channel" default="/event/PEAC_IL_Notification__e"/>
+            <property name="replayId" type="Integer" label="Replay Id (-1 for new events only)" default="-1"/>
+            <property name="titleField" type="String" label="Title Field API Name" default="Title__c"/>
+            <property name="messageField" type="String" label="Message Field API Name" default="Message__c"/>
+            <property name="variantField" type="String" label="Variant Field API Name" default="Variant__c"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

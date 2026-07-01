@@ -47,7 +47,7 @@ public with sharing class SL_UserTriggerHandlerTest {
             PermissionSetAssignment thePSA = new PermissionSetAssignment(AssigneeId = u.Id, PermissionSetId = thePermission.Id);
             insert thePSA;
             SL_SCTestData.createPortalContracts(1,portalAccount, u);
-            update u;
+            update new User(Id = u.Id, LastName = u.LastName);
         }
         Test.stopTest();
     }
@@ -67,9 +67,22 @@ public with sharing class SL_UserTriggerHandlerTest {
             PermissionSetAssignment thePSA = new PermissionSetAssignment(AssigneeId = u.Id, PermissionSetId = thePermission.Id);
             insert thePSA;
             SL_SCTestData.createPortalContracts(1,portalAccount, u);
-            u.IsActive = false;
-            update u;
+            update new User(Id = u.Id, IsActive = false);
         }
+        Test.stopTest();
+    }
+    
+    @isTest
+    static void fieldTrackerPermissionSetAssignmentQTest(){
+        Test.startTest();
+        
+        SL_UserTriggerHandler.FieldTrackerPermissionSetAssignmentQ q =
+            new SL_UserTriggerHandler.FieldTrackerPermissionSetAssignmentQ(
+                new List<Id>{UserInfo.getUserId()}
+            );
+        
+        q.execute(null);
+        
         Test.stopTest();
     }
 }

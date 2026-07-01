@@ -14,9 +14,9 @@
     <aura:attribute name="clientWrapper" type="TC_DatabaseUtil.TC_ClientWrapper" access="global"/>
 
 
-    <!--<aura:attribute name="guarantors" type="List" access="global" default="[]"/>
+    <aura:attribute name="guarantors" type="List" access="global" default="[]"/>
     <aura:attribute name="ccgGuarantors" type="List" access="global" default="[]"/>
-    <aura:attribute name="company" type="Account" access="global"/>-->
+    <aura:attribute name="company" type="Account" access="global"/>
     <aura:attribute name="isCCG" type="Boolean" default="false"/>
     <aura:attribute name="isLoan" type="Boolean"/>
     <aura:html tag="style">

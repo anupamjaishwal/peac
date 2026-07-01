@@ -4,7 +4,7 @@
  *              Supports multiple payment frequencies and terms - creates all combinations.
  * @author Northteq
  */
-public class NT_TValueService {
+public without sharing class NT_TValueService {
     
     /**
      * @description Enqueues TValue calculation asynchronously.
@@ -32,37 +32,112 @@ public class NT_TValueService {
             
             // Build all frequency × term combinations
             List<NT_TValueQueueable.TValueCombination> combinations = buildCombinations(ctx);
-            
+
             if (combinations.isEmpty()) {
                 System.debug('No frequency/term combinations to process for TValue');
                 return;
             }
-            
+
             System.debug('Enqueueing TValue for ' + combinations.size() + ' combinations');
             for (NT_TValueQueueable.TValueCombination combo : combinations) {
                 System.debug('  - ' + combo.paymentFrequency + ' / ' + combo.term + ' mo');
             }
-            
-            // Enqueue Queueable - runs in separate transaction (callout first, then DML)
+
+            // Net financed amount: subtract down payment and buy-down before sending to TValue
+            Decimal netFinancedAmount = ctx.financedAmount != null ? ctx.financedAmount : 0;
+            if (ctx.downPayment != null && ctx.downPayment > 0) {
+                netFinancedAmount -= ctx.downPayment;
+            }
+            if (ctx.buyDown != null && ctx.buyDown > 0) {
+                netFinancedAmount -= ctx.buyDown;
+            }
+
+            // AC Scenario 3: ctx.transactionId is passed to the queueable so EF offer creation is scoped to this pricing run
             NT_TValueQueueable queueable = new NT_TValueQueueable(
                 parentQuote.Id,
                 opportunityId,
                 ctx.templateId,
                 ctx.pricingResult?.Id,
                 ctx.finalRate,
-                ctx.financedAmount,
+                netFinancedAmount,
                 combinations,
                 ctx.advancePayments,
                 ctx.finalResidual,
                 ctx.endOfTermOption,
                 parentQuote.Name,
-                new List<String>()  // Empty list for tvalueQuoteIds
+                new List<String>(),
+                ctx.transactionId,
+                ctx.points
             );
             
             if (!Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
                 System.enqueueJob(queueable);
             } else if (Test.isRunningTest()) {
                 // For tests, execute synchronously
+                queueable.execute(null);
+            }
+            
+        } catch (Exception e) {
+            ctx.setError('Failed to enqueue TValue: ' + e.getMessage());
+        }
+    }
+    
+    /**
+     * @description Enqueues TValue calculation for Opportunity-only context (no parent Quote).
+     *              Uses Opportunity fields directly.
+     * @param ctx The pricing context (must be Opportunity-based)
+     */
+    public void invokeTValue(NT_PricingContext ctx) {
+        if (ctx.hasError()) {
+            return;
+        }
+        
+        if (!ctx.isOpportunity() || ctx.opportunity == null) {
+            ctx.setError('Opportunity context required for Quote-less TValue invocation');
+            return;
+        }
+        
+        try {
+            Id opportunityId = ctx.parentId;
+            List<NT_TValueQueueable.TValueCombination> combinations = buildCombinations(ctx);
+
+            if (combinations.isEmpty()) {
+                System.debug('No frequency/term combinations to process for TValue');
+                return;
+            }
+
+            System.debug('Enqueueing TValue (Opportunity context) for ' + combinations.size() + ' combinations');
+
+            // Net financed amount: subtract down payment and buy-down before sending to TValue
+            Decimal netFinancedAmount = ctx.financedAmount != null ? ctx.financedAmount : 0;
+            if (ctx.downPayment != null && ctx.downPayment > 0) {
+                netFinancedAmount -= ctx.downPayment;
+            }
+            if (ctx.buyDown != null && ctx.buyDown > 0) {
+                netFinancedAmount -= ctx.buyDown;
+            }
+
+            // AC Scenario 3: ctx.transactionId is passed to the queueable so EF offer creation is scoped to this pricing run
+            NT_TValueQueueable queueable = new NT_TValueQueueable(
+                null,
+                opportunityId,
+                ctx.templateId,
+                ctx.pricingResult?.Id,
+                ctx.finalRate,
+                netFinancedAmount,
+                combinations,
+                ctx.advancePayments,
+                ctx.finalResidual,
+                ctx.endOfTermOption,
+                ctx.opportunity.Name,
+                new List<String>(),
+                ctx.transactionId,
+                ctx.points
+            );
+            
+            if (!Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
+                System.enqueueJob(queueable);
+            } else if (Test.isRunningTest()) {
                 queueable.execute(null);
             }
             
@@ -92,7 +167,16 @@ public class NT_TValueService {
         // Build the Cartesian product: frequencies × terms
         for (String frequency : frequencies) {
             for (Decimal term : terms) {
-                combinations.add(new NT_TValueQueueable.TValueCombination(frequency, term));
+                NT_TValueQueueable.TValueCombination combo = new NT_TValueQueueable.TValueCombination(frequency, term);
+                // Attach per-term rate/residual when available (Quote context)
+                if (ctx.hasTermPricingResults()) {
+                    NT_PricingContext.TermPricingResult tpr = ctx.termPricingResults.get(term);
+                    if (tpr != null) {
+                        combo.rate = tpr.finalRate;
+                        combo.residual = tpr.finalResidual;
+                    }
+                }
+                combinations.add(combo);
             }
         }
         

@@ -4,7 +4,10 @@
  *              This ensures each TValue call runs in a clean transaction.
  * @author Northteq
  */
-public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
+public without sharing class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
+
+    @TestVisible private static List<tval__TValue_Quote__c> mockCalculateQuoteResult = null;
+    @TestVisible private static Boolean throwCalloutException = false;
     
     /**
      * @description Inner class to hold a payment frequency + term combination
@@ -12,6 +15,8 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
     public class TValueCombination {
         public String paymentFrequency;
         public Decimal term;
+        public Decimal rate;
+        public Decimal residual;
         
         public TValueCombination(String paymentFrequency, Decimal term) {
             this.paymentFrequency = paymentFrequency;
@@ -31,6 +36,9 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
     private String endOfTermOption;
     private String quoteName;
     private List<String> tvalueQuoteIds;
+    // AC Scenario 3: transactionId scopes which Pricing_Result__c records are used to create EF offers
+    private String transactionId;
+    private Decimal points;
     
     /**
      * @description Constructor with all pricing parameters
@@ -46,7 +54,9 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
      * @param endOfTermOption The end of term/purchase option
      * @param quoteName The base quote name for naming TValue quotes
      * @param tvalueQuoteIds Accumulated list of created TValue Quote Ids
+     * @param transactionId The pricing transaction Id to scope Pricing_Result__c queries
      */
+    // AC Scenario 3: Constructor accepts transactionId so each queueable instance carries the originating pricing transaction
     public NT_TValueQueueable(
         Id quoteId,
         Id opportunityId,
@@ -59,7 +69,9 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
         Decimal finalResidual,
         String endOfTermOption,
         String quoteName,
-        List<String> tvalueQuoteIds
+        List<String> tvalueQuoteIds,
+        String transactionId,
+        Decimal points
     ) {
         this.tvalueQuoteIds = new List<String>();
         if (tvalueQuoteIds != null) {
@@ -76,6 +88,8 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
         this.finalResidual = finalResidual;
         this.endOfTermOption = endOfTermOption;
         this.quoteName = quoteName;
+        this.transactionId = transactionId;
+        this.points = points;
     }
     
     /**
@@ -93,14 +107,17 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
         try {
             System.debug('Processing TValue for: ' + currentCombination.paymentFrequency + ' - ' + 
                         currentCombination.term + ' mo (' + combinations.size() + ' remaining)');
+
+                        System.debug('tvalue templateId: ' + templateId);
             
+            if (throwCalloutException) {
+                throw new CalloutException('Mock callout exception');
+            }
             tval__TValue_Quote__c tvq = buildTValueQuote(currentCombination);
             List<tval.TValueServiceInv.Params> params = new List<tval.TValueServiceInv.Params>();
-            params.add(new tval.TValueServiceInv.Params(tvq, 'a7FVA000000LRGX', true));
-            
-            // Each call to this function performs a DML operation 
-            // meaning we have to make the call for each TValue quote in a separate transaction (queueable chain)
-            List<tval__TValue_Quote__c> quotes = tval.TValueServiceInv.calculateQuote(params);
+            params.add(new tval.TValueServiceInv.Params(tvq, templateId, true));
+            System.debug(params);
+            List<tval__TValue_Quote__c> quotes = mockCalculateQuoteResult != null ? mockCalculateQuoteResult : tval.TValueServiceInv.calculateQuote(params);
             if (quotes != null && !quotes.isEmpty()) {
                 tvalueQuoteIds.add(quotes[0].Id);
             }   
@@ -109,7 +126,13 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
             if (combinations.isEmpty() && quotes != null && !quotes.isEmpty()) {
                 String recordId = String.isNotBlank(quoteId) ? quoteId : opportunityId;
                 publishPlatformEvent(tvalueQuoteIds, recordId, 'Success');
-                update new Quote(Id = quoteId, Pricing_Status__c = 'Success');
+                if (quoteId != null) {
+                    update new Quote(Id = quoteId, Pricing_Status__c = 'Success');
+                }
+                if (opportunityId != null) {
+                    updateOpportunityFromTValue(quotes[0]);
+                    sendPricingNotification('Pricing Complete', 'Yield, IRR, and Payment have been updated.', opportunityId);
+                }
             }
             
         } catch (Exception e) {
@@ -118,24 +141,20 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
                         currentCombination.term + ' mo: ' + e.getMessage());
             logError(e);
             publishPlatformEvent(tvalueQuoteIds, recordId, 'Error');
-            return;  // Stop processing - do not chain to next combination
+            if (opportunityId != null) {
+                sendPricingNotification('Pricing Error', 'Please review the Pricing Results.', opportunityId);
+            }
+            return;
         }
         
-        // Chain to next combination if any remain
+        // AC Scenario 3: transactionId is forwarded to the next chained queueable so every instance shares the same pricing run scope
         if (!combinations.isEmpty() && !Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
             System.enqueueJob(new NT_TValueQueueable(
-                quoteId,
-                opportunityId,
-                templateId,
-                pricingResultId,
-                finalRate,
-                financedAmount,
-                combinations,
-                advancePayments,
-                finalResidual,
-                endOfTermOption,
-                quoteName,
-                tvalueQuoteIds
+                quoteId, opportunityId, templateId,
+                pricingResultId, finalRate, financedAmount,
+                combinations, advancePayments, finalResidual,
+                endOfTermOption, quoteName, tvalueQuoteIds,
+                transactionId, points
             ));
         }
     }
@@ -187,9 +206,14 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
         // Set term
         tvq.tval__Term__c = combination.term;
         
-        // Set rate
-        if (finalRate != null) {
-            tvq.tval__Rate__c = finalRate;
+        // Set rate: prefer per-term rate from combination, fall back to flat finalRate.
+        // Add dealer points (percentage point markup) on top of the base rate.
+        Decimal effectiveRate = combination.rate != null ? combination.rate : finalRate;
+        if (points != null && points != 0) {
+            effectiveRate = (effectiveRate != null ? effectiveRate : 0) + points;
+        }
+        if (effectiveRate != null) {
+            tvq.tval__Rate__c = effectiveRate;
         }
         
         // Set advance payments
@@ -198,20 +222,41 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
             tvq.tval__Payment_In_Advance__c = advancePayments > 0;
         }
         
-        // Set residual/balloon
-        if (finalResidual != null) {
-            tvq.tval__Balloon_Payment_Amount__c = finalResidual;
+        // Set residual/balloon: prefer per-term residual, fall back to flat finalResidual
+        Decimal effectiveResidual = combination.residual != null ? combination.residual : finalResidual;
+        if (effectiveResidual != null) {
+            tvq.tval__Balloon_Payment_Amount__c = effectiveResidual;
         }
         
         // Set payment period based on frequency from the combination
         tvq.tval__Period__c = mappedFrequency;
         
-        // Set end of term option
+        // Set end of term option (translate user-facing value to the one
+        // TValue's calculation engine expects — see mapToTValuePurchaseOption).
         if (String.isNotBlank(endOfTermOption)) {
-            tvq.tval__Purchase_Option__c = endOfTermOption;
+            tvq.tval__Purchase_Option__c = mapToTValuePurchaseOption(endOfTermOption);
         }
-        
+
         return tvq;
+    }
+
+    /**
+     * @description  SAL-7243 — translate the user-facing Purchase Option value
+     *               (from Quote.End_of_Term_Option__c or
+     *               Opportunity.Purchase_Options__c) to the value TValue's
+     *               calculation engine expects on tval__Purchase_Option__c.
+     *               TValue's restricted picklist accepts both "1.00 Out" and
+     *               "$1.00 Buyout", but per SAL-6389/SAL-7243 the engine must
+     *               receive "$1.00 Buyout" for the $1 buyout case. All other
+     *               values pass through unchanged.
+     * @param        userValue  The user-facing purchase option.
+     * @return       The TValue-engine value to stamp on tval__Purchase_Option__c.
+     */
+    @TestVisible
+    private static String mapToTValuePurchaseOption(String userValue) {
+        if (String.isBlank(userValue)) return userValue;
+        if ('1.00 Out'.equalsIgnoreCase(userValue)) return '$1.00 Buyout';
+        return userValue;
     }
     
     /**
@@ -219,7 +264,7 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
      * @param frequency The payment frequency string
      * @return String The mapped TValue period
      */
-    private String mapPaymentFrequency(String frequency) {
+    @TestVisible private String mapPaymentFrequency(String frequency) {
         if (String.isBlank(frequency)) {
             return 'Monthly';
         }
@@ -244,28 +289,121 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
     }
     
     /**
+     * @description Updates Opportunity fields from the TValue Quote result.
+     *              Maps Yield, Estimated IRR, Payment Amount, and sets Pricing_Status__c to Success.
+     * @param tvQuote The TValue Quote returned from calculation
+     */
+    private void updateOpportunityFromTValue(tval__TValue_Quote__c tvQuote) {
+        if (opportunityId == null || tvQuote == null) {
+            return;
+        }
+        try {
+            tval__TValue_Quote__c fullQuote = [
+                SELECT Id, tval__Nominal_Annual_Rate__c, tval__Annual_Percentage_Rate__c,
+                       tval__Payment_Amount__c, tval__Term__c, tval__Purchase_Option__c
+                FROM tval__TValue_Quote__c
+                WHERE Id = :tvQuote.Id
+                LIMIT 1
+            ];
+            
+            Opportunity opp = new Opportunity(Id = opportunityId);
+            opp.Yield__c = fullQuote.tval__Nominal_Annual_Rate__c;
+            opp.Estimated_IRR__c = fullQuote.tval__Nominal_Annual_Rate__c;
+            opp.Payment_Amount__c = fullQuote.tval__Payment_Amount__c;
+            opp.Pricing_Status__c = 'Success';
+            update opp;
+        } catch (Exception ex) {
+            System.debug('Failed to update Opportunity from TValue: ' + ex.getMessage());
+            setOpportunityPricingStatus('Error');
+        }
+    }
+    
+    /**
+     * @description Sets the Pricing_Status__c field on the Opportunity.
+     * @param status The status value to set (e.g. 'Error', 'Success')
+     */
+    private void setOpportunityPricingStatus(String status) {
+        if (opportunityId == null) {
+            return;
+        }
+        try {
+            update new Opportunity(Id = opportunityId, Pricing_Status__c = status);
+        } catch (DmlException ex) {
+            System.debug('Failed to set Pricing_Status__c to ' + status + ': ' + ex.getMessage());
+        }
+    }
+    
+    /**
+     * @description Sends a Salesforce custom bell notification to the current user.
+     * @param title The notification title
+     * @param body The notification body
+     * @param opportunityId The Opportunity Id
+     */
+    public static void sendPricingNotification(String title, String body, String x_opportunityId) {
+        if (x_opportunityId == null) {
+            return;
+        }
+        try {
+            CustomNotificationType notifType = [
+                SELECT Id FROM CustomNotificationType
+                WHERE DeveloperName = 'Pricing_Complete' LIMIT 1
+            ];
+            Messaging.CustomNotification notification = new Messaging.CustomNotification();
+            notification.setTitle(title);
+            notification.setBody(body);
+            notification.setNotificationTypeId(notifType.Id);
+            notification.setTargetId(x_opportunityId);
+            notification.send(new Set<String>{ UserInfo.getUserId() });
+        } catch (Exception ex) {
+            System.debug('Failed to send pricing notification: ' + ex.getMessage());
+        }
+    }
+    
+    /**
      * @description Updates Pricing_Result__c with TValue error and links to Quote
      * @param e The exception to log
      */
+    private static String truncate(String msg) {
+        if (msg == null) return null;
+        return msg.length() > 255 ? msg.left(255) : msg;
+    }
+
     private void logError(Exception e) {
         System.debug('Logging TValue error to Pricing Result: ');
         System.debug(e.getMessage());
         System.debug(e.getStackTraceString());
+
+        // Log to API_Log__c for integration-level traceability
+        try {
+            Id logRecordId = String.isNotBlank(quoteId) ? quoteId : opportunityId;
+            MARLIN_IntegrationLog.addLog(
+                'TValue Pricing',
+                logRecordId,
+                'Error',
+                '',
+                '',
+                'TVALUE_ERROR',
+                e.getMessage() + '\n' + e.getStackTraceString()
+            );
+            MARLIN_IntegrationLog.insertLogs();
+        } catch (Exception logEx) {
+            System.debug('Failed to log TValue error to API_Log__c: ' + logEx.getMessage());
+        }
+
         if (pricingResultId == null) {
             System.debug('No Pricing Result Id available to log error');
+            setOpportunityPricingStatus('Error');
             return;
         }
-        
+
         try {
-            // Update Pricing Result with error
             Pricing_Result__c result = new Pricing_Result__c(
                 Id = pricingResultId,
                 Status__c = 'Error',
-                Error_Message__c = 'TValue Error: ' + e.getMessage()
+                Error_Message__c = truncate('TValue Error: ' + e.getMessage())
             );
             update result;
-            
-            // Update Quote Pricing_Status__c text
+
             if (quoteId != null) {
                 Quote q = new Quote(
                     Id = quoteId,
@@ -273,6 +411,8 @@ public class NT_TValueQueueable implements Queueable, Database.AllowsCallouts {
                 );
                 update q;
             }
+
+            setOpportunityPricingStatus('Error');
         } catch (DmlException dmlEx) {
             System.debug('Failed to update Pricing Result/Quote with error: ' + dmlEx.getMessage());
         }

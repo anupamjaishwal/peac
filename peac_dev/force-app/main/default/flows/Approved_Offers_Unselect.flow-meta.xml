@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <interviewLabel>Approved Offers - Unselect {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Approved Offers - Unselect</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>Uncheck_all_other_approved_offers_related_to_Opportunity</name>
+        <label>Uncheck all other approved offers related to Opportunity</label>
+        <locationX>568</locationX>
+        <locationY>76</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <elementReference>varApprovedOfferId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Opportunity__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varOpportunityId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Select__c</field>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </inputAssignments>
+        <object>Approved_Offer__c</object>
+    </recordUpdates>
+    <startElementReference>Uncheck_all_other_approved_offers_related_to_Opportunity</startElementReference>
+    <status>Active</status>
+    <variables>
+        <name>varApprovedOfferId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varOpportunityId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

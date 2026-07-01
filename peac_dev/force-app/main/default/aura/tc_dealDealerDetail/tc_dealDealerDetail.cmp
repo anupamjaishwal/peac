@@ -5,6 +5,8 @@
         <aura:attribute name="index" type="Integer"/>
         <aura:attribute name="partnerType" type="String" access="global"/>
         <aura:attribute name="contactFieldsRequired" type="Boolean" access="global" default="false" />
+        <aura:attribute name="programId"   type="String" access="global"/>
+
     
    
     <aura:attribute name="selectedValues" type="List" default="" description="Selected value in Multi Select" />
@@ -97,6 +99,9 @@
                                                       iconCategoryName="standard:account"/>
                                 </div>
 
+
+                                                              
+
                                 <aura:if isTrue="{!v.partner.dupe}">
                                     <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-1">
                                         <h3 style="color:red;">Duplicate record found and pulled in.</h3>
@@ -123,6 +128,26 @@
                                 <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
                                     <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Account_Dealer_Program__c"  label="Program" value="{!v.partner.account.Account_Dealer_Program__c}" disabled="{!v.partner.readOnly}" multiple="true"/>
                                 </div>
+
+                                 <!-- TEST LOOKUP -->
+                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                <c:sL_LookupPicklistLWC
+                                    label="Program"
+                                    sObjectApiName="Program__c"
+                                    displayField="Name"
+                                    filterValue="{!v.partner.account.Id}"
+                                    junctionObject="Account_Program__c"
+                                    junctionFilterField="Account__c"
+                                    junctionTargetField="Program__c"
+                                    iconName="standard:custom_notification"
+                                    placeholder="Search program..."
+                                    noFilterMessage="Select an Account to see available Programs."
+                                    value="{!v.partner.Program__c}"
+                                    onchange="{!c.handleProgramChange}"
+                                />
+
+                                <!-- END TEST LOOKUP -->
+                                </div>      
 
                                 <lightning:input value="{!v.partner.account.Business_Address__c}" label="Address"
                                                  class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>

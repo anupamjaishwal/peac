@@ -68,8 +68,9 @@ public class TC_LGHTNSendPaymentsCTRL {
             for (Asset__c asset : assets) {
                 if (String.isEmpty(asset.Equipment_Code__c)) {
                     throwException ('Equipment Code is required on Asset: ' + asset.Name);
-                } else if (labelMap.get (asset.Equipment_Code__c).containsIgnoreCase('general') && (String.isEmpty(asset.Equipment_Sub_Category__c) || subCatLabelMap.get (asset.Equipment_Sub_Category__c).containsIgnoreCase('general')) ) {
-                    throwException (labelMap.get (asset.Equipment_Code__c) + ' equipment code requires a non General Sub Category on Asset: ' + asset.Name);
+                }
+                else if (labelMap.get (asset.Equipment_Code__c).containsIgnoreCase('general') && String.isEmpty(asset.Equipment_Sub_Category__c)) {// SAL-6664 Misael Romero
+                    throwException (labelMap.get (asset.Equipment_Code__c) + ' equipment code requires a Sub category(type) on Asset: ' + asset.Name);
                 }
             }
             

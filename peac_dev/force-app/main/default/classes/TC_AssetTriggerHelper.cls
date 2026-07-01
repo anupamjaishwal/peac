@@ -68,16 +68,15 @@ public class TC_AssetTriggerHelper {
     }
 
     public static void setEquipmentState(Asset__c theAsset, Boolean isNew, List<String> fieldsChanged) {
-        if(getIsToUpdateOppTaxState(isNew, fieldsChanged)){
-            if(!(isnew && theAsset.Equipment_Location_City__c == null) )theAsset.Equipment_City__c = theAsset.Equipment_Location_City__c;
-            if(!(isnew && theAsset.Equipment_Location_State__c == null))theAsset.Equipment_State__c = TC_BridgewareUtility.transState(theAsset.Equipment_Location_State__c);
-        }
+        //SAL-5692 Expo:Refactor-Removed getIsToUpdateOppTaxState(). Added conditions before method call 
+        if(!(isnew && theAsset.Equipment_Location_City__c == null) )theAsset.Equipment_City__c = theAsset.Equipment_Location_City__c;
+        if(!(isnew && theAsset.Equipment_Location_State__c == null))theAsset.Equipment_State__c = TC_BridgewareUtility.transState(theAsset.Equipment_Location_State__c);
     }
     
     public static Map<Id, Opportunity> setOpportunityTaxState(Asset__c theAsset, Boolean isNew, List<String> fieldsChanged,Opportunity relatedOpp,
         Map<Id, Opportunity> oppsToUpdateById) {
-        
-        if(relatedOpp != null && theAsset.First_Record__c && getIsToUpdateOppTaxState(isNew, fieldsChanged)){
+        Map<Id, Opportunity> opportunityIdMap = new Map<Id, Opportunity>(); //SAL-7139
+        if(relatedOpp != null && theAsset.First_Record__c){//SAL-5692 Expo:Refactor-Removed getIsToUpdateOppTaxState(). Added conditions before method call 
             Opportunity oppToUpdate = oppsToUpdateById.get(relatedOpp.Id);
             if(oppToUpdate == null){
                 oppToUpdate = relatedOpp;
@@ -88,17 +87,22 @@ public class TC_AssetTriggerHelper {
             oppToUpdate.Tax_City_Code__c = theAsset.City_Code__c;
             //oppToUpdate.Tax_County_Code__c = theAsset.County_Code__c;
             //oppToUpdate.Tax_State_Code__c  = theAsset.State_Code__c;
-            oppsToUpdateById.put(oppToUpdate.Id, oppToUpdate);
-        }
-        return oppsToUpdateById;
+            oppsToUpdateById.put(oppToUpdate.Id, oppToUpdate); 
+            opportunityIdMap.put(oppToUpdate.Id, oppToUpdate); //SAL-7139
+        } 
+            System.debug(LoggingLevel.error, ' setOpportunityTaxState -------- : '+oppsToUpdateById.values());
+        //return oppsToUpdateById;
+        return opportunityIdMap;
+        
     }
 
-    public static Boolean getIsToUpdateOppTaxState(Boolean isNew, List<String> fieldsChanged){
+    //SAL-5692 Expo: Opportunity Refactor
+    /*public static Boolean getIsToUpdateOppTaxState(Boolean isNew, List<String> fieldsChanged){
         return isNew || (fieldsChanged != null && (fieldsChanged.contains('Equipment_Location_City__c')
             || fieldsChanged.contains('Equipment_Location_County__c') || fieldsChanged.contains('Equipment_Location_State__c')
             || fieldsChanged.contains('City_Code__c') || fieldsChanged.contains('County_Code__c') 
             || fieldsChanged.contains('State_Code__c')));
-    }
+    }*/
 
     public static void populateCostFieldsPriceFirstAsset (Asset__c theAsset, Opportunity relatedOpp) {
         if ((theAsset.Cost__c == null || theAsset.Cost__c == 0) && relatedOpp.Equipment_Cost__c != null){
@@ -161,9 +165,11 @@ public class TC_AssetTriggerHelper {
         Set<Id> oppIds = new Set<Id>();
         if (newMap != null) {
             for (Asset__c asset : newMap.values ()) {
-                if (oldMap == null || asset.Residual_Amount__c  != oldMap.get (asset.Id).Residual_Amount__c
-                    || asset.Cost__c != oldMap.get (asset.Id).Cost__c
-                    || asset.Quantity__c != oldMap.get (asset.Id).Quantity__c) {
+                if (oldMap == null || asset.Residual_Amount__c != oldMap.get(asset.Id).Residual_Amount__c
+                    || asset.Cost__c != oldMap.get(asset.Id).Cost__c || asset.Quantity__c != oldMap.get(asset.Id).Quantity__c
+                    || asset.Description__c != oldMap.get(asset.Id).Description__c || asset.List_Price__c != oldMap.get(asset.Id).List_Price__c
+                    || asset.Asset_Rental_Amount__c != oldMap.get(asset.Id).Asset_Rental_Amount__c
+                   	|| asset.Rental_Amount_fml__c != oldMap.get(asset.Id).Rental_Amount_fml__c) {
                     oppIds.add (asset.Opportunity__c );
                 }
             }
@@ -175,21 +181,44 @@ public class TC_AssetTriggerHelper {
 
         if (!oppIds.isEmpty ()) {
             List <Opportunity> updateList = new List <Opportunity> ();
-            for (Opportunity opp : [SELECT Id, Gross_Contract__c, Equipment_Cost__c, (SELECT Id, Residual_Amount__c, Cost__c,Opportunity_Contract_Type__c, Quantity__c FROM Assets__r) FROM Opportunity WHERE Id IN :oppIds]) {
+            //SAL-5692 Expo: Opportunity Refactor - avoided asset sub-query using oppAssetsMap
+            Map<String, List<Asset__c>> oppAssetsMap = new Map<String, List<Asset__c>>();
+            for(Asset__c asset : [SELECT Id,Opportunity__c,List_Price__c,Calculated_Monthly_Rent__c,Residual_Amount__c, Cost__c,Description__c,Asset_Rental_Amount__c,Rental_Amount_fml__c,Quantity__c FROM Asset__c WHERE Opportunity__c IN: oppIds ORDER BY Rental_Amount_fml__c DESC]){
+                if(!oppAssetsMap.containsKey(asset.Opportunity__c)){
+                    oppAssetsMap.put(asset.Opportunity__c, new List<Asset__c>{asset});
+                }else{
+                    oppAssetsMap.get(asset.Opportunity__c).add(asset);
+                }
+            }
+            for (Opportunity opp : [SELECT Id,Payment_Amount__c,X_Rate_Factor__c,of_Payments__c,Gross_Contract__c,Equipment_Cost__c FROM Opportunity WHERE Id IN :oppIds]) {
                 Opportunity withOtherChanges = oppsToUpdateById.get(opp.Id);
                 Opportunity oppToUpdate = withOtherChanges != null? withOtherChanges: new Opportunity (Id = opp.Id);
                 Decimal residAmt = 0;
                 Decimal cost = 0;
                 Decimal quantity = 0;
+                String maxRentDesc = (oppAssetsMap?.get(opp.Id)?.size()>0) ? oppAssetsMap?.get(opp.Id)[0]?.Description__c : '';//SAL-6661
+                //SAL-6661 & SAL-6924
+                system.debug('maxRentDesc -->' + maxRentDesc);
+                //Decimal payAmt = ((((opp.Payment_Amount__c??0) == 0) || (opp.Equipment_Cost__c??0) == 0)) ? (opp.X_Rate_Factor__c??0) : (opp.Payment_Amount__c/opp.Equipment_Cost__c);
+                //Decimal maxRentAmt = payAmt * (((oppAssetsMap?.get(opp.Id)?.size()>0) ? oppAssetsMap?.get(opp.Id)[0]?.List_Price__c : 0) ?? 0);
                 Integer totalAsset = 0;
-                for (Asset__c asset : opp.Assets__r) {
+                Decimal maxListPrice = 0; 
+                if(oppAssetsMap?.get(opp.Id)?.size()>0){
+                    for (Asset__c asset : oppAssetsMap?.get(opp.Id)) {
                     totalAsset+=1;
-                    if (asset.Residual_Amount__c  != null) residAmt += asset.Residual_Amount__c ;
-                    if (asset.Cost__c  != null) cost += asset.Cost__c ;
+                    if (asset.Residual_Amount__c  != null) residAmt += asset.Residual_Amount__c;
+                    if (asset.Cost__c  != null) cost += asset.Cost__c;
                     if (asset.Quantity__c != null) quantity += asset.Quantity__c;
+                    //Commented below for refactor deployment
+                        if ( (asset.Calculated_Monthly_Rent__c ?? 0) > maxListPrice){
+                            maxListPrice = asset.Calculated_Monthly_Rent__c?? 0;
+                            maxRentDesc = asset.Description__c;//SAL-6661
+                        } 
+                }
                 }
                 oppToUpdate.Residual__c = residAmt;
                 oppToUpdate.Number_of_Units__c = quantity;
+                oppToUpdate.Equipment_Description__c = maxRentDesc;//SAL-6661//Commented for refactor deployment
                 //Remove list size() to totalAsset- Rajesh Kumar(LTIMindtree)
                 if (totalAsset > 0 || cost != opp.Equipment_Cost__c) {
                     oppToUpdate.Gross_Finance__c = opp.Gross_Contract__c != null ? opp.Gross_Contract__c - cost : 0 - cost;
@@ -314,5 +343,86 @@ public class TC_AssetTriggerHelper {
             }
         }
     }
+
+	/* Start: SAL-6284 - Manish */
     
+    /* Start:
+     * Process Builder: TC Asset Booking Default – Tax Method & Responsibility Code
+	 * Apex Trigger Implementation for TC Asset Booking Default – Tax Method & Responsibility Code
+	*/
+/*
+    public static void tcAssetBookingDefaultTaXMethodResponsibilityCode(List<Asset__c> newList, Map <Id, Asset__c> oldMap){
+        for(Asset__c asset : newList) {
+            Asset__c oldAsset = oldMap.get(asset.Id);
+
+            // Null Tax Code Logic
+            if(asset.Upfront_Tax_Code__c == null) {
+                asset.Responsibility_Code__c = null;
+                asset.Upfront_Responsibility_Code__c = null;
+                asset.Upfront_Tax_Method__c = null;
+                continue;
+            }
+
+            // Responsibility Code Logic
+            if(asset.Upfront_Tax_Code__c != null && !isCaliforniaOrMaine(asset.Equipment_Location_State__c)) {
+                asset.Responsibility_Code__c = 'L';
+                asset.Upfront_Responsibility_Code__c = 'L';
+            }
+
+            // Tax Method Logic
+            if(isPPMState(asset)) {
+                asset.Upfront_Tax_Method__c = 'PPM';
+            } else if(isGRMState(asset)) {
+                asset.Upfront_Tax_Method__c = 'GRM';
+            }
+
+            // California Logic
+            if(asset.Equipment_Location_State__c == 'CALIFORNIA' && asset.Opportunity__c != null) {
+                if(asset.Opportunity__r.Purchase_Options__c == '1.00 Out') {
+                    asset.Upfront_Tax_Method__c = 'PPM';
+                } else if(asset.Opportunity__r.Purchase_Options__c == '$101 Purchase Option') { // inactive value
+                    asset.Upfront_Tax_Method__c = 'GRM';
+                }
+            }
+
+            // Maine Logic
+            if(asset.Equipment_Location_State__c == 'MAINE' && asset.Opportunity__c != null) {
+                if(asset.Opportunity__r.Purchase_Options__c == 'FMV') {
+                    asset.Upfront_Tax_Method__c = 'PPM';
+                } else if(asset.Opportunity__r.Purchase_Options__c == '$101 Purchase Option' || 
+                          asset.Opportunity__r.Purchase_Options__c == '1.00 Out') {
+                    asset.Upfront_Tax_Method__c = 'GRM';
+                }
+            }
+
+            // Reset Trigger Asset Recalc
+            if(asset.Trigger_Asset_PB__c == true) {
+                asset.Trigger_Asset_PB__c = false;
+            }
+        }
+    }
+
+    private static Boolean isCaliforniaOrMaine(String state) {
+        return state == 'CALIFORNIA' || state == 'MAINE';
+    }
+
+    private static Boolean isPPMState(Asset__c asset) {
+        List<String> ppmStates = new List<String>{'Alabama','Idaho','Illinois','Nevada','Tennessee'};
+        return ppmStates.contains(asset.Equipment_Location_State__c);
+    }
+
+    private static Boolean isGRMState(Asset__c asset) {
+        List<String> grmStates = new List<String>{
+            'District of Columbia','Florida','Georgia','Hawaii','Indiana','Iowa','Kansas','Kentucky',
+            'Louisiana','Massachusetts','Michigan','Minnesota','Nebraska','New Jersey','New Mexico',
+            'North Carolina','North Dakota','Ohio','Oklahoma','Rhode Island','South Dakota','Texas',
+            'Utah','Vermont','Wisconsin','Washington','West Virginia'
+        };
+        return grmStates.contains(asset.Equipment_Location_State__c);
+    }
+    /* End:
+     * Process Builder: TC Asset Booking Default – Tax Method & Responsibility Code
+	 * Apex Trigger Implementation for TC Asset Booking Default – Tax Method & Responsibility Code
+	*/
+	/* END: SAL-6284 - Manish */
 }

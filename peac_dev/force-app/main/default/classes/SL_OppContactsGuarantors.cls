@@ -25,6 +25,19 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
     public static String getAllContacts(String accountId, String opportunityId) {
         String result = '{}';
         Set<Id> oppContactIds = new Set<Id>();
+        // DP-2081 Misael Romero
+        Id currentUserContactId = [SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()].ContactId;
+        if(currentUserContactId != null){
+            OpportunityContactRole dealerOppContactRole = new OpportunityContactRole();
+            List<OpportunityContactRole> existingOcr = [SELECT Id, ContactId, OpportunityId, Role, IsPrimary FROM OpportunityContactRole 
+                WHERE ContactId = :currentUserContactId AND OpportunityId = :opportunityId];
+            if(existingOcr.size() == 0){
+                dealerOppContactRole.ContactId = currentUserContactId;
+                dealerOppContactRole.OpportunityId = opportunityId;
+                dealerOppContactRole.Role = 'Dealer Primary Contact';
+                insert dealerOppContactRole;
+            }
+        }
         for(OpportunityContactRole ocr :[SELECT ContactId FROM OpportunityContactRole 
             WHERE Role != 'Dealer Primary Contact' AND OpportunityId = :opportunityId]){
             oppContactIds.add(ocr.ContactId);
@@ -179,20 +192,6 @@ public without sharing class SL_OppContactsGuarantors { // need to ask if this i
             theContact = upsertList[0];
             
             List<OpportunityContactRole> oppContactRoles = new List<OpportunityContactRole>();
-            Id currentUserContactId = [SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()].ContactId;
-            if(currentUserContactId != null){
-                OpportunityContactRole dealerOppContactRole = new OpportunityContactRole();
-                List<OpportunityContactRole> existingOcr = [SELECT Id, ContactId, OpportunityId, Role, IsPrimary FROM OpportunityContactRole 
-                    WHERE ContactId = :currentUserContactId AND OpportunityId = :opportunityId];
-                if(existingOcr.size() > 0){
-                    dealerOppContactRole.Id = existingOcr[0].Id;
-                }else{
-                    dealerOppContactRole.ContactId = currentUserContactId;
-                    dealerOppContactRole.OpportunityId = opportunityId;
-                    dealerOppContactRole.Role = 'Dealer Primary Contact';
-                    oppContactRoles.add(dealerOppContactRole);
-                }
-            }
             if(isGuarantor){
                 SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters parameters = new SL_DealerPortalCAGuarantor.CreateGuarantorContactParameters();
                 parameters.theOpportunityId = opportunityId;

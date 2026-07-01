@@ -4,7 +4,7 @@
 * The high level logic for this:
 1. insert records if they don't exist
 2. If they don't exist pull them in and mark them read only
-3. If a user searches for a record, pull that in as read only
+3. If a user searches for a record, pull that iPEAC_ProgramTypeMDTServicen as read only
 4. If a user inserts a duplicate record pull in the duped record as read only
 5. Only records that can be updated/deleted are those specific to the deal, like: equipment, pgs, ccgs, opportunity roles
 
@@ -18,6 +18,7 @@ clientSideData is used to pass data between the server/client side easily, allow
 public /*without sharing*/ class TC_LoanApplicationCtrl {
     
     public static Marlin_Configuration__c config = Marlin_Configuration__c.getOrgDefaults ();
+
     public static TC_DatabaseUtil.TC_RecordTypeIdWrapper rtIds = new TC_DatabaseUtil.TC_RecordTypeIdWrapper ();
     public static final String DEALER_SALESREP_ROLE = 'Dealer Primary Contact';
     public static final String DEALER_SALESREP_SALES_CONTACT = 'Dealer Sales Contact';
@@ -38,7 +39,7 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
             , (SELECT Id, ContactId, Role, IsPrimary FROM OpportunityContactRoles WHERE OpportunityId = :appId)
             , (SELECT Id, Account__c FROM Brokers1__r)
             , (SELECT Id, Franchisor__c FROM Franchisors__r)
-            , (SELECT Id, Dealer__c FROM Brokers__R) // need to get primary dealer contacts too
+            , (SELECT Id, Dealer__c, Program__c  FROM Brokers__R) // need to get primary dealer contacts too
             , (SELECT Id FROM Assets__R)
             , AccountId
             FROM Opportunity
@@ -252,6 +253,8 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         for (Dealer__c dealer : oppRelatedIds[0].Brokers__R) {
             TC_DatabaseUtil.TC_RecordWrapper rw = TC_DatabaseUtil.createQuriedRecordWrapper ();
             rw.account = accMap.get (dealer.Dealer__c);
+            rw.dealer  = dealer;
+
             
             TC_DatabaseUtil.TC_RecordWrapper subRW = new TC_DatabaseUtil.TC_RecordWrapper ();
             subRW.contact = new Contact ();
@@ -473,6 +476,8 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
             
             if (clientSideData.company.account.Id == null) {
                 company.RecordTypeId = rtIds.endUserRecordTypeId;
+                //SAL-5802 : Update Branch on End User Account to 'PEACHoldings Inc'
+                //company.Account_Branch__c = '00231';
                 TC_DatabaseUtil.dmlRecords (new List <TC_DatabaseUtil.TC_RecordWrapper> {clientSideData.company}, 'Account');
             } else if (!clientSideData.company.readOnly) {
                 update company;
@@ -582,8 +587,24 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
             //                clientSideData.deal.opportunity = opp;
             //            }
             if ((clientSideData.deal.opportunity == null || clientSideData.deal.opportunity.Id == null)||test.isrunningtest()) {
-                // Preapproval is coming over from the client side, otherwise all other fields are set here
-                Opportunity opp = new Opportunity(Name = clientSideData.company.account.Name, CloseDate = Date.today () + 7, AccountId = clientSideData.company.account.Id, StageName = 'Quote', Terms__c = 60, Payment_Frequency__c = clientSideData.recordTypeName != 'Loan' ? 'Monthly' : 'Daily', Points__c = 0 , of_Payments__c = 0, Created_via_App_Wizard__c = true, Pre_Approval__c = clientSideData.deal.opportunity.Pre_Approval__c);
+                // Preapproval is coming over from the client side, otherwise all other fields are set here.
+                // SAL-7243 — Points__c, Purchase_Options__c, and Dealer_Account__c
+                // are pre-populated on the client wrapper by
+                // tc_loanApplicationGuestHelper.fetchAndPopulateQuotes when a
+                // New Quote launched Quick App. Honor those values so the
+                // converted Opportunity carries them; Points__c falls back to
+                // 0 (legacy default) when no source quote was used. Note:
+                // Opportunity.Dealer_Account__c is force-derived by
+                // SL_OpportunityTriggerHandler.addDealerAcc from
+                // Primary_Dealer__c on every save — to make the dealer stick
+                // through that trigger, the wizard's existing dealerAccounts
+                // step (processed later in this method) must also reflect the
+                // quote's dealer; the assignment here is the first-pass
+                // mapping per Sripriya's SAL-7243 response.
+                Decimal sourcePoints = (clientSideData.deal.opportunity != null && clientSideData.deal.opportunity.Points__c != null)
+                    ? clientSideData.deal.opportunity.Points__c
+                    : 0;
+                Opportunity opp = new Opportunity(Name = clientSideData.company.account.Name, CloseDate = Date.today () + 7, AccountId = clientSideData.company.account.Id, StageName = 'Quote', Terms__c = clientSideData.deal.opportunity.Terms__c != null ? clientSideData.deal.opportunity.Terms__c : 60, Program_Lookup__c = clientSideData.deal.opportunity.Program_Lookup__c, Payment_Frequency__c = clientSideData.recordTypeName != 'Loan' ? 'Monthly' : 'Daily', Points__c = sourcePoints, of_Payments__c = 0, Created_via_App_Wizard__c = true, Pre_Approval__c = clientSideData.deal.opportunity.Pre_Approval__c, Purchase_Options__c = clientSideData.deal.opportunity.Purchase_Options__c, Dealer_Account__c = clientSideData.deal.opportunity.Dealer_Account__c);
                 
                 // get the record type id
                 List <ProductType> productTypes = getAvailableRecordTypes ();
@@ -603,9 +624,49 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                     }
                 }
                 
+                // SAL-7243 — capture the Quote's dealer BEFORE insert. The
+                // Dealer_Account__c field on Opportunity is owned by the
+                // existing addDealerAcc trigger: it nulls the field on insert
+                // when no Primary_Dealer__c junction exists yet, then stamps
+                // it back from whichever Dealer__c junction is marked Primary.
+                // Per Sripriya on SAL-7243: "There is no need to make changes
+                // on this trigger" — so we feed it the input instead.
+                Id sourceDealerAccountId = clientSideData.deal.opportunity.Dealer_Account__c;
+
                 insert clientSideData.deal.opportunity;
+
+                // SAL-7243 — make Dealer flow from New Quote → Opportunity.
+                // Insert a Dealer__c junction with Primary_Dealer__c=true, then
+                // touch the Opp so TC_OpportunityTriggerHandler picks up the
+                // new junction, auto-sets opp.Primary_Dealer__c, and
+                // SL_OpportunityTriggerHandler.addDealerAcc copies the dealer
+                // Id into Dealer_Account__c. No-op when the source Quote had
+                // no dealer.
+                if (sourceDealerAccountId != null) {
+                    Dealer__c primaryDealerJunction = new Dealer__c(
+                        Opportunity__c = clientSideData.deal.opportunity.Id,
+                        Dealer__c = sourceDealerAccountId,
+                        Primary_Dealer__c = true
+                    );
+                    insert primaryDealerJunction;
+                    update new Opportunity(
+                        Id = clientSideData.deal.opportunity.Id,
+                        StageName = clientSideData.deal.opportunity.StageName
+                    );
+                }
+
+                // SAL-7168 — link the source Quote (the standalone Quote behind
+                // the selected TValue Quote(s) from the New Quote tab) to the
+                // Opportunity we just created. Setting Quote.OpportunityId fires
+                // NT_QuoteTriggerHandler, which back-stamps tval__Opportunity__c
+                // on the related TValue Quotes and Opportunity__c on the
+                // related Pricing_Result__c rows.
+                linkSourceQuoteToOpportunity(
+                    clientSideData.selectedTValueQuoteIds,
+                    clientSideData.deal.opportunity.Id
+                );
             }
-            
+
             // SAL-3178 Dummy web service record creation
             List<Webservice_Field__c> oppWebserviceField = [Select Id,Reason_PG_Required__c from Webservice_Field__c where Opportunity__c=:clientSideData.deal.opportunity.Id limit 1];
             if(oppWebserviceField.isEmpty() && clientSideData.recordTypeName != 'Loan')
@@ -672,7 +733,6 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
             if ((clientSideData.deal.opportunity.Loan_Purpose__c == null || clientSideData.deal.opportunity.Loan_Purpose__c == '') && clientSideData.recordTypeName == 'Loan') missingFields.add ('Loan Purpose');
             //Years_in_Business__c
             if (clientSideData.recordTypeName.contains('HKF') && (clientSideData.deal.opportunity.Program__c == null || clientSideData.deal.opportunity.Program__c == '')) missingFields.add('Program'); // SAL-1996, SAL-1937
-            
             if (!missingFields.isEmpty()){
                 String message = 'Deal fields missing: ' + String.valueOf (missingFields).replace('{','').replace('}','');
                 AuraHandledException ex = new AuraHandledException (message);
@@ -1346,7 +1406,7 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         
         try {
             System.debug ('????? clientWrapperString: ' + clientWrapperString);
-            
+            PEAC_GenerateTaxMatrixBatch.isRunning = true;//Added this to fix 101 soql error
             TC_DatabaseUtil.TC_ClientWrapper clientSideData = (TC_DatabaseUtil.TC_ClientWrapper) JSON.deserialize(clientWrapperString, TC_DatabaseUtil.TC_ClientWrapper.class);
             
             /*
@@ -1607,10 +1667,15 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                         if (noAccountMap != null && noAccountMap.get (dealer.Dealer__c) == null) dealerDeletes.add (dealer);
                     }
                     
-                    for (Account acc : dealerAccounts) {
-                        if (noDealerMap == null || noDealerMap.get (acc.Id) == null) {
-                            Dealer__c dealer = new Dealer__C (Dealer__C = acc.Id, Opportunity__c = clientSideData.deal.opportunity.Id);//01261000000X2Sl
-                            dealers.add (dealer);
+                    for (TC_DatabaseUtil.TC_RecordWrapper wr : clientSideData.dealerAccounts) {
+                        Account acc = wr.account;
+                        if (noDealerMap == null || noDealerMap.get(acc.Id) == null) {
+                            Dealer__c dealer = new Dealer__c(
+                                Dealer__c      = acc.Id,
+                                Opportunity__c = clientSideData.deal.opportunity.Id,
+                                Program__c     = wr.dealer != null ? wr.dealer.Program__c : null
+                            );
+                            dealers.add(dealer);
                         }
                     }
                 }
@@ -2008,6 +2073,8 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
             opp.Submitted_from_App_Wizard__c = true;
             if (opp.Program__c == 'Unknown') opp.Program__c = null; // SAL-1937
             update opp;
+            //SAL-5818 : Split Commission rates
+            createCommission(opp.Id);
             return opp.Id;
             
         } catch (Exception ex) {
@@ -2017,7 +2084,58 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         }
         
     }
-    
+	//SAL-5818 : Split Commission rates - start
+	//When an opportunity is created from the QuickApp, create commissions with salesRep and 100% by default.
+    public static void createCommission(String opportunityId){
+        Opportunity opp = [Select Id,Originating_Business__c, AccountId,Account.OwnerId,Account.Owner.Name,Account.Owner.FederationIdentifier,Account.Owner.Profile.Name,Dealer_Account__c,Dealer_Account__r.OwnerId,Dealer_Account__r.Owner.Name, Dealer_Account__r.Owner.Profile.Name,Dealer_Account__r.Owner.FederationIdentifier from Opportunity where Id=:opportunityId];
+        Boolean eligibleToCreateCommission = false;
+
+        Id salesRep = null;
+        Boolean Acc_Exclude = False;
+        Boolean Dealer_Exclude = False;
+        
+        List <Commission_Exclude_List__mdt> CommissionES = New List <Commission_Exclude_List__mdt> ([Select Exclude_Profile_Name__c,Exclude_User_FedID__c from Commission_Exclude_List__mdt]);
+        if(CommissionES.size() > 0 )
+          {
+            for (Commission_Exclude_List__mdt AE:CommissionES)
+                     {
+                        if( opp.Account.Owner.Profile.Name == AE.Exclude_Profile_Name__c || opp.Account.Owner.FederationIdentifier == AE.Exclude_User_FedID__c ){
+                            Acc_Exclude = True;
+                        }                     
+                     }
+                if(!String.isBlank(opp.Dealer_Account__c))
+                    {
+                        for (Commission_Exclude_List__mdt DE:CommissionES)
+                        {
+                            if(opp.Dealer_Account__r.Owner.Profile.Name == DE.Exclude_Profile_Name__c || opp.Dealer_Account__r.Owner.FederationIdentifier == DE.Exclude_User_FedID__c){
+                            Dealer_Exclude = True ;                       
+                        }
+                    }         
+                }   
+            }   
+
+        if(!String.isBlank(opp.Originating_Business__c) && opp.Originating_Business__c == PEAC_ConstantClass.OPPORTUNITY_ORIGINATING_BUSINESS_VA_PEAC){
+             if(!String.isBlank(opp.AccountId) && opp.Account.Owner.Name != PEAC_ConstantClass.USER_PROFILE_USER_INFORMATICA && !Acc_Exclude){
+                eligibleToCreateCommission = true;
+                salesRep = opp.Account.OwnerId;
+            }
+        }else{
+            if(String.isBlank(opp.Dealer_Account__c) && !String.isBlank(opp.AccountId) && opp.Account.Owner.Name != PEAC_ConstantClass.USER_PROFILE_USER_INFORMATICA && !Acc_Exclude){                
+                eligibleToCreateCommission = true;
+                salesRep = opp.Account.OwnerId;
+            }else{
+             if(!String.isBlank(opp.Dealer_Account__c) && opp.Dealer_Account__r.Owner.Name != PEAC_ConstantClass.USER_PROFILE_USER_INFORMATICA && !Dealer_Exclude){
+                    eligibleToCreateCommission = true;
+                    salesRep = opp.Dealer_Account__r.OwnerId;
+                }     
+            }
+        }
+       
+        if(eligibleToCreateCommission){
+            PEAC_Commission.addCommission(OpportunityId,SalesRep);
+        }
+    }
+    //SAL-5818 : Split Commission rates - end
     // SAL-3079
     public static void callDfiOnSubmitToCredit (TC_DatabaseUtil.TC_ClientWrapper clientSideData) {
         
@@ -2201,6 +2319,19 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         
     }
     
+	/*Manish - Feb 13 - SAL-6345*/
+    @AuraEnabled(cacheable=true)
+    public static List<PEAC_CreditBranchMDTService.MatrixDTO> getCreditBranchOptions() {
+        return PEAC_CreditBranchMDTService.getAllBranchMatrix();
+    }
+    /*Manish - Feb 13 - SAL-6345*/
+
+	//SAL-6717 : Automation to update Program Types in Quick App -start   
+ 	@AuraEnabled(cacheable=true)
+    public static Map<String, List<PEAC_ProgramTypeMDTService.ProgramTypeOption>> getProgramTypesByBranch() {
+        return PEAC_ProgramTypeMDTService.getProgramTypeMDT();
+    }
+	//SAL-6717 : Automation to update Program Types in Quick App -start
     
     
     @AuraEnabled
@@ -2215,7 +2346,12 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                 quoteRTIds.put (productName, info.getRecordTypeId());
                 
                 
-            } else if (info.isAvailable () && info.getName() == 'Loan Opportunity') {
+            } 
+            //Commenting to deploy in fullcopy
+            else if (info.isAvailable () && info.getName() == 'Ordering Period') {
+                quoteRTIds.put ('Ordering Period', info.getRecordTypeId());
+            }
+			else if (info.isAvailable () && info.getName() == 'Loan Opportunity') {
                 quoteRTIds.put ('Loan', info.getRecordTypeId());
             }
         }
@@ -2234,14 +2370,21 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         String leaseProduct = '';
         
         for (RecordTypeInfo info: Opportunity.SObjectType.getDescribe ().getRecordTypeInfos ()) {
-            if (info.isAvailable () && info.isActive() && ((info.getName().contains('Opportunity')  ))) {
+            if (info.isAvailable () && info.isActive() && ((info.getName().contains('Opportunity')  )) || info.getName().contains('Ordering')) {
+            //if (info.isAvailable () && info.isActive() && ((info.getName().contains('Opportunity')  ))) {
                 
                 String productName = info.getName().contains('_Opportunity') ? info.getName().remove ('_Opportunity') : info.getName().remove (' Opportunity');
                 // dlg quote - lease opportunity
                 if (info.getName().contains('Lease')) {
                     productTypes.add(new ProductType (productName, quoteRTIds.get ('Express'), 'Express Lease'));
                     leaseProduct = 'Express';
-                } else if (!info.getName().contains('Loan')) {
+                } 
+                //Commenting to deploy in fullcopy
+                  else if (info.getName().contains('Ordering')) {
+                    System.debug('Ordering::');
+                    productTypes.add(new ProductType (productName, quoteRTIds.get (productName), productName));
+                }
+                else if (!info.getName().contains('Loan')) {
                     leaseProduct = productName;
                     productTypes.add(new ProductType (productName, quoteRTIds.get (productName), productName + ' Lease'));
                 }
@@ -2320,8 +2463,10 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         }
         
         // Note: Express ORT translates to 'Lease' in the QA
-        if(clientSideData.recordTypeName != 'Loan')system.debug('Manager_PG_Override__c====>'+dealOpp.Webservice_Fields__r[0].Manager_PG_Override__c);
-        system.debug('fraud pg req original value====>'+dealOpp.Fraud_PG_Required__c);
+        if(!dealOpp?.Webservice_Fields__r.isEmpty()){
+            system.debug('Manager_PG_Override__c====>'+dealOpp?.Webservice_Fields__r[0].Manager_PG_Override__c);
+        }
+        system.debug('fraud pg req original value====>'+dealOpp?.Fraud_PG_Required__c);
         system.debug('fraud pg req====>'+dealOpp?.Fraud_PG_Required__c);
         system.debug('dealOpp.Webservice_Fields__r.isEmpty()'+dealOpp.Webservice_Fields__r.isEmpty());
         
@@ -2372,10 +2517,18 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
 
         if (ids.isEmpty()) return null;
 
-        // Query tval__TValue_Quote__c and return the parent Quote__r (first found)
+        // Query tval__TValue_Quote__c and return the parent Quote__r (first found).
+        // SAL-7243 — also return Quote.Dealer__c, Quote.Points__c,
+        // Quote.End_of_Term_Option__c, and Quote.Rate__c so
+        // tc_loanApplicationGuestHelper can pre-populate the Opportunity's
+        // Dealer_Account__c, Points__c, Purchase_Options__c, and Estimated_IRR__c
+        // when a New Quote is converted via Quick App. The helper already
+        // assigns these fields client-side, but they were resolving to
+        // undefined because the SOQL didn't return them.
         List<tval__TValue_Quote__c> tqs = [
             SELECT Id, Quote__c, Quote__r.Equipment_Type__c, tval__Quote_Amount__c, Quote__r.Description, tval__Term__c,
-            tval__Period__c, tval__Purchase_Option__c
+            tval__Period__c, tval__Purchase_Option__c, Quote__r.Program__c,
+            Quote__r.Dealer__c, Quote__r.Points__c, Quote__r.End_of_Term_Option__c, Quote__r.Rate__c
             FROM tval__TValue_Quote__c
             WHERE Id IN :ids
             LIMIT 1
@@ -2386,7 +2539,104 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         }
         return null;
     }
-    
+
+    /**
+     * @description  SAL-7243 — mark the picked TValue Quote as the selected
+     *               one. When the user clicks "Use this quote" in the
+     *               tvalueQuotePicker LWC, this sets tval__Selected__c = true
+     *               on the chosen TValue Quote and clears it on the other
+     *               TValue Quotes that share the same parent Quote, so the
+     *               parent record's selected-quote relationship is single-
+     *               valued and consistent with the wizard's downstream
+     *               assumptions (saveCompany, Quick App flow).
+     * @param        tvalueQuoteId  The TValue Quote the user chose.
+     */
+    @AuraEnabled
+    public static void markSelectedTValueQuote(Id tvalueQuoteId) {
+        if (tvalueQuoteId == null) return;
+
+        List<tval__TValue_Quote__c> chosen = [
+            SELECT Id, Quote__c
+            FROM tval__TValue_Quote__c
+            WHERE Id = :tvalueQuoteId
+            LIMIT 1
+        ];
+        if (chosen.isEmpty()) return;
+
+        Id parentQuoteId = chosen[0].Quote__c;
+
+        List<tval__TValue_Quote__c> toUpdate = new List<tval__TValue_Quote__c>();
+        toUpdate.add(new tval__TValue_Quote__c(Id = tvalueQuoteId, tval__Selected__c = true));
+
+        if (parentQuoteId != null) {
+            // Clear the flag on sibling TValue Quotes under the same parent so
+            // only one is "selected" at a time. Skip the chosen Id; bulk-safe.
+            for (tval__TValue_Quote__c sibling : [
+                SELECT Id
+                FROM tval__TValue_Quote__c
+                WHERE Quote__c = :parentQuoteId
+                  AND Id != :tvalueQuoteId
+                  AND tval__Selected__c = true
+            ]) {
+                toUpdate.add(new tval__TValue_Quote__c(Id = sibling.Id, tval__Selected__c = false));
+            }
+        }
+
+        update toUpdate;
+    }
+
+    /**
+     * SAL-7168 — set Quote.OpportunityId on the source Quote(s) behind the
+     * selected TValue Quote Ids. Setting OpportunityId is the trigger
+     * NT_QuoteTriggerHandler watches for; once it fires, the handler
+     * back-stamps tval__Opportunity__c on every related TValue Quote and
+     * Opportunity__c on every related Pricing_Result__c, so they appear in
+     * the Opportunity's related lists. No-op when either input is blank.
+     */
+    @TestVisible
+    private static void linkSourceQuoteToOpportunity(String tvalQuoteIds, Id opportunityId) {
+        if (String.isBlank(tvalQuoteIds) || opportunityId == null) return;
+        // SAL-7168 back-stamp is best-effort. Wrap in a savepoint + try/catch
+        // so a failure in the downstream NT_QuoteTriggerHandler chain (e.g. the
+        // tval managed-package trigger throwing on tval__TValue_Quote__c update
+        // in qa) doesn't roll back saveCompany's Opportunity insert. If this
+        // throws, SAL-7243 mapping still lands; only the Quote → Opp back-link
+        // is lost for this record.
+        Savepoint sp = Database.setSavepoint();
+        try {
+            Set<Id> tvalIds = new Set<Id>();
+            for (String part : tvalQuoteIds.replace('"','').replace('[','').replace(']','').split('[,;\\s]+')) {
+                if (String.isNotBlank(part)) {
+                    try { tvalIds.add(Id.valueOf(part.trim())); } catch (Exception ignore) {}
+                }
+            }
+            if (tvalIds.isEmpty()) return;
+
+            Set<Id> quoteIds = new Set<Id>();
+            for (tval__TValue_Quote__c tvq : [
+                SELECT Quote__c
+                FROM tval__TValue_Quote__c
+                WHERE Id IN :tvalIds AND Quote__c != null
+            ]) {
+                quoteIds.add(tvq.Quote__c);
+            }
+            if (quoteIds.isEmpty()) return;
+
+            List<Quote> toUpdate = new List<Quote>();
+            for (Quote q : [
+                SELECT Id, OpportunityId
+                FROM Quote
+                WHERE Id IN :quoteIds AND OpportunityId = null
+            ]) {
+                toUpdate.add(new Quote(Id = q.Id, OpportunityId = opportunityId));
+            }
+            if (!toUpdate.isEmpty()) update toUpdate;
+        } catch (Exception ex) {
+            Database.rollback(sp);
+            System.debug('SAL-7168 linkSourceQuoteToOpportunity skipped: ' + ex.getMessage());
+        }
+    }
+
     // SAL-2384 if SSN is entered, require 'Dealer/Customer Supplied PG' and 'OK to Pull Credit' fields
     @testVisible
     private static void checkPermissionToPullCredit (Contact con) {
@@ -2446,6 +2696,16 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         public Integer TermInMonth;
         } */
     
+    @AuraEnabled
+    public static Boolean getIsRiskBasedPricing(Id opportunityId) {
+        Opportunity opp = [
+            SELECT Risk_Based_Pricing__c
+            FROM Opportunity
+            WHERE Id = :opportunityId
+            LIMIT 1
+        ];
+        return opp.Risk_Based_Pricing__c;
+    }
     
     public class TC_LoanApplicationCtrlException extends  Exception {}
 }

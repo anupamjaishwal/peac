@@ -1,0 +1,96 @@
+/* sL_LookupPicklistLWC.css */
+
+.lookup-container {
+    position: relative;
+    width: 100%;
+    display: block;
+}
+
+/* Ensures the dropdown renders above sibling elements */
+.slds-combobox_container {
+    position: relative;
+    width: 100%;
+    display: block;
+}
+
+/* Input stretches full width */
+.slds-combobox__form-element {
+    width: 100%;
+}
+
+.slds-input {
+    width: 100%;
+}
+
+/* Dropdown anchored to the input, not the page */
+.slds-dropdown {
+    position: absolute;
+    z-index: 9001;
+    top: 100%;
+    left: 0;
+    right: 0;
+    min-width: 100%;
+    background: white;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;
+    box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
+    max-height: 220px;
+    overflow-y: auto;
+}
+
+/* ── Pill: full width, proper height ─────────────────────────── */
+.selected-pill {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    border-radius: 0.25rem;   /* matches SLDS input radius */
+    padding: 0 0.5rem;
+    height: 2rem;             /* same height as the search input */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.selected-pill .slds-pill__label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.875rem;
+    margin: 0 0.5rem;
+    color: #3e3e3c;
+}
+
+.selected-pill .slds-pill__remove {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+/* Inline validation error */
+.slds-form-error {
+    color: #c23934;
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+/* Hover state for dropdown options */
+.slds-listbox__item:hover {
+    background-color: #f3f2f2;
+    cursor: pointer;
+}
+
+/* Read-only pill (single program auto-assigned) */
+.pill--readonly {
+    background: #f3f2f2;
+    border-color: #c9c7c5;
+    cursor: default;
+}
+
+.pill--readonly .slds-pill__label {
+    color: #706e6b;
+}

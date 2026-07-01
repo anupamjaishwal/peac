@@ -50,8 +50,27 @@ export default class TvalueQuoteEmail extends LightningElement {
         this.body = event.target.value;
     }
 
+    validateEmailList(value) {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        const emails = value.split(';').map(e => e.trim()).filter(e => e.length > 0);
+        for (let email of emails) {
+            if (!emailRegex.test(email)) {
+                return `Invalid email format: ${email}`;
+            }
+        }
+        return null;
+    }
+
     async handleSendEmail() {
-        // Basic validation
+        const toField = this.template.querySelector('[data-id="toAddress"]');
+        const ccField = this.template.querySelector('[data-id="ccAddress"]');
+
+        const toError = this.toAddress ? this.validateEmailList(this.toAddress) : null;
+        const ccError = this.ccAddress ? this.validateEmailList(this.ccAddress) : null;
+
+        toField.setCustomValidity(toError || '');
+        ccField.setCustomValidity(ccError || '');
+
         const allValid = [...this.template.querySelectorAll('lightning-input, lightning-textarea')]
             .reduce((validSoFar, inputCmp) => {
                 inputCmp.reportValidity();

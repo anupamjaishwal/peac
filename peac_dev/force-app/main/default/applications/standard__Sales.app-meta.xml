@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultLandingTab>standard-home</defaultLandingTab>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <tabs>standard-Lead</tabs>
+    <tabs>standard-Account</tabs>
+    <tabs>standard-Contact</tabs>
+    <tabs>standard-Opportunity</tabs>
+    <tabs>Quick_App</tabs>
+    <tabs>standard-report</tabs>
+    <tabs>standard-Dashboard</tabs>
+    <tabs>standard-Chatter</tabs>
+    <tabs>arxxusleadassig__Lead_Assignment_Manager</tabs>
+    <tabs>Dealer_Surveillance__c</tabs>
+    <tabs>T_Call1</tabs>
+    <tabs>T_Prod1</tabs>
+    <tabs>T_Call</tabs>
+    <tabs>T_BDM</tabs>
+    <tabs>Accent</tabs>
+    <tabs>Infolease_Group_Code__c</tabs>
+    <tabs>copado__Artifact_Version__c</tabs>
+    <tabs>Signer_Portal_Status__c</tabs>
+    <tabs>Report_Subscription__c</tabs>
+    <tabs>Pool__c</tabs>
+    <tabs>Buyout_Asset__c</tabs>
+    <tabs>Buyout__c</tabs>
+    <tabs>TCRE__Rule_Config__c</tabs>
+</CustomApplication>

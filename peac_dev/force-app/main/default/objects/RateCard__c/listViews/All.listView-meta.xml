@@ -3,7 +3,9 @@
     <fullName>All</fullName>
     <columns>NAME</columns>
     <columns>CREATED_DATE</columns>
-    <columns>LAST_UPDATE</columns>
+    <columns>CREATEDBY_USER</columns>
+    <columns>Entry_Criteria__c</columns>
+    <columns>Quote_Entry_Config__c</columns>
     <filterScope>Everything</filterScope>
     <label>All</label>
 </ListView>

@@ -2,11 +2,15 @@
 public with sharing class TC_AddBlendedIncomeItemsTest {
     @testSetup
     static void setup() {
+        Test.startTest();
+        PEAC_GenerateTaxMatrixBatch.isRunning = true;
         SL_SCTestData.prepareFundingOpportunity();
+        Test.stopTest();
     }
 
     @isTest
     static void lessor409() {
+        PEAC_GenerateTaxMatrixBatch.isRunning = true;
         List<Opportunity> opps = [SELECT Id, Name, Account.Account_Billing_Street__c, StageName,
         Loan_Record_Type__c, Lessor__c, Lease_Payment_Interim_Rent__c, Interim_Rent__c, Contract_Type__c,
         Broker_Fees__c, Documentation_Fee__c,
@@ -17,9 +21,11 @@ public with sharing class TC_AddBlendedIncomeItemsTest {
         Map<Id, List<Blended_Income_Item__c>> blendedIncomeItems = new Map<Id, List<Blended_Income_Item__c>>();
         Blended_Income_Item__c newBII = new Blended_Income_Item__c (Blended_Income_Code__c = '0029', Blended_Income_Amount__c = 11,
             Opportunity__c = opps[2].Id, Generated_Code__c = '0029');
-        insert newBII;
+    
         Test.startTest();
         System.runAs(theAdmin){
+            //commented out as per discussion and this is not going live on 2/13
+               // insert newBII;
             opps[2].StageName = 'Booking';
             opps[2].Opportunity_Status__c = 'Booking - In Process';
             opps[2].Account_Billing_Street__c = opps[2].Account.Account_Billing_Street__c;
@@ -51,6 +57,7 @@ public with sharing class TC_AddBlendedIncomeItemsTest {
     
     @isTest
     static void lessorNot409() {
+        PEAC_GenerateTaxMatrixBatch.isRunning = true;
         List<Opportunity> opps = [SELECT Id, Name, Account.Account_Billing_Street__c, StageName,
         Loan_Record_Type__c, Lessor__c, Lease_Payment_Interim_Rent__c, Interim_Rent__c, Contract_Type__c,
         Broker_Fees__c, Documentation_Fee__c,
@@ -61,9 +68,12 @@ public with sharing class TC_AddBlendedIncomeItemsTest {
         Map<Id, List<Blended_Income_Item__c>> blendedIncomeItems = new Map<Id, List<Blended_Income_Item__c>>();
         Blended_Income_Item__c newBII = new Blended_Income_Item__c (Blended_Income_Code__c = '0004', Blended_Income_Amount__c = 11,
             Opportunity__c = opps[2].Id, Generated_Code__c = '0004');
-        insert newBII;
+       
         Test.startTest();
         System.runAs(theAdmin){
+            
+            //commented out as per discussion and this is not going live on 2/13
+             //insert newBII;
             opps[2].StageName = 'Booking';
             opps[2].Opportunity_Status__c = 'Booking - In Process';
             opps[2].Account_Billing_Street__c = opps[2].Account.Account_Billing_Street__c;
@@ -91,6 +101,31 @@ public with sharing class TC_AddBlendedIncomeItemsTest {
         // List<Blended_Income_Item__c> biisAfter = [SELECT Id, Blended_Income_Code__c FROM Blended_Income_Item__c 
         //     WHERE Opportunity__c = :opps[2].Id AND Generated_Code__c = '0004'];
         // System.Assert.areEqual(1, biisAfter.size(), 'must have created the Documentation Fee');
+    }
+	
+    //commented out as per discussion and this is not going live on 2/13
+	 @IsTest
+	
+    static void addIndirectSubsidyBlendedIncomeItemsTest(){
+        PEAC_GenerateTaxMatrixBatch.isRunning = true;
+        User theAdmin = [SELECT Id FROM User WHERE Profile.Name = 'System Administrator' AND FirstName = 'Test Owner' LIMIT 1];
+        List<Opportunity> opps = [SELECT Id, Name, Account.Account_Billing_Street__c, StageName,
+        Loan_Record_Type__c, Lessor__c, Lease_Payment_Interim_Rent__c, Interim_Rent__c, Contract_Type__c,
+        Broker_Fees__c, Documentation_Fee__c,
+        Primary_Dealer__r.Dealer__r.Interim_Rent_Dealer_Percentage__c, Primary_Dealer__r.Dealer__r.Preferred_Dealer_Level__c
+         FROM Opportunity];
+        Opportunity fundingopp =  opps[0];
+        fundingopp.StageName = 'Funding';
+        System.runAs(theAdmin){
+            Test.startTest();
+            Map<Id, Opportunity> oldMap = new Map<Id, Opportunity>();
+            oldMap.put(fundingopp.Id, fundingopp.clone(true, true, true, true));
+            fundingopp.StageName = 'Booking';
+            fundingopp.Opportunity_Status__c = '';
+            List<Opportunity> newList = new List<Opportunity>{fundingopp};
+            TC_AddBlendedIncomeItems.addIndirectSubsidyBlendedIncomeItems(newList, oldMap);
+            Test.stopTest();
+        }
     }
     
 

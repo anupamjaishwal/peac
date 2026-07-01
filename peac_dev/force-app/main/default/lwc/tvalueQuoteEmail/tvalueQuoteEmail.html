@@ -16,14 +16,14 @@
                     <div class="slds-form__row">
                         <div class="slds-form__item" role="listitem">
                             <div class="slds-form-element slds-form-element_stacked">
-                                <lightning-input type="email" label="To" value={toAddress} onchange={handleToChange} required></lightning-input>
+                                <lightning-input type="text" label="To" value={toAddress} onchange={handleToChange} data-id="toAddress" required placeholder="email1@example.com; email2@example.com"></lightning-input>
                             </div>
                         </div>
                     </div>
                     <div class="slds-form__row">
                         <div class="slds-form__item" role="listitem">
                             <div class="slds-form-element slds-form-element_stacked">
-                                <lightning-input type="email" label="CC" value={ccAddress} onchange={handleCcChange}></lightning-input>
+                                <lightning-input type="text" label="CC" value={ccAddress} onchange={handleCcChange} data-id="ccAddress" placeholder="email1@example.com; email2@example.com"></lightning-input>
                             </div>
                         </div>
                     </div>

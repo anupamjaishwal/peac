@@ -1,0 +1,580 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>0.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision</name>
+        <label>myDecision</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>myDecision2</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_1</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_1</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_1_A1</targetReference>
+            </connector>
+            <label>Clear Conditions?</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <processMetadataValues>
+            <name>index</name>
+            <value>
+                <numberValue>1.0</numberValue>
+            </value>
+        </processMetadataValues>
+        <name>myDecision2</name>
+        <label>myDecision2</label>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>default</defaultConnectorLabel>
+        <rules>
+            <name>myRule_3</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>formula_myRule_3</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>myRule_3_A1</targetReference>
+            </connector>
+            <label>Populate Conditions</label>
+        </rules>
+    </decisions>
+    <description>Clear the Interim Rent</description>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>[Opportunity].Payment_Amount__c * 0.85</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_4_myRule_3_A1_4904191822</name>
+        <dataType>Currency</dataType>
+        <expression>{!myVariable_current.Payment_Amount__c} * 0.85</expression>
+        <scale>18</scale>
+    </formulas>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>[Opportunity].Opportunity_CurrentUser_Profile__c != &quot;DataAdmin&quot;
+&amp;&amp;
+[Opportunity].Loan_Record_Type__c = FALSE
+&amp;&amp;
+(
+	[Opportunity].Waive_Interim_Rent__c = TRUE
+	&amp;&amp; 
+	ISCHANGED([Opportunity].Waive_Interim_Rent__c)
+) 
+
+|| 
+
+(
+	[Opportunity].Loan_Record_Type__c = FALSE
+	&amp;&amp; 
+	(
+		(
+			TEXT(PRIORVALUE([Opportunity].Payment_Frequency__c)) = &quot;Monthly&quot; 
+			&amp;&amp; 
+			ISCHANGED([Opportunity].Payment_Frequency__c)
+			&amp;&amp;
+			TEXT([Opportunity].Payment_Frequency__c) != &quot;Monthly&quot;
+		) 
+		|| 
+		(
+			[Opportunity].Advance_Rental_Amount__c = 0
+			&amp;&amp; 
+			ISCHANGED([Opportunity].Advance_Rental_Amount__c)
+		) 
+		|| 
+		(
+			[Opportunity].Required_Adv_Payments__c &gt; 0
+			&amp;&amp; 
+			ISCHANGED([Opportunity].Required_Adv_Payments__c)
+		) 
+		||
+		(
+			[Opportunity].First_Payment_Amount__c != [Opportunity].Payment_Amount__c
+			&amp;&amp; 
+			(
+			   ISCHANGED([Opportunity].First_Payment_Amount__c)
+			   || 
+			   ISCHANGED([Opportunity].Payment_Amount__c)
+            )			   
+		)
+		||
+		(
+			[Opportunity].Variable_Payment__c = TRUE
+			&amp;&amp; 
+			ISCHANGED([Opportunity].Variable_Payment__c)			   
+		)
+		||
+		(
+			[Opportunity].Payments_In_Arrears__c = TRUE
+			&amp;&amp; 
+			ISCHANGED([Opportunity].Payments_In_Arrears__c)			   
+		)		
+		||
+		(
+			(
+				[Opportunity].of_beginning_payments__c &gt; 0
+				||
+				[Opportunity].of_ending_payments__c &gt; 0
+			)
+			&amp;&amp; 
+			(
+				ISCHANGED([Opportunity].of_beginning_payments__c)
+				||
+				ISCHANGED([Opportunity].of_ending_payments__c)
+			)			
+		)
+		|| 
+		(
+			[Opportunity].First_Payment_Date__c != [Opportunity].Commencement_Date__c
+			&amp;&amp; 
+			(
+				ISCHANGED([Opportunity].First_Payment_Date__c)
+				|| 
+				ISCHANGED([Opportunity].Commencement_Date__c)
+			)
+		)
+	)
+)</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_1</name>
+        <dataType>Boolean</dataType>
+        <expression>{!myVariable_current.Opportunity_CurrentUser_Profile__c} != &quot;DataAdmin&quot;
+&amp;&amp;
+{!myVariable_current.Loan_Record_Type__c} = FALSE
+&amp;&amp;
+(
+	{!myVariable_current.Waive_Interim_Rent__c} = TRUE
+	&amp;&amp; 
+	ISCHANGED({!myVariable_current.Waive_Interim_Rent__c})
+) 
+
+|| 
+
+(
+	{!myVariable_current.Loan_Record_Type__c} = FALSE
+	&amp;&amp; 
+	(
+		(
+			TEXT(PRIORVALUE({!myVariable_current.Payment_Frequency__c})) = &quot;Monthly&quot; 
+			&amp;&amp; 
+			ISCHANGED({!myVariable_current.Payment_Frequency__c})
+			&amp;&amp;
+			TEXT({!myVariable_current.Payment_Frequency__c}) != &quot;Monthly&quot;
+		) 
+		|| 
+		(
+			{!myVariable_current.Advance_Rental_Amount__c} = 0
+			&amp;&amp; 
+			ISCHANGED({!myVariable_current.Advance_Rental_Amount__c})
+		) 
+		|| 
+		(
+			{!myVariable_current.Required_Adv_Payments__c} &gt; 0
+			&amp;&amp; 
+			ISCHANGED({!myVariable_current.Required_Adv_Payments__c})
+		) 
+		||
+		(
+			{!myVariable_current.First_Payment_Amount__c} != {!myVariable_current.Payment_Amount__c}
+			&amp;&amp; 
+			(
+			   ISCHANGED({!myVariable_current.First_Payment_Amount__c})
+			   || 
+			   ISCHANGED({!myVariable_current.Payment_Amount__c})
+            )			   
+		)
+		||
+		(
+			{!myVariable_current.Variable_Payment__c} = TRUE
+			&amp;&amp; 
+			ISCHANGED({!myVariable_current.Variable_Payment__c})			   
+		)
+		||
+		(
+			{!myVariable_current.Payments_In_Arrears__c} = TRUE
+			&amp;&amp; 
+			ISCHANGED({!myVariable_current.Payments_In_Arrears__c})			   
+		)		
+		||
+		(
+			(
+				{!myVariable_current.of_beginning_payments__c} &gt; 0
+				||
+				{!myVariable_current.of_ending_payments__c} &gt; 0
+			)
+			&amp;&amp; 
+			(
+				ISCHANGED({!myVariable_current.of_beginning_payments__c})
+				||
+				ISCHANGED({!myVariable_current.of_ending_payments__c})
+			)			
+		)
+		|| 
+		(
+			{!myVariable_current.First_Payment_Date__c} != {!myVariable_current.Commencement_Date__c}
+			&amp;&amp; 
+			(
+				ISCHANGED({!myVariable_current.First_Payment_Date__c})
+				|| 
+				ISCHANGED({!myVariable_current.Commencement_Date__c})
+			)
+		)
+	)
+)</expression>
+    </formulas>
+    <formulas>
+        <processMetadataValues>
+            <name>originalFormula</name>
+            <value>
+                <stringValue>[Opportunity].Opportunity_CurrentUser_Profile__c != &quot;DataAdmin&quot; &amp;&amp; [Opportunity].Channel__c != &apos;CVG&apos;
+&amp;&amp;
+[Opportunity].Loan_Record_Type__c = FALSE
+&amp;&amp;
+(
+   [Opportunity].Interim_Rent__c = 0
+   ||
+   ISBLANK([Opportunity].Interim_Rent__c)
+)
+&amp;&amp;
+[Opportunity].Waive_Interim_Rent__c = FALSE
+&amp;&amp;
+TEXT([Opportunity].Payment_Frequency__c) = &quot;Monthly&quot;
+&amp;&amp;
+[Opportunity].Required_Adv_Payments__c = 0
+&amp;&amp;
+[Opportunity].First_Payment_Amount__c = [Opportunity].Payment_Amount__c
+&amp;&amp;
+[Opportunity].Variable_Payment__c = FALSE
+&amp;&amp;
+[Opportunity].Payments_In_Arrears__c = FALSE
+&amp;&amp;
+[Opportunity].of_beginning_payments__c = 0
+&amp;&amp;
+[Opportunity].of_ending_payments__c = 0
+&amp;&amp;
+[Opportunity].First_Payment_Date__c = [Opportunity].Commencement_Date__c
+&amp;&amp;
+(
+	ISCHANGED([Opportunity].Waive_Interim_Rent__c)
+	||
+	ISCHANGED([Opportunity].Payment_Frequency__c)
+	||
+	ISCHANGED([Opportunity].Required_Adv_Payments__c)
+	||
+	ISCHANGED([Opportunity].First_Payment_Amount__c)
+	||
+	ISCHANGED([Opportunity].Variable_Payment__c)
+	||
+	ISCHANGED([Opportunity].Payments_In_Arrears__c)
+	||
+	ISCHANGED([Opportunity].of_beginning_payments__c)
+	||
+	ISCHANGED([Opportunity].of_ending_payments__c)
+	||
+	ISCHANGED([Opportunity].First_Payment_Date__c)
+    ||
+    ISCHANGED([Opportunity].Commencement_Date__c)
+	||
+	ISCHANGED([Opportunity].Payment_Amount__c)
+)</stringValue>
+            </value>
+        </processMetadataValues>
+        <name>formula_myRule_3</name>
+        <dataType>Boolean</dataType>
+        <expression>{!myVariable_current.Opportunity_CurrentUser_Profile__c} != &quot;DataAdmin&quot; &amp;&amp; {!myVariable_current.Channel__c} != &apos;CVG&apos;
+&amp;&amp;
+{!myVariable_current.Loan_Record_Type__c} = FALSE
+&amp;&amp;
+(
+   {!myVariable_current.Interim_Rent__c} = 0
+   ||
+   ISBLANK({!myVariable_current.Interim_Rent__c})
+)
+&amp;&amp;
+{!myVariable_current.Waive_Interim_Rent__c} = FALSE
+&amp;&amp;
+TEXT({!myVariable_current.Payment_Frequency__c}) = &quot;Monthly&quot;
+&amp;&amp;
+{!myVariable_current.Required_Adv_Payments__c} = 0
+&amp;&amp;
+{!myVariable_current.First_Payment_Amount__c} = {!myVariable_current.Payment_Amount__c}
+&amp;&amp;
+{!myVariable_current.Variable_Payment__c} = FALSE
+&amp;&amp;
+{!myVariable_current.Payments_In_Arrears__c} = FALSE
+&amp;&amp;
+{!myVariable_current.of_beginning_payments__c} = 0
+&amp;&amp;
+{!myVariable_current.of_ending_payments__c} = 0
+&amp;&amp;
+{!myVariable_current.First_Payment_Date__c} = {!myVariable_current.Commencement_Date__c}
+&amp;&amp;
+(
+	ISCHANGED({!myVariable_current.Waive_Interim_Rent__c})
+	||
+	ISCHANGED({!myVariable_current.Payment_Frequency__c})
+	||
+	ISCHANGED({!myVariable_current.Required_Adv_Payments__c})
+	||
+	ISCHANGED({!myVariable_current.First_Payment_Amount__c})
+	||
+	ISCHANGED({!myVariable_current.Variable_Payment__c})
+	||
+	ISCHANGED({!myVariable_current.Payments_In_Arrears__c})
+	||
+	ISCHANGED({!myVariable_current.of_beginning_payments__c})
+	||
+	ISCHANGED({!myVariable_current.of_ending_payments__c})
+	||
+	ISCHANGED({!myVariable_current.First_Payment_Date__c})
+    ||
+    ISCHANGED({!myVariable_current.Commencement_Date__c})
+	||
+	ISCHANGED({!myVariable_current.Payment_Amount__c})
+)</expression>
+    </formulas>
+    <interviewLabel>TC_Opportunity_Booking_Rules_Clear_the_Interim_Rent-17_InterviewLabel</interviewLabel>
+    <label>TC Opportunity: Booking Rules - Clear the Interim Rent</label>
+    <processMetadataValues>
+        <name>ObjectType</name>
+        <value>
+            <stringValue>Opportunity</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>ObjectVariable</name>
+        <value>
+            <elementReference>myVariable_current</elementReference>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OldObjectVariable</name>
+        <value>
+            <elementReference>myVariable_old</elementReference>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>RecursiveCountVariable</name>
+        <value>
+            <elementReference>RecursiveCountVariable</elementReference>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>TriggerType</name>
+        <value>
+            <stringValue>onAllChanges</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Workflow</processType>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>extraTypeInfo</name>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[Opportunity]</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>referenceTargetField</name>
+        </processMetadataValues>
+        <name>myRule_1_A1</name>
+        <label>Erase Interim Rent</label>
+        <locationX>100</locationX>
+        <locationY>200</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Currency</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Interim Rent</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue></stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>GlobalConstant</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Interim_Rent__c</field>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordUpdates>
+    <recordUpdates>
+        <processMetadataValues>
+            <name>evaluationType</name>
+            <value>
+                <stringValue>always</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>extraTypeInfo</name>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>isChildRelationship</name>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>reference</name>
+            <value>
+                <stringValue>[Opportunity]</stringValue>
+            </value>
+        </processMetadataValues>
+        <processMetadataValues>
+            <name>referenceTargetField</name>
+        </processMetadataValues>
+        <name>myRule_3_A1</name>
+        <label>Populate Interim Rent</label>
+        <locationX>300</locationX>
+        <locationY>200</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <processMetadataValues>
+                <name>implicit</name>
+                <value>
+                    <booleanValue>true</booleanValue>
+                </value>
+            </processMetadataValues>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>myVariable_current.Id</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <processMetadataValues>
+                <name>dataType</name>
+                <value>
+                    <stringValue>Currency</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>isRequired</name>
+                <value>
+                    <booleanValue>false</booleanValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideLabel</name>
+                <value>
+                    <stringValue>Interim Rent</stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>leftHandSideReferenceTo</name>
+                <value>
+                    <stringValue></stringValue>
+                </value>
+            </processMetadataValues>
+            <processMetadataValues>
+                <name>rightHandSideType</name>
+                <value>
+                    <stringValue>Formula</stringValue>
+                </value>
+            </processMetadataValues>
+            <field>Interim_Rent__c</field>
+            <value>
+                <elementReference>formula_4_myRule_3_A1_4904191822</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordUpdates>
+    <startElementReference>myDecision</startElementReference>
+    <status>Obsolete</status>
+    <variables>
+        <name>myVariable_current</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Opportunity</objectType>
+    </variables>
+    <variables>
+        <name>myVariable_old</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Opportunity</objectType>
+    </variables>
+    <variables>
+        <name>RecursiveCountVariable</name>
+        <dataType>Number</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+</Flow>

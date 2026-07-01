@@ -10,6 +10,9 @@ export default class SL_SelectChildDealer extends LightningElement {
     @api dealerUserFirstName;
     @api dealerUserLastName;
     @api isComingSecondTime = false;
+    @api availableActions = [];
+    @api get isUserSelectable() { return this.s2==="selectUser" };
+    @api s2 = "";
     dealerUser = null;
     isLoading;
     childAccounts = [];
@@ -18,6 +21,7 @@ export default class SL_SelectChildDealer extends LightningElement {
     dealerUsers = [];
     userId;
     canAdvocate;
+    get comboSize() { return this.isUserSelectable? 6: 12 }
 
     connectedCallback(){
         this.isLoading = true;
@@ -34,7 +38,7 @@ export default class SL_SelectChildDealer extends LightningElement {
                     return user.ContactId.substring(0,15) == this.currentContactId
                 });
                 this.setUserInfo();
-                this.isComingSecondTime = sessionStorage.getItem('isNewAppComingBack') === 'true';
+                this.isComingSecondTime = sessionStorage.getItem('isNewAppComingBack') === 'true' && this.availableActions.includes('BACK');
                 if(this.isComingSecondTime){
                     sessionStorage.setItem('isNewAppComingBack',false);
                     this.dispatchEvent(new FlowNavigationBackEvent());
@@ -48,6 +52,9 @@ export default class SL_SelectChildDealer extends LightningElement {
                     this.childAccounts.push({ label: account.Name, value: account.Id });
                 });
                 this.allDealerUsers = obj.dealerUsersByAccountId;
+                if(this.dealerAccountId){// DP-2180 Misael Romero
+                    this.handleChildAccount({target: {value: this.dealerAccountId}});
+                }
             }
         })
         .catch((error)=>{

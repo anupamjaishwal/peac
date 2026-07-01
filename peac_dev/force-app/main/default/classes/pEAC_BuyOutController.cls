@@ -3,57 +3,59 @@
 * @Author : Varun
 * @Last Modified By : Varun
 * @Last Modified On : Sep 9, 2024
-*==============================================================================
 * Ver | Date | Author | Modification
-*==============================================================================
 * 1.0 | August 15, 2024 |   | Initial Version
 **/
 
 public without sharing class pEAC_BuyOutController {
     
     @AuraEnabled
-    public static List<Buyout__c> getBuyOuts(string contractId) {
+    public static String getBuyOuts(string contractId) {
         List<Buyout__c> buyOutList = new List<Buyout__c>();
         try {
             buyOutList = [select Id,Contract__c, Most_Recent_DP__c, Name, Buyout_Type__c,Show_To_DP_Users__c, Date_Quoted__c, Contract__r.Purchase_Option_Description__c, Contract__r.Payments_Remaining__c, Expiration_Date__c,Buyout_Amount__c,Buyout_Description__c,Most_Recent__c,Partial_Buyout__c, Contract__r.Lessor_Code__c from Buyout__c where Contract__c =: contractId and Show_To_DP_Users__c = true order by createddate desc];
         } catch (Exception ex) {
             System.debug('pEAC_BuyOutController::getBuyOuts::Message::'+ex.getMessage());
+            throw new AuraHandledException(ex.getMessage());
         }
-        return buyOutList;
+        String serialized = JSON.serialize(buyOutList);// DP-2069 Misael Romero
+        return serialized;
     }
     
-    @AuraEnabled
-    public static string processBuyouts(List<BuyoutWrapper> wrapList, String contractId) { 
-        try {
-           // List<Buyout__c> oldBuyoutList = [select Id, Most_Recent__c,Show_To_DP_Users__c from Buyout__c where Contract__c =: contractId AND (Most_Recent_DP__c = TRUE OR Most_Recent__c = TRUE)];
-            List<Buyout__c> oldBuyoutList = [select Id, Most_Recent__c,Show_To_DP_Users__c from Buyout__c where Contract__c =: contractId];
-            List<Buyout__c> newBuyoutList = new List<Buyout__c>();
-            for(BuyoutWrapper obj : wrapList) {
-                Buyout__c newBuyout = mapBuyoutQuoteFields(contractId, obj.QuoteSeq, obj.QuoteType, obj);
-                newBuyout.Show_To_DP_Users__c = TRUE;
-                newBuyout.Most_Recent_DP__c = TRUE;
-                newBuyout.Most_Recent__c = TRUE;
-                newBuyoutList.add(newBuyout);
-            }
-            if(newBuyoutList.size() > 0) {
-                insert newBuyoutList;
-                // SL-2644 Misael Romero
-                SL_PartialBuyout.insertBuyoutAssets(contractId, newBuyoutList, false, new List<String>());
-            }
-            if(oldBuyoutList.size() > 0) {
-                for(Buyout__c rec : oldBuyoutList) {
-                    rec.Most_Recent_DP__c = false;
-                rec.Most_Recent__c = false;
-                }
-                update oldBuyoutList;
-            }
+    // DP-2069 Misael Romero
+    // @AuraEnabled
+    // public static string processBuyouts(String jsonBuyouts, String contractId) { 
+    //     system.debug(jsonBuyouts);
+    //     try {
+    //         List<BuyoutWrapper> wrapList = (List<BuyoutWrapper>)JSON.deserialize(jsonBuyouts, List<BuyoutWrapper>.class);
+    //         List<Buyout__c> oldBuyoutList = [select Id, Most_Recent__c,Show_To_DP_Users__c from Buyout__c where Contract__c =: contractId];
+    //         List<Buyout__c> newBuyoutList = new List<Buyout__c>();
+    //         for(BuyoutWrapper obj : wrapList) {
+    //             Buyout__c newBuyout = mapBuyoutQuoteFields(contractId, obj.QuoteSeq, obj.QuoteType, obj);
+    //             newBuyout.Show_To_DP_Users__c = TRUE;
+    //             newBuyout.Most_Recent_DP__c = TRUE;
+    //             newBuyout.Most_Recent__c = TRUE;
+    //             newBuyoutList.add(newBuyout);
+    //         }
+    //         if(newBuyoutList.size() > 0) {
+    //             insert newBuyoutList;
+    //             // SL-2644 Misael Romero
+    //             SL_PartialBuyout.insertBuyoutAssets(contractId, newBuyoutList, false, new List<String>());
+    //         }
+    //         if(oldBuyoutList.size() > 0) {
+    //             for(Buyout__c rec : oldBuyoutList) {
+    //                 rec.Most_Recent_DP__c = false;
+    //             rec.Most_Recent__c = false;
+    //             }
+    //             update oldBuyoutList;
+    //         }
             
-        } catch(Exception ex) {
-            System.debug('pEAC_BuyOutController::processBuyouts::Message::'+ex.getMessage());
-            return 'Error';
-        }
-        return 'Success';
-    }
+    //     } catch(Exception ex) {
+    //         System.debug('pEAC_BuyOutController::processBuyouts::Message::'+ex.getMessage());
+    //         return 'Error';
+    //     }
+    //     return 'Success';
+    // }
     
     @AuraEnabled
     public static string getPartnerPDFDetails(string buyoutID) {
@@ -84,7 +86,11 @@ public without sharing class pEAC_BuyOutController {
         reportPage.getParameters().put('buyoutId', buyoutID);
         Blob reportPdf;
         try {
-            if(!Test.isRunningTest())reportPdf = reportPage.getContentAsPDF();
+            if(Test.isRunningTest()){
+                    reportPdf = Blob.valueOf('Test');
+            } else {
+                reportPdf = reportPage.getContentAsPDF();
+            }
             //Create Document
             ContentVersion cv = new ContentVersion();
             cv.Title = 'Partner Quote';
@@ -144,7 +150,11 @@ public without sharing class pEAC_BuyOutController {
         reportPage.getParameters().put('action', 'letter');
         Blob reportPdf;
         try {
-            if(!Test.isRunningTest())reportPdf = reportPage.getContentAsPDF();
+            if(Test.isRunningTest()){
+                    reportPdf = Blob.valueOf('Test');
+            } else {
+                reportPdf = reportPage.getContentAsPDF();
+            }
             //Create Document
             ContentVersion cv = new ContentVersion();
             cv.Title = 'Customer Quote';

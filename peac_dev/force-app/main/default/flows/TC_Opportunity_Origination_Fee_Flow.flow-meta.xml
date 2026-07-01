@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>54.0</apiVersion>
+    <assignments>
+        <name>set_origination_to_opt_1</name>
+        <label>set origination to opt 1</label>
+        <locationX>50</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Origination_Fee__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Origination1</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>set_origination_to_opt_2</name>
+        <label>set origination to opt 2</label>
+        <locationX>314</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Origination_Fee__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Orgination2</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <assignments>
+        <name>set_origination_to_opt_3</name>
+        <label>set origination to opt 3</label>
+        <locationX>578</locationX>
+        <locationY>395</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Origination_Fee__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Origination3</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Decision</name>
+        <label>Decision</label>
+        <locationX>314</locationX>
+        <locationY>287</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Loan_Ready_to_Doc_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Loan_Ready_To_Doc__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Yes</stringValue>
+                </rightValue>
+            </conditions>
+            <label>Loan Ready to Doc = Yes</label>
+        </rules>
+        <rules>
+            <name>Contains_Express</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Owner.Profile.Name</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <stringValue>Express</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.Product__c</leftValueReference>
+                <operator>IsChanged</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>set_origination_to_opt_1</targetReference>
+            </connector>
+            <label>Contains Express?</label>
+        </rules>
+        <rules>
+            <name>Not_Express_Not_LendingTree</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Lendingtree</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>set_origination_to_opt_2</targetReference>
+            </connector>
+            <label>Not Express &amp;&amp; Not LendingTree?</label>
+        </rules>
+        <rules>
+            <name>Not_Express_Is_LendingTree</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>NotExpress</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>set_origination_to_opt_3</targetReference>
+            </connector>
+            <label>Not Express &amp;&amp; Is LendingTree?</label>
+        </rules>
+    </decisions>
+    <description>SAL-6185</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>Lendingtree</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(!CONTAINS({!$Record.Owner.Profile.Name}, &apos;Express&apos;)
+&amp;&amp;(ISNEW()||ISCHANGED({!$Record.Product__c})||ISCHANGED({!$Record.Primary_Source__c}))
+&amp;&amp;!ISPICKVAL({!$Record.Primary_Source__c}, &apos;LendingTree&apos;),
+   True,
+   False)</expression>
+    </formulas>
+    <formulas>
+        <name>NotExpress</name>
+        <dataType>Boolean</dataType>
+        <expression>IF(!CONTAINS({!$Record.Owner.Profile.Name}, &apos;Express&apos;)
+&amp;&amp;(ISNEW()||ISCHANGED({!$Record.Product__c})||ISCHANGED({!$Record.Primary_Source__c}))
+&amp;&amp;ISPICKVAL({!$Record.Primary_Source__c}, &apos;LendingTree&apos;),
+   True,
+   False)</expression>
+    </formulas>
+    <formulas>
+        <name>Orgination2</name>
+        <dataType>Number</dataType>
+        <expression>IF(IsNew() || ISPICKVAL({!$Record.Product__c}, &quot;Concurrent Loan&quot;), 2.0, IF(CONTAINS(TEXT({!$Record.Product__c}), &quot;Renewal&quot;), 1.0, {!$Record.Origination_Fee__c}))</expression>
+        <scale>2</scale>
+    </formulas>
+    <formulas>
+        <name>Origination1</name>
+        <dataType>Number</dataType>
+        <expression>CASE(TEXT({!$Record.Product__c}), &quot;Concurrent Loan&quot;,2,&quot;Concurrent&quot;, 2, &quot;New&quot;, 2, &quot;Loan&quot;, 2,&quot;Renewal Loan&quot;,1, &quot;Renewal&quot; , 1, &quot;Renewal Loan-2&quot;, 1,&quot;Renewal Loan-3&quot;,1, &quot;Renewal Loan-4&quot;,1,&quot;Renewal Loan-5&quot;,1,{!$Record.Origination_Fee__c})</expression>
+        <scale>0</scale>
+    </formulas>
+    <formulas>
+        <name>Origination3</name>
+        <dataType>Number</dataType>
+        <expression>IF(IsNew() || ISPICKVAL({!$Record.Product__c}, &quot;Concurrent Loan&quot;) || ISCHANGED({!$Record.Primary_Source__c}) , 2.5, IF(IsNew() || CONTAINS(TEXT({!$Record.Product__c}), &quot;Renewal&quot;), 1, {!$Record.Origination_Fee__c}))</expression>
+        <scale>2</scale>
+    </formulas>
+    <interviewLabel>TC Opportunity: Origination Fee {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>TC Opportunity: Origination Fee Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>188</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Decision</targetReference>
+        </connector>
+        <filterFormula>CONTAINS(UPPER({!$Record.RecordType.Name}), &apos;LOAN&apos;)</filterFormula>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

@@ -13,11 +13,13 @@
     <targetConfigs>
         <targetConfig targets="lightning__FlowScreen" category="isItRequired">
             <property name="currentContactId" type="String" role="inputOnly" />
-            <property name="dealerAccountId" type="String" role="outputOnly" />
+            <property name="dealerAccountId" type="String" />
             <property name="dealerUserId" type="String" role="outputOnly" />
             <property name="dealerUserFirstName" type="String" role="outputOnly" />
             <property name="dealerUserLastName" type="String" role="outputOnly" />
             <property name="isComingSecondTime" type="String" role="inputOnly" />
+            <property name="isUserSelectable" type="Boolean" role="inputOnly" default="false" />
+            <property name="s2" type="String" role="inputOnly" />
         </targetConfig>
     </targetConfigs>
 </LightningComponentBundle>

@@ -48,7 +48,9 @@
                                         <template if:false={isSaving}>
                                             <div class="slds-text-align_right slds-p-bottom_medium">
                                                 <lightning-button type="button" label="Cancel" class="slds-var-p-right_medium" onclick={handleCancel}></lightning-button>
-                                                <lightning-button variant="brand" type="submit" label="Save"></lightning-button>
+                                                <!-- PEAC New Pricing Changes - Start: Unified Save button is moved below the Asset grid so Opportunity and Asset changes save together. -->
+                                                <!--<lightning-button variant="brand" type="submit" label="Save"></lightning-button>-->
+                                                <!-- PEAC New Pricing Changes - End -->
                                             </div>
                                             
                                         </template>
@@ -151,7 +153,7 @@
             </header>
             <!-- Modal/Popup Box LWC body starts here -->
             <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-              <lightning-record-edit-form object-api-name="Asset__c" onsuccess={handleAssetSuccess} onsubmit={handleSubmit} 
+              <lightning-record-edit-form object-api-name="Asset__c" onsuccess={handleAssetSuccess} onsubmit={handlePEACNewAssetSubmit} 
               onerror={handleError}>
                 <lightning-layout multiple-rows="true"> 
                   <lightning-layout-item size="12">
@@ -237,9 +239,40 @@
     hide-checkbox-column 
     onrowaction={handleMeterInfo}
     onsave={handleSaveDT}
-    draft-values={saveDraftValues}>
+    draft-values={saveDraftValues}
+    suppress-bottom-bar>
+      <!-- PEAC New Pricing Changes - Start: Standard datatable Save is suppressed; unified Save below handles Asset drafts. -->
+      <!-- PEAC New Pricing Changes - End -->
       
     </c-sl_-custom-data-table-type>
+
+    <!-- PEAC New Pricing Changes - Start: One Save button for Opportunity top section and Asset row edits. -->
+    <template lwc:if={editable}>
+      <div class="slds-text-align_right slds-p-top_medium slds-p-bottom_medium">
+        <lightning-button variant="brand" label="Save" onclick={handlePEACUnifiedSave} disabled={isSaving}></lightning-button>
+      </div>
+    </template>
+    <!-- PEAC New Pricing Changes - End -->
   </div>
   <!--End Asset Section-->
+
+  <!-- PEAC New Pricing Changes - Start: Disclaimer modal shown before saving pricing-impacting changes. -->
+  <template if:true={isPEACPricingDisclaimerOpen}>
+    <section role="dialog" tabindex="-1" aria-modal="true" class="slds-modal slds-fade-in-open">
+      <div class="slds-modal__container">
+        <header class="slds-modal__header">
+          <h2 class="slds-text-heading_medium slds-hyphenate">{labels.PEAC_DPPricingDisclaimerTitle}</h2>
+        </header>
+        <div class="slds-modal__content slds-p-around_medium">
+          <p>{peacDisclaimerMessage}</p>
+        </div>
+        <footer class="slds-modal__footer">
+          <lightning-button label={labels.PEAC_DPOfferPricingCancel} onclick={handlePEACPricingDisclaimerCancel} class="slds-var-p-right_medium"></lightning-button>
+          <lightning-button variant="brand" label={labels.PEAC_DPOfferPricingSaveAndCalculate} onclick={handlePEACPricingDisclaimerConfirm}></lightning-button>
+        </footer>
+      </div>
+    </section>
+    <div class="slds-backdrop slds-backdrop_open"></div>
+  </template>
+  <!-- PEAC New Pricing Changes - End -->
 </template>

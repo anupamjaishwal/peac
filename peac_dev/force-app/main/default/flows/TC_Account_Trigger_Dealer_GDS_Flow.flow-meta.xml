@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>53.0</apiVersion>
+    <decisions>
+        <name>Is_GDS_Dealer_Criteria_Check</name>
+        <label>Is GDS Dealer Criteria Check</label>
+        <locationX>169</locationX>
+        <locationY>305</locationY>
+        <defaultConnector>
+            <targetReference>Is_No_Dealer_Number</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>GDS_Dealer_Criteria_Check</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>iGDSDealer</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Update_Submitted_By</targetReference>
+            </connector>
+            <label>GDS Dealer Criteria Check</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_has_Dealer_number</name>
+        <label>Is has Dealer number</label>
+        <locationX>166</locationX>
+        <locationY>672</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>has_dealer_number</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>ihasDealerNumber</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Dealer_GDS</targetReference>
+            </connector>
+            <label>has dealer number</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Is_No_Dealer_Number</name>
+        <label>Is No Dealer Number</label>
+        <locationX>160</locationX>
+        <locationY>498</locationY>
+        <defaultConnector>
+            <targetReference>Is_has_Dealer_number</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>No_Dealer_Number</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>iNoDealerNumber</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Dealer_Info_Lease</targetReference>
+            </connector>
+            <label>No Dealer Number</label>
+        </rules>
+    </decisions>
+    <description>TC Account - Trigger Dealer GDS</description>
+    <formulas>
+        <name>iGDSDealer</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+   OR(
+       ISCHANGED({!$Record.DM_Review_Status__c}),
+       ISCHANGED({!$Record.Review_For__c})
+   ),
+   CONTAINS({!$Record.RecordType.Name}, &apos;Dealer&apos;),
+   ISPICKVAL({!$Record.DM_Review_Status__c}, &apos;Submitted for Review&apos;),
+   OR(
+         INCLUDES({!$Record.Review_For__c},&apos;Approval&apos;),
+         INCLUDES({!$Record.Review_For__c},&apos;Predelivery&apos;)
+   )
+)</expression>
+    </formulas>
+    <formulas>
+        <name>iGDSDealerHasDealer</name>
+        <dataType>String</dataType>
+        <expression>{!$Label.TC_GDS_Get_Dealer}</expression>
+    </formulas>
+    <formulas>
+        <name>ihasDealerNumber</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+   OR(
+       ISCHANGED({!$Record.DM_Review_Status__c}),
+       ISCHANGED({!$Record.Review_For__c})
+   ),
+   CONTAINS({!$Record.RecordType.Name}, &apos;Dealer&apos;),
+   ISPICKVAL({!$Record.DM_Review_Status__c}, &apos;Submitted for Review&apos;),
+   OR(
+         INCLUDES({!$Record.Review_For__c},&apos;Approval&apos;),
+         INCLUDES({!$Record.Review_For__c},&apos;Predelivery&apos;)
+   ),
+   NOT(ISBLANK({!$Record.Dealer_Number__c}))
+)</expression>
+    </formulas>
+    <formulas>
+        <name>iLabel</name>
+        <dataType>String</dataType>
+        <expression>{!$Label.TC_GDS_Get_Dealer_InfoLease}</expression>
+    </formulas>
+    <formulas>
+        <name>iNoDealerNumber</name>
+        <dataType>Boolean</dataType>
+        <expression>AND(
+   OR(
+       ISCHANGED({!$Record.DM_Review_Status__c}),
+       ISCHANGED({!$Record.Review_For__c})
+   ),
+   CONTAINS({!$Record.RecordType.Name}, &apos;Dealer&apos;),
+   ISPICKVAL({!$Record.DM_Review_Status__c}, &apos;Submitted for Review&apos;),
+   OR(
+         INCLUDES({!$Record.Review_For__c},&apos;Approval&apos;),
+         INCLUDES({!$Record.Review_For__c},&apos;Predelivery&apos;)
+   ),
+   ISBLANK({!$Record.Dealer_Number__c})
+)</expression>
+    </formulas>
+    <interviewLabel>TC Account - Trigger Dealer GDS Flow {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>TC Account - Trigger Dealer GDS Flow</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Dealer_GDS</name>
+        <label>Dealer GDS</label>
+        <locationX>369</locationX>
+        <locationY>681</locationY>
+        <inputAssignments>
+            <field>Action__c</field>
+            <value>
+                <elementReference>iGDSDealerHasDealer</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Record_Id__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>GDS_Action__e</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordCreates>
+        <name>Dealer_Info_Lease</name>
+        <label>Dealer Info Lease</label>
+        <locationX>498</locationX>
+        <locationY>518</locationY>
+        <inputAssignments>
+            <field>Action__c</field>
+            <value>
+                <elementReference>iLabel</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Record_Id__c</field>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <object>GDS_Action__e</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordCreates>
+    <recordUpdates>
+        <name>Update_Submitted_By</name>
+        <label>Update Submitted By</label>
+        <locationX>442</locationX>
+        <locationY>392</locationY>
+        <connector>
+            <targetReference>Is_No_Dealer_Number</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Submitted_By__c</field>
+            <value>
+                <elementReference>$User.Id</elementReference>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>50</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Is_GDS_Dealer_Criteria_Check</targetReference>
+        </connector>
+        <object>Account</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Obsolete</status>
+</Flow>

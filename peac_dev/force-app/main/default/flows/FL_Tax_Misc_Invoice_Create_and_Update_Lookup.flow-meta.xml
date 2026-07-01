@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <description>Called from PB to create misc invoice and set the lookup on opportunity for later updates</description>
+    <interviewLabel>FL Tax Misc Invoice Create and Update Lookup {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>FL Tax Misc Invoice Create and Update Lookup</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <name>Create_Misc_Invoice</name>
+        <label>Create Misc Invoice</label>
+        <locationX>570</locationX>
+        <locationY>180</locationY>
+        <assignRecordIdToReference>varMiscInvoiceId</assignRecordIdToReference>
+        <connector>
+            <targetReference>Update_Lookup_to_Misc_Invoice</targetReference>
+        </connector>
+        <inputAssignments>
+            <field>Amount__c</field>
+            <value>
+                <elementReference>varFlTaxAmount</elementReference>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>GL_Code__c</field>
+            <value>
+                <stringValue>0019 - Fla Doc Stamp Tax</stringValue>
+            </value>
+        </inputAssignments>
+        <inputAssignments>
+            <field>Opportunity__c</field>
+            <value>
+                <elementReference>varOpportunityId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Miscellaneous_Invoice_Item__c</object>
+    </recordCreates>
+    <recordUpdates>
+        <name>Update_Lookup_to_Misc_Invoice</name>
+        <label>Update Lookup to Misc Invoice</label>
+        <locationX>566</locationX>
+        <locationY>330</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varOpportunityId</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>FL_Doc_St_Tax_Misc_Invoice__c</field>
+            <value>
+                <elementReference>varMiscInvoiceId</elementReference>
+            </value>
+        </inputAssignments>
+        <object>Opportunity</object>
+    </recordUpdates>
+    <startElementReference>Create_Misc_Invoice</startElementReference>
+    <status>Active</status>
+    <variables>
+        <name>varFlTaxAmount</name>
+        <dataType>Currency</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+        <scale>2</scale>
+    </variables>
+    <variables>
+        <name>varMiscInvoiceId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varOpportunityId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

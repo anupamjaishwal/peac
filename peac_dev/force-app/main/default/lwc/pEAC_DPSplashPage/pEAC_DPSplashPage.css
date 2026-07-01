@@ -1,0 +1,19 @@
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    z-index: 9999;   /* 🔥 KEY FIX */
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image {
+    max-width: 90vw;
+    max-height: 90vh;
+    object-fit: contain;
+}

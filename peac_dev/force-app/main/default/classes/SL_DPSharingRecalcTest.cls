@@ -2,27 +2,7 @@
 public with sharing class SL_DPSharingRecalcTest {
     @TestSetup
     static void makeData(){
-        SL_SCTestData.createAccountAndContracts(3, 1);
-        List<Account> theAccounts = SL_SCTestData.testAccounts;
-        List<Account> portalAccounts = new List<Account>{ theAccounts[1], theAccounts[2] };
-        SL_SCTestData.createOpportunitiesAndAssets(theAccounts[0].Id, 1, 1);
-        Test.startTest();
-        portalAccounts[0].recordTypeId = SL_SCTestData.DEALER_ACC;
-        portalAccounts[0].Waiting_To_Be_Sent_To_Bridgeware__c = true;
-        portalAccounts[1].recordTypeId = SL_SCTestData.DEALER_ACC;
-        portalAccounts[1].Waiting_To_Be_Sent_To_Bridgeware__c = true;
-        update portalAccounts;
-        System.runAs(SL_SCTestData.testUser){
-            User parentUser = SL_SCTestData.createDPDataForUser(portalAccounts[0]);
-            User childUser = SL_SCTestData.createDPDataForUser(portalAccounts[1]);
-        }
-        ExternalAccountHierarchy parentHierarchy = new ExternalAccountHierarchy (HierarchyType = 'Partner', 
-            Name = 'Test parent 1', AccountId = portalAccounts[0].Id, IsActive = true);
-        insert parentHierarchy;
-        ExternalAccountHierarchy childHierarchy = new ExternalAccountHierarchy (HierarchyType = 'Partner', 
-            Name = 'Test child 1', AccountId = portalAccounts[1].Id, ParentId = parentHierarchy.Id, IsActive = true);
-        insert childHierarchy;
-        Test.stopTest();
+        SL_SCTestData.createExternalHierarchy();
     }
 
     @isTest

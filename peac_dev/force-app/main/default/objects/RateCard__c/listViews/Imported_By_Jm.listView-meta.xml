@@ -6,10 +6,5 @@
     <columns>CREATED_DATE</columns>
     <columns>CREATEDBY_USER</columns>
     <filterScope>Everything</filterScope>
-    <filters>
-        <field>CREATEDBY_USER.ALIAS</field>
-        <operation>equals</operation>
-        <value>jmung</value>
-    </filters>
     <label>Imported By Jm</label>
 </ListView>

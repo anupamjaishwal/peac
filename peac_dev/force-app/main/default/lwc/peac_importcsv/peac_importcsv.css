@@ -1,0 +1,125 @@
+/**
+ * @description CSS styles for peac_importcsv LWC component
+ * Developed by Suraj Harichandan (LTIMindtree) for SAL-6285 Project Expo - RF: Asset Selection Screen for Multi-County Listings
+ * @author Suraj Harichandan (LTIMindtree)
+ * @userStory SAL-6285
+ * @date December 19, 2025
+ */
+
+/* File uploader section */
+.file-uploader {
+    padding: 1rem;
+}
+
+.error-message {
+    color: #c23934;
+    font-size: 0.875rem;
+}
+
+/* Discrepant assets table styling - Salesforce SLDS conventions */
+.slds-table {
+    width: 100%;
+}
+
+/* Bold header styling with Salesforce brand colors */
+.slds-table th {
+    background-color: #16325c; /* Salesforce dark blue */
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.8125rem;
+    text-transform: uppercase;
+    letter-spacing: 0.025rem;
+    padding: 0.75rem 1rem;
+    border: none;
+}
+
+.slds-table th .slds-truncate {
+    color: #ffffff;
+    font-weight: 700;
+}
+
+/* Table cell styling */
+.slds-table td {
+    vertical-align: middle;
+    position: relative;
+}
+
+/* Ensure Action column button is always visible */
+.slds-table td[data-label="Action"] {
+    z-index: 1;
+    position: relative;
+}
+
+/* Ensure button inside Action cell is visible */
+.slds-table td lightning-button {
+    position: relative;
+    z-index: 2;
+}
+
+/* Jurisdiction dropdown styling - reduced width to fit in view */
+lightning-combobox {
+    min-width: 200px;
+    max-width: 250px;
+}
+
+/* Pagination styling */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+/* Success illustration */
+.slds-illustration {
+    padding: 2rem;
+    text-align: center;
+}
+
+/* SAL-6285: Scrollable table container with dynamic height and sticky header - Suraj Harichandan (LTIMindtree) - January 29, 2026 */
+.table-scroll-container {
+    max-height: calc(100vh - 350px); /* Dynamic height based on viewport */
+    min-height: 200px;
+    overflow-y: auto;
+    overflow-x: auto;
+    max-width: 100%;
+    position: relative;
+}
+
+/* Sticky header while scrolling */
+.table-scroll-container .slds-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #196288; /* Ensure background stays solid when scrolling */
+}
+
+/* Legacy scrollable_x - kept for backward compatibility */
+.slds-scrollable_x {
+    overflow-x: auto;
+    overflow-y: visible;
+    max-width: 100%;
+}
+
+/* Ensure table doesn't clip dropdown */
+.slds-table {
+    overflow: visible;
+}
+
+/* Force dropdown to render above container boundaries */
+lightning-combobox {
+    min-width: 200px;
+    max-width: 250px;
+    --slds-c-combobox-dropdown-position: absolute;
+}
+
+/* Table cell overflow visible for dropdowns */
+.slds-table td {
+    vertical-align: middle;
+    overflow: visible;
+}
+
+/* Ensure dropdown menu is visible */
+.slds-table tbody {
+    overflow: visible;
+}

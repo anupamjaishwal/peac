@@ -1,0 +1,50 @@
+<template>
+    <template if:true={isObjectTypeProvided}>
+        <lightning-record-edit-form 
+            object-api-name={sobjectType} 
+            record-id={recordId}
+            class="slds-form-element">
+            
+            <div class="slds-form-element">
+                <div class="slds-form-element__label">
+                    <label class="slds-no-flex">
+                        <abbr class="slds-required" title="required" if:true={required}>*</abbr>
+                        <span>{label}</span>
+                    </label>
+                    <lightning-helptext 
+                        if:true={helpText} 
+                        content={helpText}
+                        class="custom-help-text">
+                    </lightning-helptext>
+                </div>
+                
+                <div class="slds-form-element__control slds-grow">
+                    <lightning-input-field 
+                        variant="label-hidden" 
+                        disabled={disabledState} 
+                        data-field-name={fieldName}
+                        value={value} 
+                        field-name={fieldName} 
+                        required={required}
+                        onchange={handleLookupChange} 
+                        class="lookup-field hide-default-help">
+                    </lightning-input-field>
+                </div>
+            </div>
+        </lightning-record-edit-form>
+    </template>
+    
+    <template if:false={isObjectTypeProvided}>
+        <div class="slds-box slds-theme_shade slds-theme_alert-texture">
+            <div class="slds-text-color_error">
+                <lightning-icon 
+                    icon-name="utility:error" 
+                    alternative-text="Error" 
+                    size="small" 
+                    class="slds-m-right_x-small">
+                </lightning-icon>
+                {objectTypeError}
+            </div>
+        </div>
+    </template>
+</template>

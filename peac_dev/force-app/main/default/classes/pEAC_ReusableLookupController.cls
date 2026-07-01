@@ -62,7 +62,6 @@ public with sharing class pEAC_ReusableLookupController {
                 }
                 // Execute the SOQL query and fetch the results
                 List<ResultWrapper> returnWrapperList = new List<ResultWrapper>();
-                System.debug('QUERY '+ query);
                 for(SObject sRecord : Database.query(query)) {
                     // Wrap each result in a ResultWrapper and add it to the list
                     ResultWrapper wrap = new ResultWrapper();

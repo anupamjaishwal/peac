@@ -43,7 +43,8 @@ public class pEAC_BuyOutControllerTest {
         Contract__c testContract = [SELECT Id FROM Contract__c LIMIT 1];
 
         Test.startTest();
-        List<Buyout__c> result = pEAC_BuyOutController.getBuyOuts(testContract.Id);
+        String serialized = pEAC_BuyOutController.getBuyOuts(testContract.Id);
+        List<Buyout__c> result = (List<Buyout__c>)JSON.deserialize(serialized, List<Buyout__c>.class);
         Test.stopTest();
 
         // Assert the returned buyouts are as expected
@@ -52,54 +53,63 @@ public class pEAC_BuyOutControllerTest {
     }
 
     @isTest
-    static void testProcessBuyouts() {
+    static void mapBuyoutQuoteFields() {
         // Fetch the Contract__c for test setup
         Contract__c testContract = [SELECT Id FROM Contract__c LIMIT 1];
 
-        // Create BuyoutWrapper test data
-        pEAC_BuyOutController.BuyoutWrapper wrapper = new pEAC_BuyOutController.BuyoutWrapper();
-        wrapper.QuoteType = 'Type 1';
-        wrapper.QuoteTypeDesc = 'Full Residual';
-        wrapper.BuyoutDate = '01/01/2024';
-        wrapper.QuoteExpireDatet = '02/02/2024';
-        wrapper.TotalBuyout = '5000';
-        wrapper.InvoiceDescription = 'Test Invoice Description';
-        wrapper.ReceivableBalance = '1000';
-        wrapper.Residual = '200';
-        wrapper.SalesTax = '150';
-        wrapper.LateCharges = '20';
-        wrapper.Fees = '50';
-        wrapper.SecurityDeposit = '300';
-        wrapper.EndingDeposit = '100';
-        wrapper.QuotedBy = 'Test';
-        wrapper.QuotedTo = 'Test';
-        wrapper.QuoteUserId = 'Test';
-        wrapper.OriginalTerm = 'Test';
-        wrapper.NumberOfPayments = 'Test';
-        wrapper.DealerNumber = 'Test';
-        wrapper.Status = 'Test';
-        wrapper.InvoiceDescription = 'Test';
-        wrapper.DealerName = 'Test';
-        wrapper.CommencementDate = '01/01/2024';
-        wrapper.DailyResidual = 'Test';
-        wrapper.UnearnedIDC = 'Test';
-        wrapper.QuoteSeq = 'Test';
-        wrapper.ITC = 'Test';
-        wrapper.showIt = true;
-        wrapper.Miscellaneous = 'Test';
-        wrapper.PurgeDate = '01/01/2024';
-        wrapper.UnearnedFinance = '2232';
-        wrapper.DailyFinance = '2342';
-        wrapper.CustomerReceivableBalance = '23432';
+    //     // Create BuyoutWrapper test data
+    //     pEAC_BuyOutController.BuyoutWrapper wrapper = new pEAC_BuyOutController.BuyoutWrapper();
+    //     wrapper.QuoteType = 'Type 1';
+    //     wrapper.QuoteTypeDesc = 'Full Residual';
+    //     wrapper.BuyoutDate = '01/01/2024';
+    //     wrapper.QuoteExpireDatet = '02/02/2024';
+    //     wrapper.TotalBuyout = '5000';
+    //     wrapper.InvoiceDescription = 'and\r\nother line \\"quote\ttab';
+    //     wrapper.ReceivableBalance = '1000';
+    //     wrapper.Residual = '200';
+    //     wrapper.SalesTax = '150';
+    //     wrapper.LateCharges = '20';
+    //     wrapper.Fees = '50';
+    //     wrapper.SecurityDeposit = '300';
+    //     wrapper.EndingDeposit = '100';
+    //     wrapper.QuotedBy = 'Test';
+    //     wrapper.QuotedTo = 'Test';
+    //     wrapper.QuoteUserId = 'Test';
+    //     wrapper.OriginalTerm = 'Test';
+    //     wrapper.NumberOfPayments = 'Test';
+    //     wrapper.DealerNumber = 'Test';
+    //     wrapper.Status = 'Test';
+    //     wrapper.InvoiceDescription = 'Test';
+    //     wrapper.DealerName = 'Test';
+    //     wrapper.CommencementDate = '01/01/2024';
+    //     wrapper.DailyResidual = 'Test';
+    //     wrapper.UnearnedIDC = 'Test';
+    //     wrapper.QuoteSeq = 'Test';
+    //     wrapper.ITC = 'Test';
+    //     wrapper.showIt = true;
+    //     wrapper.Miscellaneous = 'Test';
+    //     wrapper.PurgeDate = '01/01/2024';
+    //     wrapper.UnearnedFinance = '2232';
+    //     wrapper.DailyFinance = '2342';
+    //     wrapper.CustomerReceivableBalance = '23432';
 
-        List<pEAC_BuyOutController.BuyoutWrapper> wrapList = new List<pEAC_BuyOutController.BuyoutWrapper>{wrapper};
-
+    //     List<pEAC_BuyOutController.BuyoutWrapper> wrapList = new List<pEAC_BuyOutController.BuyoutWrapper>{wrapper};
+    //     String jsonObj = JSON.serialize(wrapList);
         Test.startTest();
-        String result = pEAC_BuyOutController.processBuyouts(wrapList, testContract.Id);
-        Test.stopTest();
+    //     String result = pEAC_BuyOutController.processBuyouts(jsonObj, testContract.Id);
+    //     String quotesWithError = '';
+    //     String extraresult = pEAC_BuyOutController.processBuyouts(quotesWithError, testContract.Id);
 
-        // Assert the result
-        System.assertEquals('Success', result, 'Expected success message from processBuyouts');
+    //     // Assert the result
+    //     System.assertEquals('Success', result, 'Expected success message from processBuyouts');
+    //     System.assertEquals('Success', extraresult, 'Expected success message from processBuyouts');
+        String quotesWithError = '[{"MiscSummary": [  { "MiscDescription": "0625", "MiscTotal": "509.10", "MiscIncludeInRentYN": "N"  },  { "MiscDescription": "0626", "MiscTotal": "458.20", "MiscIncludeInRentYN": "N"  }],"DailyFinance": "","Miscellaneous": "967.30","QuoteUserId": "marlin","OriginalTerm": "60","QuotedBy": "ashley@sentrysur","Residual": "1.00","LateCharges": "16.61","UnearnedIDC": "","SalesTax": "517.51","CustomerReceivableBalance": "7392.00","CommencementDate": "04/20/2022","QuoteSeq": "13","BuyoutDate": "01/12/2026","QuotedTo": "","SecurityDeposit": "","DealerNumber": "77059.2040","QuoteExpireDatet": "02/11/2026","PurgeDate": "05/12/2026","NumberOfPayments": "44.00","DealerName": "Sentry Surveillance Inc","Status": "ACTIVE","InvoiceDescription": "8 IP Cameras, 1\\r\\nAcer Monitor, 1\\r\\nRealeyes Recorder","UnearnedFinance": "","ReceivableBalance": "7392.00","Fees": "0.00","EndingDeposit": "","TotalBuyout": "8894.42","DailyResidual": "","ITC": "0.00","QuoteType": "1","PartialCode": "Complete Contract Buyout","QuoteTypeDesc": "Full Residual"  },  {"MiscSummary": [  { "MiscDescription": "0625", "MiscTotal": "509.10", "MiscIncludeInRentYN": "N"  },  { "MiscDescription": "0626", "MiscTotal": "458.20", "MiscIncludeInRentYN": "N"  }],"DailyFinance": "","Miscellaneous": "967.30","QuoteUserId": "marlin","OriginalTerm": "60","QuotedBy": "ashley@sentrysur","Residual": "1.00","LateCharges": "16.61","UnearnedIDC": "","SalesTax": "0.00","CustomerReceivableBalance": "7392.00","CommencementDate": "04/20/2022","QuoteSeq": "14","BuyoutDate": "01/12/2026","QuotedTo": "","SecurityDeposit": "0.00","DealerNumber": "77059.2040","QuoteExpireDatet": "02/11/2026","PurgeDate": "05/12/2026","NumberOfPayments": "44.00","DealerName": "Sentry Surveillance Inc","Status": "ACTIVE","InvoiceDescription": "8 IP Cameras, 1\\r\\nAcer Monitor, 1\\r\\nRealeyes Recorder","UnearnedFinance": "","ReceivableBalance": "7392.00","Fees": "0.00","EndingDeposit": "","TotalBuyout": "8376.91","DailyResidual": "","ITC": "0.00","QuoteType": "6","PartialCode": "Complete Contract Buyout","QuoteTypeDesc": "Trade-Up no Equip Return"  }]';
+        List<pEAC_BuyOutController.BuyoutWrapper> wrapList = (List<pEAC_BuyOutController.BuyoutWrapper>)JSON.deserialize(quotesWithError, List<pEAC_BuyOutController.BuyoutWrapper>.class);
+        for(pEAC_BuyOutController.BuyoutWrapper obj : wrapList) {
+            Buyout__c newBuyout = pEAC_BuyOutController.mapBuyoutQuoteFields(testContract.Id, obj.QuoteSeq, obj.QuoteType, obj);
+            System.Assert.areEqual(967.30, newBuyout.Property_Tax__c, 'property tax comes from GL codes 0625 and 0626');
+        }
+        Test.stopTest();
     }
 
     @isTest

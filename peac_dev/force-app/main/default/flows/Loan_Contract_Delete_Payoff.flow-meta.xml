@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <interviewLabel>Loan Contract - Delete Payoff {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Loan Contract - Delete Payoff</label>
+    <processType>AutoLaunchedFlow</processType>
+    <recordDeletes>
+        <name>Delete_Payoff_Record</name>
+        <label>Delete Payoff Record</label>
+        <locationX>427</locationX>
+        <locationY>68</locationY>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varPayoffId</elementReference>
+            </value>
+        </filters>
+        <object>Payoff__c</object>
+    </recordDeletes>
+    <startElementReference>Delete_Payoff_Record</startElementReference>
+    <status>Active</status>
+    <variables>
+        <name>varPayoffId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

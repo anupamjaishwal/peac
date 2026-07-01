@@ -1,7 +1,7 @@
 import { LightningElement, api, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import sendEmail from '@salesforce/apex/PEAC_PrintSendBuyoutController.sendEmail';
-import getEmailTemplates from '@salesforce/apex/PEAC_PrintSendBuyoutController.getEmailTemplates';
+import fetchDetails from '@salesforce/apex/PEAC_PrintSendBuyoutController.fetchDetails';
 export default class Peac_PrintSendBuyout extends LightningElement {
     @api recordId;
     @api detailColumn;
@@ -10,10 +10,12 @@ export default class Peac_PrintSendBuyout extends LightningElement {
     selectDetailPDF = false;
     selectSummaryPDF = false;
     selectCustomerPDF = false;
+    selectEndOfTermPDF = false;
     emailList;
     emailFormatError = "Please enter a valid e-mail address";
     emailTemplates = [];
     emailTemplateId;
+    showEndOfTermPDF = false;
 
     @track quoteTypeList = [79, 80, 73, 72, 70];
 
@@ -25,11 +27,13 @@ export default class Peac_PrintSendBuyout extends LightningElement {
 
     connectedCallback() {
         console.log('selectedQuoteType::',this.selectedQuoteType);
-        getEmailTemplates({
+        fetchDetails({
             recordId: this.recordId
         }).then(result => {
-            if (result) {
-                this.emailTemplates = result.map(emailTemplate => {
+            console.log('RESULT:', JSON.stringify(result));
+            this.showEndOfTermPDF = result["originatingBusiness"] && result["originatingBusiness"] == 'VA PEAC';
+            if (result.emailTemplates) {
+                this.emailTemplates = result.emailTemplates.map(emailTemplate => {
                     return {
                         ...emailTemplate,
                         label: emailTemplate.Name,
@@ -49,6 +53,7 @@ export default class Peac_PrintSendBuyout extends LightningElement {
     }
 
     get showEmailField() {
+        //return this.selectDetailPDF || this.selectSummaryPDF || this.selectCustomerPDF || this.selectEndOfTermPDF;
         return this.selectDetailPDF || this.selectSummaryPDF || this.selectCustomerPDF;
     }
 
@@ -74,6 +79,16 @@ export default class Peac_PrintSendBuyout extends LightningElement {
         rows.splice(0, 1);
         console.log('handleDetailedPdf::', JSON.stringify(rows));
         window.open('/apex/SL_PrintDetailedBuyout?rows=' + encodeURIComponent(JSON.stringify(rows))
+            + '&contractId=' + this.recordId + '&quoteSeq=' + quoteSeq, "_blank");
+    }
+
+    handleEndOfTermPdf() {
+        let rows = [...this.detailColumn];
+        let quoteSeq = this.detailColumn.find((ele) =>  ele.key == 'QuoteSeq')["destination"];
+        console.log('quoteSeq::',quoteSeq);
+        rows.splice(0, 1);
+        console.log('handleDetailedPdf::', JSON.stringify(rows));
+        window.open('/apex/PEAC_PrintEndOfTermBuyout?rows=' + encodeURIComponent(JSON.stringify(rows))
             + '&contractId=' + this.recordId + '&quoteSeq=' + quoteSeq, "_blank");
     }
 
@@ -107,6 +122,14 @@ export default class Peac_PrintSendBuyout extends LightningElement {
             this.selectCustomerPDF = true;
         } else {
             this.selectCustomerPDF = false;
+        }
+    }
+
+    handleeEndOfTermSelect(event) {
+        if (event.target.checked) {
+            this.selectEndOfTermPDF = true;
+        } else {
+            this.selectEndOfTermPDF = false;
         }
     }
 
@@ -172,7 +195,7 @@ export default class Peac_PrintSendBuyout extends LightningElement {
                 pdfList.push(pdfWrap);
 
             }
-            if (this.selectDetailPDF) {
+            if (this.selectDetailPDF || this.selectEndOfTermPDF) {
                 let rows = [...this.detailColumn];
                 rows.splice(0, 1);
                 rows = this.cleanFields(rows);
@@ -193,13 +216,23 @@ export default class Peac_PrintSendBuyout extends LightningElement {
                 pdfAttribute2['value'] = quoteSeq;
                 pdfAttributeList.push(pdfAttribute2);
 
+                if (this.selectDetailPDF) {
+                    let pdfWrap = {};
+                    pdfWrap['pdfName'] = "Detailed Buyout.pdf";
+                    pdfWrap['apexVFPageName'] = "SL_PrintDetailedBuyout";
+                    pdfWrap['pdfAttributeList'] = pdfAttributeList;
+                    pdfList.push(pdfWrap);
+                }
 
-                let pdfWrap = {};
-                pdfWrap['pdfName'] = "Detailed Buyout.pdf";
-                pdfWrap['apexVFPageName'] = "SL_PrintDetailedBuyout";
-                pdfWrap['pdfAttributeList'] = pdfAttributeList;
 
-                pdfList.push(pdfWrap);
+
+                if (this.selectEndOfTermPDF) {
+                    let pdfWrap = {};
+                    pdfWrap['pdfName'] = "End Of Term.pdf";
+                    pdfWrap['apexVFPageName'] = "PEAC_PrintEndOfTermBuyout";
+                    pdfWrap['pdfAttributeList'] = pdfAttributeList;
+                    pdfList.push(pdfWrap);
+                }
 
             }
             if (this.selectCustomerPDF) {

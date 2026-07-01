@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>63.0</apiVersion>
+    <assignments>
+        <description>Sets the Application Status to Pending Decision When entry conditions are met.</description>
+        <name>Set_Application_Status</name>
+        <label>Set Application Status</label>
+        <locationX>176</locationX>
+        <locationY>287</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Application_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Pending Decision</stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <description>This flow updates the Application Status to &apos;&apos;Pending Decision&quot; when an Opportunity is marked as Resubmitted to Credit and the Resubmission Type matches any of the specified picklist values. SAL-5313</description>
+    <environments>Default</environments>
+    <interviewLabel>Update Application Status on Resubmission {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Update Application Status on Resubmission</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Application_Status</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>(1 AND 2) OR (1 AND 3) OR (1 AND 4) OR (1 AND 5)</filterLogic>
+        <filters>
+            <field>Resubmitted_to_Credit__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Resubmission_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Change Request – Terms</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Resubmission_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Change Request – Equipment Cost</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Resubmission_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>More Info</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Resubmission_Type__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Appeal Decision</stringValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

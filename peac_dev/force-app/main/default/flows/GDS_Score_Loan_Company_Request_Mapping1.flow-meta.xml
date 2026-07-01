@@ -1,0 +1,545 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>49.0</apiVersion>
+    <assignments>
+        <name>Map_GDS_Request</name>
+        <label>Map GDS Request</label>
+        <locationX>182</locationX>
+        <locationY>758</locationY>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Name</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Name</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Address__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Business_Address__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.City__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Business_City__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.State__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Business_State__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Zip__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FormattedBusinessZip</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Phone__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>FormattedBusinessPhone</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Db_Duns_Number__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formDuns</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Ebfa_File_Number__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Experian_Business_File_Number__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Ccan__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formCcan</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Dealer_Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formDealerStatus</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Request_Based_On__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Id_Number__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formIdNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.DBA__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.DBA__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Contact__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Contact.Name</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.RecordTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Loan_RecordType.Id</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.FAX__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formatFaxNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Contact_Title__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Contact.Title</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Website__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Website</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Primary_Contact_Phone__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formattedMobileNumber</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Primary_Contact_Email__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Get_Contact.Email</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Account_State_Of_Incorporation__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Account_State_Of_Incorporation__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.STRUCTURE__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varAcc.Business_Type__c</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>varRequestBean.Date_Established__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>formEstablishDate</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Is_opportunity_contact_available</name>
+        <label>Is opportunity contact available</label>
+        <locationX>182</locationX>
+        <locationY>350</locationY>
+        <defaultConnector>
+            <targetReference>Get_Loan_RecordType</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Outcome_1_of_Is_opportnity</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varContactRole</leftValueReference>
+                <operator>IsBlank</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_Contact</targetReference>
+            </connector>
+            <label>Outcome 1 of Is opportnity</label>
+        </rules>
+    </decisions>
+    <description>GDS Score Loan Company Request Mapping</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>formatFaxNumber</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(
+  SUBSTITUTE(
+    SUBSTITUTE(
+      SUBSTITUTE(
+        SUBSTITUTE(
+          SUBSTITUTE(
+            SUBSTITUTE(
+              SUBSTITUTE(
+                SUBSTITUTE(
+                  SUBSTITUTE(
+                    {!varAcc.Fax},
+                    &quot; &quot;, &quot;&quot;
+                  ),
+                  &quot;-&quot;, &quot;&quot;
+                ),
+                &quot;(&quot;, &quot;&quot;
+              ),
+              &quot;)&quot;, &quot;&quot;
+            ),
+            &quot;.&quot;, &quot;&quot;
+          ),
+          &quot;+&quot;, &quot;&quot;
+        ),
+        &quot;/&quot;, &quot;&quot;
+      ),
+      &quot;*&quot;, &quot;&quot;
+    ),
+    &quot;#&quot;, &quot;&quot;
+  ),
+  &quot;_&quot;, &quot;&quot;
+)</expression>
+    </formulas>
+    <formulas>
+        <name>FormattedBusinessPhone</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(
+  SUBSTITUTE(
+    SUBSTITUTE(
+      SUBSTITUTE(
+        SUBSTITUTE(
+          SUBSTITUTE(
+            SUBSTITUTE(
+              SUBSTITUTE(
+                SUBSTITUTE(
+                  SUBSTITUTE(
+                    {!varAcc.Business_Phone__c},
+                    &quot; &quot;, &quot;&quot;
+                  ),
+                  &quot;-&quot;, &quot;&quot;
+                ),
+                &quot;(&quot;, &quot;&quot;
+              ),
+              &quot;)&quot;, &quot;&quot;
+            ),
+            &quot;.&quot;, &quot;&quot;
+          ),
+          &quot;+&quot;, &quot;&quot;
+        ),
+        &quot;/&quot;, &quot;&quot;
+      ),
+      &quot;*&quot;, &quot;&quot;
+    ),
+    &quot;#&quot;, &quot;&quot;
+  ),
+  &quot;_&quot;, &quot;&quot;
+)</expression>
+    </formulas>
+    <formulas>
+        <name>FormattedBusinessZip</name>
+        <dataType>String</dataType>
+        <expression>LEFT(TRIM({!varAcc.Business_Zip__c}), 5)</expression>
+    </formulas>
+    <formulas>
+        <name>formattedMobileNumber</name>
+        <dataType>String</dataType>
+        <expression>SUBSTITUTE(
+  SUBSTITUTE(
+    SUBSTITUTE(
+      SUBSTITUTE(
+        SUBSTITUTE(
+          SUBSTITUTE(
+            SUBSTITUTE(
+              SUBSTITUTE(
+                SUBSTITUTE(
+                  SUBSTITUTE(
+                   {!Get_Contact.MobilePhone},
+                    &quot; &quot;, &quot;&quot;
+                  ),
+                  &quot;-&quot;, &quot;&quot;
+                ),
+                &quot;(&quot;, &quot;&quot;
+              ),
+              &quot;)&quot;, &quot;&quot;
+            ),
+            &quot;.&quot;, &quot;&quot;
+          ),
+          &quot;+&quot;, &quot;&quot;
+        ),
+        &quot;/&quot;, &quot;&quot;
+      ),
+      &quot;*&quot;, &quot;&quot;
+    ),
+    &quot;#&quot;, &quot;&quot;
+  ),
+  &quot;_&quot;, &quot;&quot;
+)</expression>
+    </formulas>
+    <formulas>
+        <name>formCcan</name>
+        <dataType>String</dataType>
+        <expression>IF ({!varCompanyType} == &apos;CC&apos;,{!varAcc.CCAN__c} ,IF ({!varCompanyType} == &apos;BV&apos;, {!varAcc.Business_Phone__c},&apos;&apos;))</expression>
+    </formulas>
+    <formulas>
+        <name>formDealerStatus</name>
+        <dataType>String</dataType>
+        <expression>IF({!varCompanyType} == &apos;Dealer&apos;, &apos;status&apos;,&apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>formDuns</name>
+        <dataType>String</dataType>
+        <expression>IF ({!varCompanyType} == &apos;CC&apos; || {!varCompanyType} == &apos;BV&apos;,{!varAcc.DUNS__c} ,&apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>formEstablishDate</name>
+        <dataType>String</dataType>
+        <expression>IF (!ISBLANK ({!varAcc.Date_Established__c})
+, 
+TEXT(MONTH({!varAcc.Date_Established__c}))+ &quot;/&quot; + TEXT(DAY({!varAcc.Date_Established__c}))+ &quot;/&quot; + TEXT(YEAR({!varAcc.Date_Established__c}))
+, &apos;&apos;)</expression>
+    </formulas>
+    <formulas>
+        <name>formIdNumber</name>
+        <dataType>String</dataType>
+        <expression>IF ({!varCompanyType} == &apos;company1&apos; , IF (!ISBLANK ({!varAcc.Tax_ID__c}), {!varAcc.Tax_ID__c}, &apos;&apos;),{!varAcc.ID_Number__c})</expression>
+    </formulas>
+    <interviewLabel>GDS Score Loan Company Request Mapping {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>GDS Score Loan Company Request Mapping</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Contact</name>
+        <label>Get Contact</label>
+        <locationX>50</locationX>
+        <locationY>458</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Loan_RecordType</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varContactRole.ContactId</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Contact</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Loan_RecordType</name>
+        <label>Get Loan RecordType</label>
+        <locationX>182</locationX>
+        <locationY>650</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Map_GDS_Request</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SobjectType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Gds_Score_Request_Company__c</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Name</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Loan</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>RecordType</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_Opp_Contactrole</name>
+        <label>Get Opp Contactrole</label>
+        <locationX>182</locationX>
+        <locationY>242</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Is_opportunity_contact_available</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>OpportunityId</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varOppId</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Role</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Primary Contact</stringValue>
+            </value>
+        </filters>
+        <object>OpportunityContactRole</object>
+        <outputReference>varContactRole</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>ContactId</queriedFields>
+    </recordLookups>
+    <recordLookups>
+        <name>Query_Acc_Fields</name>
+        <label>Query Acc Fields</label>
+        <locationX>182</locationX>
+        <locationY>134</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Get_Opp_Contactrole</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Id</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>varAccId</elementReference>
+            </value>
+        </filters>
+        <object>Account</object>
+        <outputReference>varAcc</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Business_Type__c</queriedFields>
+        <queriedFields>CCAN__c</queriedFields>
+        <queriedFields>Account_Dealer_Status__c</queriedFields>
+        <queriedFields>Account_121__c</queriedFields>
+        <queriedFields>Fraud_Flag__c</queriedFields>
+        <queriedFields>PQ_Flag__c</queriedFields>
+        <queriedFields>PQ_Date__c</queriedFields>
+        <queriedFields>PQ_Expiration__c</queriedFields>
+        <queriedFields>Account_Approved_App_PQ_Amount__c</queriedFields>
+        <queriedFields>Vendor_Approval__c</queriedFields>
+        <queriedFields>Dealer_Exempt_from_Fraud_Model__c</queriedFields>
+        <queriedFields>Name</queriedFields>
+        <queriedFields>Business_Address__c</queriedFields>
+        <queriedFields>Business_City__c</queriedFields>
+        <queriedFields>Business_State__c</queriedFields>
+        <queriedFields>Business_Zip__c</queriedFields>
+        <queriedFields>Business_Phone__c</queriedFields>
+        <queriedFields>Paynet_ID_Number__c</queriedFields>
+        <queriedFields>DUNS__c</queriedFields>
+        <queriedFields>Experian_Business_File_Number__c</queriedFields>
+        <queriedFields>Tax_ID__c</queriedFields>
+        <queriedFields>Phone</queriedFields>
+        <queriedFields>ID_Number__c</queriedFields>
+        <queriedFields>DBA__c</queriedFields>
+        <queriedFields>Fax</queriedFields>
+        <queriedFields>Website</queriedFields>
+        <queriedFields>Account_State_Of_Incorporation__c</queriedFields>
+        <queriedFields>Date_Established__c</queriedFields>
+    </recordLookups>
+    <start>
+        <locationX>56</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Query_Acc_Fields</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <name>varAcc</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Account</objectType>
+    </variables>
+    <variables>
+        <name>varAccId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varCompanyType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varContactRole</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>true</isOutput>
+        <objectType>OpportunityContactRole</objectType>
+    </variables>
+    <variables>
+        <name>varOpp</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Opportunity</objectType>
+    </variables>
+    <variables>
+        <name>varOppId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>varRequestBean</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+        <objectType>Gds_Score_Request_Company__c</objectType>
+    </variables>
+</Flow>

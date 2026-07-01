@@ -68,6 +68,41 @@ public class TC_AddBlendedIncomeItems {
             delete biisToDelete;
         }
     }
+    
+    //SAL-6227 : Booking a Plus Subsidy as Blended Income Item to IL10 -Start
+    //Create  Indirect Subsidy Blended Income Items when Opportunity Stage changes from Funding to Booking
+    public static void addIndirectSubsidyBlendedIncomeItems(List<Opportunity> newList,Map<Id,Opportunity> oldMap) {
+        Set<Id> optyIdSet = new Set<Id>();
+        for(Opportunity opty: newList) {
+            if(opty.StageName == PEAC_ConstantClass.OPPORTUNITY_STAGENAME_BOOKING && !String.isBlank(oldMap.get(opty.Id).StageName) &&  oldMap.get(opty.Id).StageName == PEAC_ConstantClass.OPPORTUNITY_STAGENAME_FUNDING) {
+                optyIdSet.add(opty.id);
+            }
+        }
+        if(optyIdSet.size() > 0){
+            List<Blended_Income_Item__c> blendedIncomeItemsList = new List<Blended_Income_Item__c>();
+            blendedIncomeItemsList = [SELECT Id From Blended_Income_Item__c Where Opportunity__c IN: optyIdSet AND  Blended_Income_Code__c='0011'];
+            if(blendedIncomeItemsList.size() > 0){
+                delete blendedIncomeItemsList;
+                blendedIncomeItemsList = new List<Blended_Income_Item__c>();
+            }
+            List<Payment__c> payments = new List<Payment__c>();
+            payments = [SELECT Id,Plus_Subsidy__c,Opportunity__c,Opportunity__r.Commencement_Date__c FROM Payment__c where Opportunity__c IN: optyIdSet AND Plus_Subsidy__c!=null];
+            if(payments.size() > 0){
+                for(Payment__c payment : payments){
+                    Blended_Income_Item__c blendedIncomeItem = new Blended_Income_Item__c();
+                    blendedIncomeItem.Begin_Date__c = !String.isBlank(String.valueOf(payment.Opportunity__r.Commencement_Date__c)) ? payment.Opportunity__r.Commencement_Date__c : null;
+                    blendedIncomeItem.Blended_Income_Amount__c = !String.isBlank(String.valueOf(payment.Plus_Subsidy__c)) ? payment.Plus_Subsidy__c : null;
+                    blendedIncomeItem.Blended_Income_Code__c ='0011';
+                    blendedIncomeItem.Opportunity__c = payment.Opportunity__c;
+                    blendedIncomeItemsList.add(blendedIncomeItem);
+                }
+                if(blendedIncomeItemsList.size()>0){
+                   insert blendedIncomeItemsList;
+                }
+            }
+        }
+    }
+    //SAL-6227 : Booking a Plus Subsidy as Blended Income Item to IL10 - end
 
     // old kept for reference
     // public static void addBlendedIncomeItems (Map <Id, Opportunity> oldMap, Map <Id, Opportunity> newMap) {

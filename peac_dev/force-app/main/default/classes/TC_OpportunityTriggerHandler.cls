@@ -21,7 +21,7 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
     Map<Id, User> dealerUsers = new Map<Id, User>();
     private Map<Id, Dealer__c> dealers = new Map<Id, Dealer__c>();
     private Map<Id, Broker__c> brokers = new Map<Id, Broker__c>();
-    Map<Id, Guarantor__c> guarantors = new Map<Id, Guarantor__c>();
+        Map<Id, Guarantor__c> guarantors = new Map<Id, Guarantor__c>();
     Map<Id, List<TC_Origination__Checklist_Item_with_Attachments__c>> checklistItemsAttachments = new Map<Id, List<TC_Origination__Checklist_Item_with_Attachments__c>>();
     Map<Id, List<OpportunityContactRole>> contactRoles = new Map<Id, List<OpportunityContactRole>>();
     Map<Id, List<Asset__c>> assets = new Map<Id, List<Asset__c>>();
@@ -46,16 +46,21 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
 
     public override void beforeUpdate(Map<Id, SObject> oldMap, Map<Id, SObject> newMap){
         checkUpdatedFields(oldMap, newMap);
+        PEAC_LeaseFieldsTrackingHandler.beforeUpdate((Map<Id, Opportunity>) oldMap,(Map<Id, Opportunity>) newMap,this.oppsAdvancedStageName);
         List<Opportunity> theList = new List<Opportunity>();
         for (Id opportunityId :newMap.keySet()){
             SObject theObject = newMap.get(opportunityId);
             getLookupMaps(theObject);
             theList.add((Opportunity)theObject);
+            //SAL-5692 Expo: Opp Refactor-Chalapati Murru(LTIMindtree)
+            if(PEAC_BulkAssetsUpload__mdt.getInstance('OppStagesToBypassAssetTrigger').Value__c.contains(((Opportunity)theObject).StageName)){
+                PEAC_CommonUtils.byPassAssetTrigger = true;
+            }
         }
         TC_MoveToProposalStage.doAction((Map<Id, Opportunity>)oldMap,(Map<Id, Opportunity>)newMap);
         // have to replace these two calls with the ones below to make the interimRent for preffered work and fix any bug after that
         TC_DefaultFirstPymtAmtFromPymtAmt.defaultFirstPaymentAmountFromPaymentAmount(null, (Map<Id, Opportunity>)oldMap,(Map<Id, Opportunity>)newMap, ((Map<Id, Opportunity>)newMap).values());
-        beforeChangesToSelf(theList, false, oldMap);
+        beforeChangesToSelf((List<Opportunity>)newMap.values(), false, oldMap);
 
         TC_ValidationForManager.validationForManager((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
 
@@ -122,6 +127,42 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
         TC_ValidateEmailageResults.validateEmailageResults((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap, this.primaryContacts, this.guarantors);
       TC_OpportunityTriggerHandlerRefactor.beforeUpdate((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap, (Map<id, Account>) accounts); //SAL-4124
       TC_CreateApprovedOffers.setOfferMadeByDealer((Map<Id, Opportunity>)oldMap, ((Map<Id, Opportunity>)newMap).values()); //DP-250
+        
+        /* SAL-6356 : START - Manish *///Commented to deploy other changes.*/
+        
+        // 1 - Booked Date is not null and Booked Date is changed
+        PEAC_OpportunityActionsHandler.opportunityUpdateBlendedIncomeItemBookedDateToOpportunityBookedDate((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+        // 2 - Manual Funding Is changed -> TC Opportunity - Set Manual Funding Fields Sub Flow
+		PEAC_OpportunityActionsHandler.opportunitySetManualFundingFields((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+		// 3 - Trigger Update to Funded Amount -> TC Opportunity - Update Funding Amount to Total Payments Sent Sub Flow
+		PEAC_OpportunityActionsHandler.opportunityUpdateFundingAmountToTotalPaymentsSent((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+        // 5 - Trigger Update to Funded Amount Loan
+        PEAC_OpportunityActionsHandler.opportunityUpdateFundedAmount((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+		// 6 - Commencement Date Changes
+		PEAC_OpportunityActionsHandler.opportunityCommencementDateChanges((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+		// 7 - Bank Account and Bank Routing entered with null bank code and type
+        PEAC_OpportunityActionsHandler.opportunityUpdateBankCodeBankAccountType((List<Opportunity>)newMap.values());
+		// 10 - Update FL Tax Misc Invoice
+		PEAC_OpportunityActionsHandler.opportunityUpdateFLTaxMiscInvoice((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+		// 11 - Clear Bank Code and and Bank Account Type
+		PEAC_OpportunityActionsHandler.opportunityClearBankCodeBankAccountType((List<Opportunity>)newMap.values());
+		// 12 - Create Security Deposit Misc Invoice
+		PEAC_OpportunityActionsHandler.opportunityCreateSecurityDepositMiscInvoice((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+        /* SAL-6356 : END - Manish */
+        
+        /*START: SAL-6126*/
+        PEAC_OpportunityStatusUpdaterHandler.evaluateAndSetStatus(Trigger.new, (Map<Id, Opportunity>)oldMap);
+        /*END: SAL-6126*/
+
+        /*SAL-5800 - Start */
+        PEAC_OpportunityTriggerHelper.updateEplusOppRegion(Trigger.new, (Map<Id, Opportunity>)oldMap);
+        /*SAL-5800 - End */
+
+        /*SAL-5801 - Start */
+        PEAC_OpportunityTriggerHelper.updateEplusOppLessorCode(Trigger.new, (Map<Id, Opportunity>)oldMap);
+        /*SAL-5801 - End */
+        //SAL-5692 Expo: Opp Refactor - To send an email when opportunity is booked/failed in InfoLease
+        if(!test.isRunningTest()) { PEAC_BookToILNotification.sendBookToILConfn(Trigger.new, (Map<Id, Opportunity>)oldMap); }
     }
     public override void beforeInsert(List<SObject> newList){
         List<Opportunity> theList = new List<Opportunity>();
@@ -144,6 +185,32 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
         
         beforeChangesToSelf(theList, true, new Map<Id, SObject>());
         TC_OpportunityCustomerTypeDefault.doAction(null,null, (List<Opportunity>) newList, false);// DP-1945 Misael Romero
+        
+        /* SAL-6356 : START - Manish */
+        
+        // 2 - Manual Funding Is changed -> TC Opportunity - Set Manual Funding Fields Sub Flow
+        PEAC_OpportunityActionsHandler.opportunitySetManualFundingFields((List<Opportunity>) newList);
+		// 3 - Trigger Update to Funded Amount -> TC Opportunity - Update Funding Amount to Total Payments Sent Sub Flow
+        PEAC_OpportunityActionsHandler.opportunityUpdateFundingAmountToTotalPaymentsSent((List<Opportunity>) newList);
+		// 5 - Trigger Update to Funded Amount Loan
+        PEAC_OpportunityActionsHandler.opportunityUpdateFundedAmount((List<Opportunity>) newList);
+		// 7 - Bank Account and Bank Routing entered with null bank code and type
+        PEAC_OpportunityActionsHandler.opportunityUpdateBankCodeBankAccountType((List<Opportunity>) newList);
+		// 11 - Clear Bank Code and and Bank Account Type
+		PEAC_OpportunityActionsHandler.opportunityClearBankCodeBankAccountType((List<Opportunity>) newList);
+        /* SAL-6356 : END - Manish */
+ 
+        /*START: SAL-6126*/
+        PEAC_OpportunityStatusUpdaterHandler.evaluateAndSetStatus((List<Opportunity>) newList, null);
+        /*END: SAL-6126*/
+
+        /*SAL-5800 - Start */
+        PEAC_OpportunityTriggerHelper.updateEplusOppRegion((List<Opportunity>) newList, null);
+        /*SAL-5800 - End */
+
+        /*SAL-5801 - Start */
+        PEAC_OpportunityTriggerHelper.updateEplusOppLessorCode((List<Opportunity>) newList, null);
+        /*SAL-5801 - End */
     }
     
     public override void afterUpdate(Map<Id, SObject> oldMap, Map<Id, SObject> newMap){
@@ -164,39 +231,46 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
             TC_CDR018Asset.runRule((Map<Id, Opportunity>)newMap);  
             TC_TriggerUtilMarket.setDLGOutOfMarket((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
             TC_CreditLeaseStipsChanged.updateStipulations((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
-            TC_SendDealerNotification.scheduleSubmissionNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
-            TC_SendDealerNotification.scheduleApprovalNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
-            TC_SendDealerNotification.docsOutNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
-            TC_SendDealerNotification.docsInNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
-            TC_SendDealerNotification.inFundingNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
-            TC_SendDealerNotification.fundedNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
+            //SAL-7221
+            PEAC_DealerNotificationGatekeeper.sendDealerNotification((Map<Id, Opportunity>)newMap, (Map<Id, Opportunity>)oldMap);
+            //TC_SendDealerNotification.scheduleSubmissionNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+            //TC_SendDealerNotification.scheduleApprovalNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
+            //TC_SendDealerNotification.docsOutNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
+            //TC_SendDealerNotification.docsInNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
+            //TC_SendDealerNotification.inFundingNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
+            //TC_SendDealerNotification.fundedNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
+            //TC_SendDealerNotification.scheduleMoreInfoNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
+            //TC_SendDealerNotification.scheduleDeclinedNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap); 
+            //END SAL-7221
+
             // Vinod Rathod(LTIMindtree) User Story: SAL-4872
             PEAC_CreditStipsChecklistItem.deleteRemovedChecklistItem((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
             //Added by Rajesh Kumar(LTIMindtree) User Story:SAL-5368
             PEAC_SubmitPotralLoanApplication.submitPortalApp((Map<Id, Opportunity>)newMap,(Map<Id, Opportunity>)oldMap);
-        
         }
         TC_CreateApprovedOffers.createApprovedOffers((Map<Id, Opportunity>)oldMap, ((Map<Id, Opportunity>)newMap).values());
-        TC_SendDealerNotification.scheduleMoreInfoNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);    
-        TC_SendDealerNotification.scheduleDeclinedNotification((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap); 
         TC_OpportunityTriggerHandlerRefactor.afterUpdate((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap, (Map<Id, Account>) accounts); //SAL-4124   
         checkUpdatedFields(oldMap, newMap);
         for (Id opportunityId :newMap.keySet()){
             SObject theObject = newMap.get(opportunityId);
             getLookupMaps(theObject);
         }
-        afterChangesToOthers(newMap, false, oldMap);
+        if(!PEAC_GenerateTaxMatrixBatch.isRunning){//SAL-5692 Expo: Opportunity Refactor
+            afterChangesToOthers(newMap, false, oldMap);
+        }
         TC_AddBlendedIncomeItems.addBlendedIncomeItems((Map<Id, Opportunity>)newMap, this.oppsMovedToBooking, this.blendedIncomeItems, oppsChangedInterimRent, this.dealers);
         TC_ChangedToDocsRequested.changedToDocsRequested((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap, assets, assetsToUpdateById);
         checkDealerUser((List<Opportunity>)newMap.values(),(Map<Id, Opportunity>) oldMap, false, this.dealerUsers);
         // SL_OpportunityTriggerHandler.commitAssetUpdates(assetsToUpdateById);// SAL-5486 Misael Romero
-        if(assetsToUpdateById.keySet().size() > 0){// will replace this with commitAssetUpdates when SAL-5486 can be promoted
+        /*if(assetsToUpdateById.keySet().size() > 0){// will replace this with commitAssetUpdates when SAL-5486 can be promoted
             update assetsToUpdateById.values();
+        }*/
+        //Added by Rajesh - below code to resolve 101 soql issue
+        if(!assetsToUpdateById.isEmpty())
+        {
+        	System.enqueueJob(new PEAC_AssetUpdateQueueable(assetsToUpdateById.values()));    
         }
         // Changes for SAL-5464
-Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
-        Map<Id, SObject> newLoanRecordMap = new Map<Id, SObject>();
-        //set<Id> oppIdSet = new  set<Id>();
         // using formula field to get the current profile name
         String profileName = newMap.values().size()>0? ((Opportunity)newMap.values()[0]).Opportunity_CurrentUser_Profile__c: null;// SAL-5468 Misael Romero
         RescoreIsMandatoryForLoan__c validationInfo = RescoreIsMandatoryForLoan__c.getInstance('Docs Requested');
@@ -225,19 +299,24 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
             {
                 newMap.get(opp.Id).addError('One or more fields used for scoring or rescoring the application have been modified. The application must be resubmitted.');
             }
-            
-            system.debug('oldStage<<>>'+ oldStage);
-            system.debug('newStage<<>>'+ newStage);
-            system.debug('profileList<<>>'+ profileList);
-            if(opp.Loan_Record_Type__c) {
+            /*if(opp.Loan_Record_Type__c) {//SAL-5692 Expo: Opp Refactor
                 oldLoanRecordMap.put(opp.Id,oldMap.get(opp.Id));
                 newLoanRecordMap.put(opp.Id,newMap.get(opp.Id));
+            }*/
+            //SAL-5692 Expo: Opp Refactor-Chalapati Murru(LTIMindtree) [Moved from OpportunityDocGenTrigger. Below method can be optimized further]
+            if(opp.Description == '[JDR-Action:Generate PDF]' && opp.Description != ((Opportunity)oldMap.get(opp.Id)).Description){
+                OpportunityDocgenSender.sendRequests(opp.Id, '', ((Opportunity)oldMap.get(opp.Id)).Description);
             }
+			//SAL-5692 Expo: Opp Refactor - To replace "TC Opportunity: Booking Rules - Depreciation Dates Flow"
+            if((opp.Opportunity_Booked_Date__c != ((Opportunity)oldMap.get(opp.Id)).Opportunity_Booked_Date__c && opp.Opportunity_Booked_Date__c != null)
+                || (opp.Commencement_Date__c != ((Opportunity)oldMap.get(opp.Id)).Commencement_Date__c && opp.Commencement_Date__c != null)){
+                PEAC_UpdateAssetsBlenIncItemAsync.updateAssetsBlenIncItemAsync(opp.Id);
+        }
         }
         /*for(Field_Tracker__c trackObj : [select Id, Opportunity__c from Field_Tracker__c where ID IN :oppIdSet]) {
             newMap.get(trackObj.Opportunity__c).addError('You can not change the status');
         }*/
-        if(!newMap.isEmpty() && !oldMap.isEmpty()) {
+        if(!newMap.isEmpty() && !oldMap.isEmpty() && !PEAC_GenerateTaxMatrixBatch.isRunning) {//SAL-5692 Expo: Opportunity Refactor
             FieldChangeTracker.TrackerWrapper trackerDetails = new FieldChangeTracker.TrackerWrapper();
             trackerDetails.newRecordMap = newMap;
             trackerDetails.oldRecordMap = oldMap;
@@ -245,6 +324,50 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
             FieldChangeTracker.trackDetails(trackerDetails);
         }
         //Changes for SAL-5464
+
+        //SAL-6047 : Project Expo - eWaste Fee Automation
+        if(!system.isBatch() && !system.isQueueable() && !system.isFuture())
+            PEAC_CeateMiscInvItemsQueueable.createMiscellaneousInvoiceItems( (List<Opportunity>) newMap.values(),(Map<Id, Opportunity>)oldMap);
+       
+        //SAL-6227 : Booking a Plus Subsidy as Blended Income Item to IL10
+        //commented out as per discussion and this is not going live on 2/13
+       // TC_AddBlendedIncomeItems.addIndirectSubsidyBlendedIncomeItems((List<Opportunity>) newMap.values(),(Map<Id, Opportunity>)oldMap);
+        
+
+        /* SAL-6356 : START - Manish */
+        // 4 - Trigger Multiple Address Check
+        PEAC_OpportunityActionsHandler.opportunityValidateForMultipleAddressCheck((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>) newMap);
+		//9 - Auto Create Fl Tax Misc Invoice
+        PEAC_OpportunityActionsHandler.autoCreateFiTaxMiscInvoice((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>) newMap);
+        // 13, 14 - Move Loan to Funded/Booked*/
+        PEAC_OpportunityActionsHandler.opportunityMoveLoantoFundedBooked((List<Opportunity>)newMap.values());
+        /* SAL-6356 : END - Manish */
+        //Added By Rajesh (LTIMindtree)
+        //Commenting as this is not part of 03 :: 
+		PEAC_EquipmentCostWOTax.validateGuidanceAmount((Map<Id, Opportunity>)newMap, (Map<Id, Opportunity>) oldMap);
+        //SAL-5831 :Update Total Exposure field on Account
+        //Commenting as this is not part of 03 ::
+		PEAC_UpdateTotalExposure.updateTotalExposureOnAccount((Map<Id, Opportunity>) newMap,(Map<Id, Opportunity>)oldMap);
+
+        /*SAL-5802 - Start - Rahul 
+        if(!system.isBatch() && !system.isQueueable() && !system.isFuture())
+        {
+        	PEAC_OpportunityTriggerHelper.updateAccountBranchForVaPeacOpp(((Map<Id, Opportunity>)newMap).values(),(Map<Id, Opportunity>)oldMap);    
+        }
+        /*SAL-5802 - End -Rahul */
+                //SAL-5830 
+        if(!system.isBatch() && !system.isQueueable() && !system.isFuture()){
+            PEAC_OpportunityTriggerHelper.validateOpportunityLeaseRateFactorChange(((Map<Id, Opportunity>)newMap).values(),(Map<Id, Opportunity>)oldMap);
+        }
+        /*SAL-7114 - Start - Vinod Rathod LTM */
+        if(!system.isBatch() && !system.isQueueable() && !system.isFuture()){
+           PEAC_AssetBookedDateUpdater.onOpportunityBookedDateChange((Map<Id, Opportunity>) newMap,(Map<Id, Opportunity>)oldMap);   
+        }
+        /*SAL-7114 - End - Vinod Rathod LTM */
+        PEAC_AssetUpdateService.handleAssetUpdates((Map<Id, Opportunity>) newMap,(Map<Id, Opportunity>)oldMap);//SAL-7139
+        //Added by Rajesh Kumar(LTM)-SAL-7197
+		PEAC_PricingAPICall.tValuePricing((Map<Id, Opportunity>) newMap,(Map<Id, Opportunity>)oldMap);
+   
     }
     
     public override void afterInsert(Map<Id, SObject> newMap){
@@ -255,9 +378,36 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
         afterChangesToOthers(newMap, true, new Map<Id, SObject>());
         checkDealerUser((List<Opportunity>)newMap.values(), null, true, this.dealerUsers);
         // SL_OpportunityTriggerHandler.commitAssetUpdates(assetsToUpdateById);// SAL-5486 Misael Romero
-        if(assetsToUpdateById.keySet().size() > 0){// will replace this with commitAssetUpdates when SAL-5486 can be promoted
+        /*if(assetsToUpdateById.keySet().size() > 0){// will replace this with commitAssetUpdates when SAL-5486 can be promoted
             update assetsToUpdateById.values();
+        }*/
+		//Added by Rajesh - below code to resolve 101 soql issue
+        if(!assetsToUpdateById.isEmpty())
+        { 
+        	System.enqueueJob(new PEAC_AssetUpdateQueueable(assetsToUpdateById.values()));    
         }
+        /* SAL-6356 : START - Manish */        
+        // 1 - Booked Date is not null and Booked Date is changed
+        PEAC_OpportunityActionsHandler.opportunityUpdateBlendedIncomeItemBookedDateToOpportunityBookedDate((Map<Id, Opportunity>)newMap);
+        // 4 - Trigger Multiple Address Check
+        PEAC_OpportunityActionsHandler.opportunityValidateForMultipleAddressCheck(((Map<Id, Opportunity>)newMap).values());
+		// 6 - Commencement Date Changes
+		PEAC_OpportunityActionsHandler.opportunityCommencementDateChanges((Map<Id, Opportunity>)newMap);
+        //9 - Auto Create Fl Tax Misc Invoice
+        PEAC_OpportunityActionsHandler.autoCreateFiTaxMiscInvoice(((Map<Id, Opportunity>)newMap).values());
+		// 10 - Update FL Tax Misc Invoice
+		PEAC_OpportunityActionsHandler.opportunityUpdateFLTaxMiscInvoice(((Map<Id, Opportunity>)newMap).values());
+		// 12 - Create Security Deposit Misc Invoice
+		PEAC_OpportunityActionsHandler.opportunityCreateSecurityDepositMiscInvoice(((Map<Id, Opportunity>)newMap).values());
+        // 13, 14 - Move Loan to Funded/Booked*/
+        PEAC_OpportunityActionsHandler.opportunityMoveLoantoFundedBooked(((Map<Id, Opportunity>)newMap).values());
+        /* SAL-6356 : END - Manish */
+
+        /*SAL-5802 - Start - Rahul 
+        if(!system.isBatch() && !system.isQueueable() && !system.isFuture()){
+        	PEAC_OpportunityTriggerHelper.updateAccountBranchForVaPeacOpp(((Map<Id, Opportunity>)newMap).values(),null); 
+        }
+        /*SAL-5802 - End - Rahul */
     }
 
     private void checkUpdatedFields(Map<Id, SObject> oldMap, Map<Id, SObject> newMap){
@@ -375,9 +525,9 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
 
     private void getInfoFromOthers(){
         if(opportunityIds.size() > 0){
-            for(Opportunity related : [SELECT Id, Account.DBA__c, Account.Date_Established__c, Account.AnnualRevenue,
+            for(Opportunity related : [SELECT Id, Account.DBA__c, Account.Risk_Rating__c, Account.Date_Established__c, Account.AnnualRevenue,
             Owner.Name, Owner.Vendor_Team__c,  Account.Tax_ID__c, Account.Business_Phone__c, Account.Id, Account.Business_Type__c, 
-            Account.Private_Label_Documents__c, Dealer_Account__r.Private_Label_Documents__c,
+            Account.Private_Label_Documents__c, Dealer_Account__r.Private_Label_Documents__c,Risk_Rating__c,
             Primary_Broker__r.Account_Branch__c, Primary_Broker__r.Dealer_Number__c, Primary_Broker__r.CCAN__c,
             Dealer_Account__r.Name, Dealer_Account__r.Id, Assigned_Credit_User__r.Profile.Name, Assigned_Credit_User__r.XBS_Risk_Analyst__c, 
             Primary_Contact__r.Emailage_Result__c, Primary_Contact__r.Override_Emailage_Result__c, Dealer_User__r.IsActive, 
@@ -409,12 +559,12 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
             (SELECT Id, Franchisor__r.Account_Dealer_Status__c, Opportunity__c FROM Franchisors__r
             ),
             //SAL-4968   
-            (SELECT Id, Manufacturer__c, Opportunity__c, Name, Asset_Description__c, Cost__c, 
-            //(SELECT Id, Opportunity__c, Name, Asset_Description__c, Cost__c, 
+            //SAL-5692 Expo: Opp Refactor - too Many SOQL
+            /*(SELECT Id, Manufacturer__c, Opportunity__c, Name, Asset_Description__c, Cost__c, 
                 Opportunity_Contract_Type__c, List_Price__c, Orig_Cost__c, Upfront_County_Tax_Amount__c, 
                 Upfront_City_Transit_Tax_Amount__c, Upfront_City_Tax_Amount__c, Upfront_County_Transit_Tax_Amount__c, 
                 Upfront_State_Tax_Amount__c, Financed_Trigger__c 
-                FROM Assets__r),
+                FROM Assets__r),*/
             (SELECT Id, GL_Code__c, Description__c, Interim_Percentage__c, Amount__c, Pay_Code__c, Generated_Code__c 
                 FROM Miscellaneous_Invoice_Items__r),
             (SELECT Id, Opportunity__c, Blended_Income_Code__c, Blended_Income_Amount__c, Generated_Code__c 
@@ -479,11 +629,16 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
                 }
                 this.blendedIncomeItems.get(related.Id).addAll(relatedBiis);
                 this.variablePayments.get(related.Id).addAll(related.Variable_Payments__r);// it is supposed to only be one per Opp
-                List<Asset__c> relatedAssets = new List<Asset__c>();
-                for(Asset__c theAsset:related.Assets__r){
-                    relatedAssets.add(theAsset);
-                }
-                this.assets.get(related.Id).addAll(relatedAssets);
+                //SAL-5692 Expo: Opportunity Refactor - too Many SOQL
+                // List<Asset__c> relatedAssets = [SELECT Id, Manufacturer__c, Opportunity__c, Name, Asset_Description__c, Cost__c, 
+                //     Opportunity_Contract_Type__c, List_Price__c, Orig_Cost__c, Upfront_County_Tax_Amount__c, 
+                //     Upfront_City_Transit_Tax_Amount__c, Upfront_City_Tax_Amount__c, Upfront_County_Transit_Tax_Amount__c, 
+                //     Upfront_State_Tax_Amount__c, Financed_Trigger__c 
+                //     FROM Asset__c WHERE Opportunity__c =:related.Id];
+                // /*for(Asset__c theAsset:related.Assets__r){
+                //     relatedAssets.add(theAsset);
+                // }*/
+                // this.assets.get(related.Id).addAll(relatedAssets);
                 if(brokers.size() == 0 && related.Primary_Broker__c != null){
                     this.primaryBrokerAccounts.put(related.Primary_Broker__c, new Account(Account_Branch__c = related.Primary_Broker__r.Account_Branch__c,
                     Dealer_Number__c = related.Primary_Broker__r.Dealer_Number__c, CCAN__c = related.Primary_Broker__r.CCAN__c));
@@ -494,11 +649,18 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
                 }
                 this.miscBillableItems.get(related.Id).addAll(relatedMbis);
             }
-            
+            // SAL-6887 Misael Romero
+            for(Asset__c relatedAsset : [SELECT Id, Manufacturer__c, Opportunity__c, Name, Asset_Description__c, Cost__c, 
+            Opportunity_Contract_Type__c, List_Price__c, Orig_Cost__c, Upfront_County_Tax_Amount__c, 
+            Upfront_City_Transit_Tax_Amount__c, Upfront_City_Tax_Amount__c, Upfront_County_Transit_Tax_Amount__c, 
+            Upfront_State_Tax_Amount__c, Financed_Trigger__c 
+            FROM Asset__c WHERE Opportunity__c IN :opportunityIds]){
+                this.assets.get(relatedAsset.Opportunity__c).add(relatedAsset);
+            }
         }
         if(Trigger.isBefore && this.accounts.size() > 0 && SL_TriggerUtil.checkForMissingInfo(this.accounts.values())){
             this.accounts.putAll([SELECT Id, DBA__c, Date_Established__c, AnnualRevenue,
-                Tax_ID__c, Business_Phone__c, Business_Type__c, Private_Label_Documents__c
+                Tax_ID__c, Business_Phone__c, Business_Type__c, Private_Label_Documents__c, Risk_Rating__c
                 FROM Account WHERE Id IN :this.accounts.keySet()]);
         }
         if(Trigger.isBefore && this.dealers.size() > 0  && SL_TriggerUtil.checkForMissingInfo(this.dealers.values())){
@@ -530,6 +692,17 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
 
     private void beforeChangesToSelf(List<Opportunity> newList, Boolean isNew, Map<Id, SObject> oldMap){
         getInfoFromOthers();
+        
+        // SAL-6976
+        for (Opportunity opp : newList){
+            if (isNew && opp.AccountId != null && (opp.Loan_Record_Type__c == false || opp.Loan_Record_Type__c == null)) {  
+                Account acc = this.accounts.get(opp.AccountId);
+                if (acc != null && opp.Risk_Rating__c == null) {
+                    opp.Risk_Rating__c = acc.Risk_Rating__c;
+                }
+            }
+        }
+        
         for (Opportunity opp :newList){
             // SAL-5464 condition for resubmit to credit checkbox is checked we have to make Scored_Field_Modified__c false
             Opportunity oldOpp = (oldMap != null) ? (Opportunity) oldMap.get(opp.Id) : null;
@@ -538,8 +711,6 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
             if (becameTrue) {
                 opp.Scored_Field_Modified__c = false;
             }
-
-        
         
             List<String> fieldsChanged = this.fieldsChangedById.get(opp.Id);
             User dealerUser = this.dealerUsers.get(opp.Dealer_User__c);
@@ -576,7 +747,9 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
             if(isToleranceExceeded && !isOppRescoringWhenOver){
                 opp.addError(exceededToleranceMessage);
             }
-            setBranch(opp, primaryBroker);
+            //Added by Rajesh SAL-6345
+            if(!PEAC_ConstantClass.VA_PEAC.Equals(opp.Originating_Business__c))      
+                setBranch(opp, primaryBroker);
             securityDepositCalculationFormerFlow(opp, isNew, fieldsChanged);
             setRepayAmountNDisbursementFormerFlow(opp, isNew, fieldsChanged);
             bankStatementChangeStageFormerFlow(opp);
@@ -846,12 +1019,13 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
             opp.Ending_Pymts_in_Advance__c = 0;
         }
         if(this.oppsChangedContractType.contains(opp.Id)){
-            List<String> contractTypesForTrue = new List<String>{'TL', 'XX', 'RL'};
+            //Added OL-Operating Lease(Rajesh LTM)
+            List<String> contractTypesForTrue = new List<String>{'TL', 'XX', 'RL','OL'};
             opp.Is_TL_RL_or_OL__c = contractTypesForTrue.contains(opp.Contract_Type__c);
         }
     }
 
-    void setRepayAmountNDisbursementFormerFlow(Opportunity opp, Boolean isNew, List<String> fieldsChanged){
+    public void setRepayAmountNDisbursementFormerFlow(Opportunity opp, Boolean isNew, List<String> fieldsChanged){
         if(opp.Loan_Record_Type__c){
             Boolean isNotBlankLoanAmount  = opp.Loan_Amount__c != null;
             Boolean isGTZeroLoanAmount = opp.Loan_Amount__c > 0;
@@ -887,7 +1061,7 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
     }
 
     public static void generateTaxMatrixFormerFlow(Opportunity opp, List<String> fieldsChanged, Boolean isNew) {
-        if(!System.isFuture() && !System.isBatch()){
+        /*if(!System.isFuture() && !System.isBatch()){
             List<String> stagesForTaxMatrix = new List<String>{'Docs In', 'Funding', 'Booking'};
             if(!isNew && !opp.Loan_Record_Type__c && stagesForTaxMatrix.contains(opp.StageName)
                 &&  (fieldsChanged != null && (fieldsChanged.contains('StageName')
@@ -900,7 +1074,7 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
                     // TC_TAX.TaxRules.runAutoGenerate(oppIds);
                 }
             }
-        }
+        }*/
     }
 
     private void checkDealerUser(List<Opportunity> lstNewOpp, Map<Id, Opportunity> mapOldOpp, Boolean isInsert, Map<Id, User> dealerUsers){
@@ -1044,6 +1218,4 @@ Map<Id, SObject> oldLoanRecordMap = new Map<Id, SObject>();
             }
         }*/
     }
-  
-    
 }

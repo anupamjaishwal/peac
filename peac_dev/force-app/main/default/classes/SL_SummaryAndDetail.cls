@@ -2,6 +2,8 @@ public with sharing class SL_SummaryAndDetail {
     static String integrationName = '';
     static final List<String> xeroxLessorCodes = new List<String> {'111','113','211','213','101','103','471','473','102','104'};
     static final List<String> xeroxBTRLessorCodes = new List<String> {'111','113','211','213'}; // we might use this list of codes in future
+	@TestVisible
+	private static Boolean qbSanitizeInProgress = false;
 
     @auraEnabled
     public static String getOpenItems(String recordId) {
@@ -105,12 +107,20 @@ public with sharing class SL_SummaryAndDetail {
     public static string requestByContractNumber(String recordId, String nitroApiOption){
         return requestByContractNumber(recordId, nitroApiOption, '');
     }
-
+	// Helper Method to Handle Exceptions specific to Call Outs & Dealer Portal Messages
+    private static AuraHandledException businessError(String code, String message) {
+    AuraHandledException ex = new AuraHandledException(message);
+    ex.setMessage('[' + code + '] ' + message);
+    return ex;
+	}
+    
     @AuraEnabled
     public static string requestByContractNumber(String recordId, String nitroApiOption, String additionalKeys){
         try {
-            Contract__c contract = [SELECT Name, Status__c, Renewal_Status__c, Quote_Buyout_Types__c, Infolease_Environment__c,
-                Opportunity__r.Purchase_Options__c, Lessor_Code__c, Branch_Code__c, Dealer_Name__r.Discount_for_Upgrade_to_Keep__c
+            Contract__c contract = [SELECT Name, Status__c, Renewal_Status__c, Quote_Buyout_Types__c, Infolease_Environment__c,Contract_Type__c,Term_Date__c,
+                Opportunity__c,Opportunity__r.Purchase_Options__c,Opportunity__r.Originating_Business__c,Dealer_Name__c,Dealer_Name__r.Type,
+				Dealer_Name__r.OwnerId,Originating_Business__c,Opportunity__r.Vendor_Team__c,Opportunity__r.Vendor_Name__c,
+              	Opportunity__r.Lessor__c,Lessor_Code__c, Branch_Code__c, Dealer_Name__r.Discount_for_Upgrade_to_Keep__c,Customer__c,Customer__r.Discount_for_Upgrade_to_Keep__c
                 FROM Contract__c WHERE Id =:recordId][0];
             String contractNumber = contract.Name;
             Boolean isIL10 = TC_BWUtility.isIL10Record(contract);
@@ -120,9 +130,22 @@ public with sharing class SL_SummaryAndDetail {
             Boolean isFirstTime = true;
             Boolean isFromPeacBuyout = false;
             String result = '';
+            Boolean isLargeAssetCase = false;
+            Integer selectedAssetCount = 0;     // assets selected in UI for createBuyout
+            // Dealer context flag 
+			Boolean isDealerContext = false;
+			String selectedBuyoutType = null;   // QBT selected (optional for debug)
+			
+            String buyoutType = '';
+            List<Object> assets = new List<Object>();
+
             if(additionalKeys == null){
                 additionalKeys = '';
             }
+            System.debug('nitroApiOption: ' + nitroApiOption);
+            system.debug('additionalKeys:' + additionalKeys);
+            System.debug('contract --'+contract);
+            
             switch on nitroApiOption {
                 when 'buyoutQuotes' {
                     nitroApi = 'BW.GET.BUYOUT.QUOTES';
@@ -133,20 +156,35 @@ public with sharing class SL_SummaryAndDetail {
                     nitroApi = 'BW.CREATE.BUYOUT.QUOTE';
                     saveLog = true;
                     integrationName = 'InfoLease Generate Buyout Quote' + (nitroApiOption == 'createBuyoutDP'? ' DP': '');
-                    String buyoutType = '';
-                    List<Object> assets = new List<Object>();
+                    //String buyoutType = '';
+                    assets = new List<Object>();
                     if(additionalKeys.isNumeric()){
                         buyoutType = additionalKeys;
                     }else{
                         Map<String, Object> keysForPartial = (Map<String, Object>)JSON.deserializeUntyped(additionalKeys);
                         buyoutType = (String)keysForPartial.get('BuyoutType');
-                        assets = (List<Object>)keysForPartial.get('Assets');
+                        //assets = (List<Object>)keysForPartial.get('Assets');
+                        Object a = keysForPartial.get('Assets');
+                            if (a instanceof List<Object>) {
+                                assets = (List<Object>) a;
+                            } else {
+                                assets = new List<Object>();
+                            }
+
+                        additionalKeys = ''; // normalize: to rebuild fragment below--SL -2921
                     }
-                    if(nitroApiOption == 'createBuyoutDP' 
-                    || (contract.Quote_Buyout_Types__c != null && contract.Quote_Buyout_Types__c.contains(buyoutType))){
+                    if(nitroApiOption == 'createBuyoutDP'
+                        || (contract.Quote_Buyout_Types__c != null && contract.Quote_Buyout_Types__c.contains(buyoutType))){
                         String quoteType = nitroApiOption == 'createBuyoutDP'? '0002': '0001';// DP-1511 Misael Romero
                         additionalKeys = ', "BuyoutType":"' + buyoutType 
                             + '", "QuoteType": "' + quoteType + '", "QuotedBy":"' + System.UserInfo.getUserName().left(16) + '"';
+                        
+                        //Append DiscountRate for CMDT templates (Send_Discount_To_IL__c = true) - SL-2921
+                        Decimal dr = PEAC_SummaryAndDetail.getDiscountRateForTemplate(contract, buyoutType);
+                        if (dr != null) {
+                            additionalKeys += ', "DiscountRate": ' + JSON.serialize(dr.setScale(3).toString());
+                        }
+
                         if(buyoutType == '14' || buyoutType == '78'){// SL-2629 Misael Romero
                             Decimal discountRate = Decimal.valueOf(contract.Dealer_Name__r?.Discount_for_Upgrade_to_Keep__c ?? '0.000');
                             // if(discountRate > 0){// DP-1861 Misael Romero
@@ -161,9 +199,147 @@ public with sharing class SL_SummaryAndDetail {
                     Integer totalContractAssets = [SELECT COUNT() FROM Contract_Asset__c 
                         WHERE Contract__c =:recordId AND Asset_Disposed_Date__c = NULL AND Asset_Cost__c > 0];
                     assets = assets ?? new List<Object>();
-                    if((assets.size() == 0 && totalContractAssets > 200) || assets.size() > 200){
-                        isCallBridgeWare = false;
+                    
+                    selectedAssetCount = assets.size();
+                    // Setting Up DEALER CONTEXT
+                    Boolean isDealerContract =
+                    contract.Dealer_Name__c != null;
+                    //contract.Dealer_Name__r != null &&
+                    //String.valueOf(contract.Dealer_Name__r.Type).equalsIgnoreCase('Dealer');
+                    
+                    // Dealer owner
+                    Boolean isDealerOwner =
+                    isDealerContract &&
+                    contract.Dealer_Name__r.OwnerId == UserInfo.getUserId();
+                    
+                    // Dealer portal user via Contact.AccountId
+                    Boolean isDealerPortalUser = false;
+                    try {
+                        User u = [SELECT Contact.AccountId FROM User WHERE Id = :UserInfo.getUserId()];
+                        isDealerPortalUser =
+                            isDealerContract &&
+                            u.Contact != null &&
+                            u.Contact.AccountId == contract.Dealer_Name__c;
+                    } catch (Exception ignore) {}
+                    
+                    //Single consolidated dealer flag
+                    isDealerContext = isDealerContract && (isDealerOwner || isDealerPortalUser );
+                    
+                    Integer dealerEffectiveAssetCount =
+                        (selectedAssetCount > 0)
+                            ? selectedAssetCount
+                            : totalContractAssets;
+                    // Dealer Portal users cannot do FULL Buyout when total assets >200
+                    /*if (isDealerContext && (selectedAssetCount > 200) ||(selectedAssetCount == 0 && totalContractAssets > 200)) {                        
+                        throw businessError(
+                                'DEALER_ASSET_LIMIT',
+                                System.Label.Dealer_Asset_Limit_Message
+                            );
+                    }*/
+                    if (isDealerContext) {                    
+                        // Partial Buyout: Assets were passed from UI
+                        if (selectedAssetCount > 0 && selectedAssetCount > 200) {
+                            throw businessError('DEALER_ASSET_LIMIT',
+                                System.Label.Dealer_Asset_Limit_Message);
+                        }                    
+                        // Full Buyout: No assets were passed → contract-wide
+                        if (selectedAssetCount == 0 && totalContractAssets > 200) {
+                            throw businessError('DEALER_ASSET_LIMIT',
+                                System.Label.Dealer_Asset_Limit_Message);
+                        }
                     }
+                    
+                    // END Of DEALER GUARD
+                    // For Async >200 assets (return immediately)
+                    Boolean isLargeBySelectionLocal =
+                        (selectedAssetCount > 200) ||
+                        (selectedAssetCount == 0 && totalContractAssets > 200);
+                    
+                    if (isLargeBySelectionLocal) {
+                    
+                        // Build BuyoutExternalId for tracking + start-time extraction
+                        String buyoutExternalId = String.join(
+                            new List<String>{
+                                contractNumber,
+                                buyoutType,
+                                Datetime.now().formatGMT('yyyyMMddHHmmssSSS')
+                            },
+                            '-'
+                        );
+                    	
+                        // Determine if this bulk request should be treated as FULL buyout
+                        Boolean isAllAssetsSelected = (selectedAssetCount > 200 && selectedAssetCount == totalContractAssets);
+                        Boolean treatAsFullBuyout = (selectedAssetCount == 0) || isAllAssetsSelected;
+
+                        // Build Request payload (includes full asset list)
+                        Map<String, Object> req = new Map<String, Object>();
+                        req.put('ContractNumber', contractNumber);
+                        req.put('BuyoutType', buyoutType);
+                        req.put('QuoteType', (nitroApiOption == 'createBuyoutDP') ? '0002' : '0001');
+                        req.put('QuotedBy', System.UserInfo.getUserName().left(16));
+                        //req.put('Assets', assets);
+                       
+                        // Discount fix
+                        Decimal dr = PEAC_SummaryAndDetail.getDiscountRateForTemplate(contract, buyoutType);
+                        
+                        if (dr != null) {
+                            req.put('DiscountRate', dr.setScale(3).toString());
+                        } else {
+                            req.put('DiscountRate', '0.000');
+                        }
+                        //change: Assets should be empty for FULL buyout scenarios
+                        //Empty Assets ONLY for INTERNAL users
+                        //Dealer context must NEVER hit empty-assets full buyout
+                        
+                        if (treatAsFullBuyout && !isDealerContext) {
+                            // Internal Service Cloud full buyout
+                            req.put('Assets', new List<Object>());
+                        } else {
+                            // Dealer users OR partial buyout
+                            req.put('Assets', assets);
+                        }
+                        req.put('BuyoutexternalId', buyoutExternalId);
+                    	
+                        // Build JSON with Header first (string-build guarantees ordering for legacy parsers)
+                      //  String strictBody =
+                       // '{"inputs":{' +
+                      //    '"Header":{"NitroApi":"BW.CREATE.BUYOUT.QUOTE"},' +
+                      //    '"Request":' + JSON.serialize(req) +
+                      //  '}}';
+                      //  
+                        String strictBody =
+                            '{' +
+                            '"Header":{"NitroApi":"BW.CREATE.BUYOUT.QUOTE"},' +
+                            '"Request":' + JSON.serialize(req) +
+                            '}';
+                    
+                        // Persist log record (audit/support)
+                        IL_Integration_Logs__c logRec = new IL_Integration_Logs__c(
+                            Contract__c = recordId,
+                            Integration_Name__c = integrationName,
+                            Request_Text__c = strictBody,
+                            Status__c = 'In Progress',
+                            Buyout_External_Id__c = buyoutExternalId
+                        );
+                        insert logRec;
+                    	
+                        // Stamp contract + instant UI response
+                        String infoMsg = 'Your request has been submitted. Due to >200 assets, processing may take sometime to complete. ' +
+                                         'You will see an update once completed on the contract screen itself';
+                    
+                        // Fire async callout using stored payload
+                        PEAC_BuyoutAsyncCalloutHelper.submitBuyoutFromIntegrationLog(logRec.Id);
+                    
+                        //Return immediately — prevents synchronous callout & stops spinner
+                        return buildInProgressUiResponse(infoMsg);
+                    }
+                    selectedBuyoutType = buyoutType;
+					//Large asset flag (for graceful handling) : SL-2924 - D Balakrishna (LTMindtree) 
+                    isLargeAssetCase = (assets.size() == 0 && totalContractAssets > 200) || (assets.size() > 200);
+
+                    /*if((assets.size() == 0 && totalContractAssets > 6000) || assets.size() > 6000){
+                        isCallBridgeWare = false;
+                    }*/
                 }
                 when 'createInsurance' {
                     nitroApi = 'BW.CREATE.INSURANCE';
@@ -205,8 +381,96 @@ public with sharing class SL_SummaryAndDetail {
                         result = generateRAs(contract);
                     }
                     when 'createBuyout', 'createBuyoutDP'{
-                        result = generateError(nitroApiOption);
+                        //result = generateError(nitroApiOption);            
+                        throw new AuraHandledException(
+                            'Unexpected path: createBuyout executed without Bridgeware callout. Please ensure isCallBridgeWare remains true for createBuyout.'
+                        );
                     }
+                }
+            }
+			// SL-2924 : Handling of Large Assets 
+            // For >200 selected assets OR contract large with empty selection, ALWAYS return InProgress payload.
+            if (nitroApiOption == 'createBuyout' || nitroApiOption == 'createBuyoutDP') {            	
+                // If selection was not passed (assets list empty), fall back to contract asset count
+                Integer totalContractAssets = [
+                    SELECT COUNT()
+                    FROM Contract_Asset__c
+                    WHERE Contract__c = :recordId
+                      AND Asset_Disposed_Date__c = NULL
+                      AND Asset_Cost__c > 0
+                ];
+                Boolean isLargeBySelection  =
+                    (selectedAssetCount > 200) ||
+                    (selectedAssetCount == 0 && totalContractAssets > 200);            
+                if (isLargeBySelection) {                                
+                    // Build BuyoutExternalId for tracking + start-time extraction in summary LWC
+                        String buyoutExternalId = String.join(
+                            new List<String>{
+                                contractNumber,
+                                buyoutType,
+                                Datetime.now().formatGMT('yyyyMMddHHmmssSSS')
+                            },
+                            '-'
+                        );
+                    	
+                        // Build STRICT request payload INCLUDING asset list (audit + bridgeware requirement)
+                        Map<String, Object> req = new Map<String, Object>();
+                        req.put('ContractNumber', contractNumber);
+                        req.put('BuyoutType', buyoutType);
+                        req.put('QuoteType', (nitroApiOption == 'createBuyoutDP') ? '0002' : '0001');
+                        req.put('QuotedBy', System.UserInfo.getUserName().left(16));
+                        req.put('Assets', assets);
+                        req.put('BuyoutexternalId', buyoutExternalId);
+                    system.debug(logginglevel.Error,'buyoutExternalId333.....'+req);
+                    Decimal dr = PEAC_SummaryAndDetail.getDiscountRateForTemplate(contract, buyoutType);
+                    if (dr != null) {
+                        req.put('DiscountRate', dr.setScale(3).toString());
+                    } else {
+                        req.put('DiscountRate', '0.000'); // fallback
+                    }
+                    
+                        // Build STRICT request payload INCLUDING Header + Request (sync-compatible)
+                        Map<String, Object> header = new Map<String, Object>{
+                            'NitroApi' => 'BW.CREATE.BUYOUT.QUOTE'
+                        };
+                        
+                        // Request object already has ContractNumber, BuyoutType, QuoteType, QuotedBy, Assets, BuyoutexternalId
+                        Map<String, Object> rootBody = new Map<String, Object>{
+                            'Header'  => header,
+                            'Request' => req
+                        };
+                        
+                        // IMPORTANT: store body as Header+Request only (callBridgeware wraps it for IL10 automatically)
+                        String strictBody = JSON.serialize(rootBody);
+                    
+                        // Persist log record (payload is stored for audit/support)
+                        IL_Integration_Logs__c logRec = new IL_Integration_Logs__c(
+                            Contract__c = recordId,
+                            Integration_Name__c = integrationName,
+                            Request_Text__c = strictBody,
+                            Status__c = 'In Progress',
+                            Buyout_External_Id__c = buyoutExternalId
+                        );
+                        insert logRec;
+						
+                    // if InfoLease failed, use actual error; else use standard submitted message
+                    String infoMsg;
+                    if (isInfoleaseFailure(result)) {
+                        infoMsg = extractInfoleaseMessage(result);
+                    } else {
+                        infoMsg = 'Your request has been submitted. Due to >200 assets, processing may take sometime to complete. '
+                                + 'You will see an update once completed on the contract screen itself';
+                    }
+                    /*try {
+                        markBuyoutInProgress(recordId, infoMsg);
+                    } catch (Exception ignore) {
+                        // never break UI
+                    }*/
+                    // Fire async callout
+                    PEAC_BuyoutAsyncCalloutHelper.submitBuyoutFromIntegrationLog(logRec.Id);
+                    // ✅ CRITICAL: return immediately so UI stops spinner and shows banner
+                    return buildInProgressUiResponse(infoMsg); 
+
                 }
             }
             // after call processing
@@ -215,69 +479,529 @@ public with sharing class SL_SummaryAndDetail {
                 if(!isFromPeacBuyout){
                     result = mapMiscSummarySF(result);
                 }
-            }
+                }
                 when 'getPaymentHistoryDP'{
                     result = getPaymentHistoryDP(isFirstTime, isIL10,  contract, result);
                 }
             }
-            
             return result;
-        } catch (Exception e) {
+        }     	
+        catch (AuraHandledException ahe) {
+            // Business errors — rethrow as-is
+            throw ahe;
+        }
+    	catch (Exception e) {
             if(Test.isRunningTest()){
                 throw e;
-            }else{
-                throw new AuraHandledException(e.getMessage());
+            }else{                
+                throw businessError(
+                        'SYSTEM_FAILURE',
+                        'We are unable to process the Buyout at this time due to a system issue. ' +
+                        'Please try again later or contact support.'
+                    );
             }
         }
+    }   
+	
+	// Part of SL-2890 Long Text Area containing multiple lessor code to ensure it Works with comma-separated list: "601,613,603,605,604,602"
+	// along with semicolons, spaces, newlines.
+    @TestVisible
+    private static Boolean containsLessorCode(String lessorCodesText, String lessorCode) {
+        if (String.isBlank(lessorCodesText) || String.isBlank(lessorCode)) return false;
+        String target = lessorCode.trim();
+        // Split on comma OR semicolon OR any whitespace/newline
+        for (String token : lessorCodesText.split('[,;\\s]+')) {
+            if (!String.isBlank(token) && token.trim() == target) return true;
+        }
+        return false;
+    }
+	
+    @TestVisible
+    private static Boolean isOegBranch(String branchCode) {
+        if (String.isBlank(branchCode)) return false;
+        // Label value example: "00004,00040,00044"
+        String labelVal = String.valueOf(Label.PEAC_OEG_Branch_Codes);
+        if (String.isBlank(labelVal)) return false;    
+        Set<String> codes = new Set<String>();
+        for (String c : labelVal.split('[,;\\s]+')) {
+            if (!String.isBlank(c)) codes.add(c.trim());
+        }
+        return codes.contains(branchCode.trim());
     }
 
+	@TestVisible
+    private static Boolean containsToken(String tokensText, String token) {
+        if (String.isBlank(tokensText) || String.isBlank(token)) return false;    
+        String target = token.trim();    
+        // Supports comma, semicolon, spaces, and newlines
+        for (String t : tokensText.split('[,;\\s]+')) {
+            if (!String.isBlank(t) && t.trim() == target) return true;
+        }
+        return false;
+    }
+    @TestVisible
+    private static Boolean isEndOfTermWindow(Contract__c c) {
+        // End-of-term = within 30 days of Term_Date__c (or past)
+        if (c == null || c.Term_Date__c == null) return false;
+        Integer daysToTerm = Date.today().daysBetween(c.Term_Date__c);
+        return daysToTerm <= 30;
+    }
+    @TestVisible
+    private static String sanitizeQuoteBuyoutTypes(String existingSemicolon, Set<String> allowed) {        
+    	if (allowed == null) allowed = new Set<String>();
+        if (String.isBlank(existingSemicolon)) return '';    
+        // Build valid API values from describe
+        Set<String> validApiValues = new Set<String>();
+        for (Schema.PicklistEntry pe :
+            Contract__c.Quote_Buyout_Types__c.getDescribe().getPicklistValues()) {
+            validApiValues.add(pe.getValue());
+        }    
+        List<String> cleaned = new List<String>();
+        Set<String> seen = new Set<String>();
+    
+        for (String t : existingSemicolon.split(';')) {
+            if (String.isBlank(t)) continue;
+            String v = t.trim();
+            if (validApiValues.contains(v) && allowed.contains(v) && !seen.contains(v)) {
+                cleaned.add(v);
+                seen.add(v);
+            }
+        }
+        return String.join(cleaned, ';');
+
+    }
+   	
+    @TestVisible
+    private static Boolean matchesEplusRowByCondition(String rowKey, Contract__c c) {
+        if (String.isBlank(rowKey) || c == null) return false;    
+        // Normalize: "LC_ePlus_OL_BOK_End_of_Term" -> "lc eplus ol bok end of term"
+        String t = rowKey.toLowerCase().replace('_', ' ').replace('-', ' ');
+    
+        Boolean isRenewal = (c.Renewal_Status__c == 'A' || c.Renewal_Status__c == 'E');
+        Boolean isOL = (c.Contract_Type__c == 'OL');    
+        
+        // If contract is in renewal: 
+    	//OL contract => only OL-renewal rows should match
+    	//Non-OL contract => only non-OL renewal rows should match
+
+        
+		if (t.contains('renewal')) {
+        if (!isRenewal) return false;
+
+        // Identify whether the CMDT row is an OL template.
+        // After normalization, OL rows typically contain " ol " (e.g., "ol eplus renewal bok")
+ 
+        Boolean isRowOL = t.contains(' ol ') || t.startsWith('ol ') || t.contains(' ol_') || t.contains('_ol_');
+            if (isOL) {
+                // OL renewal contract => allow ONLY OL renewal templates
+                return isRowOL;
+            } else {
+                // Non-OL renewal contract => allow ONLY non-OL renewal templates
+                return !isRowOL;
+            }
+    	}
+
+        
+        // If contract is renewal, do not allow NON-renewal templates
+        if (isRenewal) return false;    
+        // 2) OL templates
+        if (t.contains(' ol ')) {
+            if (!isOL) return false;
+    
+            Boolean isBOR = t.contains(' bor ');
+            Boolean isBOK = t.contains(' bok ');
+    
+            Boolean isRowEOT = t.contains('end of term') || t.contains('eol');
+            Boolean isRowInTerm = t.contains('in term');
+    
+            // BOR types: always show for OL (per requirement matrix)
+            if (isBOR) return true;
+    
+            // Only BOK types are term-date driven
+            if (!isBOK) return false;
+    
+            // BOK types: term-date driven
+            if (c.Term_Date__c == null) return false;
+    
+            Integer daysToTerm = Date.today().daysBetween(c.Term_Date__c);
+            Boolean isEOT = (daysToTerm <= 30);
+    
+            if (isEOT && isRowEOT) return true;
+            if (!isEOT && isRowInTerm) return true;
+    
+            return false;
+        }
+    
+        // 3) Non-OL templates: If contract is OL, non-OL rows must not be shown.
+        if (isOL) return false;
+    
+        // Non-OL non-renewal rows allowed (83-86 etc.)
+        return true;
+    }
+    @TestVisible
+    private static String autoSelectEligible(List<String> validQBs) {
+        if (validQBs == null || validQBs.isEmpty()) return '';
+        // validQBs already preserves order; join with semicolon for storage
+        return String.join(validQBs, ';');
+    }
+    
     @testVisible
-    private static String getValidQB(Contract__c contract){
-        String result = '';
-        List<String> validQBs = new List<String>();
-        List<String> options = new List<String>();
-        Boolean isOEG = contract.Branch_Code__c=='00004'||contract.Branch_Code__c=='00040'||contract.Branch_Code__c=='00044';
-        Decimal discountRate = Decimal.valueOf(contract.Dealer_Name__r?.Discount_for_Upgrade_to_Keep__c ?? '0.000'); // SL-2629
-        if(xeroxLessorCodes.contains(contract.Lessor_Code__c) 
-        || (isOEG && discountRate > 0)){
+    private static String getValidQB(Contract__c contract) {
+ 
+    String cleanedChosen = contract.Quote_Buyout_Types__c;
+    List<String> validQBs = new List<String>();
+    List<String> options = new List<String>();
+ 
+   /*Fix for Deployment issue -- enclosed the condtions in a Parenthesis : D Balakrishna(LTMindtree)*/
+    Boolean expo =((contract.Opportunity__c != null && contract.Opportunity__r.Originating_Business__c == PEAC_ConstantClass.OPPORTUNITY_ORIGINATING_BUSINESS_VA_PEAC)
+    || contract.Originating_Business__c == PEAC_ConstantClass.OPPORTUNITY_ORIGINATING_BUSINESS_VA_PEAC );
+ 
+    Boolean isOEG = isOegBranch(contract.Branch_Code__c);
+    Decimal discountRate =
+        Decimal.valueOf(contract.Dealer_Name__r?.Discount_for_Upgrade_to_Keep__c ?? '0.000');
+ 
+    /* NON‑EXPO / LEGACY PATH (UNCHANGED, SAFE) */
+        if (!expo) {
+            if (xeroxLessorCodes.contains(contract.Lessor_Code__c) || (isOEG && discountRate > 0)) {
+                String jsonQBs = buyoutCreationV2(contract.Id);
+                if (jsonQBs != null && jsonQBs.contains('"quoteBuyouts"')) {
+                    Map<String, Object> quoteBuyoutObj =
+                        (Map<String, Object>)JSON.deserializeUntyped(jsonQBs);
+                    String quoteBuyouts = (String)quoteBuyoutObj.get('quoteBuyouts');
+                    if (!String.isBlank(quoteBuyouts)) {
+                        validQBs = quoteBuyouts.split(';');
+                    }
+                }
+            } else if (
+                contract.Status__c != 'Disposed' &&
+                contract.Status__c != 'Disposed - Charged Off' &&
+                contract.Renewal_Status__c == 'A'
+            ) {
+                validQBs = new List<String>{ '37', '40', '41' };
+            } else if (
+                contract.Status__c == 'Active' &&
+                (contract.Renewal_Status__c == 'E' || String.isBlank(contract.Renewal_Status__c))
+            ) {
+                validQBs = new List<String>{
+                    '1','20','21','6','22','14','26','44','45','46','47'
+                };
+            }
+        }
+ 
+    /* EXPO + CMDT PATH (SOURCE OF TRUTH FOR ePlus)*/
+        if (expo && !String.isBlank(contract.Lessor_Code__c) && (contract.Status__c != 'Disposed' && contract.Status__c != 'Disposed - Charged Off')) {
+     
+            // Build valid picklist API values
+            Set<String> picklistApiValues = new Set<String>();
+            for (Schema.PicklistEntry pe :
+                 Contract__c.Quote_Buyout_Types__c.getDescribe().getPickListValues()) {
+                picklistApiValues.add(pe.getValue());
+       
+            }
+     
+            List<Lessor_Code_Buyout_Map__mdt> cmdtRows = [
+                SELECT DeveloperName, LessorCodes__c, LessorCode__c,TemplateId__c,
+                       BuyoutType__c, Branch_Codes__c
+                FROM Lessor_Code_Buyout_Map__mdt
+            ];
+    
+            Set<String> currentSet = new Set<String>(validQBs);
+     
+            for (Lessor_Code_Buyout_Map__mdt row : cmdtRows) {
+            system.debug('row::'+row);
+                // Lessor match (CMDT‑driven)
+                Boolean applies =
+                    containsLessorCode(row.LessorCodes__c, contract.Lessor_Code__c) /*||
+                    (!String.isBlank(row.LessorCode__c) &&
+                     row.LessorCode__c.trim() == contract.Lessor_Code__c)*/;
+                if (!applies) continue;
+     
+                // Branch restriction (160 only)
+                if (contract.Lessor_Code__c == '160' &&
+                    !String.isBlank(row.Branch_Codes__c) &&
+                    !containsToken(row.Branch_Codes__c, contract.Branch_Code__c)) {
+                    continue;
+                }
+     
+                // Apply strict rules ONLY for ePlus templates
+                if (row.DeveloperName != null &&
+                    row.DeveloperName.toLowerCase().contains('eplus') &&
+                    !matchesEplusRowByCondition(row.DeveloperName, contract)) { 
+                    continue;
+                }
+     
+                // CMDT BuyoutType__c = picklist API value
+                String code = row.BuyoutType__c != null
+                    ? row.TemplateId__c
+                    : null;
+                 system.debug('Code::'+code + ' code is blank::'+ !String.isBlank(code) +' picklistApiValues::'+ picklistApiValues.contains(code) +' buyout::'+row.BuyoutType__c.trim()); //Toms
+                
+                Boolean isBlank = String.isBlank(code);
+                Boolean inPicklist = !isBlank && picklistApiValues.contains(code);
+                Boolean inCurrent = !isBlank && currentSet.contains(code); 
+    
+                if (isBlank || !inPicklist) {
+                    continue;
+                }
+    
+                if (!inCurrent) {
+                    validQBs.add(code);
+                    currentSet.add(code);
+                }         
+            }
+     
+            // Sanitize existing selections (safe)
+            Set<String> allowedSet = new Set<String>(validQBs);
+            cleanedChosen = sanitizeQuoteBuyoutTypes(contract.Quote_Buyout_Types__c, allowedSet);
+        }
+ 
+
+       //CMDT‑SAFE FALLBACK (NO HARDCODE)
+       //ONLY FOR NON‑ePlus CONTRACTS
+
+        Boolean isEplusContract = false;
+        for (Lessor_Code_Buyout_Map__mdt row : [
+            SELECT LessorCodes__c, LessorCode__c
+            FROM Lessor_Code_Buyout_Map__mdt
+        ]) {
+            if (
+                containsLessorCode(row.LessorCodes__c, contract.Lessor_Code__c) ||
+                (!String.isBlank(row.LessorCode__c) &&
+                 row.LessorCode__c.trim() == contract.Lessor_Code__c)
+            ) {
+                isEplusContract = true;
+                break;
+            }
+        }
+ 
+        if (validQBs.isEmpty() && !isEplusContract) {
             String jsonQBs = buyoutCreationV2(contract.Id);
-            if(jsonQBs.contains('"quoteBuyouts"')){
-                Map<String, Object> quoteBuyoutObj = (Map<String, Object>)JSON.deserializeUntyped(jsonQBs);
+            if (jsonQBs != null && jsonQBs.contains('"quoteBuyouts"')) {
+                Map<String, Object> quoteBuyoutObj =
+                    (Map<String, Object>)JSON.deserializeUntyped(jsonQBs);
                 String quoteBuyouts = (String)quoteBuyoutObj.get('quoteBuyouts');
-                if(quoteBuyouts != null){
+                if (!String.isBlank(quoteBuyouts)) {
                     validQBs = quoteBuyouts.split(';');
                 }
             }
-        }else{
-            if(contract.Status__c != 'Disposed' && contract.Status__c != 'Disposed - Charged Off'
-                && contract.Renewal_Status__c == 'A'){
-                validQBs = new List<String>{'37', '40', '41'};
-            }else{
-                if(contract.Status__c == 'Active' && (contract.Renewal_Status__c == 'E' || String.isEmpty(contract.Renewal_Status__c))){
-                    validQBs = new List<String>{'1', '20', '21', '6', '22', '14', '26', '44', '45', '46', '47'};
+        }
+ 
+    /* BUILD UI RESPONSE */
+        for (Schema.PicklistEntry pe :
+             Contract__c.Quote_Buyout_Types__c.getDescribe().getPickListValues()) {
+              if (validQBs.contains(pe.getValue())) {
+                options.add(
+                    '{ "label": "' + pe.getLabel() +
+                    '", "value": "' + pe.getValue() + '" }'   
+                );
+            }
+        }
+     
+        return '{"filteredQBs": [' + String.join(options, ',') +
+               '], "quoteBuyoutTypes": "' +
+               (cleanedChosen == null ? '' : cleanedChosen) + '"}';
+    }
+ 
+	
+    @TestVisible
+    private static String normalizePickKey(String s) {
+        if (String.isBlank(s)) return '';
+        String x = s.toLowerCase();
+        // Replace any non-alphanumeric (including hyphens, punctuation) with space
+        x = x.replaceAll('[^a-z0-9]+', ' ');
+        // Collapse multiple spaces
+        x = x.replaceAll('\\s+', ' ').trim();
+        return x;
+    }
+    @TestVisible
+    private static String normalizeRestrictedSinglePicklist(
+        String incoming,
+        Schema.SObjectField fieldRef
+    ) {
+        if (String.isBlank(incoming)) return null;
+    
+        List<Schema.PicklistEntry> entries =
+            fieldRef.getDescribe().getPicklistValues();
+    
+        Map<String, String> labelToValue = new Map<String, String>();
+        Set<String> validApiValues = new Set<String>();
+    
+        for (Schema.PicklistEntry pe : entries) {
+            validApiValues.add(pe.getValue());
+            labelToValue.put(
+                normalizePickKey(pe.getLabel()),
+                pe.getValue()
+            );
+        }
+    
+        // Already API value → accept
+        if (validApiValues.contains(incoming)) {
+            return incoming;
+        }
+    
+        // Try label → API
+        String norm = normalizePickKey(incoming);
+        if (labelToValue.containsKey(norm)) {
+            return labelToValue.get(norm);
+        }
+    
+        throw new AuraHandledException(
+            'Invalid value for Renewal Status: ' + incoming
+        );
+    }
+	@TestVisible
+    private static Map<String, String> getPicklistLabelToValueMap(Schema.SObjectField fieldRef) 
+    {   Map<String, String> labelToValue = new Map<String, String>();    
+        for (Schema.PicklistEntry pe : fieldRef.getDescribe().getPicklistValues()) {
+            if (pe != null) {
+                // normalize label for safe matching
+                labelToValue.put(
+                    normalizePickKey(pe.getLabel()),
+                    pe.getValue()
+                );
+            }
+        }
+        return labelToValue;
+    }
+	@TestVisible
+    private static String normalizeRestrictedPicklist( String incoming,Schema.SObjectField fieldRef)
+    {
+        if (String.isBlank(incoming)) return '';
+    
+        List<Schema.PicklistEntry> entries =
+            fieldRef.getDescribe().getPicklistValues();
+    
+        Set<String> validApiValues = new Set<String>();
+        Map<String, String> normLabelToValue = new Map<String, String>();
+    
+        for (Schema.PicklistEntry pe : entries) {
+            if (pe == null) continue;
+            validApiValues.add(pe.getValue());
+            normLabelToValue.put(
+                normalizePickKey(pe.getLabel()),
+                pe.getValue()
+            );
+            system.debug('pe::' +pe);
+        }
+    
+        List<String> result = new List<String>();
+        Set<String> seen = new Set<String>();
+    
+        for (String token : incoming.split('\\s*[;,]\\s*')) {
+            if (String.isBlank(token)) continue;
+    
+            String t = token.trim();
+            if (validApiValues.contains(t)) {
+                if (!seen.contains(t)) {
+                    result.add(t);
+                    seen.add(t);
+                }
+            } else {
+                String norm = normalizePickKey(t);
+                if (normLabelToValue.containsKey(norm)) {
+                    String apiVal = normLabelToValue.get(norm);
+                    if (!seen.contains(apiVal)) {
+                        result.add(apiVal);
+                        seen.add(apiVal);
+                    }
+                } else {
+                    throw new AuraHandledException(
+                        'Invalid value for restricted picklist: ' + t
+                    );
                 }
             }
         }
-        
-        list<Schema.PicklistEntry> values = Schema.getGlobalDescribe().get('Contract__c')
-                .getDescribe().Fields.getMap().get('Quote_Buyout_Types__c').getDescribe().getPickListValues();
-        for(Schema.PicklistEntry pickListValue: values){
-            if(validQBs.contains(pickListValue.getValue())){
-                options.add('{ "label": "' + pickListValue.getLabel() + '", "value": "' + pickListValue.getValue() + '" }');
-            }
-        }
-        result = '{"filteredQBs": [' + String.join(options, ',') + '], "quoteBuyoutTypes": "'
-            + contract.Quote_Buyout_Types__c + '"}';
-        return result;
+        return String.join(result, ';');
     }
 
     @testVisible
-    private static String saveQB(Contract__c contract, String quoteBuyoutTypes){
-        String result = '';
+    private static String saveQB(Contract__c contract, String quoteBuyoutTypes){       
+        // Normalize null
+        String incoming = (quoteBuyoutTypes == null) ? '' : quoteBuyoutTypes.trim();
+        System.debug('saveQB incoming quoteBuyoutTypes = ' + incoming);
+        // SAFE picklist describe 
+        Schema.SObjectType sObjType = Schema.getGlobalDescribe().get('Contract__c');
+        Schema.SObjectField fld = sObjType.getDescribe().fields.getMap().get('Quote_Buyout_Types__c');
+        List<Schema.PicklistEntry> entries = fld.getDescribe().getPicklistValues();
+
+        // Build maps of picklist Label->Value and valid Value set
+        
+        // Build maps:- valid API values- normalized label -> API value
+        Set<String> validApiValues = new Set<String>();
+        Map<String, String> normLabelToValue = new Map<String, String>();
+    
+        for (Schema.PicklistEntry pe : entries) {
+            if (pe == null) continue;
+            String apiVal = pe.getValue();
+            String lbl = pe.getLabel();
+    		system.debug('pe::' +pe);
+            if (!String.isBlank(apiVal)) validApiValues.add(apiVal.trim());
+    
+            if (!String.isBlank(lbl) && !String.isBlank(apiVal)) {
+                normLabelToValue.put(normalizePickKey(lbl), apiVal.trim());
+            }
+        }
+    
+        // Split incoming by ; or ,
+        List<String> normalizedApiValues = new List<String>();
+        List<String> unknownTokens = new List<String>();
+    
+        for (String token : incoming.split('\\s*[;,]\\s*')) {
+            if (String.isBlank(token)) continue;
+            String t = token.trim();
+    
+            // 1) If already an API value, accept it
+            if (validApiValues.contains(t)) {
+                normalizedApiValues.add(t);
+                continue;
+            }
+    
+            // 2) Otherwise try label -> value using normalization
+            String norm = normalizePickKey(t);
+            if (normLabelToValue.containsKey(norm)) {
+                normalizedApiValues.add(normLabelToValue.get(norm));
+                continue;
+            }
+    
+            // 3) Not a valid API value, not a recognizable label
+            unknownTokens.add(t);
+        }
+
+        // If anything is unknown, to display a helpful message
+        if (!unknownTokens.isEmpty()) {
+            // This prevents Salesforce from attempting to save invalid picklist values
+            throw new AuraHandledException(
+                'Invalid selection(s) for Quote Buyout Types: ' + String.join(unknownTokens, ', ') +
+                '. Please refresh the page and try again.'
+            );
+        }
+    
+        // Dedupe while preserving order
+        Set<String> seen = new Set<String>();
+        List<String> finalList = new List<String>();
+        for (String v : normalizedApiValues) {
+            if (!String.isBlank(v) && !seen.contains(v)) {
+                finalList.add(v);
+                seen.add(v);
+            }
+        }
+    	
+        // Save ONLY API values
+        contract.Quote_Buyout_Types__c = String.join(finalList, ';');		
+        //Harden Renewal Status (A / E only)
+        contract.Renewal_Status__c =
+            normalizeRestrictedSinglePicklist(
+                contract.Renewal_Status__c,
+                Contract__c.Renewal_Status__c
+            );
+        update contract;    
+        return 'success';
+        /*String result = '';
         contract.Quote_Buyout_Types__c = quoteBuyoutTypes;
         update contract;
         result = 'success';
-        return result;
+        System.debug('the value of QBT'+ result);
+        return result;*/        
     }
 
     @testVisible
@@ -286,6 +1010,7 @@ public with sharing class SL_SummaryAndDetail {
         result = '{"oppPurchaseOpt": ' + JSON.serialize(contract.Opportunity__r?.Purchase_Options__c)+ '}';
         return result;
     }
+    @TestVisible
     private static String getUserProfile(Contract__c contract){
         Profile currentProfile = [SELECT Id, Name FROM Profile WHERE Id = :UserInfo.getProfileId()];
         String result = '';
@@ -293,6 +1018,7 @@ public with sharing class SL_SummaryAndDetail {
         result = '{"isAssetManagement": ' + JSON.serialize(Boolean.valueOf(hasPermissionToAM))+ '}';
         return result;
     }
+    @TestVisible
     private static String generateRAs(Contract__c contract){
         List<Contract_Asset__c> contractAssets = [SELECT Id, Name FROM Contract_Asset__c WHERE Contract__c = :contract.Id];
         String result = '';
@@ -310,7 +1036,8 @@ public with sharing class SL_SummaryAndDetail {
         }
         return result;
     }
-// SL-2672 Misael Romero
+	// SL-2672 Misael Romero
+	@TestVisible
     private static String generateError(String nitroApiOption){
         String errorJson = '{"response": {"Response": {"Success": "false", "Errors": ["';
         switch on nitroApiOption {
@@ -323,6 +1050,64 @@ public with sharing class SL_SummaryAndDetail {
         }
         return errorJson +'"]}}}';
     }
+
+    //SL-2924 (Start of Helper Methods) - D Balakrishna (LTMindtree)
+    private static final String BUYOUT_INPROGRESS_MSG =
+        'Buyout is Inprogress and will be notified once the Buyout is Successfully completed';
+    
+    @TestVisible
+    private static String extractInfoleaseMessage(String rawResponse) {
+        if (String.isBlank(rawResponse)) return 'No response returned from Infolease.';
+        try {
+            Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped(rawResponse);
+            Map<String, Object> respWrap =
+                (Map<String, Object>) (root.get('response') != null ? root.get('response') : root);
+            Map<String, Object> resp = (Map<String, Object>) respWrap.get('Response');
+    
+            if (resp != null) {
+                Object errs = resp.get('Errors');
+                if (errs instanceof List<Object>) {
+                    List<Object> eList = (List<Object>) errs;
+                    List<String> msgs = new List<String>();
+                    for (Object o : eList) if (o != null) msgs.add(String.valueOf(o));
+                    if (!msgs.isEmpty()) return String.join(msgs, ', ');
+                }
+            }
+            return rawResponse;
+        } catch (Exception e) {
+            return rawResponse;
+        }
+    }
+    
+    @TestVisible
+    private static Boolean isInfoleaseFailure(String rawResponse) {
+        if (String.isBlank(rawResponse)) return true;
+        try {
+            Map<String, Object> root = (Map<String, Object>) JSON.deserializeUntyped(rawResponse);
+            Map<String, Object> respWrap =
+                (Map<String, Object>) (root.get('response') != null ? root.get('response') : root);
+            Map<String, Object> resp = (Map<String, Object>) respWrap.get('Response');
+            if (resp == null) return true;
+    
+            String successVal = String.valueOf(resp.get('Success'));
+            return successVal != null && successVal.toLowerCase() == 'false';
+        } catch (Exception e) {
+            return true;
+        }
+    }
+    
+    @TestVisible
+    private static String buildInProgressUiResponse(String infoleaseMessage) {
+        return JSON.serialize(new Map<String, Object>{
+            'Response' => new Map<String, Object>{
+                'Success' => 'true',
+                'InProgress' => true,
+                'Message' => BUYOUT_INPROGRESS_MSG,
+                'InfoleaseMessage' => infoleaseMessage
+            }
+        });
+    }
+	//SL-2924 (End of Helper Methods) - D Balakrishna (LTMindtree)
 
     public static String callBridgeware(String body, String recordId, Boolean saveLog, Boolean isWaiver, Boolean isIL10){
         String JSONResponse = '';
@@ -347,51 +1132,182 @@ public with sharing class SL_SummaryAndDetail {
         req.setMethod('POST');
         req.setHeader('CONFIG-NAME', util.getServiceSettings().Config_Name__c);
         req.setHeader('Content-Type','application/json');
-        body = isIL10 && il10Setting.use_IL10__c? '{"inputs": ' + body + '}': body;
-        req.setBody(body);
-        system.debug('JSON request: ' + body);
-        system.debug('JSON request tail: ' + body.right(255));
-        req.setTimeout(120000);
-        if(Test.isRunningTest()){
-            Test.setMock(HttpCalloutMock.class, new SL_OnBaseCalloutTest.RetrieveMock());
+        //Build STRICT payload for sending (no logging metadata)
+        String bodyForSend = body;
+        if (isIL10 && il10Setting.use_IL10__c) {
+            bodyForSend = '{"inputs": ' + bodyForSend + '}';
         }
-        HttpResponse resp = h.send(req);
-        JSONResponse = resp.getBody();
-        system.debug('JSONResponse: ' + JSONResponse);
-        system.debug('JSONResponse tail: ' + JSONResponse.right(255));
-        if(saveLog){
-            Decimal waivedAmount = null;
-            List<String> errors = new List<String>();
-            String errorMessage = '';
-            JSONParser parser = JSON.createParser(JSONResponse);
-            while (parser.nextToken() != null) {
-                if(isWaiver && parser.getCurrentToken() == JSONToken.FIELD_NAME && parser.getText() == 'TotalWaived') {
-                    parser.nextToken();
-                    waivedAmount = Decimal.valueOf(parser.getText());
-                }
-                if (parser.getCurrentToken() == JSONToken.FIELD_NAME && parser.getText() == 'Errors') {
-                    parser.nextToken();
-                    if(parser.getCurrentToken() == JSONToken.START_ARRAY ){
-                        parser.nextToken();
-                        while (parser.getCurrentToken() != JSONToken.END_ARRAY){
-                            String errorText = parser.getText().trim();
-                            if(errorText.length()> 0){
-                                errors.add(parser.getText());
-                            }
-                            parser.nextValue();
-                        }
+		
+    	String contractNumber;
+        String buyoutType;
+    	
+    	Integer assetCount = 0;
+        try {
+            /*Map<String, Object> root =
+                (Map<String, Object>) JSON.deserializeUntyped(bodyForSend);
+            Map<String, Object> inputs =
+                (Map<String, Object>) root.get('inputs');
+    
+            if (inputs != null) {
+                Map<String, Object> reqObj =
+                    (Map<String, Object>) inputs.get('Request');
+    
+                if (reqObj != null) {
+                    if (reqObj.containsKey('ContractNumber'))
+                        contractNumber = String.valueOf(reqObj.get('ContractNumber'));
+    
+                    if (reqObj.containsKey('BuyoutType'))
+                        buyoutType = String.valueOf(reqObj.get('BuyoutType'));
+    
+                    Object assets = reqObj.get('Assets');
+                    if (assets instanceof List<Object>) {
+                        assetCount = ((List<Object>) assets).size();
                     }
                 }
+            }*/
+            Map<String, Object> root =
+                (Map<String, Object>) JSON.deserializeUntyped(bodyForSend);
+            
+            Map<String, Object> inputs;
+            Map<String, Object> reqObj;
+            
+            // FIX: support both formats (with and without 'inputs')
+            if (root.containsKey('inputs')) {
+                inputs = (Map<String, Object>) root.get('inputs');
+                if (inputs != null && inputs.containsKey('Request')) {
+                    reqObj = (Map<String, Object>) inputs.get('Request');
+                }
+            } else {
+                reqObj = (Map<String, Object>) root.get('Request');
             }
-            if(errors.size() > 0){
-                errorMessage = String.join(errors, ', ');
-            }   
-            SL_InfoleaseLoggingUtils.addLog(integrationName, recordId,  req.getBody(), JSONResponse, errorMessage, errorMessage.length() > 0, waivedAmount);
+            
+            if (reqObj != null) {
+                if (reqObj.containsKey('ContractNumber'))
+                    contractNumber = String.valueOf(reqObj.get('ContractNumber'));
+                
+                if (reqObj.containsKey('BuyoutType'))
+                    buyoutType = String.valueOf(reqObj.get('BuyoutType'));
+                
+                Object assets = reqObj.get('Assets');
+                if (assets instanceof List<Object>) {
+                    assetCount = ((List<Object>) assets).size();
+                }
+            }
+            
+        } catch (Exception ignore) {
+        }
+       //BUILD BuyoutexternalId ONLY WHEN assetCount > 200
+       
+       
+       //INJECT ONLY FOR >200 ASSETS
+        try {
+                Map<String, Object> rootSend =
+                    (Map<String, Object>) JSON.deserializeUntyped(bodyForSend);
+        
+            Map<String, Object> inputsSend;
+            Map<String, Object> reqSend;
+            
+            if (rootSend.containsKey('inputs')) {
+                inputsSend = (Map<String, Object>) rootSend.get('inputs');
+                reqSend = (Map<String, Object>) inputsSend.get('Request');
+            } else {
+                reqSend = (Map<String, Object>) rootSend.get('Request');
+            }
+        
+            if (rootSend.containsKey('inputs')) {
+                inputsSend.put('Request', reqSend);
+                rootSend.put('inputs', inputsSend);
+            } else {
+                rootSend.put('Request', reqSend);
+            }
+            
+             bodyForSend = JSON.serialize(rootSend);
+        		
+                // Defensive cleanup: ensure NO existing Request node survives 
+               /* if (inputsSend.containsKey('Request')) {
+                    inputsSend.remove('Request');
+                }
+
+                inputsSend.put('Request', reqSend);
+                rootSend.put('inputs', inputsSend);
+                bodyForSend = JSON.serialize(rootSend);*/
+
+    		} catch (Exception ignore) {}
+
+       //SEND CLEAN PAYLOAD
+        req.setBody(bodyForSend);
+        req.setTimeout(120000); 
+        System.debug(logginglevel.error,'Request JSON' + req);
+        if (Test.isRunningTest()) {
+            Test.setMock(HttpCalloutMock.class, new SL_OnBaseCalloutTest.RetrieveMock());
+        }    
+        HttpResponse resp = h.send(req);
+        JSONResponse = resp.getBody();
+        
+        //SAFE LOGGING (STRICT REQUEST JSON)
+        if (saveLog) {
+            String errorMessage = '';
+            Decimal waivedAmount;
+            List<String> errors = new List<String>();
+
+            try {
+                String trimmedResp =
+                    (JSONResponse == null) ? '' : JSONResponse.trim();
+    
+                if (trimmedResp.startsWith('<')) {
+                    errorMessage =
+                        'Non-JSON response received from InfoLease (HTML).';
+                } else {
+                    JSONParser p = JSON.createParser(JSONResponse);
+                    while (p.nextToken() != null) {
+                        if (isWaiver &&
+                            p.getCurrentToken() == JSONToken.FIELD_NAME &&
+                            p.getText() == 'TotalWaived') {
+    
+                            p.nextToken();
+                            waivedAmount = Decimal.valueOf(p.getText());
+                        }
+    
+                        if (p.getCurrentToken() == JSONToken.FIELD_NAME &&
+                            p.getText() == 'Errors') {
+    
+                            p.nextToken();
+                            if (p.getCurrentToken() == JSONToken.START_ARRAY) {
+                                p.nextToken();
+                                while (p.getCurrentToken() != JSONToken.END_ARRAY) {
+                                    String err =
+                                        p.getText() != null ? p.getText().trim() : '';
+                                    if (err.length() > 0) errors.add(err);
+                                    p.nextValue();
+                                }
+                            }
+                        }
+                    }
+    
+                    if (!errors.isEmpty()) {
+                        errorMessage = String.join(errors, ', ');
+                    }
+                }
+            } catch (Exception ex) {
+                errorMessage =
+                    'Failed to parse InfoLease response as JSON: ' + ex.getMessage();
+            }
+
+            SL_InfoleaseLoggingUtils.addLog(
+                integrationName,
+                recordId,
+                req.getBody(),        // STRICT JSON 
+                JSONResponse,
+                errorMessage,
+                String.isNotBlank(errorMessage),
+                waivedAmount
+            );
             SL_InfoleaseLoggingUtils.flush();
         }
         return JSONResponse;
-    }
-  public static boolean isContractBlocked(Contract__c currentCon){
+   }
+  	
+    public static boolean isContractBlocked(Contract__c currentCon){
         If(currentCon.Quote_Buyout__c =='04'||currentCon.Quote_Buyout__c =='07'||currentCon.Quote_Buyout__c =='13'
             ||currentCon.Quote_Buyout__c =='15'||currentCon.Quote_Buyout__c =='18'||currentCon.Quote_Buyout__c =='20'){
             return true;
@@ -417,9 +1333,9 @@ public with sharing class SL_SummaryAndDetail {
             if(xeroxLessorCodes.contains(contract.Lessor_Code__c)){
                 if(contract.Contract_Type__c == 'CS'){
                     contract.Quote_Buyout_Types__c = '73;78';
-                }else if(contract.Contract_Type__c == 'TL' && contract.Renewal_Status__c == 'A'){
+                }else if(PEAC_ConstantClass.TRUE_AND_OPERATING_LEASE.Contains( contract.Contract_Type__c) && contract.Renewal_Status__c == 'A'){//Fix for OL and TL
                     contract.Quote_Buyout_Types__c = '82;81;80;79';
-                }else if(penaltyForBuyout == 3 && contract.Term_Date__c != null && Date.today() <= contract.Term_Date__c.addDays(daysOfIntent * -1) && contract.Contract_Type__c == 'TL'){
+                }else if(penaltyForBuyout == 3 && contract.Term_Date__c != null && Date.today() <= contract.Term_Date__c.addDays(daysOfIntent * -1) && PEAC_ConstantClass.TRUE_AND_OPERATING_LEASE.Contains( contract.Contract_Type__c)){//Fix for OL and TL
                     //Dealer Portal
                     if(System.Site.getSiteId() != null){
                         if(contract.Dealer_Name__r.Eligible_for_BORs__c && contract.Legacy_Contract_Id__c!=null){
@@ -471,12 +1387,12 @@ public with sharing class SL_SummaryAndDetail {
                 }else{
                     contract.Quote_Buyout_Types__c = '1;6';
                 }
-            }
-            if(String.isBlank(contract.Quote_Buyout_Types__c)){
-                result = genericErrorJson;
-            }else{
-            result = '{"quoteBuyouts": ' + JSON.serialize(contract.Quote_Buyout_Types__c)+ '}';
-            }
+        }
+        if(String.isBlank(contract.Quote_Buyout_Types__c)){
+            result = genericErrorJson;
+        }else{
+        result = '{"quoteBuyouts": ' + JSON.serialize(contract.Quote_Buyout_Types__c)+ '}';
+        }
         }else{
             result = genericErrorJson;
         }
@@ -753,6 +1669,7 @@ public with sharing class SL_SummaryAndDetail {
             //Update new Opportunity(id = recordId, Docs_In_From_Portal__c = System.now());
            
         } catch (Exception e) {
+            System.debug(e.getMessage());
             throw new AuraHandledException(e.getMessage());
         }
     }
@@ -832,7 +1749,8 @@ public with sharing class SL_SummaryAndDetail {
         
         return new List<Account>{acc[0]};
     } 
-    // SL-2629 Misael Romero
+    //SL-2629 Misael Romero
+    @TestVisible
     static void addDiscountCode(Contract__c theContract){
         Decimal discountRate = Decimal.valueOf(theContract.Dealer_Name__r?.Discount_for_Upgrade_to_Keep__c ?? '0.000');
         Boolean isIL10 = TC_BWUtility.isIL10Record(theContract);
@@ -842,7 +1760,8 @@ public with sharing class SL_SummaryAndDetail {
             removeQBTypes(theContract, notAllowedWith14);
         }
     }
-    static void removeQBTypes(Contract__c theContract, List<String> codesToRemove){
+    
+    public static void removeQBTypes(Contract__c theContract, List<String> codesToRemove){
         List<String> qbTypes = new List<String>();
         String qbTypesString = theContract.Quote_Buyout_Types__c ?? '';
         for(String qbType :qbTypesString.split(';')){

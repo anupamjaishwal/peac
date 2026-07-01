@@ -1,0 +1,31 @@
+<!-- 
+    Developed by Suraj Harichandan(LTIMindtree) as a part of BugFix for SAL-5654
+    Auto-visible banner for Residual discrepancy detection with embedded Resolve button.
+-->
+<template>
+    <template lwc:if={showBanner}>
+        <div class="banner-container slds-notify slds-notify_alert slds-alert_error slds-m-bottom_small" role="alert">
+            <span class="slds-assistive-text">Error</span>
+            <div class="slds-grid slds-grid_vertical-align-center slds-wrap">
+                <div class="slds-col slds-grow slds-p-right_small">
+                    <h2 class="banner-message">
+                        <lightning-icon icon-name="utility:error" size="x-small"
+                                        variant="inverse" class="slds-m-right_x-small">
+                        </lightning-icon>
+                        {discrepancyMessage}
+                    </h2>
+                </div>
+                <div class="slds-col slds-no-flex">
+                    <lightning-button
+                        variant="brand"
+                        label="Resolve Residual"
+                        title="Re-sync Residual field from Asset totals"
+                        icon-name="utility:refresh"
+                        onclick={handleResolve}
+                        disabled={isResolving}>
+                    </lightning-button>
+                </div> 
+            </div>
+        </div>
+    </template>
+</template>

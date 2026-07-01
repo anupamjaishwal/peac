@@ -194,11 +194,8 @@ public with sharing class SL_DealerPortalCreateAppTest {
         parameterObj.theOpportunityId = SL_SCTestData.testOpportunities[0].Id;
         parameterObj.guarantorContact = testCon[0];
         parameters.add(parameterObj);
-        Id accId = SL_SCTestData.testAccounts[0].Id;
+        // Id accId = SL_SCTestData.testAccounts[0].Id;
         User dpUser = null;
-        // System.runAs(SL_SCTestData.testUser){
-        //     dpUser = SL_SCTestData.createDPUser(accId);
-        // }
         System.runAs(SL_SCTestData.testUser){
             Account portalAccount = SL_SCTestData.testAccounts[0];
             dpUser = SL_SCTestData.createDPDataForUser(portalAccount);
@@ -206,8 +203,8 @@ public with sharing class SL_DealerPortalCreateAppTest {
         System.runAs(dpUser){
             guarantorsCreated = SL_DealerPortalCAGuarantor.createGuarantorContact(parameters);
         }
-        Integer contactsCreated = [SELECT COUNT() FROM Contact];
-        System.Assert.areEqual(3, contactsCreated, 'must used the existing dupe');// 3 contacts already exist as prep data
+        Integer contactsCreated = [SELECT COUNT() FROM Contact WHERE Account.IsPartner = false];
+        System.Assert.areEqual(1, contactsCreated, 'must used the existing dupe');// 1 contact already exists as prep data
         // DP-872 Misael Romero
         // Contact c = new Contact (AccountId = accId, FirstName = 'new test',
         //          LastName = 'testbeni new', OtherStreet = 'test new', OtherCity = 'test', 
@@ -222,9 +219,6 @@ public with sharing class SL_DealerPortalCreateAppTest {
         Contact testInput = testExisting.clone(false,false,false);
         testInput.MailingStreet = '12180856 new Street';
         Boolean isNewData = SL_DealerPortalCAGuarantor.checkUpdatedField(testExisting, testInput, 'MailingStreet', false);
-        Opportunity opp = SL_SCTestData.testOpportunities[0].clone(false,false,false);
-        List<Opportunity> createdOpp = SL_DealerPortalCAAllowSave.updateOpp(new List<Opportunity>{opp});
-        SL_DealerPortalCAAllowSave.updateOpp(createdOpp);
         Test.stopTest();
         // DP-872 Misael Romero
         // contactsCreated = [SELECT COUNT() FROM Contact];

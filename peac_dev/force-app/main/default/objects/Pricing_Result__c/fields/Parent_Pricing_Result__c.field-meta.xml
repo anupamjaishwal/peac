@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Parent_Pricing_Result__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Parent Pricing Result</label>
+    <referenceTo>Pricing_Result__c</referenceTo>
+    <relationshipLabel>Modifier Pricing Results</relationshipLabel>
+    <relationshipName>Modifier_Pricing_Results</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

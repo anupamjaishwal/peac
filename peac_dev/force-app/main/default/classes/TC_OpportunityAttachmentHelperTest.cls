@@ -45,9 +45,19 @@ public with sharing class TC_OpportunityAttachmentHelperTest {
             Description = 'This is a booking sheet',
             Body = Blob.valueOf('Booking sheet')
         );
-        
+        Test.startTest();
         insert attachment;
         Opportunity_Attachment__c onBaseAttachment = [SELECT Id FROM Opportunity_Attachment__c WHERE Name = 'Loan Booking Sheet'];
+        opp.StageName = 'Lost';
+        opp.Lost__c = Date.today();
+        opp.Lost_Reason__c = 'Vendor Lost Sale';
+        opp.RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('Loan Closed').getRecordTypeId();
+        update opp;
+        Opportunity_Attachment__c bankStatementAtt = new Opportunity_Attachment__c(Opportunity__c = opp.Id, Type__c = 'FS - Bank Statements - Apr');
+        Database.SaveResult bankResult = Database.insert(bankStatementAtt, false);
+        Test.stopTest();
+        System.Assert.areEqual(false, bankResult.isSuccess());
+        System.Assert.areEqual('Bank Statements cannot be uploaded once the Loan is Closed.', bankResult.getErrors()[0].getMessage());
     }
     
     @isTest

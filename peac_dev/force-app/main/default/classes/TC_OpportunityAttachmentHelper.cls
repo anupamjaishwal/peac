@@ -1,4 +1,5 @@
 public class TC_OpportunityAttachmentHelper {
+    static Map<Id, Opportunity> opps = new Map<Id, Opportunity>();
 
     public static void sendStatementsOnBaseURLToCC (Map <Id, Opportunity_Attachment__c> newMap) {
     /*
@@ -85,27 +86,65 @@ public class TC_OpportunityAttachmentHelper {
         
     }
 
-  public static void onBeforeInsert(List<Opportunity_Attachment__c> lstNewOppAttachment){
-    for(Opportunity_Attachment__c oppAtt : lstNewOppAttachment){
-      System.debug('Oattachment onBeforeInsert' + oppAtt.Dealer_Doc_Type__c);
-      if(oppAtt.Dealer_Doc_Type__c != null){
-        dealerDocTypeToTypeField(oppAtt);
-      }
+    public static void onBeforeInsert(List<Opportunity_Attachment__c> lstNewOppAttachment){
+        Boolean isBankStat = false;
+        for(Opportunity_Attachment__c oppAtt :lstNewOppAttachment){
+            getLookupMaps(oppAtt);
+            if(!isBankStat){
+                isBankStat = isBankStatement(oppAtt);
+            }
+        }
+        if(isBankStat){
+            getInfoFromOthers();
+        }
+        for(Opportunity_Attachment__c oppAtt : lstNewOppAttachment){
+            if(oppAtt.Dealer_Doc_Type__c != null){
+                dealerDocTypeToTypeField(oppAtt);
+            }
+            validateBankStatement(oppAtt);// SAL-6464 Misael Romero
+        }
     }
-  }
 
-  public static void onBeforeUpdate(Map<Id, Opportunity_Attachment__c> mapNewOppAttachment, Map<Id, Opportunity_Attachment__c> mapoldOppAttachment){
+    public static void onBeforeUpdate(Map<Id, Opportunity_Attachment__c> mapNewOppAttachment, Map<Id, Opportunity_Attachment__c> mapoldOppAttachment){
     for(Opportunity_Attachment__c oppAtt : mapNewOppAttachment.values()){
-    System.debug('Oattachment onBeforeUpdate' + oppAtt.Dealer_Doc_Type__c);
-
-      Opportunity_Attachment__c oldOppAtt = mapoldOppAttachment.get(oppAtt.Id);
-      if(oppAtt.Dealer_Doc_Type__c != oldOppAtt.Dealer_Doc_Type__c){
-        dealerDocTypeToTypeField(oppAtt);
-      }
+        Opportunity_Attachment__c oldOppAtt = mapoldOppAttachment.get(oppAtt.Id);
+        if(oppAtt.Dealer_Doc_Type__c != oldOppAtt.Dealer_Doc_Type__c){
+            dealerDocTypeToTypeField(oppAtt);
+        }
     }
-  }
+    }
 
-  private static void dealerDocTypeToTypeField(Opportunity_Attachment__c oppAtt){
+    private static void dealerDocTypeToTypeField(Opportunity_Attachment__c oppAtt){
     oppAtt.Type__c = oppAtt.Dealer_Doc_Type__c;
-  }
+    }
+
+    private static void getLookupMaps(Opportunity_Attachment__c oppAtt){
+        if(oppAtt.Opportunity__c != null){
+            opps.put(oppAtt.Opportunity__c, new Opportunity());
+        }
+    }
+
+    private static void getInfoFromOthers(){
+        if(Trigger.isBefore && opps.size() > 0 && SL_TriggerUtil.checkForMissingInfo(opps.values())){
+            opps.putAll([SELECT Id, IsClosed, Loan_Record_Type__c
+                FROM Opportunity WHERE Id IN :opps.keySet()]);
+        }
+    }
+
+    private static Boolean isBankStatement(Opportunity_Attachment__c oppAtt){
+        Boolean isBankStat = false;
+        String type = oppAtt.Type__c ?? oppAtt.Dealer_Doc_Type__c;
+        if(type != null && type.containsIgnoreCase(Label.TC_BankStatementFileType)){
+            isBankStat = true;
+        }
+        return isBankStat;
+    }
+
+    private static void validateBankStatement(Opportunity_Attachment__c oppAtt){
+        Boolean isBankStat = isBankStatement(oppAtt);
+        Opportunity opp = opps.get(oppAtt.Opportunity__c);
+        if(isBankStat && opp != null && opp.Loan_Record_Type__c && opp.IsClosed){
+            oppAtt.addError('Bank Statements cannot be uploaded once the Loan is Closed.');
+        }
+    }
 }

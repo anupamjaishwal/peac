@@ -8,6 +8,7 @@
 
 .quote-picker-container {
     padding: 24px;
+    background-color: #ffffff;
     background: linear-gradient(135deg, #f5f7fa 0%, #ffffff 100%);
     min-height: 100%;
     border-radius: 8px;
@@ -29,6 +30,7 @@
     align-items: center;
     margin-bottom: 24px;
     padding-bottom: 16px;
+    background-color: #ffffff;
     border-bottom: 2px solid #e8eef7;
     flex-wrap: wrap;
     gap: 16px;
@@ -46,6 +48,24 @@
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+}
+
+/* Waiting Container */
+.waiting-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 60px 20px;
+}
+
+.waiting-message {
+    font-size: 20px;
+    font-weight: 500;
+    color: #0b5394;
+    text-align: center;
+    margin: 0;
+    letter-spacing: -0.3px;
 }
 
 .component-title {

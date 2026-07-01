@@ -1,4 +1,4 @@
-public with sharing class tvalueQuotePickerController {
+public without sharing class tvalueQuotePickerController {
 
     /**
      * Wrapper class to hold flattened data for the LWC.
@@ -87,6 +87,7 @@ public with sharing class tvalueQuotePickerController {
     /**
      * Queries for tval__TValue_Quote__c records by recordId and transforms them into the wrapper class.
      */
+    @TestVisible
     private static List<QuoteWrapper> getTValueQuotes(Id recordId) {
         try {
             String query = 'SELECT Id, Name, CreatedDate, tval__Amount_Financed__c, tval__Term__c, tval__Payment_Amount__c, ' +
@@ -167,9 +168,11 @@ public with sharing class tvalueQuotePickerController {
         }
         try {
             Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
-            mail.setToAddresses(new List<String>{ toAddress });
+            List<String> toAddressList = toAddress.contains(';') ? toAddress.split(';') : new List<String>{ toAddress };
+            mail.setToAddresses(toAddressList);
             if (String.isNotBlank(ccAddress)) {
-                mail.setCcAddresses(new List<String>{ ccAddress });
+                List<String> ccAddressList = ccAddress.contains(';') ? ccAddress.split(';') : new List<String>{ ccAddress };
+                mail.setCcAddresses(ccAddressList);
             }
             mail.setSubject(subject);
             mail.setPlainTextBody(body);

@@ -4,7 +4,7 @@ public class PEAC_BuyoutComparisonController {
     public integer maxRecSize {get; set;}
     public Contract__c ContractRec {get; set;}
     public Double totalAmt {get; set;}
-    public Date next30Days {get; set;}
+    public Date quoteDate {get; set;}
     public string action {get; set;}
     Set<String> labels = new Set<String>();
     public Double buyoutreceivableTotal = 0;
@@ -22,7 +22,6 @@ public class PEAC_BuyoutComparisonController {
     
     public PEAC_BuyoutComparisonController(){
         hidePDF = true;
-        next30Days = system.today().addDays(30);
         // this.setFields(ApexPages.currentPage().getParameters().get('rows'));
         // if(this.fields.size() > 0 && this.fields[0].Rows.size() > 0){
         //      maxRecSize = this.fields[0].Rows.size();
@@ -33,7 +32,9 @@ public class PEAC_BuyoutComparisonController {
         this.setLogoResource(recId);
         if(recId <> null) {
             ContractRec = [SELECT Id, Customer__r.Name,Logo__c,PO__c, Invoice_Description__c, Remit_To_Address__c, Remit_To_City__c,Remit_To_State__c,Remit_To_Zip_Code__c, Name, Opportunity__r.Purchase_Options__c, Commencement_Date__c, Payments_Remaining__c, Contract_Term__c, Gross_Equipment_Cost__c, Payment_Amount__c, Current_Rental_Payment__c, Next_Payment_Date__c, Quote_Buyout__c FROM Contract__c WHERE Id = :recId];
-            Buyouts = [SELECT Buyout_Type__c, Contract__c, Buyout_Description__c, Buyout_Amount__c, Most_Recent__c, Receivable_Balance__c, Residual__c, SalesTax__c, LateCharges__c, Early_Termination_Fee__c, Security_Deposit__c, Ending_Deposit__c, Service_pass_through__c, Property_tax__c, Insurance__c, Other_Lease_Charges__c, Total_Buyout__c, Partial_Buyout__c, Date_Quoted__c, Expiration_Date__c, Id, Name FROM Buyout__c WHERE Contract__c = :recId AND Most_Recent__c = true order by Quote_Sequence__c];
+            Buyouts = [SELECT Buyout_Type__c, Contract__c, Buyout_Description__c, Buyout_Amount__c, Most_Recent__c, Receivable_Balance__c, Residual__c, SalesTax__c, LateCharges__c, Early_Termination_Fee__c, Security_Deposit__c, 
+                Ending_Deposit__c, Service_pass_through__c, Property_tax__c, Insurance__c, Other_Lease_Charges__c, Total_Buyout__c, Partial_Buyout__c, Date_Quoted__c, Expiration_Date__c, Id, Name 
+                FROM Buyout__c WHERE Contract__c = :recId AND Most_Recent__c = true order by Quote_Sequence__c];
             for(Buyout__c buyout : Buyouts) {
                 if(buyout.Partial_Buyout__c) {
                     isPartialChecked = true;
@@ -66,6 +67,7 @@ public class PEAC_BuyoutComparisonController {
                         
                     }
                 }
+                quoteDate = thisBuyout.Date_Quoted__c;// DP-2088 Misael Romero
                 serialNumbers = String.join(serialNumberSet, ', ');
                 Buyoutssize = Buyouts.size();
                 maxRecSize = Buyoutssize;

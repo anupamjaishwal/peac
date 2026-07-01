@@ -36,6 +36,12 @@
                         clientWrapper.deal.opportunity = {};
                     }
 
+                    // SAL-7168 — stash the TValue Quote Ids on the wrapper so
+                    // TC_LoanApplicationCtrl.saveCompany can stamp
+                    // Quote.OpportunityId on the source Quote when the Opp is
+                    // inserted (which triggers the back-stamp).
+                    clientWrapper.selectedTValueQuoteIds = quoteIds;
+
                     try {
                         // Map quote into the clientWrapper.equipment list (TC_RecordWrapper.equipment = Asset__c)
                         if (!clientWrapper.equipment || !Array.isArray(clientWrapper.equipment)) {
@@ -76,8 +82,16 @@
                             clientWrapper.deal.opportunity.Equipment_Code__c = quoteData.Quote__r.Equipment_Type__c;
                             clientWrapper.deal.opportunity.Equipment_Cost__c = quoteData.tval__Quote_Amount__c;
                             clientWrapper.deal.opportunity.Terms__c = quoteData.tval__Term__c;
-                            clientWrapper.deal.opportunity.Purchase_Options__c = quoteData.tval__Purchase_Option__c;
+                            //clientWrapper.deal.opportunity.Purchase_Options__c = quoteData.tval__Purchase_Option__c;
                             clientWrapper.deal.opportunity.Payment_Frequency__c = quoteData.tval__Period__c;
+                            clientWrapper.deal.opportunity.Program_Lookup__c = quoteData.Quote__r.Program__c;
+                            clientWrapper.deal.opportunity.Estimated_IRR__c = quoteData.Quote__r.Rate__c;
+                            clientWrapper.deal.opportunity.Purchase_Options__c = quoteData.Quote__r.End_of_Term_Option__c;
+                            clientWrapper.deal.opportunity.Dealer_Account__c = quoteData.Quote__r.Dealer__c;
+                            // SAL-7243 — also propagate Points so the converted
+                            // Opportunity carries the quote's points value
+                            // instead of the hardcoded 0 default in saveCompany.
+                            clientWrapper.deal.opportunity.Points__c = quoteData.Quote__r.Points__c;
                         }
 
                         // Persist changes back to component attributes so child components receive them
@@ -96,8 +110,8 @@
 
     refreshDealGuarantorsView : function (cmp) {
         var dealGuarantorsComp = cmp.find('dealGuarantorsComp');
-        dealGuarantorsComp.set('v.company', cmp.get('v.company'));
-        dealGuarantorsComp.set('v.guarantors', cmp.get('v.guarantors'));
+         dealGuarantorsComp.set('v.company', cmp.get('v.company'));
+         dealGuarantorsComp.set('v.guarantors', cmp.get('v.guarantors'));
     },
 
     refreshDealQuotesView : function (cmp) {
@@ -216,6 +230,11 @@
                     }
                     cmp.set ('v.clientWrapper', clientWrapper); 
 
+                    // If coming from a Quote, populate quote fields now that clientWrapper is initialized
+                    var selectedQuoteIds = cmp.get('v.quoteIds');
+                    if (selectedQuoteIds) {
+                        this.fetchAndPopulateQuotes(cmp, selectedQuoteIds);
+                    }
 
                     // Get current user profile name
 
@@ -355,6 +374,7 @@
 
         saveSalesCommentsAction.setCallback(this, function (result) {
             if (result.getState() === 'SUCCESS') {
+ 
                 var callDwhAction = cmp.get('c.callDwhAndAutoPgApi');// SAL-5820 Misael Romero
                 callDwhAction.setParams({
                     clientWrapperString : JSON.stringify (cmp.get ('v.clientWrapper'))
@@ -370,9 +390,34 @@
                         
                         // });
                         $A.enqueueAction(callGdsAction); // fire and forget
+
+                        // Save the Id before resetting
+                        var opportunityId = cmp.get('v.clientWrapper.deal.opportunity.Id');
+
+                        // Reset all state
+                        cmp.set('v.currentStep', 'step_1');
+                        cmp.set('v.isButtonNavigation', false);
+                        cmp.set('v.isShowAllTabs', false);
+                        cmp.set('v.showQuoteTab', true);
+                        cmp.set('v.availableRecordTypes', []);
+                        cmp.set('v.equipmentList', []);
+                        cmp.set('v.guarantors', []);
+                        cmp.set('v.ccgGuarantors', []);
+                        cmp.set('v.fileList', []);
+                        cmp.set('v.quoteOptions', []);
+                        cmp.set('v.totalFinanceAmount', 0);
+                        cmp.set('v.quoteIds', null);
+                        cmp.set('v.company', { sobjectType: 'Account' });
+                        cmp.set('v.companyCustomer', { sobjectType: 'Contact' });
+                        cmp.set('v.dealOpp', { sobjectType: 'Opportunity' });
+                        cmp.set('v.deal', { sobjectType: 'Opportunity' });
+                        cmp.set('v.clientWrapper', null);
+
+                        // Reload record types so component is ready when user reopens it
+                        this.getAvailableRecordTypesHelper(cmp);
                         var navEvt = $A.get("e.force:navigateToSObject");
                                                 navEvt.setParams({
-                                                  "recordId": cmp.get ('v.clientWrapper.deal.opportunity.Id'),
+                                                  "recordId":opportunityId,
                                                   "slideDevName": "detail"
                                                 });
                                                 navEvt.fire();
@@ -501,6 +546,47 @@
 
                 },
 
+refreshIsRiskBased: function(component, callback) {
+    var opportunityId = component.get('v.clientWrapper').deal.opportunity.Id;
+
+    var action = component.get('c.getIsRiskBasedPricing');
+    action.setParams({ opportunityId: opportunityId });
+
+    action.setCallback(this, function(response) {
+        if (response.getState() === 'SUCCESS') {
+            var clientWrapper = component.get('v.clientWrapper');
+            clientWrapper.isRiskBasedPricing = response.getReturnValue();
+            component.set('v.clientWrapper', clientWrapper);
+            console.log('isRiskBasedPricing', clientWrapper.isRiskBasedPricing);
+        } else {
+            console.error('Failed to fetch Risk Based Pricing flag');
+        }
+        callback();
+    });
+
+    $A.enqueueAction(action);
+},
+
+navigate: function(component, direction) {
+    var isRiskBased = component.get('v.clientWrapper').isRiskBasedPricing;
+    var currentStep = component.get('v.currentStep');
+    var stepIndex = parseInt(currentStep.split('_')[1], 10);
+
+    if (direction === 'next') {
+        if (stepIndex === 5 && !isRiskBased) {
+            stepIndex++; // skip step_6
+        }
+        stepIndex++;
+        component.set('v.isButtonNavigation', true);
+        component.set('v.currentStep', 'step_' + stepIndex);
+    } else if (direction === 'prev') {
+        if (stepIndex === 7 && !isRiskBased) {
+            stepIndex--; // skip step_6 going back
+        }
+        stepIndex--;
+        component.set('v.currentStep', 'step_' + stepIndex);
+    }
+},
 
 
 

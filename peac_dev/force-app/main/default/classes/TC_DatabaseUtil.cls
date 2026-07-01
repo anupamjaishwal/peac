@@ -290,6 +290,8 @@ public with sharing class TC_DatabaseUtil {
         public String recordTypeName;
         @AuraEnabled
         public String recordTypeId;
+        @AuraEnabled
+        public Boolean isRiskBasedPricing = true;
 
         @AuraEnabled
         public String curentUserProfileName;
@@ -300,6 +302,13 @@ public with sharing class TC_DatabaseUtil {
         @AuraEnabled
         public Boolean gdsScoreEnabled = false;
 
+        // SAL-7168 — Aura passes the TValue Quote Ids selected via the New
+        // Quote tab here so saveCompany can stamp Quote.OpportunityId on the
+        // source Quote when the Opp is inserted. That fires the
+        // NT_QuoteTriggerHandler back-stamp, which surfaces the TValue Quote
+        // and Pricing Result on the Opportunity related lists.
+        @AuraEnabled
+        public String selectedTValueQuoteIds;
     }
     
     public class LightningPicklist {

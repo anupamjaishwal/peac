@@ -116,11 +116,11 @@ public class UploadAttachment {
     public void sendAttachmentToOnBase() {
     	
         try {
-                List<Opportunity_Attachment__c> lAttachmentList = [select id,Attachment__c,Name,Opportunity__r.Application__c,
+                List<Opportunity_Attachment__c> lAttachmentList = [SELECT id,Attachment__c,Name, Type__c, Opportunity__r.Application__c,
                 													Opportunity__r.CaseCenter__c,Opportunity__r.RECORDTYPE.DEVELOPERNAME,
-                                                                    Opportunity__r.Loan_Record_Type__c
-                													from Opportunity_Attachment__c 
-                													where Opportunity__c = :oppty.Id 
+                                                                    Opportunity__r.Loan_Record_Type__c, Opportunity__r.IsClosed
+                													FROM Opportunity_Attachment__c 
+                													WHERE Opportunity__c = :oppty.Id 
                 													And (Sent_To_OnBase__c = False OR Updated_Rapport__c = False)];
 			
 			System.Debug('On Base List to process:' + lAttachmentList);
@@ -131,7 +131,13 @@ public class UploadAttachment {
             List<Id> onbaseIdsFiltered = new List<Id>();
 
             for(Opportunity_Attachment__c oppAtt :lAttachmentList){
-                onbaseIds.add(oppAtt.Id);
+                String type = oppAtt.Type__c ?? oppAtt.Dealer_Doc_Type__c;// SAL-6464 Misael Romero
+                if(oppAtt.Opportunity__r.Loan_Record_Type__c && oppAtt.Opportunity__r.IsClosed && type != null && type.containsIgnoreCase(Label.TC_BankStatementFileType)){
+                    ApexPages.AddMessage(new ApexPages.Message(ApexPages.Severity.ERROR, 
+                                                           'File ' + oppAtt.Name + ' not Uploaded, Bank Statements cannot be uploaded once the Loan is Closed.'));
+                }else{
+                    onbaseIds.add(oppAtt.Id);
+                }
             }
 
             for (Attachment att : [SELECT ID,Name, BodyLength, ParentId, CreatedDate FROM Attachment WHERE ParentId IN :onbaseIds])

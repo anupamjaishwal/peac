@@ -27,49 +27,25 @@ public with sharing class TC_OcrolusCtrlTest {
 
     }
 
-
     @isTest
-    static void testSendAttachmentToOcrolusNoOpportunityAttachment() {
+    static void lostOpp() {
 
         Opportunity opp;
         List<Opportunity> oppList = new List<Opportunity>([SELECT Id, Name FROM Opportunity WHERE Name = 'ocrolusOpp']);
         if (!oppList.isEmpty()) opp = oppList[0];
-
-        PageReference pageRef = Page.OpportunityAttachmentAsynch;
-        Test.setCurrentPage(pageRef);
-        ApexPages.currentPage().getParameters().put('id', opp.Id);
-        ApexPages.StandardController sc = new ApexPages.StandardController(opp);
-        UploadAttachment controller = new UploadAttachment(sc);
-
-        controller.sendAttachmentToOcrolus();
-
-    }
-
-    @isTest
-    static void testSendAttachmentToOcrolusNoCaseCenterNumber() {
-
-        Opportunity opp;
-        List<Opportunity> oppList = new List<Opportunity>([SELECT Id, Name FROM Opportunity WHERE Name = 'ocrolusOpp']);
-        if (!oppList.isEmpty()) opp = oppList[0];
-        
-        opp.CaseCenter__c = null;
-        Test.startTest();
-        update opp;
-
+    
         Opportunity_Attachment__c testOppAttach = new Opportunity_Attachment__c(Opportunity__c = opp.Id,
                 Type__c = 'FS - Bank Statements');
         insert testOppAttach;
-
-        
-
-        PageReference pageRef = Page.OpportunityAttachmentAsynch;
-        Test.setCurrentPage(pageRef);
-        ApexPages.currentPage().getParameters().put('id', opp.Id);
-        ApexPages.StandardController sc = new ApexPages.StandardController(opp);
-        UploadAttachment controller = new UploadAttachment(sc);
-
-        controller.sendAttachmentToOcrolus();
-
+        opp.StageName = 'Lost';
+        opp.Lost__c = Date.today();
+        opp.Lost_Reason__c = 'Vendor Lost Sale';
+        opp.RecordTypeId = Schema.SObjectType.Opportunity.getRecordTypeInfosByName().get('Loan Closed').getRecordTypeId();
+        update opp;
+        Test.startTest();
+        TC_OcrolusCtrl.processOcrolusAttachmentList(opp.Id);
+        delete testOppAttach;
+        TC_OcrolusCtrl.processOcrolusAttachmentList(opp.Id);// NoOpportunityAttachment
         Test.stopTest();
     }
 
@@ -102,7 +78,7 @@ public with sharing class TC_OcrolusCtrlTest {
         UploadAttachment controller = new UploadAttachment(sc);
 
         controller.sendAttachmentToOcrolus();
-
+        TC_OcrolusCtrl.processOcrolusAttachmentList(opp.Id);
         Test.stopTest();
     }
 
@@ -130,7 +106,7 @@ public with sharing class TC_OcrolusCtrlTest {
         UploadAttachment controller = new UploadAttachment(sc);
 
         controller.sendAttachmentToOcrolus();
-
+        TC_OcrolusCtrl.processOcrolusAttachmentList(opp.Id);
         Test.stopTest();
 
     }
@@ -167,7 +143,7 @@ public with sharing class TC_OcrolusCtrlTest {
         UploadAttachment controller = new UploadAttachment(sc);
 
         controller.sendAttachmentToOcrolus();
-
+        TC_OcrolusCtrl.processOcrolusAttachmentList(opp.Id);
         Test.stopTest();
 
     }
@@ -205,7 +181,7 @@ public with sharing class TC_OcrolusCtrlTest {
         UploadAttachment controller = new UploadAttachment(sc);
 
         controller.sendAttachmentToOcrolus();
-
+        TC_OcrolusCtrl.processOcrolusAttachmentList(opp.Id);
         Test.stopTest();
 
     }
@@ -239,7 +215,7 @@ public with sharing class TC_OcrolusCtrlTest {
         UploadAttachment controller = new UploadAttachment(sc);
 
         controller.sendAttachmentToOcrolus();
-
+        TC_OcrolusCtrl.processOcrolusAttachmentList(opp.Id);
         Test.stopTest();
 
     }

@@ -8,11 +8,6 @@
 
 
         if (cmp.get ('v.isEdit') == false) {
-
-
-
-
-
 /*
             var clientWrapper = {company : {account : cmp.get ('v.company'), readOnly : false, dupe : false}
                                         , contact : {contact : cmp.get ('v.companyCustomer'), readOnly : false, dupe : false}
@@ -31,6 +26,11 @@
                                         //dealOpp
 
                     cmp.set ('v.clientWrapper', clientWrapper);*/
+                     // Reset all state to prevent stale data when component is reused
+        // (lightning:isUrlAddressable causes the component to be cached
+        // and not destroyed between navigations, so doInit may fire again
+        // on the same instance with leftover clientWrapper data)
+
             helper.getAvailableRecordTypesHelper(cmp);
 
 
@@ -64,13 +64,10 @@
             //helper.getApplicationRecordById(cmp);
         //}
 
-        // Capture Quote IDs from the URL State
+        // Capture Quote IDs from the URL State - store for use after clientWrapper is initialized
         var pageRef = cmp.get("v.pageReference");
         if (pageRef && pageRef.state && pageRef.state.c__selectedQuoteIds) {
-            var quoteIds = pageRef.state.c__selectedQuoteIds;
-            
-            // Call helper to fetch quote data and prepopulate fields
-            helper.fetchAndPopulateQuotes(cmp, quoteIds);
+            cmp.set('v.quoteIds', pageRef.state.c__selectedQuoteIds);
         }
     },
 
@@ -102,26 +99,26 @@
         helper.refreshDealDetailsView(cmp);
     },
 
-    handleTabNavigation: function (cmp, event, helper) {
+handleTabNavigation: function (cmp, event, helper) {
+    var navEventData = event.getParam('data');
+    var currentStep = cmp.get('v.currentStep');
+    var recordTypeName = cmp.get('v.clientWrapper').recordTypeName;
 
-
-        var navEventData = event.getParam('data');
-        console.log('event triggered handleTabNavigation', navEventData);
-        var currentStep = cmp.get('v.currentStep');
-        var stepIndex = currentStep.split('_')[1];
-
-        if (navEventData.direction === 'next') {
-            stepIndex++;
-            cmp.set('v.isButtonNavigation', true);
-            cmp.set('v.currentStep', 'step_' + stepIndex);
-        } else if (navEventData.direction === 'prev') {
-            stepIndex--;
-            cmp.set('v.currentStep', 'step_' + stepIndex);
-        }
-    },
+    if (currentStep === 'step_4' && navEventData.direction === 'next' && recordTypeName !== 'Loan') {
+        helper.refreshIsRiskBased(cmp, function() {
+            // Update showQuoteTab based on the fetched value
+            var isRiskBased = cmp.get('v.clientWrapper').isRiskBasedPricing;
+            cmp.set('v.showQuoteTab', isRiskBased);
+            helper.navigate(cmp, navEventData.direction);
+        });
+    } else {
+        helper.navigate(cmp, navEventData.direction);
+    }
+},
 
     handleStepClick: function (cmp, event, helper) {
-
+        var clientWrapper = cmp.get('v.clientWrapper.deal.opportunity');
+        console.log('WRAPPER ', JSON.parse(JSON.stringify(clientWrapper)));
         var currentStep = event.getSource().get('v.value');
         cmp.set('v.currentStep', currentStep);
 //        helper.showHideButtons(cmp);
@@ -143,7 +140,9 @@
 
     goToNext: function (cmp, event, helper) {
 //if (cmp.get ('v.clientWrapper.deal.opportunity.Id') != null && cmp.get ('v.clientWrapper.deal.opportunity.Id') != '') {
-
+        helper.refreshOpportunityAndNavigate(cmp, 'next');
+        var isRiskBased = cmp.get('v.clientWrapper').isRiskBasedPricing;
+        console.log('isRiskBased', isRiskBased);
         var currentStep = cmp.get('v.currentStep');
         var stepIndex = currentStep.split('_')[1];
         stepIndex++;
@@ -199,7 +198,6 @@
     handleCompanyChoose: function (cmp, event, helper) {
         helper.selectCompany(cmp, event);
     },
-
 
     submitToRapport: function (cmp, event, helper) {
             helper.navigateToRapportHelper(cmp);

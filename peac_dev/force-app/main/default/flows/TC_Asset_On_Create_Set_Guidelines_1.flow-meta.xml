@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <description>Migrated from the TC Asset - On Create Set Guidelines process using No Criteria criteria.</description>
+    <label>TC Asset - On Create Set Guidelines_1</label>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordUpdates>
+        <name>myRule_1_A1</name>
+        <label>Asset Help Guidelines</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <inputAssignments>
+            <field>Mandatory_Fields_Include__c</field>
+            <value>
+                <stringValue>&lt;small style=&quot;color:red;&quot;&gt;&lt;i&gt;&lt;b&gt; Is the shipping address for this asset the same as the Business Address on the opportunity? If yes, select the checkbox below and save. If there is an alternative address, manually enter the information below.  &lt;/b&gt;&lt;/i&gt;&lt;/small&gt;</stringValue>
+            </value>
+        </inputAssignments>
+        <inputReference>$Record</inputReference>
+    </recordUpdates>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>myRule_1_A1</targetReference>
+        </connector>
+        <filterLogic>1 OR 2</filterLogic>
+        <filters>
+            <field>Asset_CurrentUser_Profile__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>DataAdmin</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Asset_CurrentUser_Profile__c</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <stringValue>System Administrator</stringValue>
+            </value>
+        </filters>
+        <object>Asset__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

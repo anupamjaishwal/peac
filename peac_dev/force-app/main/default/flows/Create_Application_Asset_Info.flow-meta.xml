@@ -739,6 +739,9 @@
         </fields>
         <fields>
             <name>Equipment_Description</name>
+            <defaultValue>
+                <stringValue>{!theAsset.Asset_Description__c}</stringValue>
+            </defaultValue>
             <fieldText>Description</fieldText>
             <fieldType>LargeTextArea</fieldType>
             <isRequired>false</isRequired>
@@ -1161,7 +1164,7 @@
         <name>theAsset</name>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
-        <isInput>false</isInput>
+        <isInput>true</isInput>
         <isOutput>true</isOutput>
         <objectType>Asset__c</objectType>
     </variables>

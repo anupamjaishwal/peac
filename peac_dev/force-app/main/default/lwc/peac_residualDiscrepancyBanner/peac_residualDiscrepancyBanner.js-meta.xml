@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Developed by Suraj Harichandan(LTIMindtree) as a part of BugFix for SAL-5654 -->
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>65.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Residual Discrepancy Banner</masterLabel>
+    <description>Auto-visible banner on Opportunity pages that warns when Residual__c does not match Total_Asset_Residual__c. Includes an inline Resolve button.</description>
+    <targets>
+        <target>lightning__RecordPage</target>
+    </targets>
+</LightningComponentBundle>

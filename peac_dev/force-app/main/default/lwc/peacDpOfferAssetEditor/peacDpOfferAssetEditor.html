@@ -1,0 +1,77 @@
+<template>
+    <div class="asset-table-wrapper">
+        <table class="asset-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Equipment Type</th>
+                    <th>Cost</th>
+                    <th>Model</th>
+                    <th>Serial Number</th>
+                    <template if:true={showDeleteColumn}>
+                        <th>Action</th>
+                    </template>
+                </tr>
+            </thead>
+
+            <tbody>
+                <template for:each={visibleAssets} for:item="asset">
+                    <tr key={asset.clientKey}>
+                        <td>{asset.rowNumber}</td>
+
+                        <td>
+                            <span>{asset.equipmentCode}</span>
+                        </td>
+
+                        <td>
+                            <lightning-input
+                                variant="label-hidden"
+                                type="number"
+                                formatter="currency"
+                                value={asset.cost}
+                                data-key={asset.clientKey}
+                                data-field="cost"
+                                onchange={handleFieldChange}
+                                disabled={isReadOnly}>
+                            </lightning-input>
+                        </td>
+
+                        <td>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={asset.model}
+                                data-key={asset.clientKey}
+                                data-field="model"
+                                onchange={handleFieldChange}
+                                disabled={isReadOnly}>
+                            </lightning-input>
+                        </td>
+
+                        <td>
+                            <lightning-input
+                                variant="label-hidden"
+                                value={asset.serialNumber}
+                                data-key={asset.clientKey}
+                                data-field="serialNumber"
+                                onchange={handleFieldChange}
+                                disabled={isReadOnly}>
+                            </lightning-input>
+                        </td>
+
+                        <template if:true={showDeleteColumn}>
+                            <td>
+                                <lightning-button
+                                    variant="destructive"
+                                    label="Delete"
+                                    data-key={asset.clientKey}
+                                    onclick={handleDelete}
+                                    disabled={isReadOnly}>
+                                </lightning-button>
+                            </td>
+                        </template>
+                    </tr>
+                </template>
+            </tbody>
+        </table>
+    </div>
+</template>

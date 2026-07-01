@@ -269,7 +269,38 @@ public with sharing class TC_BridgewareBookContractRequestBean {
                     + TC_UCIStringHelper.value(privateLabel)
                     + TC_UCIStringHelper.value(whiteLabel): '')
                     + TC_UCIStringHelper.value(MMRMetered)
-                    + TC_UCIStringHelper.value(MeterAccount);
+                    + TC_UCIStringHelper.value(MeterAccount)
+                	//Begin: SAL-6343
+                    + TC_UCIStringHelper.value(primeContract)
+                    + TC_UCIStringHelper.value(deliveryOrder)
+                    + TC_UCIStringHelper.value(orderDate)
+                    + TC_UCIStringHelper.value(requisitionNum)
+                    + TC_UCIStringHelper.value(itemNum)
+                    + TC_UCIStringHelper.value(issuedName)
+                    + TC_UCIStringHelper.value(issuedAddr1)
+                    + TC_UCIStringHelper.value(issuedAddr2)
+                    + TC_UCIStringHelper.value(issuedCity)
+                    + TC_UCIStringHelper.value(issuedState)
+                    + TC_UCIStringHelper.value(issuedZip)
+                    + TC_UCIStringHelper.value(adminName)
+                    + TC_UCIStringHelper.value(adminAddr1)
+                    + TC_UCIStringHelper.value(adminAddr2)
+                    + TC_UCIStringHelper.value(adminCity)
+                    + TC_UCIStringHelper.value(adminState)
+                    + TC_UCIStringHelper.value(adminZip)
+                    + TC_UCIStringHelper.value(paymentsName)
+                    + TC_UCIStringHelper.value(paymentsAddr1)
+                    + TC_UCIStringHelper.value(paymentsAddr2)
+                    + TC_UCIStringHelper.value(paymentsCity)
+                    + TC_UCIStringHelper.value(paymentsState)
+                    + TC_UCIStringHelper.value(paymentsZip)
+                    + TC_UCIStringHelper.value(contractorName)
+                    + TC_UCIStringHelper.value(contractorAddr1)
+                    + TC_UCIStringHelper.value(contractorAddr2)
+                    + TC_UCIStringHelper.value(contractorCity)
+                    + TC_UCIStringHelper.value(contractorState)
+                    + TC_UCIStringHelper.value(contractorZip);
+            		//End: SAL-6343
         }
         
         private String contractNumber;
@@ -471,7 +502,37 @@ public with sharing class TC_BridgewareBookContractRequestBean {
         private String whiteLabel;
         private String MMRMetered;
         private String MeterAccount;
-        
+        //Begin: SAL-6343
+        private String primeContract;
+        private String deliveryOrder;
+        private Date orderDate;
+        private String requisitionNum;
+        private String itemNum;
+        private String issuedName;
+        private String issuedAddr1;
+        private String issuedAddr2;
+        private String issuedCity;
+        private String issuedState;
+        private String issuedZip;
+        private String adminName;
+        private String adminAddr1;
+        private String adminAddr2;
+        private String adminCity;
+        private String adminState;
+        private String adminZip;
+        private String paymentsName;
+        private String paymentsAddr1;
+        private String paymentsAddr2;
+        private String paymentsCity;
+        private String paymentsState;
+        private String paymentsZip;
+        private String contractorName;
+        private String contractorAddr1;
+        private String contractorAddr2;
+        private String contractorCity;
+        private String contractorState;
+        private String contractorZip;
+        //End: SAL-6343
     
         public Date getActivationDate() {
             return activationDate;
@@ -1326,15 +1387,217 @@ public with sharing class TC_BridgewareBookContractRequestBean {
             this.MMRMetered = MMRM;
         }
         
-       public String getMeterAccount() {
+        public String getMeterAccount() {
             return MeterAccount;
         }
     
         public void setMeterAccount(String MeterAccount) {
             this.MeterAccount = MeterAccount;
         }
+        //Begin: SAL-6343
+        public String getPrimeContract() {
+            return primeContract;
+        }
+        public void setPrimeContract(String primeContract) {
+            this.primeContract = primeContract;
+        }
         
+        public String getDeliveryOrder() {
+            return deliveryOrder;
+        }
+        public void setDeliveryOrder(String deliveryOrder) {
+            this.deliveryOrder = deliveryOrder;
+        }
         
+        public Date getOrderDate() {
+            return orderDate;
+        }
+        public void setOrderDate(Date orderDate) {
+            this.orderDate = orderDate;
+        }
+        
+        public String getRequisitionNum() {
+            return requisitionNum;
+        }
+        public void setRequisitionNum(String requisitionNum) {
+            this.requisitionNum = requisitionNum;
+        }
+        
+        public String getItemNum() {
+            return itemNum;
+        }
+        public void setItemNum(String itemNum) {
+            this.itemNum = itemNum;
+        }
+        
+        public String getIssuedName() {
+            return issuedName;
+        }
+        public void setIssuedName(String issuedName) {
+            this.issuedName = issuedName;
+        }
+        
+        public String getIssuedAddr1() {
+            return issuedAddr1;
+        }
+        public void setIssuedAddr1(String issuedAddr1) {
+            this.issuedAddr1 = issuedAddr1;
+        }
+        
+        public String getIssuedAddr2() {
+            return issuedAddr2;
+        }
+        public void setIssuedAddr2(String issuedAddr2) {
+            this.issuedAddr2 = issuedAddr2;
+        }
+        
+        public String getIssuedCity() {
+            return issuedCity;
+        }
+        public void setIssuedCity(String issuedCity) {
+            this.issuedCity = issuedCity;
+        }
+        
+        public String getIssuedState() {
+            return issuedState;
+        }
+        public void setIssuedState(String issuedState) {
+            this.issuedState = issuedState;
+        }
+        
+        public String getIssuedZip() {
+            return issuedZip;
+        }
+        public void setIssuedZip(String issuedZip) {
+            this.issuedZip = issuedZip;
+        }
+        
+        public String getAdminName() {
+            return adminName;
+        }
+        public void setAdminName(String adminName) {
+            this.adminName = adminName;
+        }
+        
+        public String getAdminAddr1() {
+            return adminAddr1;
+        }
+        public void setAdminAddr1(String adminAddr1) {
+            this.adminAddr1 = adminAddr1;
+        }
+        
+        public String getAdminAddr2() {
+            return adminAddr2;
+        }
+        public void setAdminAddr2(String adminAddr2) {
+            this.adminAddr2 = adminAddr2;
+        }
+        
+        public String getAdminCity() {
+            return adminCity;
+        }
+        public void setAdminCity(String adminCity) {
+            this.adminCity = adminCity;
+        }
+        
+        public String getAdminState() {
+            return adminState;
+        }
+        public void setAdminState(String adminState) {
+            this.adminState = adminState;
+        }
+        
+        public String getAdminZip() {
+            return adminZip;
+        }
+        public void setAdminZip(String adminZip) {
+            this.adminZip = adminZip;
+        }
+        
+        public String getPaymentsName() {
+            return paymentsName;
+        }
+        public void setPaymentsName(String paymentsName) {
+            this.paymentsName = paymentsName;
+        }
+        
+        public String getPaymentsAddr1() {
+            return paymentsAddr1;
+        }
+        public void setPaymentsAddr1(String paymentsAddr1) {
+            this.paymentsAddr1 = paymentsAddr1;
+        }
+        
+        public String getPaymentsAddr2() {
+            return paymentsAddr2;
+        }
+        public void setPaymentsAddr2(String paymentsAddr2) {
+            this.paymentsAddr2 = paymentsAddr2;
+        }
+        
+        public String getPaymentsCity() {
+            return paymentsCity;
+        }
+        public void setPaymentsCity(String paymentsCity) {
+            this.paymentsCity = paymentsCity;
+        }
+        
+        public String getPaymentsState() {
+            return paymentsState;
+        }
+        public void setPaymentsState(String paymentsState) {
+            this.paymentsState = paymentsState;
+        }
+        
+        public String getPaymentsZip() {
+            return paymentsZip;
+        }
+        public void setPaymentsZip(String paymentsZip) {
+            this.paymentsZip = paymentsZip;
+        }
+        
+        public String getContractorName() {
+            return contractorName;
+        }
+        public void setContractorName(String contractorName) {
+            this.contractorName = contractorName;
+        }
+        
+        public String getContractorAddr1() {
+            return contractorAddr1;
+        }
+        public void setContractorAddr1(String contractorAddr1) {
+            this.contractorAddr1 = contractorAddr1;
+        }
+        
+        public String getContractorAddr2() {
+            return contractorAddr2;
+        }
+        public void setContractorAddr2(String contractorAddr2) {
+            this.contractorAddr2 = contractorAddr2;
+        }
+        
+        public String getContractorCity() {
+            return contractorCity;
+        }
+        public void setContractorCity(String contractorCity) {
+            this.contractorCity = contractorCity;
+        }
+        
+        public String getContractorState() {
+            return contractorState;
+        }
+        public void setContractorState(String contractorState) {
+            this.contractorState = contractorState;
+        }
+        
+        public String getContractorZip() {
+            return contractorZip;
+        }
+        public void setContractorZip(String contractorZip) {
+            this.contractorZip = contractorZip;
+        }
+        //End: SAL-6343
     }
     
     public class ContractBlendedIncome {
@@ -1469,6 +1732,10 @@ public with sharing class TC_BridgewareBookContractRequestBean {
             IL10_Flag__c il10Setting = IL10_Flag__c.getValues('GeneralSetting');
             Boolean isIL10 = il10Setting.use_IL10__c; // booking always to IL10 regardless of record
             return 'AS'
+                	/*+ TC_UCIStringHelper.value(name)//SAL-6343*/
+            		+ TC_UCIStringHelper.value(aliasName)//SAL-6343
+            		+ TC_UCIStringHelper.value(name)//SAL-6343
+            		+ TC_UCIStringHelper.value(assetClassification)//SAL-6343
                     + TC_UCIStringHelper.value(assetUser3Alphanum1)
                     + TC_UCIStringHelper.value(assetUser3Table1)
                     + TC_UCIStringHelper.value(assetUserDef)
@@ -1486,6 +1753,9 @@ public with sharing class TC_BridgewareBookContractRequestBean {
                     + TC_UCIStringHelper.value(yearofManuf)
                     + TC_UCIStringHelper.value(originalCost)
                     + TC_UCIStringHelper.value(salesProfit)
+                    + TC_UCIStringHelper.value(assetCostPercent)//SAL-6693
+                	+ TC_UCIStringHelper.value(rentalAmount)//SAL-6343
+                	+ TC_UCIStringHelper.value('')//SAL-6343
                     + TC_UCIStringHelper.value(vehicleMake)
                     + TC_UCIStringHelper.value(aceDeprBasis)
                     + TC_UCIStringHelper.value(detailedAssetDescription)
@@ -1541,6 +1811,9 @@ public with sharing class TC_BridgewareBookContractRequestBean {
                     + TC_UCIStringHelper.value(deprPercentages)
                     + TC_UCIStringHelper.value(federalLife)
                     + (isIL10? TC_UCIStringHelper.value(ManagerResidual): '')
+ /*                   + TC_UCIStringHelper.value(assetCostPercent)//SAL-6693
+                	+ TC_UCIStringHelper.value(rentalAmount)//SAL-6343
+                	+ TC_UCIStringHelper.value('')//SAL-6343*/
                     + TC_UCIStringHelper.value(manufacturer)
                     + TC_UCIStringHelper.value(model)
                     + TC_UCIStringHelper.value(maxCityPerInv)
@@ -1590,6 +1863,9 @@ public with sharing class TC_BridgewareBookContractRequestBean {
             
         }
         
+        private String name;//SAL-6343
+        private String aliasName;//SAL-6343
+        private String assetClassification;//SAL-6343
         private String assetUser3Alphanum1;
         private String assetUser3Table1;
         private List<String> assetUserDef;
@@ -1657,7 +1933,9 @@ public with sharing class TC_BridgewareBookContractRequestBean {
         private integer fedConvention;
         private Decimal deprPercentages;
         private integer federalLife;
-        private integer ManagerResidual;
+        private integer ManagerResidual;        
+        private Boolean assetCostPercent;//SAL-6693
+        private Decimal rentalAmount;//SAL-6343
         private String manufacturer;
         private String model;
         private Decimal maxCityPerInv;
@@ -2626,6 +2904,43 @@ public with sharing class TC_BridgewareBookContractRequestBean {
         public void setDealerResidual(Decimal DResidual) {
             this.DealerResidual = DResidual;
         }
+        //SAL-6693
+        public Boolean getAssetCostPercent() {
+            return assetCostPercent;
+        }
+        //SAL-6693
+        public void setAssetCostPercent(Boolean AssetCostPct) {
+            this.assetCostPercent = AssetCostPct;
+        }
+        //Begin: SAL-6343
+        public String getAssetName() {
+            return name;
+        }
+        public void setAssetName(String name) {
+            this.name = name;
+        }
+        
+        public String getAssetAliasName() {
+            return aliasName;
+        }
+        public void setAssetAliasName(String aliasName) {
+            this.aliasName = aliasName;
+        }
+        
+        public String getAssetClassification() {
+            return assetClassification;
+        }
+        public void setAssetClassification(String assetClassification) {
+            this.assetClassification = assetClassification;
+        }
+        
+        public Decimal getAssetRentalAmount() {
+            return rentalAmount;
+        }
+        public void setAssetRentalAmount(Decimal rentalAmount) {
+            this.rentalAmount = rentalAmount;
+        }
+        //End: SAL-6343
  
     }
     
@@ -2998,6 +3313,9 @@ public with sharing class TC_BridgewareBookContractRequestBean {
                     + TC_UCIStringHelper.value(vendor)
                     + (isIL10? TC_UCIStringHelper.value(PaymentType): '')
                     + (isIL10? TC_UCIStringHelper.value(PassThroughPercentage): '');
+                    /*+ TC_UCIStringHelper.value('')//SAL-6343: MAA.ASSET
+                    + TC_UCIStringHelper.value('')//SAL-6343: MAA.AMOUNT
+                    + TC_UCIStringHelper.value('');//SAL-6343: MAA.PERCENT*/
         }
         
         private String amountType;
@@ -3180,7 +3498,10 @@ public with sharing class TC_BridgewareBookContractRequestBean {
                     + TC_UCIStringHelper.value(taxable)
                     + TC_UCIStringHelper.value(vendor)
                     + TC_UCIStringHelper.value(InterimPercentage)
-                    + (isIL10? TC_UCIStringHelper.value(PassThrough): '')// SAL-6006 Misael Romero
+                    + (isIL10? TC_UCIStringHelper.value(PassThrough): '')// SAL-6006 Misael Romero                	
+                    /*+ TC_UCIStringHelper.value('')//SAL-6343: MAA.ASSET
+                    + TC_UCIStringHelper.value('')//SAL-6343: MAA.AMOUNT
+                    + TC_UCIStringHelper.value('')//SAL-6343: MAA.PERCENT*/
                     /*+ (isIL10? TC_UCIStringHelper.value(PaymentType): '')
                     + (isIL10? TC_UCIStringHelper.value(PassThroughPercentage): '')*/;
         }
@@ -3299,7 +3620,4 @@ public with sharing class TC_BridgewareBookContractRequestBean {
         //     this.PassThroughPercentage = pt;
         // }
     }
-    
-    
-        
 }

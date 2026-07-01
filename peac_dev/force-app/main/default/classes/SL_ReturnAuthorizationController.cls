@@ -55,7 +55,7 @@ public with sharing class SL_ReturnAuthorizationController {
                 SELECT Contract_Asset__r.Name, Contract_Asset__r.SP_Mfg_Make__c,
                        Contract_Asset__r.Model_Number__c, Contract_Asset__r.Serial_Number__c,
                        Contract_Asset__r.Return_Address__c, Contract_Asset__r.Asset_Cost__c, 
-                       Contract_Asset__r.Location__r.Contact_Phone__c, Contract_Asset__r.Asset_Number__c,
+                       Contract_Asset__r.Location__r.Phone__c, Contract_Asset__r.Asset_Number__c,
                        Contract_Asset__r.Service_Provider__r.Name, Contract_Asset__r.Location__c, Contract_Asset__r.Manufacturer__c
                 FROM Buyout_Asset__c
                 WHERE Buyout__c = :buyouts[0].Id AND Contract_Asset__r.Asset_Cost__c > 0
@@ -77,7 +77,7 @@ public with sharing class SL_ReturnAuthorizationController {
                 fieldList.add(new FieldWrapper('Model', contractAsset.Model_Number__c, false, true));
                 fieldList.add(new FieldWrapper('Serial', contractAsset.Serial_Number__c, false, true));
                 fieldList.add(new FieldWrapper('Value', String.valueOf(contractAsset.Asset_Cost__c), false, true));
-                fieldList.add(new FieldWrapper('Phone', contractAsset.Location__r.Contact_Phone__c, false, true));
+                fieldList.add(new FieldWrapper('Phone', contractAsset.Location__r.Phone__c, false, true));
                 fieldList.add(new FieldWrapper('Service Provider Name', (contractAsset.Service_Provider__r.Name != null) ? contractAsset.Service_Provider__r.Name : 'N/A', false, true));
                 
                 // Add asset cost to total value
