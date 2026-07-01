@@ -127,8 +127,20 @@
 }
 
 .peac-spinner {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 160px;
     position: relative;
-    min-height: 120px;
+}
+
+.spinner-message {
+    color: #1f2937;
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 72px;
+    text-align: center;
 }
 
 .asset-modal {

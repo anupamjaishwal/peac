@@ -23,6 +23,9 @@
             </template>
             <template if:true={waitingForQuotes}>
                 <div class="waiting-container">
+                    <div class="waiting-spinner">
+                        <lightning-spinner alternative-text="Pricing in progress" size="small"></lightning-spinner>
+                    </div>
                     <p class="waiting-message">{label.WAITING_LABEL}</p>
                 </div>
             </template>
@@ -39,7 +42,7 @@
         <template if:true={waitingError}>
             <div class="error-container">
                 <lightning-badge label="Error"></lightning-badge>
-                <p class="error-message">{label.QUOTES_NOT_GENERATED_LABEL}</p>
+                <p class="error-message">{waitingErrorText}</p>
             </div>
         </template>
 
@@ -76,22 +79,6 @@
                     >
                 </lightning-datatable>
             </div>
-
-            <!-- Footer Buttons -->
-            <!-- <div class="footer-section">
-                <button 
-                    class="slds-button slds-button_neutral"
-                    onclick={handleEmailQuotes}>
-                    <lightning-icon icon-name="utility:email" size="small"></lightning-icon>
-                    {label.EMAIL_QUOTES_LABEL}
-                </button>
-                <button 
-                    class="slds-button slds-button_brand"
-                    onclick={handleUseThisQuote}>
-                    <lightning-icon icon-name="utility:check" size="small"></lightning-icon>
-                    {label.USE_THIS_QUOTE_LABEL}
-                </button>
-            </div> -->
 
             <!-- Legal Disclaimer -->
             <div class="legal-section">

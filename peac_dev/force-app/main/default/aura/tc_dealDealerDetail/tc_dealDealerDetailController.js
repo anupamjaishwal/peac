@@ -24,14 +24,60 @@
             	
             },
 
+        doInit : function(component, event, helper) {
+            var clientWrapper = component.get('v.clientWrapper');
+            var oppProgramId  = clientWrapper &&
+                                clientWrapper.deal &&
+                                clientWrapper.deal.opportunity &&
+                                clientWrapper.deal.opportunity.Program_Lookup__c;
+
+        console.log('34',JSON.stringify(oppProgramId));
+        console.log('clientWrapper.deal.opportunity.Program_Lookup__c', JSON.stringify(clientWrapper.deal.opportunity.Program_Lookup__c));
+
+
+            if (oppProgramId != null) {
+                // Opp already has a program — lock the LWC and pre-save to dealer
+                component.set('v.oppProgramIdSet', true);
+
+                // Also write it to the dealer object right away so it gets saved
+                // even if the user never interacts with the field
+                var partner = component.get('v.partner');
+                if (!partner.dealer) partner.dealer = {};
+                partner.dealer.Program__c = oppProgramId;
+                component.set('v.partner', partner);
+            }
+        },
+
         handleProgramChange : function(component, event, helper) {
-            var recordId = event.getParam('value');
-            var partner  = component.get('v.partner');
 
-            // partner.dealer holds the Dealer__c junction fields
-            if (!partner.dealer) partner.dealer = {};
-            partner.dealer.Program__c = recordId;
+            var clientWrapper = component.get('v.clientWrapper');
+            var oppProgramId  = clientWrapper &&
+                                clientWrapper.deal &&
+                                clientWrapper.deal.opportunity &&
+                                clientWrapper.deal.opportunity.Program_Lookup__c;
 
-            component.set('v.partner', partner);
+            if (oppProgramId != null) {
+                // Opp already has a program — lock the LWC and pre-save to dealer
+                component.set('v.oppProgramIdSet', true);
+
+                // Also write it to the dealer object right away so it gets saved
+                // even if the user never interacts with the field
+                var partner = component.get('v.partner');
+                if (!partner.dealer) partner.dealer = {};
+                partner.dealer.Program__c = oppProgramId;
+                component.set('v.partner', partner);
+            }
+            else{
+                var recordId = event.getParam('value');
+                var partner  = component.get('v.partner');
+
+                if (!partner.dealer) partner.dealer = {};
+                partner.dealer.Program__c = recordId;
+
+                component.set('v.partner', partner);
+
+            }
+
+
         },
 })

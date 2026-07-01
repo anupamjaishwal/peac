@@ -53,10 +53,20 @@
 /* Waiting Container */
 .waiting-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 20px;
     width: 100%;
     padding: 60px 20px;
+}
+
+/* Contains the absolutely-positioned lightning-spinner in a small box so it sits
+   above the message instead of overlaying the whole component. */
+.waiting-spinner {
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
 }
 
 .waiting-message {

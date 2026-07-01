@@ -4,12 +4,12 @@
             <div class={pricingResultBannerClass}>
                 <strong>{pricingResultTitle}</strong>
 
-                <template if:true={pricingResultUrl}>
+               <!-- <template if:true={pricingResultUrl}>
                     &nbsp; Pricing Result:
                     <a href={pricingResultUrl} target="_blank">
                         {latestPricingResult.pricingResultName}
                     </a>
-                </template>
+                </template> -->
 
                 <template if:true={latestPricingResult.pricingErrorMessage}>
                     <div>{latestPricingResult.pricingErrorMessage}</div>
@@ -19,7 +19,8 @@
 
         <template if:true={isLoading}>
             <div class="peac-spinner">
-                <lightning-spinner alternative-text="Loading"></lightning-spinner>
+                <lightning-spinner alternative-text={loadingMessage}></lightning-spinner>
+                <div class="spinner-message">{loadingMessage}</div>
             </div>
         </template>
 

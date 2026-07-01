@@ -33,20 +33,19 @@ export default class SL_LookupPicklistLWC extends LightningElement {
      *   2. Calls getProgramRules to determine required/readOnly/auto-select
      */
     @api
-    get filterValue() { return this._filterValue; }
+    get filterValue() {
+        return this._filterValue;
+    }
     set filterValue(val) {
         const changed = val !== this._filterValue;
         this._filterValue = val;
-        if (changed) {
-            this.clearSelection();
-            if (val) {
-                this.applyProgramRules(val);
-            } else {
-                // No account selected — reset to default state
-                this._required = false;
-                this._disabled = false;
-            }
+
+        if (!changed) {
+            return;
         }
+
+        this.clearSelection();
+        this.evaluateProgramState();
     }
 
     /**
@@ -62,6 +61,22 @@ export default class SL_LookupPicklistLWC extends LightningElement {
         } else {
             this.selectedRecord = null;
         }
+    }
+
+
+
+    _forceReadOnly = false;
+
+    @api
+    get forceReadOnly() {
+        return this._forceReadOnly;
+    }
+    set forceReadOnly(value) {
+        console.log('forceReadOnly changed:', value);
+
+        this._forceReadOnly = value;
+
+        this.evaluateProgramState();
     }
 
     // ─── Internal state ────────────────────────────────────────────────────
@@ -100,28 +115,45 @@ export default class SL_LookupPicklistLWC extends LightningElement {
      *   2+ programs → required, user picks
      */
     async applyProgramRules(accountId) {
+        // If the Opp program is already set, don't let rules override the lock
+        console.log('PROGRAM SET?' , this.forceReadOnly);
+                console.log('PROGRAM SET?' , this._forceReadOnly);
+
+        if (this._forceReadOnly) {
+            console.log('_forceReadOnly true?' , this._forceReadOnly);
+
+            this._required = false;
+            this._disabled = true;
+            return;
+        }
         this.isLoading = true;
         try {
-            const rules = await getProgramRules({ accountId });
+                        console.log('applyProgramRules?');
 
+            const rules = await getProgramRules({ accountId });
             this._required = rules.isRequired;
             this._disabled = rules.isReadOnly;
 
+            if (this._forceReadOnly) {
+                console.log('_forceReadOnly true?' , this._forceReadOnly);
+
+                this._required = false;
+                this._disabled = true;
+                return;
+            }
             if (rules.count === 1 && rules.autoSelected) {
-                // Auto-select the single program and lock the field
                 this.selectedRecord = rules.autoSelected;
                 this._value         = rules.autoSelected.id;
                 this.fireChange(rules.autoSelected.id, rules.autoSelected.label);
             } else {
-                // Multiple or zero — clear selection so user can choose or skip
                 this.clearSelection();
             }
         } catch (e) {
             console.error('sL_LookupPicklistLWC: error loading program rules', e);
         } finally {
-            this.isLoading = false;
-        }
+        this.isLoading = false;
     }
+}
 
     // ─── Pre-load existing value ───────────────────────────────────────────
 
@@ -271,5 +303,23 @@ export default class SL_LookupPicklistLWC extends LightningElement {
     @api
     checkValidity() {
         return !(this._required && !this._value);
+    }
+
+    evaluateProgramState() {
+        if (!this._filterValue) {
+            this._required = false;
+            this._disabled = false;
+            return;
+        }
+
+        // Opp already has a Program → lock and skip rules
+        if (this._forceReadOnly) {
+            this._required = false;
+            this._disabled = true;
+            this.applyProgramRules(this._filterValue);
+            return;
+        }
+
+        this.applyProgramRules(this._filterValue);
     }
 }

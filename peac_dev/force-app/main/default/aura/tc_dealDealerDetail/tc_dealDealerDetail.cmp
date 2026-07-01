@@ -6,6 +6,10 @@
         <aura:attribute name="partnerType" type="String" access="global"/>
         <aura:attribute name="contactFieldsRequired" type="Boolean" access="global" default="false" />
         <aura:attribute name="programId"   type="String" access="global"/>
+        <aura:attribute name="oppProgramId" type="String" />
+        <aura:attribute name="oppProgramIdSet" type="Boolean" access="global" default="false" />
+
+        <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
 
     
    
@@ -125,29 +129,32 @@
                                 <lightning:input value="{!v.partner.account.Business_Phone__c}" label="Phone"
                                                  class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
 
-                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
-                                    <c:tc_inputSelect objInfo="{sobjectType : 'Account'}" fldInfo="Account_Dealer_Program__c"  label="Program" value="{!v.partner.account.Account_Dealer_Program__c}" disabled="{!v.partner.readOnly}" multiple="true"/>
-                                </div>
 
-                                 <!-- TEST LOOKUP -->
-                                <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
-                                <c:sL_LookupPicklistLWC
-                                    label="Program"
-                                    sObjectApiName="Program__c"
-                                    displayField="Name"
-                                    filterValue="{!v.partner.account.Id}"
-                                    junctionObject="Account_Program__c"
-                                    junctionFilterField="Account__c"
-                                    junctionTargetField="Program__c"
-                                    iconName="standard:custom_notification"
-                                    placeholder="Search program..."
-                                    noFilterMessage="Select an Account to see available Programs."
-                                    value="{!v.partner.Program__c}"
-                                    onchange="{!c.handleProgramChange}"
-                                />
-
-                                <!-- END TEST LOOKUP -->
-                                </div>      
+                                <!-- Program LOOKUP — disabled: c:sL_LookupPicklistLWC is not committed to
+                                     this repo and is not present in the QA org, so it cannot be deployed.
+                                     Keeping the original tc_inputSelect Program field above so the branch
+                                     deploys consistently to every org. Re-enable this block only once
+                                     sL_LookupPicklistLWC is committed to source and deployed everywhere. -->
+                                <aura:if isTrue="{!(v.clientWrapper.recordTypeName != 'Loan' &amp;&amp; v.clientWrapper.recordTypeName != 'Ordering Period')}">
+                                    <div class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3">
+                                    <c:sL_LookupPicklistLWC
+                                        label="Program"
+                                        sObjectApiName="Program__c"
+                                        displayField="Name"
+                                        filterValue="{!v.partner.account.Id}"   
+                                        junctionObject="Account_Program__c"
+                                        junctionFilterField="Account__c"
+                                        junctionTargetField="Program__c"
+                                        iconName="standard:custom_notification"
+                                        placeholder="Search program..."
+                                        noFilterMessage="Select an Account to see available Programs."
+                                        value="{!v.partner.dealer.Program__c}"
+                                        forceReadOnly="{!v.oppProgramIdSet}"
+                                        onchange="{!c.handleProgramChange}"
+                                    />
+                                    </div>
+                            </aura:if>
+                                <!-- END TEST LOOKUP  -->
 
                                 <lightning:input value="{!v.partner.account.Business_Address__c}" label="Address"
                                                  class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="true" disabled="{!v.partner.readOnly}"/>
@@ -235,7 +242,7 @@
                                     </lightning:select>
     
     
-                                    <lightning:input value="{!v.partner.subRecord.contact.MobilePhone}" label="Phone"
+                                    <lightning:input value="{!v.partner.subRecord.contact.Phone}" label="Phone"
                                                      class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!v.contactFieldsRequired}" disabled="{!v.partner.subRecord.readOnly}"/>
     
     
@@ -266,7 +273,7 @@
                                         </lightning:select> Role is defaulted to Dealer Primary Contact --> 
         
         
-                                        <lightning:input value="{!v.partner.subRecord.contact.MobilePhone}" label="Phone"
+                                        <lightning:input value="{!v.partner.subRecord.contact.Phone}" label="Phone"
                                                          class="slds-p-around_x-small slds-x-small-size_1-of-1 slds-large-size_1-of-3" required="{!true}" disabled="{!v.partner.subRecord.readOnly}"/>
         
         

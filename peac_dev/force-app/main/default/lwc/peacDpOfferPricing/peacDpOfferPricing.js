@@ -6,6 +6,7 @@ import getOfferData from '@salesforce/apex/PEAC_DPOfferSaveService.getOfferData'
 import getLeasePricingTrackedFields from '@salesforce/apex/PEAC_DPOfferSaveService.getLeasePricingTrackedFields';
 import saveOfferChanges from '@salesforce/apex/PEAC_DPOfferSaveService.saveOfferChanges';
 import getLatestPricingResultStatus from '@salesforce/apex/PEAC_DPOfferSaveService.getLatestPricingResultStatus';
+import recalculatePricingAfterAssetCreate from '@salesforce/apex/PEAC_DPOfferSaveService.recalculatePricingAfterAssetCreate';
 
 import PEAC_DPPricingDisclaimerTitle from '@salesforce/label/c.PEAC_DPPricingDisclaimerTitle';
 import PEAC_DPPricingDisclaimerMessage from '@salesforce/label/c.PEAC_DPPricingDisclaimerMessage';
@@ -24,6 +25,7 @@ export default class PeacDpOfferPricing extends LightningElement {
     @track draftAssets = [];
 
     isLoading = true;
+    loadingMessage = 'Loading offer details...';
     isSaving = false;
     isAssetSaving = false;
     isDisclaimerOpen = false;
@@ -77,6 +79,8 @@ export default class PeacDpOfferPricing extends LightningElement {
     }
 
     get rateFactorDisplay() {
+        console.log('PEAC DEBUG - rateFactorDisplay draftOffer.rateFactor:', this.draftOffer.rateFactor);
+
         return this.draftOffer.rateFactor === null || this.draftOffer.rateFactor === undefined
             ? '0.00000'
             : Number(this.draftOffer.rateFactor).toFixed(5);
@@ -119,6 +123,7 @@ export default class PeacDpOfferPricing extends LightningElement {
 
     async initializeComponent() {
         this.hasInitialized = true;
+        this.loadingMessage = 'Loading offer details...';
         this.isLoading = true;
 
         try {
@@ -133,9 +138,15 @@ export default class PeacDpOfferPricing extends LightningElement {
     async loadOfferData() {
         const data = await getOfferData({ opportunityId: this.recordId });
 
+        //console.log('PEAC DEBUG - loadOfferData data:', JSON.parse(JSON.stringify(data)));
+        // console.log('PEAC DEBUG - loadOfferData data.rateFactor:', data ? data.rateFactor : null);
+
         this.originalOffer = JSON.parse(JSON.stringify(data));
         this.draftOffer = JSON.parse(JSON.stringify(data));
         this.draftAssets = JSON.parse(JSON.stringify(data.assets || []));
+
+        //console.log('PEAC DEBUG - draftOffer after loadOfferData:', JSON.parse(JSON.stringify(this.draftOffer)));
+        //console.log('PEAC DEBUG - draftOffer.rateFactor after loadOfferData:', this.draftOffer.rateFactor);
 
         this.originalAssetsById = {};
         this.draftAssets.forEach(asset => {
@@ -170,6 +181,7 @@ export default class PeacDpOfferPricing extends LightningElement {
 
     async handleRefresh() {
         this.isEditMode = false;
+        this.loadingMessage = 'Loading offer details...';
         this.isLoading = true;
 
         try {
@@ -183,6 +195,14 @@ export default class PeacDpOfferPricing extends LightningElement {
 
     handleOpenNewAssetModal() {
         this.showNewAssetModal = true;
+
+        debugSearchManufacturerAccounts({ searchTerm: 'xer' })
+            .then(result => {
+                console.log('PEAC DEBUG - Manufacturer Account search result:', JSON.parse(JSON.stringify(result)));
+            })
+            .catch(error => {
+                console.error('PEAC DEBUG - Manufacturer Account search error:', JSON.parse(JSON.stringify(error)));
+            });
     }
 
     handleCloseNewAssetModal() {
@@ -221,11 +241,97 @@ export default class PeacDpOfferPricing extends LightningElement {
         this.template.querySelector('lightning-record-edit-form').submit(fields);
     }
 
-    async handleNewAssetSuccess() {
+    /*async handleNewAssetSuccess() {
         this.showNewAssetModal = false;
         this.isAssetSaving = false;
         this.dispatchEvent(showToast('Success', 'Asset Created Successfully!', 'success'));
         await this.loadOfferData();
+    }*/
+
+    async handleNewAssetSuccess() {
+        this.showNewAssetModal = false;
+        this.isAssetSaving = false;
+        this.isLoading = true;
+        this.loadingMessage = 'Asset created. Saving changes and waiting for pricing result...';
+        this.showPricingResultBanner = false;
+        this.latestPricingResult = null;
+
+        try {
+            const existingPricingResult = await getLatestPricingResultStatus({
+                opportunityId: this.recordId,
+                existingPricingResultId: null
+            });
+
+            const existingPricingResultId =
+                existingPricingResult && existingPricingResult.pricingResultId
+                    ? existingPricingResult.pricingResultId
+                    : null;
+            this.loadingMessage = 'Asset created. Waiting for equipment cost update...';
+            await new Promise(resolve => window.setTimeout(resolve, 5000));
+
+            this.loadingMessage = 'Starting pricing calculation...';
+
+            const result = await recalculatePricingAfterAssetCreate({
+                opportunityId: this.recordId
+            });
+
+            if (result && result.success && result.pricingStarted) {
+                const pricingResult = await this.waitForPricingResult(existingPricingResultId);
+
+                if (pricingResult) {
+                    this.dispatchEvent(
+                        showToast(
+                            'Success',
+                            'Asset created and pricing result created.',
+                            'success'
+                        )
+                    );
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+
+                    this.dispatchEvent(
+                        showToast(
+                            'Info',
+                            'Asset created. Pricing calculation has started. Refresh shortly to see the result.',
+                            'info'
+                        )
+                    );
+                }
+                await this.loadOfferData();
+            } else if (result && result.success) {
+                this.dispatchEvent(
+                    showToast(
+                        'Success',
+                        result.message || 'Asset Created Successfully!',
+                        'success'
+                    )
+                );
+            } else {
+                this.dispatchEvent(
+                    showToast(
+                        'Error',
+                        result?.message || 'Asset created, but pricing could not be started.',
+                        'error'
+                    )
+                );
+            }
+
+            await this.loadOfferData();
+        } catch (error) {
+            this.dispatchEvent(
+                showToast(
+                    'Error',
+                    reduceErrors(error).join(', '),
+                    'error'
+                )
+            );
+
+            await this.loadOfferData();
+        } finally {
+            this.isLoading = false;
+        }
     }
 
     handleNewAssetError(event) {
@@ -330,19 +436,40 @@ export default class PeacDpOfferPricing extends LightningElement {
         }
 
         this.isSaving = true;
+        this.loadingMessage = this.pendingPayload.shouldStartPricing === true
+            ? 'Saving changes and waiting for pricing result...'
+            : 'Saving changes...';
         this.isLoading = true;
         this.showPricingResultBanner = false;
         this.latestPricingResult = null;
 
         try {
+            let existingPricingResultId = null;
+
+            if (this.pendingPayload.shouldStartPricing === true) {
+                const existingPricingResult = await getLatestPricingResultStatus({
+                    opportunityId: this.recordId,
+                    existingPricingResultId: null
+                });
+
+                existingPricingResultId = existingPricingResult && existingPricingResult.pricingResultId
+                    ? existingPricingResult.pricingResultId
+                    : null;
+            }
+
             const result = await saveOfferChanges(this.pendingPayload);
 
             if (result && result.success) {
                 if (result.pricingStarted) {
-                    const pricingResult = await this.waitForPricingResult();
+                    console.log('PEAC DEBUG - save result:', JSON.parse(JSON.stringify(result)));
+                    console.log('PEAC DEBUG - existingPricingResultId before polling:', existingPricingResultId);
+                    const pricingResult = await this.waitForPricingResult(existingPricingResultId);
 
                     if (pricingResult) {
                         this.dispatchEvent(showToast('Success', 'Changes saved and pricing result created.', 'success'));
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
                     } else {
                         this.dispatchEvent(showToast('Info', 'Changes saved. Pricing calculation has started. Refresh shortly to see the result.', 'info'));
                     }
@@ -365,22 +492,34 @@ export default class PeacDpOfferPricing extends LightningElement {
         }
     }
 
-    async waitForPricingResult() {
-        const maxAttempts = 10;
-        const delayMs = 1500;
+    async waitForPricingResult(existingPricingResultId) {
+        const maxAttempts = 30;
+        const delayMs = 2000;
+
+        console.log('PEAC DEBUG - waitForPricingResult START');
+        console.log('PEAC DEBUG - existingPricingResultId:', existingPricingResultId);
 
         for (let i = 0; i < maxAttempts; i++) {
-            const result = await getLatestPricingResultStatus({ opportunityId: this.recordId });
+            console.log('PEAC DEBUG - poll attempt:', i + 1);
+
+            const result = await getLatestPricingResultStatus({
+                opportunityId: this.recordId,
+                existingPricingResultId: existingPricingResultId
+            });
+
+            console.log('PEAC DEBUG - pricing poll result:', JSON.parse(JSON.stringify(result)));
 
             if (result && result.hasPricingResult) {
                 this.latestPricingResult = result;
                 this.showPricingResultBanner = true;
+                console.log('PEAC DEBUG - pricing banner should show:', this.showPricingResultBanner);
                 return result;
             }
 
             await new Promise(resolve => window.setTimeout(resolve, delayMs));
         }
 
+        console.log('PEAC DEBUG - waitForPricingResult END - no new pricing result found');
         return null;
     }
 

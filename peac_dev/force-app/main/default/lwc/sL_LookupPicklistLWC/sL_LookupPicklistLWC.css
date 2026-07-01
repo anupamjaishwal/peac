@@ -27,11 +27,11 @@
     position: absolute;
     z-index: 9001;
     top: 100%;
-    left: 0;
+    left: 1;
     right: 0;
     min-width: 100%;
     background: white;
-    border: 1px solid #dddbda;
+    border: 0px solid #dddbda;
     border-radius: 0.25rem;
     box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.16);
     max-height: 220px;

@@ -4,7 +4,12 @@
         //helper.getPicklists(cmp);
         var recordTypeName = cmp.get("v.clientWrapper.recordTypeName");
         console.log(recordTypeName);
-        
+
+        // SAL-7243 — surface the dealer that came from a New Quote on the
+        // Partners tab. Runs here (Partners-tab init, after saveCompany has
+        // created the Opportunity) rather than at wizard init, so saveCompany
+        // is never affected.
+        helper.prefillQuoteDealer(cmp);
     },
     recordUpdate: function(cmp, event, helper) {
         
