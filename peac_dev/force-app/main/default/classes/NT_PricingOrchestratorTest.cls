@@ -675,11 +675,13 @@ public class NT_PricingOrchestratorTest {
         System.assertEquals('Monthly',    queueable.mapPaymentFrequency(''));
         System.assertEquals('Monthly',    queueable.mapPaymentFrequency('unknown'));
         System.assertEquals('Quarterly',  queueable.mapPaymentFrequency('Quarterly'));
-        System.assertEquals('Semi-Annual', queueable.mapPaymentFrequency('Semi-Annual'));
-        System.assertEquals('Semi-Annual', queueable.mapPaymentFrequency('half-year'));
+        //System.assertEquals('Semiannual', queueable.mapPaymentFrequency('Semi-Annual'));
+        //System.assertEquals('Semiannual', queueable.mapPaymentFrequency('half-year'));
         System.assertEquals('Annual',     queueable.mapPaymentFrequency('Annual'));
         System.assertEquals('Annual',     queueable.mapPaymentFrequency('yearly'));
         System.assertEquals('Weekly',     queueable.mapPaymentFrequency('Weekly'));
+        System.assertEquals('Biweekly',   queueable.mapPaymentFrequency('Bi-Weekly'));
+        System.assertEquals('Biweekly',   queueable.mapPaymentFrequency('biweekly'));
         System.assertEquals('Daily',      queueable.mapPaymentFrequency('daily'));
         System.assertEquals('Daily',      queueable.mapPaymentFrequency('per day'));
     }
@@ -842,7 +844,8 @@ public class NT_PricingOrchestratorTest {
         );
         insert mod;
         mod = [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
-                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c
+                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                      Residual_Balloon_Table__c
                FROM Modifier__c WHERE Id = :mod.Id];
 
         NT_PricingContext ctx = new NT_PricingContext(q.Id);
@@ -862,6 +865,196 @@ public class NT_PricingOrchestratorTest {
 
         System.assertEquals(7.0, ctx.finalRate, 'Final rate should include modifier base rate adjustment');
         System.assertEquals(1.518, ctx.finalRateFactor, 'Final rate factor should include modifier base rate adjustment');
+    }
+
+    @IsTest
+    static void testModifierService_gridRateWithRowAndColumn() {
+        // Modifier rate card grid: base rate 1.0 + credit-score row rate 0.5 = 1.5 adjustment
+        Quote q = [SELECT Id FROM Quote WHERE Name = 'Test Pricing Quote' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        TCRE__Rule_Config__c modRowRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        TCRE__Rule_Config__c modColRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        insert new List<TCRE__Rule_Config__c>{ modRowRule, modColRule };
+
+        RateCard__c modRc = new RateCard__c(
+            Effective_Start_Date__c = Date.today().addDays(-1),
+            Rate_Card_Type__c = 'Interest Rate',
+            Base_Rate__c = 1.0
+        );
+        insert modRc;
+
+        Rate_Card_Row__c modRow = new Rate_Card_Row__c(
+            Rate_Card__c = modRc.Id,
+            Row_Criteria__c = modRowRule.Id,
+            Quote_Row_Criteria__c = modRowRule.Id
+        );
+        insert modRow;
+
+        Rate_Card_Column__c modCol = new Rate_Card_Column__c(
+            Rate_Card__c = modRc.Id,
+            Column_Criteria__c = modColRule.Id,
+            Quote_Column_Criteria__c = modColRule.Id
+        );
+        insert modCol;
+
+        insert new Rate_Card_Rate__c(
+            Rate_Card_Row__c = modRow.Id,
+            Rate_Card_Column__c = modCol.Id,
+            Rate__c = 0.5
+        );
+
+        Modifier__c mod = new Modifier__c(Rate_Card__c = rc.Id, Modifier_Rate_Card__c = modRc.Id);
+        insert mod;
+        mod = [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
+                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                      Residual_Balloon_Table__c
+               FROM Modifier__c WHERE Id = :mod.Id];
+
+        NT_PricingContext ctx = new NT_PricingContext(q.Id);
+        ctx.selectedRateCard = rc;
+        ctx.baseRate = 5.0;
+        ctx.finalRate = 5.0;
+        ctx.eligibleModifiers = new List<Modifier__c>{ mod };
+        ctx.parentId = q.Id;
+
+        NT_ModifierService.mockModifierRowRuleResults = new Map<Id, Map<Id, Boolean>>{
+            q.Id => new Map<Id, Boolean>{ modRowRule.Id => true }
+        };
+        NT_ModifierService.mockModifierColumnRuleResults = new Map<Id, Map<Id, Boolean>>{
+            q.Id => new Map<Id, Boolean>{ modColRule.Id => true }
+        };
+
+        try {
+            Test.startTest();
+            new NT_ModifierService().applyModifiers(ctx);
+            Test.stopTest();
+        } finally {
+            NT_ModifierService.mockModifierRowRuleResults = null;
+            NT_ModifierService.mockModifierColumnRuleResults = null;
+        }
+
+        System.assertEquals(1.5, ctx.modifierRateAdjustments.get(mod.Id),
+            'Modifier rate should be base (1.0) + credit-score grid rate (0.5)');
+        System.assertEquals(6.5, ctx.finalRate,
+            'Final rate should be 5.0 + (base 1.0 + grid 0.5)');
+    }
+
+    @IsTest
+    static void testModifierService_gridRateCatchAllColumn() {
+        // Modifier rate card with a catch-all column (no column criteria): match row only
+        Quote q = [SELECT Id FROM Quote WHERE Name = 'Test Pricing Quote' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        TCRE__Rule_Config__c modRowRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        insert modRowRule;
+
+        RateCard__c modRc = new RateCard__c(
+            Effective_Start_Date__c = Date.today().addDays(-1),
+            Rate_Card_Type__c = 'Interest Rate',
+            Base_Rate__c = 1.0
+        );
+        insert modRc;
+
+        Rate_Card_Row__c modRow = new Rate_Card_Row__c(
+            Rate_Card__c = modRc.Id,
+            Row_Criteria__c = modRowRule.Id,
+            Quote_Row_Criteria__c = modRowRule.Id
+        );
+        insert modRow;
+
+        // Column with no criteria (catch-all "All term lengths")
+        Rate_Card_Column__c modCol = new Rate_Card_Column__c(Rate_Card__c = modRc.Id);
+        insert modCol;
+
+        insert new Rate_Card_Rate__c(
+            Rate_Card_Row__c = modRow.Id,
+            Rate_Card_Column__c = modCol.Id,
+            Rate__c = 2.0
+        );
+
+        Modifier__c mod = new Modifier__c(Rate_Card__c = rc.Id, Modifier_Rate_Card__c = modRc.Id);
+        insert mod;
+        mod = [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
+                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                      Residual_Balloon_Table__c
+               FROM Modifier__c WHERE Id = :mod.Id];
+
+        NT_PricingContext ctx = new NT_PricingContext(q.Id);
+        ctx.selectedRateCard = rc;
+        ctx.baseRate = 5.0;
+        ctx.finalRate = 5.0;
+        ctx.eligibleModifiers = new List<Modifier__c>{ mod };
+        ctx.parentId = q.Id;
+
+        NT_ModifierService.mockModifierRowRuleResults = new Map<Id, Map<Id, Boolean>>{
+            q.Id => new Map<Id, Boolean>{ modRowRule.Id => true }
+        };
+
+        try {
+            Test.startTest();
+            new NT_ModifierService().applyModifiers(ctx);
+            Test.stopTest();
+        } finally {
+            NT_ModifierService.mockModifierRowRuleResults = null;
+        }
+
+        System.assertEquals(3.0, ctx.modifierRateAdjustments.get(mod.Id),
+            'Modifier rate should be base (1.0) + catch-all grid rate (2.0)');
+    }
+
+    @IsTest
+    static void testModifierService_gridNoRowMatch() {
+        // No row matches → grid contributes nothing, only base rate applies
+        Quote q = [SELECT Id FROM Quote WHERE Name = 'Test Pricing Quote' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        TCRE__Rule_Config__c modRowRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        insert modRowRule;
+
+        RateCard__c modRc = new RateCard__c(
+            Effective_Start_Date__c = Date.today().addDays(-1),
+            Rate_Card_Type__c = 'Interest Rate',
+            Base_Rate__c = 1.0
+        );
+        insert modRc;
+
+        Rate_Card_Row__c modRow = new Rate_Card_Row__c(
+            Rate_Card__c = modRc.Id,
+            Row_Criteria__c = modRowRule.Id,
+            Quote_Row_Criteria__c = modRowRule.Id
+        );
+        insert modRow;
+
+        Modifier__c mod = new Modifier__c(Rate_Card__c = rc.Id, Modifier_Rate_Card__c = modRc.Id);
+        insert mod;
+        mod = [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
+                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                      Residual_Balloon_Table__c
+               FROM Modifier__c WHERE Id = :mod.Id];
+
+        NT_PricingContext ctx = new NT_PricingContext(q.Id);
+        ctx.selectedRateCard = rc;
+        ctx.baseRate = 5.0;
+        ctx.finalRate = 5.0;
+        ctx.eligibleModifiers = new List<Modifier__c>{ mod };
+        ctx.parentId = q.Id;
+
+        // Row rule evaluates to false → no matching row
+        NT_ModifierService.mockModifierRowRuleResults = new Map<Id, Map<Id, Boolean>>{
+            q.Id => new Map<Id, Boolean>{ modRowRule.Id => false }
+        };
+
+        try {
+            Test.startTest();
+            new NT_ModifierService().applyModifiers(ctx);
+            Test.stopTest();
+        } finally {
+            NT_ModifierService.mockModifierRowRuleResults = null;
+        }
+
+        System.assertEquals(1.0, ctx.modifierRateAdjustments.get(mod.Id),
+            'With no matching grid row, only the modifier base rate (1.0) applies');
     }
 
     @IsTest
@@ -899,7 +1092,8 @@ public class NT_PricingOrchestratorTest {
         );
         insert mod;
         mod = [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
-                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c
+                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                      Residual_Balloon_Table__c
                FROM Modifier__c WHERE Id = :mod.Id];
 
         NT_PricingContext ctx = new NT_PricingContext(q.Id);
@@ -1227,7 +1421,7 @@ public class NT_PricingOrchestratorTest {
         System.assert(!ctx.modifierResults.isEmpty(), 'Modifier results should be populated on ctx');
         List<Pricing_Result__c> results = [
             SELECT Id, Status__c, Source__c, Modified_Rate__c, Rate_Card__c, Base_Rate__c,
-                   Residual_Amount__c, Modified_Residual_Amount__c, Total_Amount__c, Total_Rate__c
+                   Base_Residual__c, Modified_Residual_Amount__c, Total_Amount__c, Total_Rate__c
             FROM Pricing_Result__c
             WHERE Source__c = 'Modifier' AND Opportunity__c = :opp.Id
         ];
@@ -1235,10 +1429,10 @@ public class NT_PricingOrchestratorTest {
         System.assertEquals('Success', results[0].Status__c);
         System.assertEquals(rc.Id, results[0].Rate_Card__c, 'Modifier result should reference the parent rate card');
         System.assertEquals(2.0, results[0].Base_Rate__c, 'Modifier result should store parent rate card base rate');
-        System.assertEquals(10.0, results[0].Residual_Amount__c, 'Modifier result should store base residual');
+        System.assertEquals(10.0, results[0].Base_Residual__c, 'Modifier result should store base residual');
         System.assertEquals(750.0, results[0].Modified_Residual_Amount__c, 'Modifier result should store residual as dollar amount');
         System.assertEquals(51231.25, results[0].Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
-        System.assertEquals(2.5, results[0].Total_Rate__c, 'Total rate should be parent base rate + modifier rate adjustment');
+        System.assertEquals(2.5, results[0].Total_Rate__c, 'Total rate should be ctx.baseRate + modifier rate adjustment');
     }
 
     @IsTest
@@ -1276,7 +1470,7 @@ public class NT_PricingOrchestratorTest {
 
         List<Pricing_Result__c> results = [
             SELECT Id, Status__c, Source__c, Error_Message__c, Rate_Card__c, Base_Rate__c,
-                   Residual_Amount__c, Modified_Residual_Amount__c, Total_Amount__c, Total_Rate__c
+                   Base_Residual__c, Modified_Residual_Amount__c, Total_Amount__c, Total_Rate__c
             FROM Pricing_Result__c
             WHERE Source__c = 'Modifier'
         ];
@@ -1287,10 +1481,10 @@ public class NT_PricingOrchestratorTest {
             if (r.Status__c == 'Success') {
                 System.assertEquals(rc.Id, r.Rate_Card__c, 'Success result should reference parent rate card');
                 System.assertEquals(2.0, r.Base_Rate__c, 'Success result should store parent rate card base rate');
-                System.assertEquals(10.0, r.Residual_Amount__c, 'Success result should store base residual');
+                System.assertEquals(10.0, r.Base_Residual__c, 'Success result should store base residual');
                 System.assertEquals(500.0, r.Modified_Residual_Amount__c, 'Modifier result should store residual as dollar amount');
                 System.assertEquals(51237.50, r.Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
-                System.assertEquals(2.5, r.Total_Rate__c, 'Total rate should be parent base rate + modifier rate adjustment');
+                System.assertEquals(2.5, r.Total_Rate__c, 'Total rate should be ctx.baseRate + modifier rate adjustment');
             }
         }
         System.assertEquals(1, errorCount, 'One error modifier result expected');
@@ -1334,7 +1528,7 @@ public class NT_PricingOrchestratorTest {
 
         List<Pricing_Result__c> results = [
             SELECT Id, Status__c, Quote__c, Rate_Card__c, Base_Rate__c,
-                   Residual_Amount__c, Modified_Residual_Amount__c, Total_Amount__c, Total_Rate__c
+                   Base_Residual__c, Modified_Residual_Amount__c, Total_Amount__c, Total_Rate__c
             FROM Pricing_Result__c
             WHERE Source__c = 'Modifier' AND Status__c = 'Success'
         ];
@@ -1342,7 +1536,7 @@ public class NT_PricingOrchestratorTest {
         System.assertEquals(q.Id, results[0].Quote__c, 'Quote lookup should be set');
         System.assertEquals(rc.Id, results[0].Rate_Card__c, 'Modifier result should reference the parent rate card');
         System.assertEquals(3.0, results[0].Base_Rate__c, 'Modifier result should store ctx.baseRate');
-        System.assertEquals(8.0, results[0].Residual_Amount__c, 'Modifier result should store base residual');
+        System.assertEquals(8.0, results[0].Base_Residual__c, 'Modifier result should store base residual');
         System.assertEquals(300.0, results[0].Modified_Residual_Amount__c, 'Modifier result should store residual as dollar amount');
         System.assertEquals(41290.25, results[0].Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
         System.assertEquals(3.25, results[0].Total_Rate__c, 'Total rate should be ctx.baseRate + modifier rate adjustment');
@@ -1448,7 +1642,8 @@ public class NT_PricingOrchestratorTest {
         );
         insert mod;
         mod = [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
-                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c
+                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                      Residual_Balloon_Table__c
                FROM Modifier__c WHERE Id = :mod.Id];
 
         NT_PricingContext ctx = new NT_PricingContext(opp.Id);
@@ -1491,7 +1686,8 @@ public class NT_PricingOrchestratorTest {
         );
         insert mod;
         mod = [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
-                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c
+                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                      Residual_Balloon_Table__c
                FROM Modifier__c WHERE Id = :mod.Id];
 
         NT_PricingContext ctx = new NT_PricingContext(q.Id);

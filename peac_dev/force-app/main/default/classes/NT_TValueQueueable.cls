@@ -187,6 +187,7 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
      * @param combination The frequency+term combination to build for
      * @return tval__TValue_Quote__c The built TValue Quote record
      */
+    @TestVisible
     private tval__TValue_Quote__c buildTValueQuote(TValueCombination combination) {
         tval__TValue_Quote__c tvq = new tval__TValue_Quote__c();
         
@@ -276,9 +277,14 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         } else if (lowerFreq.contains('quarter')) {
             return 'Quarterly';
         } else if (lowerFreq.contains('semi') || lowerFreq.contains('half')) {
-            return 'Semi-Annual';
+            return 'Semiannual';
         } else if (lowerFreq.contains('annual') || lowerFreq.contains('year')) {
             return 'Annual';
+        } else if (lowerFreq.contains('biweek') || lowerFreq.contains('bi-week')) {
+            // Check biweekly before the generic 'week' branch so 'Bi-Weekly'
+            // isn't silently downgraded to 'Weekly'. tval__Period__c has a
+            // distinct restricted value of 'Biweekly'.
+            return 'Biweekly';
         } else if (lowerFreq.contains('week')) {
             return 'Weekly';
         } else if (lowerFreq.contains('daily') || lowerFreq.contains('day')) {

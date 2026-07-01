@@ -44,7 +44,7 @@ public class NT_CalculatePricingControllerTest {
         );
         insert opp;
 
-        // Insert with required stage fields; Payment_Frequency__c and Program_Lookup__c left null
+        // Insert with required stage fields; Payment_Frequency__c left null
         // so the controller still detects missing fields
         Opportunity oppMissingFields = new Opportunity(
             Name = 'Test Missing Fields Opp',

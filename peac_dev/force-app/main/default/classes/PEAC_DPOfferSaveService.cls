@@ -5,7 +5,7 @@ public with sharing class PEAC_DPOfferSaveService {
     private static final String ACTION_UPDATE = 'UPDATE';
     private static final String ACTION_DELETE = 'DELETE';
 
-    // PEAC New Pricing Changes - Start
+    
     @AuraEnabled
     public static PEAC_OfferDataResponse getOfferData(Id opportunityId) {
         if (opportunityId == null) {
@@ -30,7 +30,9 @@ public with sharing class PEAC_DPOfferSaveService {
         // Per Dealer Portal enhancement, offer tab values should come directly from Opportunity.
         response.monthlyPayment = opp.Payment_Amount__c;
         response.rateFactor = opp.Rate_Factor__c;
-        // PEAC New Pricing Changes - End
+        //System.debug('PEAC DEBUG - getOfferData response.monthlyPayment: ' + response.monthlyPayment);
+        //System.debug('PEAC DEBUG - getOfferData response.rateFactor: ' + response.rateFactor);
+       
 
         response.accountBillingState = opp.Account_Billing_State_Province__c;
 
@@ -58,7 +60,6 @@ public with sharing class PEAC_DPOfferSaveService {
 
         return response;
     }
-    // PEAC New Pricing Changes - End
 
     @AuraEnabled(cacheable=true)
     public static List<PEAC_TrackedFieldDTO> getLeasePricingTrackedFields() {
@@ -94,20 +95,30 @@ public with sharing class PEAC_DPOfferSaveService {
     }
 
     @AuraEnabled
-    public static PEAC_PricingResultStatusDTO getLatestPricingResultStatus(Id opportunityId) {
+    public static PEAC_PricingResultStatusDTO getLatestPricingResultStatus(Id opportunityId, Id existingPricingResultId) {
         PEAC_PricingResultStatusDTO response = new PEAC_PricingResultStatusDTO();
 
         if (opportunityId == null) {
             return response;
         }
 
-       List<Pricing_Result__c> pricingResults = [SELECT Id, Name, Status__c, Error_Message__c, CreatedDate FROM Pricing_Result__c WHERE Opportunity__c = :opportunityId ORDER BY CreatedDate DESC LIMIT 1];
+        List<Pricing_Result__c> pricingResults = [
+            SELECT Id, Name, Status__c, Error_Message__c, CreatedDate
+            FROM Pricing_Result__c
+            WHERE Opportunity__c = :opportunityId
+            ORDER BY CreatedDate DESC
+            LIMIT 1
+        ];
 
         if (pricingResults.isEmpty()) {
             return response;
         }
 
         Pricing_Result__c latestResult = pricingResults[0];
+
+        if (existingPricingResultId != null && latestResult.Id == existingPricingResultId) {
+            return response;
+        }
 
         response.hasPricingResult = true;
         response.pricingResultId = latestResult.Id;
@@ -117,6 +128,39 @@ public with sharing class PEAC_DPOfferSaveService {
 
         return response;
     }
+    
+    @AuraEnabled
+    public static PEAC_SaveOfferResponse recalculatePricingAfterAssetCreate(Id opportunityId) {
+        PEAC_SaveOfferResponse response = new PEAC_SaveOfferResponse();
+        response.success = false;
+        response.pricingStarted = false;
+        response.didSaveChanges = false;
+
+        if (opportunityId == null) {
+            response.message = 'Opportunity Id is required.';
+            return response;
+        }
+
+        try {
+            syncOpportunityEquipmentCostFromAssets(opportunityId);
+            NT_PricingOrchestrator.runPricingOrchestrator(new List<Id>{ opportunityId });
+
+            response.success = true;
+            response.pricingStarted = true;
+            response.didSaveChanges = true;
+            response.message = 'Asset created successfully. Pricing calculation has been started.';
+            populateLatestPricingResult(response, opportunityId);
+            return response;
+        } catch (Exception ex) {
+            response.success = false;
+            response.pricingStarted = false;
+            response.didSaveChanges = false;
+            response.message = ex.getMessage();
+            return response;
+        }
+    }
+    
+    
 
     @AuraEnabled
     public static PEAC_SaveOfferResponse saveOfferChanges(
@@ -155,6 +199,10 @@ public with sharing class PEAC_DPOfferSaveService {
 
             if (hasAssetChanges) {
                 didSaveAssets = processAssetChanges(opportunityId, assetChanges);
+
+                if (didSaveAssets) {
+                    syncOpportunityEquipmentCostFromAssets(opportunityId);
+                }
             }
 
             if (hasOpportunityChanges) {
@@ -320,6 +368,32 @@ public with sharing class PEAC_DPOfferSaveService {
         }
 
         return didDml;
+    }
+
+
+    private static void syncOpportunityEquipmentCostFromAssets(Id opportunityId) {
+        if (opportunityId == null) {
+            return;
+        }
+
+        Decimal totalEquipmentCost = 0;
+
+        for (AggregateResult ar : [
+            SELECT SUM(Cost__c) totalCost
+            FROM Asset__c
+            WHERE Opportunity__c = :opportunityId
+        ]) {
+            totalEquipmentCost = (Decimal) ar.get('totalCost');
+        }
+
+        if (totalEquipmentCost == null) {
+            totalEquipmentCost = 0;
+        }
+
+        update new Opportunity(
+            Id = opportunityId,
+            Equipment_Cost__c = totalEquipmentCost
+        );
     }
 
     private static Boolean updateOpportunityChanges(

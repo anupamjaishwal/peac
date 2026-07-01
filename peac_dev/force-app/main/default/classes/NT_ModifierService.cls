@@ -7,7 +7,8 @@ public without sharing class NT_ModifierService {
 
     @TestVisible private static Decimal testResidualOverride = null;
     @TestVisible private static Boolean forceEvaluationException = false;
-    @TestVisible private static Decimal testModifierGridRateOverride = null;
+    @TestVisible private static Map<Id, Map<Id, Boolean>> mockModifierRowRuleResults = null;
+    @TestVisible private static Map<Id, Map<Id, Boolean>> mockModifierColumnRuleResults = null;
     
     /**
      * @description Evaluates and applies all applicable modifiers
@@ -189,9 +190,6 @@ public without sharing class NT_ModifierService {
      * @return Decimal The grid rate, or null if no matching row/column found
      */
     private Decimal getModifierGridRate(Id modRateCardId, NT_PricingContext ctx) {
-        if (testModifierGridRateOverride != null) {
-            return testModifierGridRateOverride;
-        }
         Boolean useQuoteField = ctx.isQuote();
 
         // Collect row criteria IDs for this modifier rate card
@@ -218,8 +216,13 @@ public without sharing class NT_ModifierService {
         rowRE.ruleConfigIds = rowCriteriaIds;
         rowRE.ruleObjectType = 'Rate_Card_Row__c';
         try {
-            rowRE.testRuleConditions();
-            Map<Id, Map<Id, Boolean>> rowResults = rowRE.ruleResults;
+            Map<Id, Map<Id, Boolean>> rowResults;
+            if (mockModifierRowRuleResults != null) {
+                rowResults = mockModifierRowRuleResults;
+            } else {
+                rowRE.testRuleConditions();
+                rowResults = rowRE.ruleResults;
+            }
             for (Map<Id, Boolean> ruleResult : rowResults.values()) {
                 for (Id ruleConfigId : ruleResult.keySet()) {
                     if (ruleResult.get(ruleConfigId) == true) {
@@ -262,8 +265,13 @@ public without sharing class NT_ModifierService {
             colRE.ruleConfigIds = columnCriteriaIds;
             colRE.ruleObjectType = 'Rate_Card_Column__c';
             try {
-                colRE.testRuleConditions();
-                Map<Id, Map<Id, Boolean>> colResults = colRE.ruleResults;
+                Map<Id, Map<Id, Boolean>> colResults;
+                if (mockModifierColumnRuleResults != null) {
+                    colResults = mockModifierColumnRuleResults;
+                } else {
+                    colRE.testRuleConditions();
+                    colResults = colRE.ruleResults;
+                }
                 for (Map<Id, Boolean> ruleResult : colResults.values()) {
                     for (Id ruleConfigId : ruleResult.keySet()) {
                         if (ruleResult.get(ruleConfigId) == true) {

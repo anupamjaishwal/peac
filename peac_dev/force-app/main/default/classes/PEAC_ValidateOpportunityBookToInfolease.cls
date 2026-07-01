@@ -14,7 +14,7 @@ public with sharing class PEAC_ValidateOpportunityBookToInfolease {
     // Cache label conversion within a single transaction
     public static Decimal cachedAssetLimit;
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static Boolean validateOpportunityForBookToInfoleaseProcess(Id recordId) {
         if (recordId == null) {
             return false;
@@ -108,7 +108,7 @@ public with sharing class PEAC_ValidateOpportunityBookToInfolease {
         return cachedAssetLimit;
     }
 
-	@AuraEnabled(cacheable=true)
+	@AuraEnabled //removed Cacheable based on Code Review by Rajesh so as to mitigate the Cached Issues with Asset Downloads 
     public static PEAC_InfoleaseIntegrationStatusWrapper getLatestInfoleaseIntegrationDetails(Id opportunityId) {
         PEAC_InfoleaseIntegrationStatusWrapper wrapper = new PEAC_InfoleaseIntegrationStatusWrapper();
         
@@ -146,5 +146,80 @@ public with sharing class PEAC_ValidateOpportunityBookToInfolease {
         
         return wrapper;
     }
-
+    
+    //Begin : SAL-7150 Theshold validations based on CreditBrnch  by  DBalaKrishna(LTMindtree)
+    @AuraEnabled
+    public static PEAC_InfoleaseIntegrationStatusWrapper validateResidualThreshold(Id recordId) {
+    
+        PEAC_InfoleaseIntegrationStatusWrapper res = new PEAC_InfoleaseIntegrationStatusWrapper();
+    
+        if (recordId == null) {
+            res.isValid = false;
+            res.showWarning = false;
+            return res;
+        }
+    
+        //Fetch Opportunity
+        Opportunity opp = [SELECT Id,Branch__c,Total_Asset_Residual__c,Equipment_Cost__c
+            FROM Opportunity
+            WHERE Id = :recordId
+            LIMIT 1
+        ];
+    
+        // Default values
+        res.isValid = true;
+        res.showWarning = false;
+        res.branch = opp.Branch__c;
+    
+        Decimal totalResidual = opp.Total_Asset_Residual__c != null 
+            ? opp.Total_Asset_Residual__c : 0;
+    
+        Decimal equipmentCost = opp.Equipment_Cost__c != null 
+            ? opp.Equipment_Cost__c : 0;
+    
+        //Safety check
+        if (equipmentCost == 0) {
+            res.actualPercent = 0;
+            res.allowedPercent = 0;
+            return res;
+        }
+    
+        //Fetch Threshold value from CMDT (dynamic)
+        List<Credit_Branch_Threshold__mdt> rules = [
+            SELECT Branch_Value__c, Threshold_Percentage__c
+            FROM Credit_Branch_Threshold__mdt 
+            WHERE Branch_Value__c = :opp.Branch__c AND Active__c = true LIMIT 1
+        ];
+    
+        if (rules.isEmpty()) {
+            // No config found → no validation
+            return res;
+        }
+    
+        Decimal allowed = rules[0].Threshold_Percentage__c;    
+        Decimal actual = (totalResidual / equipmentCost) * 100;
+    
+        //Round for UI clarity
+        actual = actual.setScale(2);
+    
+        //Set wrapper values
+        res.actualPercent = actual;
+        res.allowedPercent = allowed;
+    
+        System.debug('Branch: ' + opp.Branch__c);
+        System.debug('Allowed%: ' + allowed);
+        System.debug('Actual%: ' + actual);
+    
+        //Validation logic
+        if (actual > allowed) {    
+            res.showWarning = true;
+            res.isValid = false;
+            res.message = System.Label.Credit_Branch_Threshold_Banner_Notification + '		: ' + opp.Branch__c
+                + '\nActual %: ' + actual + '   |   Allowed %: ' + allowed;
+            
+        }
+    
+        return res;
+    }
+	//End : SAL-7150 by DBalaKrishna(LTMindtree)
 }

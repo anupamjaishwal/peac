@@ -140,8 +140,8 @@ private class NT_TValueQueueableTest {
         System.assertEquals('Monthly', q.mapPaymentFrequency(''));
         System.assertEquals('Monthly', q.mapPaymentFrequency('monthly'));
         System.assertEquals('Quarterly', q.mapPaymentFrequency('Quarterly'));
-        System.assertEquals('Semi-Annual', q.mapPaymentFrequency('Semi-Annual'));
-        System.assertEquals('Semi-Annual', q.mapPaymentFrequency('Half-yearly'));
+        System.assertEquals('Semiannual', q.mapPaymentFrequency('Semi-Annual'));
+        System.assertEquals('Semiannual', q.mapPaymentFrequency('Half-yearly'));
         System.assertEquals('Annual', q.mapPaymentFrequency('Annual'));
         System.assertEquals('Annual', q.mapPaymentFrequency('Yearly'));
         System.assertEquals('Weekly', q.mapPaymentFrequency('Weekly'));
@@ -242,5 +242,61 @@ private class NT_TValueQueueableTest {
         NT_TValueQueueable.sendPricingNotification('t', 'b', null);
         Test.stopTest();
         System.assert(true, 'Null opportunityId returns early without exception.');
+    }
+
+    // ---------------------------------------------------------------------
+    // SAL-7244 — dealer points are added to the rate on the TValue Quote
+    // ---------------------------------------------------------------------
+
+    /** Build a queueable with an explicit points value (financed amount is pre-net). */
+    private static NT_TValueQueueable makeQueueableWithPoints(Decimal points) {
+        Quote q = [SELECT Id, Name FROM Quote WHERE Name = 'NT_TValueQueueableTest Quote' LIMIT 1];
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'NT_TValueQueueableTest Opp' LIMIT 1];
+        Pricing_Result__c pr = [SELECT Id FROM Pricing_Result__c WHERE Transaction_Id__c = 'tvq-test-001' LIMIT 1];
+        NT_TValueQueueable.TValueCombination c = new NT_TValueQueueable.TValueCombination('Monthly', 36);
+        c.rate = 6.25;
+        c.residual = 1000;
+        return new NT_TValueQueueable(
+            q.Id, opp.Id, null, pr.Id,
+            5.5, 50000, new List<NT_TValueQueueable.TValueCombination>{ c },
+            1, 1000, '1.00 Out',
+            'NT_TValueQueueableTest Quote', new List<String>(), 'tvq-test-001', points
+        );
+    }
+
+    /**
+     * @description  2 points = +2% on the rate: tval__Rate__c = combination rate + points.
+     *               Equipment cost is never on the TValue Quote, so the financed amount
+     *               passed in (already net) is stamped unchanged.
+     */
+    @isTest
+    static void buildTValueQuote_appliesPointsToRate() {
+        NT_TValueQueueable q = makeQueueableWithPoints(2);
+        NT_TValueQueueable.TValueCombination combo = new NT_TValueQueueable.TValueCombination('Monthly', 36);
+        combo.rate = 6.25;
+        combo.residual = 1000;
+
+        Test.startTest();
+        tval__TValue_Quote__c tvq = q.buildTValueQuote(combo);
+        Test.stopTest();
+
+        System.assertEquals(8.25, tvq.tval__Rate__c, 'Rate must be combination rate (6.25) + points (2).');
+        System.assertEquals(50000, tvq.tval__Amount_Financed__c, 'Net financed amount passed in is stamped unchanged.');
+    }
+
+    /**
+     * @description  With no points, the rate is the combination rate unchanged.
+     */
+    @isTest
+    static void buildTValueQuote_noPointsLeavesRate() {
+        NT_TValueQueueable q = makeQueueableWithPoints(null);
+        NT_TValueQueueable.TValueCombination combo = new NT_TValueQueueable.TValueCombination('Monthly', 36);
+        combo.rate = 6.25;
+
+        Test.startTest();
+        tval__TValue_Quote__c tvq = q.buildTValueQuote(combo);
+        Test.stopTest();
+
+        System.assertEquals(6.25, tvq.tval__Rate__c, 'With no points the rate is unchanged.');
     }
 }

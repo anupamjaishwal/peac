@@ -5,7 +5,15 @@
  * @author Northteq
  */
 public without sharing class NT_TValueService {
-    
+
+    // SAL-6442 — hard ceiling on how many Quote/Offer/TValue combinations a single
+    // submission can generate. Multiple quotes (one per selected term) is intended, but
+    // the business caps the total at 12 (per grooming). MVP field restrictions already
+    // keep the count at 6 (6 terms × Monthly); this guards future term/frequency growth.
+    // If admin tuning is ever needed, source this from custom metadata instead.
+    @TestVisible
+    private static final Integer MAX_QUOTE_COMBINATIONS = 12;
+
     /**
      * @description Enqueues TValue calculation asynchronously.
      *              Creates all frequency × term combinations and processes via queueable chain.
@@ -43,14 +51,8 @@ public without sharing class NT_TValueService {
                 System.debug('  - ' + combo.paymentFrequency + ' / ' + combo.term + ' mo');
             }
 
-            // Net financed amount: subtract down payment and buy-down before sending to TValue
-            Decimal netFinancedAmount = ctx.financedAmount != null ? ctx.financedAmount : 0;
-            if (ctx.downPayment != null && ctx.downPayment > 0) {
-                netFinancedAmount -= ctx.downPayment;
-            }
-            if (ctx.buyDown != null && ctx.buyDown > 0) {
-                netFinancedAmount -= ctx.buyDown;
-            }
+            // SAL-7244 — net financed amount = financed − down − buydown − subsidy
+            Decimal netFinancedAmount = computeNetFinancedAmount(ctx);
 
             // AC Scenario 3: ctx.transactionId is passed to the queueable so EF offer creation is scoped to this pricing run
             NT_TValueQueueable queueable = new NT_TValueQueueable(
@@ -108,14 +110,8 @@ public without sharing class NT_TValueService {
 
             System.debug('Enqueueing TValue (Opportunity context) for ' + combinations.size() + ' combinations');
 
-            // Net financed amount: subtract down payment and buy-down before sending to TValue
-            Decimal netFinancedAmount = ctx.financedAmount != null ? ctx.financedAmount : 0;
-            if (ctx.downPayment != null && ctx.downPayment > 0) {
-                netFinancedAmount -= ctx.downPayment;
-            }
-            if (ctx.buyDown != null && ctx.buyDown > 0) {
-                netFinancedAmount -= ctx.buyDown;
-            }
+            // SAL-7244 — net financed amount = financed − down − buydown − subsidy
+            Decimal netFinancedAmount = computeNetFinancedAmount(ctx);
 
             // AC Scenario 3: ctx.transactionId is passed to the queueable so EF offer creation is scoped to this pricing run
             NT_TValueQueueable queueable = new NT_TValueQueueable(
@@ -147,10 +143,38 @@ public without sharing class NT_TValueService {
     }
     
     /**
+     * @description  SAL-7244 — computes the financed amount sent to TValue after
+     *               the buy-down levers. Down payment, buy-down, and subsidy each
+     *               reduce the financed amount the customer carries (equipment
+     *               cost stays gross and is never sent to TValue). Per business:
+     *               "subsidy/discount/buydown/rebate should be deducted from the
+     *               financed amount." Shared by both invokeTValue overloads so the
+     *               Quote (New Quote tab) and Opportunity (Calculate Pricing) paths
+     *               stay consistent. Floored at 0 to avoid a negative financed amount.
+     * @param        ctx  The pricing context.
+     * @return       The net financed amount (gross financed − down − buydown − subsidy, min 0).
+     */
+    @TestVisible
+    private Decimal computeNetFinancedAmount(NT_PricingContext ctx) {
+        Decimal net = ctx.financedAmount != null ? ctx.financedAmount : 0;
+        if (ctx.downPayment != null && ctx.downPayment > 0) {
+            net -= ctx.downPayment;
+        }
+        if (ctx.buyDown != null && ctx.buyDown > 0) {
+            net -= ctx.buyDown;
+        }
+        if (ctx.subsidy != null && ctx.subsidy > 0) {
+            net -= ctx.subsidy;
+        }
+        return net < 0 ? 0 : net;
+    }
+
+    /**
      * @description Builds all frequency × term combinations for TValue processing
      * @param ctx The pricing context
      * @return List<NT_TValueQueueable.TValueCombination> List of all combinations to process
      */
+    @TestVisible
     private List<NT_TValueQueueable.TValueCombination> buildCombinations(NT_PricingContext ctx) {
         List<NT_TValueQueueable.TValueCombination> combinations = new List<NT_TValueQueueable.TValueCombination>();
         
@@ -179,7 +203,19 @@ public without sharing class NT_TValueService {
                 combinations.add(combo);
             }
         }
-        
+
+        // SAL-6442 — enforce the max-combinations ceiling. Keep the first N in the
+        // existing deterministic order (frequency-outer, term-inner); never drop silently.
+        if (combinations.size() > MAX_QUOTE_COMBINATIONS) {
+            System.debug(LoggingLevel.WARN, 'NT_TValueService: capping pricing combinations from '
+                + combinations.size() + ' to ' + MAX_QUOTE_COMBINATIONS);
+            List<NT_TValueQueueable.TValueCombination> capped = new List<NT_TValueQueueable.TValueCombination>();
+            for (Integer i = 0; i < MAX_QUOTE_COMBINATIONS; i++) {
+                capped.add(combinations[i]);
+            }
+            combinations = capped;
+        }
+
         return combinations;
     }
     

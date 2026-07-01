@@ -1,11 +1,16 @@
 /**
  * @description Trigger handler for Quote. When OpportunityId is set or changed,
- *              queries the latest Pricing_Result__c and tval__TValue_Quote__c
- *              linked to the Quote, back-stamps tval__Opportunity__c on those
- *              TValue Quotes AND Opportunity__c on those Pricing_Result__c rows
- *              (so they surface in the Opportunity related list after a
- *              standalone quote is converted), and creates EF_Approved_Offers__c
- *              records.
+ *              the back-stamp work (tval__Opportunity__c on related TValue Quotes,
+ *              Opportunity__c on related Pricing_Result__c rows, and
+ *              EF_Approved_Offers__c creation) is decoupled from the originating
+ *              transaction by publishing an NT_Quote_Backstamp__e platform event
+ *              per Quote. The event subscriber (NT_QuoteBackstampEventTrigger)
+ *              runs as the Automated Process user, which has access to the
+ *              Opportunity even when the Quote was updated by a portal/community
+ *              user. This avoids INSUFFICIENT_ACCESS_ON_CROSS_REFERENCE_ENTITY,
+ *              which the synchronous path hit when the tval managed-package
+ *              trigger cascaded a Quote update referencing an Opportunity the
+ *              portal user could not access (SAL-7168).
  * @author Northteq
  */
 public without sharing class NT_QuoteTriggerHandler {
@@ -18,9 +23,7 @@ public without sharing class NT_QuoteTriggerHandler {
                 quoteToOppId.put(quoteId, q.OpportunityId);
             }
         }
-        if (!quoteToOppId.isEmpty()) {
-            createEFOffers(quoteToOppId);
-        }
+        publishBackstampEvents(quoteToOppId);
     }
 
     public void afterUpdate(Map<Id, SObject> oldMap, Map<Id, SObject> newMap) {
@@ -32,8 +35,59 @@ public without sharing class NT_QuoteTriggerHandler {
                 quoteToOppId.put(quoteId, newQ.OpportunityId);
             }
         }
+        publishBackstampEvents(quoteToOppId);
+    }
+
+    /**
+     * @description Publishes one NT_Quote_Backstamp__e per Quote->Opportunity pair
+     *              so the back-stamp + EF offer work runs asynchronously as the
+     *              Automated Process user. PublishAfterCommit on the event ensures
+     *              the source Quote.OpportunityId change is committed before the
+     *              subscriber runs, so its queries see the linked Opportunity.
+     * @param quoteToOppId Map of Quote Id to its OpportunityId.
+     */
+    private void publishBackstampEvents(Map<Id, Id> quoteToOppId) {
+        if (quoteToOppId == null || quoteToOppId.isEmpty()) {
+            return;
+        }
+        List<NT_Quote_Backstamp__e> events = new List<NT_Quote_Backstamp__e>();
+        for (Id quoteId : quoteToOppId.keySet()) {
+            events.add(new NT_Quote_Backstamp__e(
+                Quote_Id__c = quoteId,
+                Opportunity_Id__c = quoteToOppId.get(quoteId)
+            ));
+        }
+        List<Database.SaveResult> results = EventBus.publish(events);
+        for (Database.SaveResult sr : results) {
+            if (!sr.isSuccess()) {
+                for (Database.Error e : sr.getErrors()) {
+                    System.debug('SAL-7168 NT_Quote_Backstamp__e publish failed: '
+                        + e.getStatusCode() + ' | ' + e.getMessage());
+                }
+            }
+        }
+    }
+
+    /**
+     * @description Subscriber entry point for NT_Quote_Backstamp__e. Rebuilds the
+     *              Quote->Opportunity map from the events and runs the back-stamp
+     *              + EF offer creation. Runs in the Automated Process context, so
+     *              it has the Opportunity access the portal user lacked.
+     * @param events The NT_Quote_Backstamp__e records from Trigger.new.
+     */
+    public static void handleBackstampEvents(List<NT_Quote_Backstamp__e> events) {
+        if (events == null || events.isEmpty()) {
+            return;
+        }
+        Map<Id, Id> quoteToOppId = new Map<Id, Id>();
+        for (NT_Quote_Backstamp__e evt : events) {
+            if (String.isBlank(evt.Quote_Id__c) || String.isBlank(evt.Opportunity_Id__c)) {
+                continue;
+            }
+            quoteToOppId.put((Id) evt.Quote_Id__c, (Id) evt.Opportunity_Id__c);
+        }
         if (!quoteToOppId.isEmpty()) {
-            createEFOffers(quoteToOppId);
+            new NT_QuoteTriggerHandler().createEFOffers(quoteToOppId);
         }
     }
 

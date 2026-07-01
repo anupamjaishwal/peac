@@ -82,4 +82,58 @@ public class TC_PaymentTriggerHelper {
             }
         }
     }
+
+    /**
+     * Deletes existing subsidy-related Blended Income Item records
+     * associated with the Opportunities linked to the given Payment records.
+     *
+     * Logic:
+     * - Collects Opportunity Ids from the Payment records in trigger old context
+     * - Calls the helper method to delete existing Blended Income Item records
+     *   for those Opportunities
+     *
+     * @param triggerOld List of Payment__c records from trigger old context
+     * Author: Manish Suwalka
+     */
+
+    public static void deleteAssociatedBIIsOnOpportunity(List<Payment__c> triggerOld){
+    	Set<Id> optyIdSet = new Set<Id>();
+        for(Payment__c payment : triggerOld){
+            if(payment.Opportunity__c != Null){
+                optyIdSet.add(payment.Opportunity__c);
+            }
+        }
+        TC_AddBlendedIncomeItems.deleteExistingBlendedIncomeItemWithSubsidy(optyIdSet);
+    }
+
+    /**
+     * Deletes existing Blended Income Item records when associated Payments
+     * are moved to "Void / Cancelled" status.
+     *
+     * Logic:
+     * - Iterates through updated Payment records (newMap)
+     * - Identifies Payments where:
+     *     • Opportunity is populated
+     *     • Payment Status is set to VOID/CANCELLED
+     * - Collects associated Opportunity Ids
+     * - Deletes existing Blended Income Item records (with subsidy code)
+     *   for those Opportunities to maintain data consistency
+     *
+     * Note:
+     * - oldMap is passed for trigger context consistency, though not used currently
+     *
+     * @param oldMap Map of old Payment__c records (before update)
+     * @param newMap Map of new Payment__c records (after update)
+     * Author: Manish Suwalka
+     */
+
+    public static void deleteAssociatedBIIsPaymentMovedToVoidCancelled(Map <Id, Payment__c> oldMap, Map <Id, Payment__c> newMap){
+    	Set<Id> optyIdSet = new Set<Id>();
+        for(Payment__c payment : newMap.values()){
+            if(payment.Opportunity__c != Null && payment.Payment_Status__c == PEAC_ConstantClass.BLENDED_INCOME_ITEM_PAYMENT_STATUS_VOID_CANCELLED){
+                optyIdSet.add(payment.Opportunity__c);
+            }
+        }
+        TC_AddBlendedIncomeItems.deleteExistingBlendedIncomeItemWithSubsidy(optyIdSet);
+    }
 }

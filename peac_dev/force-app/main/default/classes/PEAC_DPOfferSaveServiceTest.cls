@@ -95,7 +95,7 @@ public class PEAC_DPOfferSaveServiceTest {
 
         Test.startTest();
         PEAC_DPOfferSaveService.PEAC_PricingResultStatusDTO response =
-            PEAC_DPOfferSaveService.getLatestPricingResultStatus(opp.Id);
+            PEAC_DPOfferSaveService.getLatestPricingResultStatus(opp.Id, null);
         Test.stopTest();
 
         System.assertNotEquals(null, response, 'Response should not be null.');
@@ -107,7 +107,7 @@ public class PEAC_DPOfferSaveServiceTest {
     static void testGetLatestPricingResultStatusWithNullId() {
         Test.startTest();
         PEAC_DPOfferSaveService.PEAC_PricingResultStatusDTO response =
-            PEAC_DPOfferSaveService.getLatestPricingResultStatus(null);
+            PEAC_DPOfferSaveService.getLatestPricingResultStatus(null, null);
         Test.stopTest();
 
         System.assertNotEquals(null, response, 'Response should not be null.');

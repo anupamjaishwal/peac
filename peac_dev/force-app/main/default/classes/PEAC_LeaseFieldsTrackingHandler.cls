@@ -6,7 +6,7 @@ public with sharing class PEAC_LeaseFieldsTrackingHandler {
     private static final String PROPOSAL_STAGE = 'Proposal';
     
     private static final String VALIDATION_MESSAGE = 'One or more pricing fields have been modified. Please click Calculate Pricing button before moving to the next stage.';
-
+    
     // Pricing Error changes start
     private static final String NO_RATE_FOUND_ERROR = 'No rate found for selected Rate Card';
     // Pricing Error changes end
@@ -84,7 +84,7 @@ public with sharing class PEAC_LeaseFieldsTrackingHandler {
             leaseOppIdsToQueryTrackers,
             trackedFields
         );
-
+        
         // Pricing Error changes start
         Map<Id, Boolean> noRateFoundByOppId = getNoRateFoundPricingErrorByOppId(leaseOppIdsForValidation);
         // Pricing Error changes end
@@ -150,7 +150,7 @@ public with sharing class PEAC_LeaseFieldsTrackingHandler {
         
         try {
             isClearingLeasePricingTracking = true;
-
+            
             Set<Id> oppIds = new Set<Id>();
             oppIds.addAll(opportunityIds);
 
@@ -177,8 +177,7 @@ public with sharing class PEAC_LeaseFieldsTrackingHandler {
             for (Id oppId : opportunityIds) {
                 oppsToUpdate.add(new Opportunity(
                     Id = oppId,
-                    Scored_Field_Modified__c = false,
-                    Payment_Amount__c = null
+                    Scored_Field_Modified__c = false
                 ));
             }
             
@@ -230,7 +229,7 @@ public with sharing class PEAC_LeaseFieldsTrackingHandler {
         if (opportunityIds == null || opportunityIds.isEmpty() || trackedFields == null || trackedFields.isEmpty()) {
             return result;
         }
-
+        
         Set<Id> oppIds = new Set<Id>();
         oppIds.addAll(opportunityIds);
 
@@ -261,7 +260,7 @@ public with sharing class PEAC_LeaseFieldsTrackingHandler {
         
         return result;
     }
-
+    
     // New Pricing Changes - Start
     private static Map<Id, Boolean> getNoRateFoundPricingErrorByOppId(Set<Id> opportunityIds) {
         Map<Id, Boolean> result = new Map<Id, Boolean>();

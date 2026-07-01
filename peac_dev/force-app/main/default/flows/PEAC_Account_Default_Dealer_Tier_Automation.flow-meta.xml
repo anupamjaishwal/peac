@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <assignments>
+        <description>Assigns the default value &apos;Generic&apos; to the Dealer Tier field.</description>
+        <name>Set_Generic_to_Dealer_Tier</name>
+        <label>Set &apos;Generic&apos; to Dealer Tier</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.Dealer_Tier__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>Generic</stringValue>
+            </value>
+        </assignmentItems>
+    </assignments>
+    <decisions>
+        <name>Check_the_Branch_value</name>
+        <label>Check the Branch value</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <defaultConnectorLabel>Default Outcome</defaultConnectorLabel>
+        <rules>
+            <name>Not_OEG</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Account_Branch__c</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <stringValue>Office Equip Group-OEG</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Set_Generic_to_Dealer_Tier</targetReference>
+            </connector>
+            <label>Not OEG</label>
+        </rules>
+    </decisions>
+    <description>Sets the default Dealer Tier to &apos;Generic&apos; for &apos;Dealer&apos; record types upon creation, unless the Branch is &apos;OEG&apos;.  SAL-7367</description>
+    <environments>Default</environments>
+    <interviewLabel>PEAC Account Default Dealer Tier Automation {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>PEAC Account - Default Dealer Tier Automation</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Check_the_Branch_value</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Type</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>D</stringValue>
+            </value>
+        </filters>
+        <object>Account</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

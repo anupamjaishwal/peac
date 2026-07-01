@@ -147,12 +147,17 @@ public without sharing class NT_PricingOrchestrator {
                 resultService.markModifierErrors(ctx);
             }
 
-            // Step 6: Invoke TValue asynchronously
-            // Quote__c is already linked inside createPricingResult; no extra update needed.
+            // Step 6: Link Pricing Result to Quote if available
+            Quote parentQuote = ctx.quote;
+            if (ctx.pricingResult != null && parentQuote != null) {
+                ctx.pricingResult.Quote__c = parentQuote.Id;
+                update ctx.pricingResult;
+            }
+            
+            // Step 7: Invoke TValue asynchronously
             List<String> missingFields = new List<String>();
             if (validationService.isTValueReady(ctx, missingFields)) {
                 System.debug('TValue is ready');
-                Quote parentQuote = ctx.quote;
                 if (parentQuote != null) {
                     tvalueService.invokeTValue(ctx, parentQuote);
                 } else if (ctx.isOpportunity()) {

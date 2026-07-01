@@ -67,12 +67,12 @@ public without sharing class NT_PricingConfigService {
      */
     private Opportunity queryOpportunity(Id oppId) {
         return [
-            SELECT Id, Name, AccountId, Amount, Equipment_Cost__c, 
+            SELECT Id, Name, AccountId, Amount, Equipment_Cost__c,
                    Risk_Based_Pricing__c, Credit_Risk_Grade__c, Points__c,
                    Deferral_Payments__c, Lessor__c, Purchase_Options__c,
-                   Terms__c, Funded_Amount__c, Payment_Amount__c, 
+                   Terms__c, Funded_Amount__c, Payment_Amount__c,
                    Payment_Frequency__c, Residual__c, Program_Lookup__c,
-                   Pricing_Status__c,
+                   Pricing_Status__c, Down_Payment__c, Buydown__c, Subsidy__c,
                    (SELECT Id, Program__c FROM Quotes WHERE Program__c != null LIMIT 1)
             FROM Opportunity
             WHERE Id = :oppId
@@ -113,6 +113,15 @@ public without sharing class NT_PricingConfigService {
             ctx.financedAmount = opp.Equipment_Cost__c;
             ctx.equipmentCost = opp.Equipment_Cost__c;
             ctx.points = opp.Points__c;
+            // SAL-7244 — Buydown, Down Payment, and Subsidy reduce the financed
+            // amount sent to TValue (equipment cost is kept gross). Previously
+            // unmapped, so the Calculate Pricing button ignored them. Note the
+            // Opportunity field is Buydown__c (the Quote field is Buy_Down__c).
+            ctx.downPayment = opp.Down_Payment__c;
+            ctx.buyDown = opp.Buydown__c;
+            ctx.subsidy = opp.Subsidy__c;
+            // advancePayments intentionally unmapped: the Opportunity has no
+            // numeric advance-payment-count field (only booleans/currency).
             ctx.paymentFrequencies.add(opp.Payment_Frequency__c);
             ctx.endOfTermOption = opp.Purchase_Options__c;
             ctx.baseResidual = opp.Residual__c;

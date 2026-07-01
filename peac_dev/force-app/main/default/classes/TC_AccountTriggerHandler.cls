@@ -69,6 +69,8 @@ public with sharing class TC_AccountTriggerHandler extends SL_Trigger.baseHandle
         TC_UpdateChildDealerAccounts.categorize((Map<Id, Account>)newMap, null, true, true, false);
         TC_CreateSurveillanceOnWatchList.createSurveillanceOnWatchList(null, (Map<Id, Account>)newMap);
         TC_ThresholdReachedCreateSurv.thresholdReachedCreateSurv(null, (Map<Id, Account>)newMap);
+        //Added By Rajesh Kumar(LTM)-SAL-SAL-7201
+        PEAC_DealerAccountProgramUpdate.checkDealerAccountAndUpdateProgram(null, (Map<Id, Account>)newMap);
         SL_InfoleaseUtils.isRecursive = true;
         for(SObject obj : newMap.values()){
             getLookupMaps(obj);
@@ -86,6 +88,8 @@ public with sharing class TC_AccountTriggerHandler extends SL_Trigger.baseHandle
         TC_CreateSurveillanceOnWatchList.createSurveillanceOnWatchList((Map<Id, Account>)oldMap, (Map<Id, Account>)newMap);
         TC_UpdateOppVerbalStips.updateOppVerbalStips((Map<Id, Account>)oldMap, (Map<Id, Account>)newMap);
         TC_ThresholdReachedCreateSurv.thresholdReachedCreateSurv((Map<Id, Account>)oldMap, (Map<Id, Account>)newMap);
+        //Added By Rajesh Kumar(LTM)-SAL-SAL-7201
+        PEAC_DealerAccountProgramUpdate.checkDealerAccountAndUpdateProgram((Map<Id, Account>)oldMap, (Map<Id, Account>)newMap);
        //TC_DealerFundingLimit.updateFundingLimit((Map<Id, Account>)oldMap, (Map<Id, Account>)newMap);
         //push to Bridgeware to Sync with Infolease
         if(!SL_InfoleaseUtils.isRecursive && !System.isFuture() && !System.isBatch()){

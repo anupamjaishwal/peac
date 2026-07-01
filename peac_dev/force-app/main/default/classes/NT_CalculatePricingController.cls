@@ -25,7 +25,7 @@ public without sharing class NT_CalculatePricingController {
 
         try {
             Opportunity opp = [
-                SELECT Id, Program_Lookup__c, Terms__c, Payment_Frequency__c,
+                SELECT Id, Terms__c, Payment_Frequency__c,
                 Equipment_Cost__c, Pricing_Status__c
                 FROM Opportunity
                 WHERE Id = :opportunityId
@@ -38,9 +38,6 @@ public without sharing class NT_CalculatePricingController {
                 return result;
             }
 
-            if (opp.Program_Lookup__c == null) {
-                result.missingFields.add('Program');
-            }
             if (opp.Terms__c == null) {
                 result.missingFields.add('Term');
             }

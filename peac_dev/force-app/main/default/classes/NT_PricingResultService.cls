@@ -24,16 +24,15 @@ public without sharing class NT_PricingResultService {
         
         result.Base_Rate__c = ctx.baseRate;
         result.Rate_Factor__c = ctx.baseRateFactor;
-        result.Residual_Amount__c = ctx.baseResidual;
-        
+
         result.Total_Rate__c = ctx.finalRate;
         result.Total_Rate_Factor__c = ctx.finalRateFactor;
         result.Total_Residual__c = ctx.finalResidual;
 
+        // SAL-6543 — standardized on Base_*/Total_* fields. The retired
+        // duplicate fields (Residual_Amount__c, Final_Rate__c,
+        // Final_Rate_Factor__c, Final_Residual__c) are no longer written.
         result.Base_Residual__c = ctx.baseResidual;
-        result.Final_Rate__c = ctx.finalRate;
-        result.Final_Rate_Factor__c = ctx.finalRateFactor;
-        result.Final_Residual__c = ctx.finalResidual;
 
         Decimal principal = ctx.financedAmount != null ? ctx.financedAmount : 0;
         Decimal totalRatePct = ctx.finalRate != null ? ctx.finalRate : 0;
@@ -89,7 +88,8 @@ public without sharing class NT_PricingResultService {
             result.Modifier__c = modifier.Id;
             result.Rate_Card__c = modifier.Rate_Card__c;
             result.Base_Rate__c = ctx.baseRate;
-            result.Residual_Amount__c = ctx.baseResidual;
+            // SAL-6543 — standardized on Base_Residual__c (was Residual_Amount__c).
+            result.Base_Residual__c = ctx.baseResidual;
 
             Decimal baseRate = ctx.baseRate != null ? ctx.baseRate : 0;
             Decimal modRate = rateAdj != null ? rateAdj : 0;

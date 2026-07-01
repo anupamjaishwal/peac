@@ -10,6 +10,7 @@ public without sharing class TC_EfOfferRateFactorCalculator {
     //=(1+21.75/12)^1*(21.75%/12)/(1-(1+(21.75/12))^-24)
     // =(1+yield/12)^Deferral*(yield/12)/(1-(1+(yield/12))^-term)
     List<EF_Approved_Offers__c> lstEfsUpdated = new List<EF_Approved_Offers__c>();
+    if (efs == null || relatedOpp == null) return lstEfsUpdated;
     for (EF_Approved_Offers__c ef : efs) {
       Opportunity opp = relatedOpp.get(ef.Opportunity__c);
       if (opp == null) continue;
@@ -59,6 +60,7 @@ public without sharing class TC_EfOfferRateFactorCalculator {
   //DP-80 new method to Calculate the Rate using the Residual for FMV.
   public static List<EF_Approved_Offers__c> calculateFMV(List<EF_Approved_Offers__c> efs, Map <Id, Opportunity> relatedOpp) {
     List<EF_Approved_Offers__c> lstEfsUpdated = new List<EF_Approved_Offers__c>();
+    if (efs == null || relatedOpp == null) return lstEfsUpdated;
     for (EF_Approved_Offers__c ef : efs) {
       Opportunity opp = relatedOpp.get(ef.Opportunity__c);
       if (opp == null) continue;

@@ -69,41 +69,87 @@ public class TC_AddBlendedIncomeItems {
         }
     }
     
-    //SAL-6227 : Booking a Plus Subsidy as Blended Income Item to IL10 -Start
-    //Create  Indirect Subsidy Blended Income Items when Opportunity Stage changes from Funding to Booking
-    public static void addIndirectSubsidyBlendedIncomeItems(List<Opportunity> newList,Map<Id,Opportunity> oldMap) {
-        Set<Id> optyIdSet = new Set<Id>();
-        for(Opportunity opty: newList) {
-            if(opty.StageName == PEAC_ConstantClass.OPPORTUNITY_STAGENAME_BOOKING && !String.isBlank(oldMap.get(opty.Id).StageName) &&  oldMap.get(opty.Id).StageName == PEAC_ConstantClass.OPPORTUNITY_STAGENAME_FUNDING) {
-                optyIdSet.add(opty.id);
-            }
+    /**
+    * SAL-6227
+    * Creates Blended Income Item records when an Opportunity stage changes
+    * from Funding to Booking.
+    *
+    * Logic:
+    * - Identifies Opportunities that moved from Funding to Booking
+    * - Deletes any existing subsidy-related Blended Income Item records for those Opportunities
+    * - Fetches related Payment records where Plus Subsidy is populated
+    * - Creates new Blended Income Item records using payment and opportunity data
+    *
+    * @param newList List of updated Opportunity records
+    * @param oldMap  Map of old Opportunity records before update
+    * Author: Manish Suwalka
+    */
+    public static void createBlendedIncomeItemsWhenOpportunityMovedBooking(List<Opportunity> newList, Map<Id, Opportunity> oldMap){
+        Set<Id> optyIdSet = new Set<Id>(); 
+        for (Opportunity opty : newList) {
+            if (!String.isBlank(oldMap.get(opty.Id).StageName) &&
+                oldMap.get(opty.Id).StageName == PEAC_ConstantClass.OPPORTUNITY_STAGENAME_FUNDING && opty.StageName == PEAC_ConstantClass.OPPORTUNITY_STAGENAME_BOOKING) {
+                    optyIdSet.add(opty.Id);
+                }
         }
-        if(optyIdSet.size() > 0){
+        
+        if (!optyIdSet.isEmpty()) {
+            deleteExistingBlendedIncomeItemWithSubsidy(optyIdSet);
+            createBlendedIncomeItemsFromPayments(optyIdSet);
+        }
+    }
+    
+    public static void createBlendedIncomeItemsFromPayments(Set<Id> optyIdSet){
+        List<Payment__c> payments = [SELECT Id, Plus_Subsidy__c, Opportunity__c, Opportunity__r.Commencement_Date__c
+                                     FROM Payment__c
+                                     WHERE Opportunity__c IN :optyIdSet
+                                     AND Plus_Subsidy__c != NULL
+                                     AND Payment_Status__c != :PEAC_ConstantClass.BLENDED_INCOME_ITEM_PAYMENT_STATUS_VOID_CANCELLED];
+        if (!payments.isEmpty()) {
             List<Blended_Income_Item__c> blendedIncomeItemsList = new List<Blended_Income_Item__c>();
-            blendedIncomeItemsList = [SELECT Id From Blended_Income_Item__c Where Opportunity__c IN: optyIdSet AND  Blended_Income_Code__c='0011'];
-            if(blendedIncomeItemsList.size() > 0){
-                delete blendedIncomeItemsList;
-                blendedIncomeItemsList = new List<Blended_Income_Item__c>();
+            
+            for (Payment__c payment : payments) {
+                Blended_Income_Item__c blendedIncomeItem = new Blended_Income_Item__c();
+                blendedIncomeItem.Begin_Date__c =
+                    !String.isBlank(String.valueOf(payment.Opportunity__r.Commencement_Date__c))
+                    ? payment.Opportunity__r.Commencement_Date__c
+                    : null;
+                blendedIncomeItem.Blended_Income_Amount__c =
+                    !String.isBlank(String.valueOf(payment.Plus_Subsidy__c))
+                    ? payment.Plus_Subsidy__c
+                    : null;
+                blendedIncomeItem.Blended_Income_Code__c = PEAC_ConstantClass.BLENDED_INCOME_ITEM_CODE_0011;
+                blendedIncomeItem.Opportunity__c = payment.Opportunity__c;
+                
+                blendedIncomeItemsList.add(blendedIncomeItem);
             }
-            List<Payment__c> payments = new List<Payment__c>();
-            payments = [SELECT Id,Plus_Subsidy__c,Opportunity__c,Opportunity__r.Commencement_Date__c FROM Payment__c where Opportunity__c IN: optyIdSet AND Plus_Subsidy__c!=null];
-            if(payments.size() > 0){
-                for(Payment__c payment : payments){
-                    Blended_Income_Item__c blendedIncomeItem = new Blended_Income_Item__c();
-                    blendedIncomeItem.Begin_Date__c = !String.isBlank(String.valueOf(payment.Opportunity__r.Commencement_Date__c)) ? payment.Opportunity__r.Commencement_Date__c : null;
-                    blendedIncomeItem.Blended_Income_Amount__c = !String.isBlank(String.valueOf(payment.Plus_Subsidy__c)) ? payment.Plus_Subsidy__c : null;
-                    blendedIncomeItem.Blended_Income_Code__c ='0011';
-                    blendedIncomeItem.Opportunity__c = payment.Opportunity__c;
-                    blendedIncomeItemsList.add(blendedIncomeItem);
-                }
-                if(blendedIncomeItemsList.size()>0){
-                   insert blendedIncomeItemsList;
-                }
+            
+            if (blendedIncomeItemsList.size() > 0) {
+                insert blendedIncomeItemsList;
             }
         }
     }
-    //SAL-6227 : Booking a Plus Subsidy as Blended Income Item to IL10 - end
-
+    
+    /**
+    * SAL-6227
+    * Deletes existing Blended Income Item records with subsidy code 0011
+    * for the provided Opportunity records before new records are inserted.
+    *
+    * This helps prevent duplicate Blended Income Item creation.
+    *
+    * @param optyIdSet Set of Opportunity Ids
+    * Author: Manish Suwalka
+    */
+    public static void deleteExistingBlendedIncomeItemWithSubsidy(Set<Id> optyIdSet) {
+        List<Blended_Income_Item__c> blendedIncomeItemsList = [SELECT Id
+												               FROM Blended_Income_Item__c
+            												   WHERE Opportunity__c IN :optyIdSet
+            												   AND Blended_Income_Code__c = :PEAC_ConstantClass.BLENDED_INCOME_ITEM_CODE_0011];
+        if (!blendedIncomeItemsList.isEmpty()) {
+            delete blendedIncomeItemsList;
+        }
+    }
+ 
     // old kept for reference
     // public static void addBlendedIncomeItems (Map <Id, Opportunity> oldMap, Map <Id, Opportunity> newMap) {
         

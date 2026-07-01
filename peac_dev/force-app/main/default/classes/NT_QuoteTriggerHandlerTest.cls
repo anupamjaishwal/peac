@@ -161,16 +161,18 @@ public class NT_QuoteTriggerHandlerTest {
 
     @IsTest
     static void testUpdate_OpportunityIdUnchanged_NoOffers() {
-        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Quote Trigger Opp' LIMIT 1];
-
-        Quote q = new Quote(
-            Name = 'Test No Change Quote',
-            OpportunityId = opp.Id
-        );
+        // A non-OpportunityId field change must not publish a backstamp event.
+        // The Quote is standalone (OpportunityId stays null), so the afterInsert
+        // path publishes nothing and the name-only update leaves OpportunityId
+        // unchanged (null) -> publishBackstampEvents is never invoked and no
+        // offers are created. (Pre-async this asserted timing of the synchronous
+        // call; with the platform-event decoupling the afterInsert event would
+        // otherwise deliver at Test.stopTest() and create offers, so the scenario
+        // must keep the Quote unlinked to isolate the update path.)
+        Quote q = new Quote(Name = 'Test No Change Quote');
         insert q;
 
         Pricing_Result__c pr = new Pricing_Result__c(
-            Opportunity__c = opp.Id,
             Quote__c = q.Id,
             Total_Rate__c = 5.5,
             Total_Rate_Factor__c = 0.018,
@@ -187,17 +189,13 @@ public class NT_QuoteTriggerHandlerTest {
         );
         insert tvq;
 
-        // Delete any offers created by the afterInsert trigger
-        delete [SELECT Id FROM EF_Approved_Offers__c WHERE Opportunity__c = :opp.Id];
-
         Test.startTest();
         q.Name = 'Updated Name Only';
         update q;
         Test.stopTest();
 
         List<EF_Approved_Offers__c> offers = [
-            SELECT Id FROM EF_Approved_Offers__c
-            WHERE Opportunity__c = :opp.Id AND RecordTypeId = :SYSTEM_RT
+            SELECT Id FROM EF_Approved_Offers__c WHERE RecordTypeId = :SYSTEM_RT
         ];
         System.assertEquals(0, offers.size(),
             'Updating a non-OpportunityId field should not create offers');
@@ -568,5 +566,48 @@ public class NT_QuoteTriggerHandlerTest {
         ];
         System.assertEquals(0, offers.size(),
             'No TValue Quote means no offers should be created');
+    }
+
+    @IsTest
+    static void testBackstampEvent_StampsViaPlatformEvent() {
+        // Directly exercise the NT_Quote_Backstamp__e subscriber path:
+        // publishing the event must drive handleBackstampEvents -> createEFOffers,
+        // stamping the Opportunity on the related TValue Quote. The event
+        // subscriber runs as Automated Process in production, which is what gives
+        // it the Opportunity access a portal user lacks.
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Quote Trigger Opp' LIMIT 1];
+
+        Quote q = new Quote(Name = 'PE Backstamp Quote');
+        insert q;
+
+        insert new tval__TValue_Quote__c(
+            Quote__c = q.Id, tval__Term__c = 36, tval__Purchase_Option__c = '1.00 Out'
+        );
+
+        Test.startTest();
+        EventBus.publish(new NT_Quote_Backstamp__e(
+            Quote_Id__c = q.Id,
+            Opportunity_Id__c = opp.Id
+        ));
+        Test.stopTest();
+
+        tval__TValue_Quote__c stamped = [
+            SELECT tval__Opportunity__c FROM tval__TValue_Quote__c WHERE Quote__c = :q.Id LIMIT 1
+        ];
+        System.assertEquals(opp.Id, stamped.tval__Opportunity__c,
+            'Platform event subscriber should back-stamp the Opportunity on the TValue Quote');
+    }
+
+    @IsTest
+    static void testBackstampEvent_BlankIdsIgnored() {
+        // Guard path: events with blank ids must be skipped without error.
+        Test.startTest();
+        NT_QuoteTriggerHandler.handleBackstampEvents(new List<NT_Quote_Backstamp__e>{
+            new NT_Quote_Backstamp__e(Quote_Id__c = null, Opportunity_Id__c = null)
+        });
+        NT_QuoteTriggerHandler.handleBackstampEvents(new List<NT_Quote_Backstamp__e>());
+        Test.stopTest();
+
+        System.assert(true, 'Blank/empty backstamp events should be ignored safely');
     }
 }

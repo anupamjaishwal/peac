@@ -21,8 +21,9 @@ public class PEAC_PricingAPICall {
         for (Opportunity newOpp : newOppsMap.values()) {
             Opportunity oldOpp = oldOppsMap.get(newOpp.Id);
 			
-            if (newOpp.StageName == PEAC_ConstantClass.OPPORTUNITY_STAGENAME_PROPOSAL && oldOpp != null && !newOpp.Loan_Record_Type__c && oldOpp.StageName != newOpp.StageName ) 
-            {
+            if (newOpp.StageName == PEAC_ConstantClass.OPPORTUNITY_STAGENAME_PROPOSAL && oldOpp != null && !newOpp.Loan_Record_Type__c && oldOpp.StageName != newOpp.StageName 
+               && newOpp.RecordTypeId != PEAC_ConstantClass.ORDERING_RECORDTYPE) 
+            { 
                 movedToProposalSet.add(newOpp.Id);
             }
         }

@@ -49,6 +49,7 @@ public without sharing class NT_PricingContext {
     public Decimal points { get; set; }
     public Decimal downPayment { get; set; }
     public Decimal buyDown { get; set; }
+    public Decimal subsidy { get; set; }
     public Decimal advancePayments { get; set; }
     public List<String> paymentFrequencies { get; set; }
     public String endOfTermOption { get; set; }

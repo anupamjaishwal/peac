@@ -3,7 +3,14 @@
  * Trigger condition on the EF Approved offer for calculating the rate factor
  */
 
-public with sharing class TC_EfOfferCalculateRateFactor implements TC_TriggerActionI{
+// without sharing: this is a system rate-factor calculation, not user-facing data
+// exposure. When an EF Approved Offer is inserted in a portal/community user
+// context (e.g. dealer portal), a `with sharing` query for the related
+// Opportunity returns 0 rows because the portal user has no sharing access to it,
+// leaving relatedOpps empty and causing a NullPointerException downstream in
+// TC_EfOfferRateFactorCalculator. Running without sharing lets the Opportunity
+// load so the rate factor is calculated correctly for portal-originated offers.
+public without sharing class TC_EfOfferCalculateRateFactor implements TC_TriggerActionI{
 
 
     public void doAction(TC_TriggerContext tc) {

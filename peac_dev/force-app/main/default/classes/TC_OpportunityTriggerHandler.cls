@@ -163,6 +163,8 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
         /*SAL-5801 - End */
         //SAL-5692 Expo: Opp Refactor - To send an email when opportunity is booked/failed in InfoLease
         if(!test.isRunningTest()) { PEAC_BookToILNotification.sendBookToILConfn(Trigger.new, (Map<Id, Opportunity>)oldMap); }
+        //SAL-6998 Rajesh Kumar(LTM)
+        PEAC_AssociateDealerProgram.updateDealerProgram((Map<Id,Opportunity>)newMap, (Map<Id,Opportunity>)oldMap);
     }
     public override void beforeInsert(List<SObject> newList){
         List<Opportunity> theList = new List<Opportunity>();
@@ -329,9 +331,8 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
         if(!system.isBatch() && !system.isQueueable() && !system.isFuture())
             PEAC_CeateMiscInvItemsQueueable.createMiscellaneousInvoiceItems( (List<Opportunity>) newMap.values(),(Map<Id, Opportunity>)oldMap);
        
-        //SAL-6227 : Booking a Plus Subsidy as Blended Income Item to IL10
-        //commented out as per discussion and this is not going live on 2/13
-       // TC_AddBlendedIncomeItems.addIndirectSubsidyBlendedIncomeItems((List<Opportunity>) newMap.values(),(Map<Id, Opportunity>)oldMap);
+        /*SAL-6227 : Booking a Plus Subsidy as Blended Income Item to IL10*/
+        TC_AddBlendedIncomeItems.createBlendedIncomeItemsWhenOpportunityMovedBooking((List<Opportunity>) newMap.values(),(Map<Id, Opportunity>)oldMap);
         
 
         /* SAL-6356 : START - Manish */
@@ -537,7 +538,7 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
                 Dealer__r.Approved_Document_Delivery_Method__c, Dealer__r.Account_Dealer_Status__c,
                 Dealer__r.Preferred_Dealer_Level__c, Dealer__r.Private_Label__c, Dealer__r.White_Label__c,
                 Dealer__r.Account_Interim_Rent_Waived__c, Dealer__r.Interim_Rent_Dealer_Percentage__c,
-                Primary_Dealer__c, Opportunity__c
+                Primary_Dealer__c, Opportunity__c, Program__c
                 FROM Brokers__r
             ),
             (SELECT Id, Account__r.Dealer_Number__c, Account__r.CCAN__c, Broker_Dealer_Number__c,
@@ -669,7 +670,7 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
                 Dealer__r.Approved_Document_Delivery_Method__c, Dealer__r.Preferred_Dealer_Level__c,
                 Dealer__r.Private_Label__c, Dealer__r.White_Label__c, Dealer__r.Account_Interim_Rent_Waived__c,
                 Dealer__r.Interim_Rent_Dealer_Percentage__c,
-                Primary_Dealer__c, Opportunity__c
+                Primary_Dealer__c, Opportunity__c, Program__c
                 FROM Dealer__c WHERE Id IN :this.dealers.keySet()]);
         }
         if(Trigger.isBefore && this.owners.size() > 0  && needsToSetBranch && SL_TriggerUtil.checkForMissingInfo(this.owners.values())){
@@ -718,6 +719,8 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
                 for(Dealer__c theDealer: dealers.values()){
                     if(theDealer.Opportunity__c == opp.Id && theDealer.Primary_Dealer__c){
                         opp.Primary_Dealer__c = theDealer.Id;
+                        //SAL-6998-Rajesh Kumar(LTM) 
+                        //if(opp.Program_Lookup__c == null)opp.Program_Lookup__c = theDealer.Program__c;
                         break;
                     }
                 }

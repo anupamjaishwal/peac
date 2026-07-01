@@ -52,6 +52,9 @@ public class PEAC_ConstantClass {
     public static final String OPPORTUNITY_STAGENAME_LOST           = 'Lost';
     public static final String OPPORTUNITY_STAGENAME_QUOTE          = 'Quote';
     
+    public static final String OPPORTUNITY_PURCHASEOPTION_CUSTOMER_OWNED          = 'Customer Owned';
+	public static final String OPPORTUNITY_PURCHASEOPTION_RENTAL          = '26-Rental-No';
+	
     /*Opportunity_Status__c*/
     public static final String OPPORTUNITY_STATUS_APPLICATION_IN_PROGRESS = 'Application In Progress';//Opportunity_Status__c
     public static final String OPPORTUNITY_STATUS_CREDIT_IN_QUEUE         = 'Credit - In Queue';
@@ -66,6 +69,7 @@ public class PEAC_ConstantClass {
     public static final String OPPORTUNITY_STATUS_FRAUD_REVIEW            = 'Fraud Review';
     public static final String OPPORTUNITY_STATUS_FRAUD_MORE_INFO         = 'Fraud More Info Requested';
     public static final String OPPORTUNITY_STATUS_SUSPICIOUS_DECLINED     = 'Suspicious activity - Declined';
+    public static final String OPPORTUNITY_STATUS_DOCS_IN                 = 'Docs In';
     
     /*Originating_Business__c*/
     public static final String OPPORTUNITY_ORIGINATING_BUSINESS_VA_PEAC = 'VA PEAC';
@@ -198,5 +202,21 @@ public class PEAC_ConstantClass {
     
     //No Tax Generation
     Public Static Final Set<String> NO_TAX_ZIP = new Set<String>{'00000'};
+    
+    /*Blended Income Codes*/
+    public static final String BLENDED_INCOME_ITEM_CODE_0011 = '0011';
+    
+    /*Blended Income payment Status*/
+    public static final String BLENDED_INCOME_ITEM_PAYMENT_STATUS_VOID_CANCELLED = 'Void/Cancelled';
+    
+    public static final Id  ORDERING_RECORDTYPE = Schema.SObjectType.Opportunity.getRecordTypeInfosByDeveloperName().get('Ordering_Period').getRecordTypeId();
+    
+    /*Profile Name*/
+    public static final String PROFILE_NAME_BOOKING = 'Booking';
+    public static final String PROFILE_NAME_CMS = 'CMS';
+    public static final String PROFILE_NAME_DATAADMIN = 'DataAdmin';
+    public static final String PROFILE_NAME_PARTNER_AMBASSADOR = 'Partner Ambassador';
+    public static final String PROFILE_NAME_SYSTEM_ADMINISTRATOR = 'System Administrator';
+    public static final String PROFILE_NAME_SERVICES_ADMIN =  'Services Admin';
     
 }

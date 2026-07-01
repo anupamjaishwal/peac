@@ -65,7 +65,7 @@
             Test.startTest();
             insert opp;
 
-            Payee__c payee = new Payee__c (Dealer__c = dealer.Id, Address1__c = 'test', City__c = 'test', State__c = 'MN', Zip__c = '11111', Email__c = 'test@test.com', SL_Vendor_ID__c = 'test');
+            Payee__c payee = new Payee__c (Dealer__c = dealer.Id, Address1__c = 'test', City__c = 'test', State__c = 'MN', Zip__c = '11111', Email__c = 'test@test.com', SL_Vendor_ID__c = 'test', Remittance_Address1__c = '100 Test',Remittance_City__c='test',Remittance_Name__c='Test',Remittance_State__c='AB',Remittance_Zip__c='12300');
             insert payee;
 
             Payment__c payment = new Payment__c (Payment_Status__c = 'Draft', Opportunity__c = opp.Id, Payee__c = payee.Id, Date_Sent_to_External_System__c = Datetime.now());
