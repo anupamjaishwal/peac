@@ -196,5 +196,8 @@ public without sharing class NT_PricingContext {
         public Decimal baseResidual;
         public Decimal finalResidual;
         public Rate_Card_Rate__c selectedRate;
+        // SAL-6441 — financed amount solved from the Requested Payment Amount for this term
+        // (payment-solve path only; null on the normal calculate-payment path).
+        public Decimal financedAmount;
     }
 }

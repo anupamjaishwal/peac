@@ -4,6 +4,9 @@ import sendEmail from '@salesforce/apex/tvalueQuotePickerController.sendEmail';
 import EMAIL_SUBJECT from '@salesforce/label/c.TvalueEmailSubject';
 import EMAIL_SUCCESS_MESSAGE from '@salesforce/label/c.TvalueEmailSuccess';
 import EMAIL_ERROR_MESSAGE from '@salesforce/label/c.TvalueEmailError';
+//SAL-7361 Add the legal language Quote Disclaimer.
+import PEAC_Quote_Disclaimer_Part_1  from '@salesforce/label/c.PEAC_Quote_Disclaimer_Part_1';
+import PEAC_Quote_Disclaimer_Part_2  from '@salesforce/label/c.PEAC_Quote_Disclaimer_Part_2';
 
 export default class TvalueQuoteEmail extends LightningElement {
     @api selectedQuotes = [];
@@ -18,6 +21,7 @@ export default class TvalueQuoteEmail extends LightningElement {
     }
 
     generateEmailBody() {
+        const quoteDisclaimer =`${PEAC_Quote_Disclaimer_Part_1} ${PEAC_Quote_Disclaimer_Part_2}`;
         let emailBody = 'Here are the quote details you requested:\n\n';
         this.selectedQuotes.forEach(quote => {
             emailBody += `Quote: ${quote.quoteOptionName || ''}\n`;
@@ -31,6 +35,9 @@ export default class TvalueQuoteEmail extends LightningElement {
             emailBody += `Notes: ${quote.notes || ''}\n\n`;
             emailBody += '--------------------------------------------------\n\n';
         });
+        
+        emailBody += '\n\n';
+        emailBody += `${quoteDisclaimer}`;
         this.body = emailBody;
     }
 

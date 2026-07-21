@@ -32,7 +32,8 @@ public class PEAC_ConstantClass {
                                                             Label.PEAC_Initial_Submission => 'SF',
                                                             Label.PEAC_Pull_Bank_Details_Action =>'Ocrolus',
                                                             Label.PEAC_Initiate_Loan_App_to_GDS =>'SF', 
-                                                            Label.PEAC_Teaser_Initial_Submission =>'SF' 
+                                                            Label.PEAC_Teaser_Initial_Submission =>'SF',
+                                                            Label.PEAC_Portal_Loan_APP_Rescore  => 'LP'
                                                         };
 
     /* Yes, No String Literals */
@@ -70,6 +71,7 @@ public class PEAC_ConstantClass {
     public static final String OPPORTUNITY_STATUS_FRAUD_MORE_INFO         = 'Fraud More Info Requested';
     public static final String OPPORTUNITY_STATUS_SUSPICIOUS_DECLINED     = 'Suspicious activity - Declined';
     public static final String OPPORTUNITY_STATUS_DOCS_IN                 = 'Docs In';
+    public static final String APPROVED =  'Approved';
     
     /*Originating_Business__c*/
     public static final String OPPORTUNITY_ORIGINATING_BUSINESS_VA_PEAC = 'VA PEAC';
@@ -202,9 +204,12 @@ public class PEAC_ConstantClass {
     
     //No Tax Generation
     Public Static Final Set<String> NO_TAX_ZIP = new Set<String>{'00000'};
-    
+        
     /*Blended Income Codes*/
     public static final String BLENDED_INCOME_ITEM_CODE_0011 = '0011';
+    
+    /*Blended Income Codes*/
+    public static final String BLENDED_INCOME_CODE_0011 = '0011';
     
     /*Blended Income payment Status*/
     public static final String BLENDED_INCOME_ITEM_PAYMENT_STATUS_VOID_CANCELLED = 'Void/Cancelled';

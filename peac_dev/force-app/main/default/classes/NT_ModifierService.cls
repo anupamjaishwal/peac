@@ -9,6 +9,7 @@ public without sharing class NT_ModifierService {
     @TestVisible private static Boolean forceEvaluationException = false;
     @TestVisible private static Map<Id, Map<Id, Boolean>> mockModifierRowRuleResults = null;
     @TestVisible private static Map<Id, Map<Id, Boolean>> mockModifierColumnRuleResults = null;
+    @TestVisible private static Map<Id, Map<Id, Boolean>> mockModifierEntryRuleResults = null;
     
     /**
      * @description Evaluates and applies all applicable modifiers
@@ -132,34 +133,69 @@ public without sharing class NT_ModifierService {
      * @return Boolean true if modifier should be applied
      */
     private Boolean isModifierApplicable(Modifier__c modifier, NT_PricingContext ctx) {
-        if (modifier.Modifier_Rate_Card__c == null) {
-            return true;
+        // SAL-7404 — a modifier can carry a rate card (Modifier_Rate_Card__c), a residual
+        // card (Residual_Balloon_Table__c → Program_Residual__c → RateCard__c), or both.
+        // Entry criteria from every card present must pass; previously only the rate
+        // card's criteria were evaluated, so residual-only modifiers all applied
+        // unconditionally and their residual percentages summed.
+        Set<Id> criteriaIds = new Set<Id>();
+
+        if (modifier.Modifier_Rate_Card__c != null) {
+            Id rateCriteria = ctx.isQuote()
+                ? modifier.Modifier_Rate_Card__r.Quote_Entry_Config__c
+                : modifier.Modifier_Rate_Card__r.Entry_Criteria__c;
+            if (rateCriteria != null) {
+                criteriaIds.add(rateCriteria);
+            }
         }
 
-        Id entryCriteria = ctx.isQuote()
-            ? modifier.Modifier_Rate_Card__r.Quote_Entry_Config__c
-            : modifier.Modifier_Rate_Card__r.Entry_Criteria__c;
+        if (modifier.Residual_Balloon_Table__c != null
+            && modifier.Residual_Balloon_Table__r.Residual_Balloon_Table__r != null) {
+            Id residualCriteria = ctx.isQuote()
+                ? modifier.Residual_Balloon_Table__r.Residual_Balloon_Table__r.Quote_Entry_Config__c
+                : modifier.Residual_Balloon_Table__r.Residual_Balloon_Table__r.Entry_Criteria__c;
+            if (residualCriteria != null) {
+                criteriaIds.add(residualCriteria);
+            }
+        }
 
-        if (entryCriteria == null) {
+        if (criteriaIds.isEmpty()) {
             return true;
         }
 
         TCRE.RuleEngine modRE = new TCRE.RuleEngine();
         modRE.logicObjectIds = new Set<Id>{ ctx.parentId };
-        modRE.ruleConfigIds = new Set<Id>{ entryCriteria };
+        modRE.ruleConfigIds = criteriaIds;
         modRE.ruleObjectType = 'RateCard__c';
+        // Quote-scoped rule configs need the logic object type or TCRE cannot
+        // evaluate them (verified live: without this, every Quote-path criteria
+        // evaluation fails and the modifier is silently filtered). Same setting
+        // NT_RateCardService.evaluateEntryCriteria uses. Opportunity runs work
+        // without it, so leave that path exactly as it has always run.
+        if (ctx.isQuote()) {
+            modRE.logicObjectType = 'Quote';
+        }
         try {
-            modRE.testRuleConditions();
-            for (Map<Id, Boolean> ruleResult : modRE.ruleResults.values()) {
+            Map<Id, Map<Id, Boolean>> ruleResults;
+            if (mockModifierEntryRuleResults != null) {
+                ruleResults = mockModifierEntryRuleResults;
+            } else {
+                modRE.testRuleConditions();
+                ruleResults = modRE.ruleResults;
+            }
+            Set<Id> passedCriteriaIds = new Set<Id>();
+            for (Map<Id, Boolean> ruleResult : ruleResults.values()) {
                 for (Id ruleConfigId : ruleResult.keySet()) {
-                    if (ruleResult.get(ruleConfigId) == true) { return true; }
+                    if (ruleResult.get(ruleConfigId) == true) {
+                        passedCriteriaIds.add(ruleConfigId);
+                    }
                 }
             }
+            return passedCriteriaIds.containsAll(criteriaIds);
         } catch (Exception e) {
             System.debug('Error evaluating modifier criteria: ' + e.getMessage());
             return false;
         }
-        return false;
     }
     
     

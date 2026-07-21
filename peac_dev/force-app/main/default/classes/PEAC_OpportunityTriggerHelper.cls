@@ -114,4 +114,57 @@ System.enqueueJob(new PEAC_AccountBranchUpdateQueueable(accountIds));
             PEAC_LeaseCalculationService.updateAssetsFromOpportunityAsync(oppIds);
         }
     }   
+
+    //SAL-7453 - Stamp dealer points in opportunity
+    public static void updateDealerPoints(List<Opportunity> newList, Map<Id, Opportunity> oldMap) {
+
+        Boolean isInsert = (oldMap == null);
+        Set<Id> dealerIdSet = new Set<Id>();
+
+        for (Opportunity opp : newList) {
+            Boolean dealerChanged = isInsert
+                ? opp.Primary_Dealer__c != null
+                : opp.Primary_Dealer__c != oldMap.get(opp.Id).Primary_Dealer__c;
+
+            if (dealerChanged && opp.Primary_Dealer__c != null) {
+                dealerIdSet.add(opp.Primary_Dealer__c);
+            }
+        }
+
+        Map<Id, Dealer__c> dealerPointsMap = new Map<Id, Dealer__c>();
+        if (!dealerIdSet.isEmpty()) {
+            dealerPointsMap = new Map<Id, Dealer__c>(
+                [SELECT Id, Dealer__r.Points__c FROM Dealer__c WHERE Id IN :dealerIdSet]
+            );
+        }
+
+        for (Opportunity opp : newList) {
+            Boolean dealerChanged = isInsert
+                ? opp.Primary_Dealer__c != null
+                : opp.Primary_Dealer__c != oldMap.get(opp.Id).Primary_Dealer__c;
+
+            if (!dealerChanged) {
+                continue;
+            }
+
+            if (opp.Primary_Dealer__c != null && dealerPointsMap.containsKey(opp.Primary_Dealer__c)) {
+                String rawPoints = dealerPointsMap.get(opp.Primary_Dealer__c).Dealer__r.Points__c;
+                opp.Points__c = parsePoints(rawPoints);
+            } else {
+                opp.Points__c = null;
+            }
+        }
+    }
+
+    private static Decimal parsePoints(String rawPoints) {
+        if (String.isBlank(rawPoints)) {
+            return null;
+        }
+        try {
+            String cleaned = rawPoints.replace(',', '').trim();
+            return Decimal.valueOf(cleaned);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

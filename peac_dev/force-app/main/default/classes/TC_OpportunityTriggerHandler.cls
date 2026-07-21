@@ -95,6 +95,7 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
         TC_DefaultGrossContract.defaultGrossContract(null, (Map<Id, Opportunity>)oldMap,(Map<Id, Opportunity>)newMap, ((Map<Id, Opportunity>)newMap).values());
         TC_DefaultGrossFinance.defaultGrossFinance(null, (Map<Id, Opportunity>)oldMap,(Map<Id, Opportunity>)newMap, ((Map<Id, Opportunity>)newMap).values());
         TC_VariablePaymentsDefaultGrossContract.variablePaymentsDefaultGrossContract((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
+        TC_SetXRateFactor.setForXRateManualOverrideFlag((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
         TC_SetXRateFactor.setXRateFactor((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
         TC_UpdatePaymentAmount.updatePaymentAmount((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap);
         TC_SetPrimaryEmail.setPrimaryEmail((Map<Id, Opportunity>)oldMap, (Map<Id, Opportunity>)newMap, this.contactRoles);
@@ -161,10 +162,12 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
         /*SAL-5801 - Start */
         PEAC_OpportunityTriggerHelper.updateEplusOppLessorCode(Trigger.new, (Map<Id, Opportunity>)oldMap);
         /*SAL-5801 - End */
+        PEAC_OpportunityValidationUtil.readyToDocValidationError(Trigger.new, (Map<Id, Opportunity>)oldMap);//SAL-7102
         //SAL-5692 Expo: Opp Refactor - To send an email when opportunity is booked/failed in InfoLease
         if(!test.isRunningTest()) { PEAC_BookToILNotification.sendBookToILConfn(Trigger.new, (Map<Id, Opportunity>)oldMap); }
         //SAL-6998 Rajesh Kumar(LTM)
         PEAC_AssociateDealerProgram.updateDealerProgram((Map<Id,Opportunity>)newMap, (Map<Id,Opportunity>)oldMap);
+        PEAC_OpportunityTriggerHelper.updateDealerPoints(Trigger.new, (Map<Id, Opportunity>)oldMap);
     }
     public override void beforeInsert(List<SObject> newList){
         List<Opportunity> theList = new List<Opportunity>();
@@ -213,6 +216,8 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
         /*SAL-5801 - Start */
         PEAC_OpportunityTriggerHelper.updateEplusOppLessorCode((List<Opportunity>) newList, null);
         /*SAL-5801 - End */
+        PEAC_OpportunityTriggerHelper.updateDealerPoints((List<Opportunity>) newList, null);
+
     }
     
     public override void afterUpdate(Map<Id, SObject> oldMap, Map<Id, SObject> newMap){
@@ -719,7 +724,6 @@ public with sharing class TC_OpportunityTriggerHandler extends SL_Trigger.baseHa
                 for(Dealer__c theDealer: dealers.values()){
                     if(theDealer.Opportunity__c == opp.Id && theDealer.Primary_Dealer__c){
                         opp.Primary_Dealer__c = theDealer.Id;
-                        //SAL-6998-Rajesh Kumar(LTM) 
                         //if(opp.Program_Lookup__c == null)opp.Program_Lookup__c = theDealer.Program__c;
                         break;
                     }

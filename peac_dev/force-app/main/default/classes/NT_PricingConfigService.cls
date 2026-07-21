@@ -73,6 +73,7 @@ public without sharing class NT_PricingConfigService {
                    Terms__c, Funded_Amount__c, Payment_Amount__c,
                    Payment_Frequency__c, Residual__c, Program_Lookup__c,
                    Pricing_Status__c, Down_Payment__c, Buydown__c, Subsidy__c,
+                   Required_Adv_Payments__c,
                    (SELECT Id, Program__c FROM Quotes WHERE Program__c != null LIMIT 1)
             FROM Opportunity
             WHERE Id = :oppId
@@ -120,8 +121,10 @@ public without sharing class NT_PricingConfigService {
             ctx.downPayment = opp.Down_Payment__c;
             ctx.buyDown = opp.Buydown__c;
             ctx.subsidy = opp.Subsidy__c;
-            // advancePayments intentionally unmapped: the Opportunity has no
-            // numeric advance-payment-count field (only booleans/currency).
+            // SAL-7384 — # Required Adv. Payments drives Advance vs Arrears in
+            // TValue (0/null = Arrears, >=1 = Advance) and the annuity-due rate
+            // inversion in NT_RateCardService.
+            ctx.advancePayments = opp.Required_Adv_Payments__c;
             ctx.paymentFrequencies.add(opp.Payment_Frequency__c);
             ctx.endOfTermOption = opp.Purchase_Options__c;
             ctx.baseResidual = opp.Residual__c;
@@ -310,6 +313,8 @@ public without sharing class NT_PricingConfigService {
                    Rate_Card__r.Rate_Card_Type__c,
                    Rate_Card__r.Base_Rate__c,
                    Residual_Balloon_Table__r.Residual_Balloon_Table__c,
+                   Residual_Balloon_Table__r.Residual_Balloon_Table__r.Entry_Criteria__c,
+                   Residual_Balloon_Table__r.Residual_Balloon_Table__r.Quote_Entry_Config__c,
                    Modifier_Rate_Card__r.Entry_Criteria__c,
                    Modifier_Rate_Card__r.Quote_Entry_Config__c,
                    Modifier_Rate_Card__r.Rate_Card_Type__c,

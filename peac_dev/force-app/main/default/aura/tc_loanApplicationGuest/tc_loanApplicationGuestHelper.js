@@ -50,10 +50,8 @@
 
                         var eqWrapper = { equipment: {} };
                         eqWrapper.equipment.Description__c = quoteData.Quote__r.Description || null;
-                        // Use Cost__c on the Asset wrapper to hold the gross financed
-                        // amount (Equipment Cost should match Financed Amount, not the
-                        // tval__Quote_Amount__c net of Down Payment used for TValue calc)
-                        eqWrapper.equipment.Cost__c = quoteData.Quote__r.Total_Financed_Amount__c || null;
+                        // Use Cost__c on the Asset wrapper to hold the quoted total cost
+                        eqWrapper.equipment.Cost__c = quoteData.tval__Quote_Amount__c || null;
                         eqWrapper.equipment.Equipment_Code__c = quoteData.Quote__r.Equipment_Type__c || null;
 
                         // Insert populated equipment: replace an empty placeholder if present, otherwise append
@@ -82,7 +80,7 @@
                         if (clientWrapper.deal && clientWrapper.deal.opportunity) {
                             clientWrapper.deal.opportunity.Equipment_Description__c = quoteData.Quote__r.Description;
                             clientWrapper.deal.opportunity.Equipment_Code__c = quoteData.Quote__r.Equipment_Type__c;
-                            clientWrapper.deal.opportunity.Equipment_Cost__c = quoteData.Quote__r.Total_Financed_Amount__c;
+                            clientWrapper.deal.opportunity.Equipment_Cost__c = quoteData.tval__Quote_Amount__c;
                             clientWrapper.deal.opportunity.Terms__c = quoteData.tval__Term__c;
                             //clientWrapper.deal.opportunity.Purchase_Options__c = quoteData.tval__Purchase_Option__c;
                             clientWrapper.deal.opportunity.Payment_Frequency__c = quoteData.tval__Period__c;
@@ -573,6 +571,11 @@ refreshIsRiskBased: function(component, callback) {
             console.log('isRiskBasedPricing', clientWrapper.isRiskBasedPricing);
         } else {
             console.error('Failed to fetch Risk Based Pricing flag');
+            var clientWrapper = component.get('v.clientWrapper');
+            clientWrapper.isRiskBasedPricing = false;
+            component.set('v.clientWrapper', clientWrapper);
+            console.log('isRiskBasedPricing', clientWrapper.isRiskBasedPricing);
+
         }
         callback();
     });
@@ -580,13 +583,15 @@ refreshIsRiskBased: function(component, callback) {
     $A.enqueueAction(action);
 },
 
-navigate: function(component, direction) {
+navigate: function(component, direction, recordTypeName) {
+        console.log('NAVIGATE ');
+
     var isRiskBased = component.get('v.clientWrapper').isRiskBasedPricing;
     var currentStep = component.get('v.currentStep');
     var stepIndex = parseInt(currentStep.split('_')[1], 10);
-
+    console.log('NAVIGATE ', recordTypeName);
     if (direction === 'next') {
-        if (stepIndex === 5 && !isRiskBased) {
+        if (stepIndex === 5 && !isRiskBased && recordTypeName !== 'Loan') {
             stepIndex++; // skip step_6
         }
         stepIndex++;

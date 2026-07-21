@@ -7,63 +7,15 @@
 public without sharing class PEAC_AssociateDealerProgram {
     public static Map<Id,Id> OppAccountIdMap =  new Map<Id,Id>();
     public static Map<Id,Id> accountProgramIdMap = new Map<Id,Id>();
-	/**************************************************************************************************************
+	
+    /**************************************************************************************************************
     @Author:Rajesh Kumar(LTM)
-    @Description: This method will be called from DealerTriggerhanlder to associate program
+    @Description: Update program when Primary Dealer changes
     @User Story:SAL-6998	 
     @Param:New Map of opportunity id with record and old map of opportunity id with record 
     @Created Date:06/29/2026  
     **************************************************************************************************************/
-  
-    public static void associateProgram(List<Dealer__c> dealerList)
-    {
-        set<Id> dealerAccountIdSet = new set<Id>();
-        List<Account> accountProgramList = new List<Account>();
-        for(Dealer__c dealer: dealerList)
-       	{
-           if(dealer.opportunity__c !=null && dealer.Dealer__c !=null && dealer.Program__c == null && dealer.Primary_Dealer__c)
-           {
-              dealerAccountIdSet.add(dealer.Dealer__c); 
-           }
-       	}
-        if(!dealerAccountIdSet.isEmpty()){
-          	Map<Id,Id> accountProgramIdSet = new Map<Id,Id>();
-            List<Opportunity> oppList = new List<Opportunity>();
-            accountProgramList =[SELECT ID,(SELECT ID,Program__c FROM Account_Programs__r ORDER BY Createddate DESC LIMIT 1) FROM ACCOUNT WHERE ID IN:dealerAccountIdSet];  
-            for(Account acc: accountProgramList)
-            {
-                if(acc.Account_Programs__r !=null)
-                {
-                 	accountProgramIdSet.put(acc.Id,acc.Account_Programs__r[0].Program__c);   
-                }
-                
-            }
-            for(Dealer__c dealer: dealerList)
-            {
-                if(dealer.Dealer__c !=null && accountProgramIdSet.containsKey(dealer.Dealer__c) && dealer.Primary_Dealer__c)
-                {
-                 	Opportunity opp = new Opportunity();
-                    opp.Id = dealer.Opportunity__c;
-                    opp.Program_Lookup__c = accountProgramIdSet.get(dealer.Dealer__c);
-                    dealer.Program__c = accountProgramIdSet.get(dealer.Dealer__c);
-                    //oppList.add(opp); 
-                    
-                }
-            }
-            if(!oppList.isEmpty())
-            {
-                update oppList;
-            }
-        }
-        
-         
-    }
-    
-    /**************************************************************************************************************
-     @Description: Update program when Primary Dealer changes
-    **************************************************************************************************************/
-    public static void updateDealerProgram(Map<Id, Opportunity> newMap,
-                                           Map<Id, Opportunity> oldMap) {
+   public static void updateDealerProgram(Map<Id, Opportunity> newMap,Map<Id, Opportunity> oldMap) {
 
         Map<Id, Id> changedDealerMap = new Map<Id, Id>();
 
@@ -95,6 +47,14 @@ public without sharing class PEAC_AssociateDealerProgram {
             }
         }
     }
+    /**************************************************************************************************************
+    @Author:Rajesh Kumar(LTM)
+    @Description: Get dealer program details
+    @User Story:SAL-6998	 
+    @Param:List of dealer record ids
+    @Created Date:06/29/2026  
+    **************************************************************************************************************/
+  
     public static void getDealerProgram(List<Id> dealerIdList)
     {
     	OppAccountIdMap.clear();
@@ -107,6 +67,14 @@ public without sharing class PEAC_AssociateDealerProgram {
         }
         getProramBasedOnAccount(OppAccountIdMap.Values());
     }
+    /**************************************************************************************************************
+    @Author:Rajesh Kumar(LTM)
+    @Description: Get dealer's program record id to update on opportunities
+    @User Story:SAL-6998	 
+    @Param:List of dealer account record ids
+    @Created Date:06/29/2026  
+    **************************************************************************************************************/
+  
     public Static void getProramBasedOnAccount(List<Id> dealerAccountIdList)
     {
     	accountProgramIdMap.clear();
@@ -120,6 +88,6 @@ public without sharing class PEAC_AssociateDealerProgram {
             }
             
         }    
-        //return accountProgramIdSet;
+        
     }
 }

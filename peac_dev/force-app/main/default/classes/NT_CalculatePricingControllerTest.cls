@@ -177,7 +177,9 @@ public class NT_CalculatePricingControllerTest {
 
     @IsTest
     static void testTValueService_invokeTValue_OpportunityContext() {
-        Opportunity opp = [SELECT Id, Name FROM Opportunity WHERE Name = 'Test Calc Pricing Opp' LIMIT 1];
+        // Query Equipment_Cost__c so computeTValueQuoteAmount can read it, mirroring how
+        // NT_PricingConfigService loads the Opportunity in the real flow.
+        Opportunity opp = [SELECT Id, Name, Equipment_Cost__c FROM Opportunity WHERE Name = 'Test Calc Pricing Opp' LIMIT 1];
 
         NT_PricingContext ctx = new NT_PricingContext(opp.Id);
         ctx.opportunity = opp;

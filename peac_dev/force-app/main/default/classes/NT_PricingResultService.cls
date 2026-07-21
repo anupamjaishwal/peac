@@ -104,7 +104,10 @@ public without sharing class NT_PricingResultService {
 
             Decimal principal = ctx.financedAmount != null ? ctx.financedAmount : 0;
             Decimal residualPct = residualAdj != null ? residualAdj : 0;
-            Decimal residualAmt = principal * residualPct / 100;
+            // SAL-7404 — Opportunity-originated runs base the residual dollar amount on total
+            // Equipment Cost; Quote-originated runs keep the financed-amount basis (out of scope).
+            Decimal residualBasis = (ctx.isOpportunity() && ctx.equipmentCost != null) ? ctx.equipmentCost : principal;
+            Decimal residualAmt = residualBasis * residualPct / 100;
             result.Modified_Residual_Amount__c = residualAmt;
             result.Total_Amount__c = (principal - residualAmt) * (1 + totalRateValue / 100) + residualAmt;
             result.Parent_Pricing_Result__c = ctx.pricingResult != null ? ctx.pricingResult.Id : null;

@@ -27,7 +27,10 @@ import NOTES_LABEL from '@salesforce/label/c.TvalueQuotePicker_Notes';
 import CREATED_LABEL from '@salesforce/label/c.TvalueQuotePicker_Created';
 import EMAIL_QUOTES_LABEL from '@salesforce/label/c.TvalueQuotePicker_EmailQuotes';
 import USE_THIS_QUOTE_LABEL from '@salesforce/label/c.TvalueQuotePicker_UseThisQuote';
-import LEGAL_DISCLAIMER_LABEL from '@salesforce/label/c.TvalueQuotePicker_LegalDisclaimer';
+//SAL-7361 replace the existing legal language Quote Disclaimer with New.
+import PEAC_Quote_Disclaimer_Part_1  from '@salesforce/label/c.PEAC_Quote_Disclaimer_Part_1';
+import PEAC_Quote_Disclaimer_Part_2  from '@salesforce/label/c.PEAC_Quote_Disclaimer_Part_2';
+//import LEGAL_DISCLAIMER_LABEL from '@salesforce/label/c.TvalueQuotePicker_LegalDisclaimer';
 // SAL-6442 — friendly, customer-facing message shown when the pricing run fails
 // (e.g. no eligible rate card). The technical reason stays in Pricing_Status__c /
 // the error Pricing_Result__c for admins; users never see raw backend strings.
@@ -66,7 +69,7 @@ export default class TvalueQuotePicker extends LightningElement {
     // SAL-6442 — friendly message for the error state; falls back to the generic
     // timeout label when unset (see waitingErrorText).
     waitingErrorMessage;
-
+    
     label = {
         SELECT_LABEL,
         QUOTE_OPTION_LABEL,
@@ -82,7 +85,7 @@ export default class TvalueQuotePicker extends LightningElement {
         CREATED_LABEL,
         EMAIL_QUOTES_LABEL,
         USE_THIS_QUOTE_LABEL,
-        LEGAL_DISCLAIMER_LABEL,
+        LEGAL_DISCLAIMER_LABEL: `${PEAC_Quote_Disclaimer_Part_1} ${PEAC_Quote_Disclaimer_Part_2}`,
         WAITING_LABEL,
         QUOTES_NOT_GENERATED_LABEL,
         PRICING_ERROR_LABEL

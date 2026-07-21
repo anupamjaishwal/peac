@@ -2213,7 +2213,12 @@ static void testQueryObjectFields_Account() {
         );
         insert opp;
 
-        Quote q = new Quote(Name = 'SAL-7168 Standalone Quote');
+        Quote q = new Quote(
+            Name = 'SAL-7168 Standalone Quote',
+            Advance_Payments__c = 2,
+            Down_Payment__c = 1500,
+            Buy_Down__c = 750
+        );
         insert q;
 
         tval__TValue_Quote__c tvq = new tval__TValue_Quote__c(
@@ -2228,6 +2233,19 @@ static void testQueryObjectFields_Account() {
         Quote after = [SELECT Id, OpportunityId FROM Quote WHERE Id = :q.Id];
         System.assertEquals(opp.Id, after.OpportunityId,
             'linkSourceQuoteToOpportunity should set Quote.OpportunityId so the trigger back-stamp fires');
+
+        // SAL-7300 — Advance Payments/Down Payment/Buy Down must be stamped onto
+        // the newly linked Opportunity.
+        Opportunity oppAfter = [
+            SELECT Required_Adv_Payments__c, Down_Payment__c, Buydown__c
+            FROM Opportunity WHERE Id = :opp.Id
+        ];
+        System.assertEquals(2, oppAfter.Required_Adv_Payments__c,
+            'Quote.Advance_Payments__c must be stamped onto Opportunity.Required_Adv_Payments__c');
+        System.assertEquals(1500, oppAfter.Down_Payment__c,
+            'Quote.Down_Payment__c must be stamped onto Opportunity.Down_Payment__c');
+        System.assertEquals(750, oppAfter.Buydown__c,
+            'Quote.Buy_Down__c must be stamped onto Opportunity.Buydown__c');
     }
 
     /**

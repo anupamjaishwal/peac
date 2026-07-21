@@ -99,20 +99,38 @@
         helper.refreshDealDetailsView(cmp);
     },
 
+    // SAL-7243 — re-run the New Quote dealer prefill when the Partners tab is
+    // activated. lightning:tabset builds all tab bodies at wizard render, so
+    // tc_dealDealerTable's init fires before saveCompany creates the Opportunity
+    // and the prefill early-returns; this gives it a chance to run once the Opp
+    // exists. 'dealDocs' lives in both record-type tabsets, so find() may return
+    // an array — handle both shapes.
+    refreshDealerTable: function (cmp, event, helper) {
+        var dealDocs = cmp.find('dealDocs');
+        if (!dealDocs) {
+            return;
+        }
+        var tables = Array.isArray(dealDocs) ? dealDocs : [dealDocs];
+        tables.forEach(function (table) {
+            if (table && table.refreshDealerPrefill) {
+                table.refreshDealerPrefill();
+            }
+        });
+    },
+
 handleTabNavigation: function (cmp, event, helper) {
     var navEventData = event.getParam('data');
     var currentStep = cmp.get('v.currentStep');
     var recordTypeName = cmp.get('v.clientWrapper').recordTypeName;
-
     if (currentStep === 'step_4' && navEventData.direction === 'next' && recordTypeName !== 'Loan') {
         helper.refreshIsRiskBased(cmp, function() {
             // Update showQuoteTab based on the fetched value
             var isRiskBased = cmp.get('v.clientWrapper').isRiskBasedPricing;
             cmp.set('v.showQuoteTab', isRiskBased);
-            helper.navigate(cmp, navEventData.direction);
+            helper.navigate(cmp, navEventData.direction, recordTypeName);
         });
     } else {
-        helper.navigate(cmp, navEventData.direction);
+        helper.navigate(cmp, navEventData.direction, recordTypeName);
     }
 },
 
@@ -140,9 +158,24 @@ handleTabNavigation: function (cmp, event, helper) {
 
     goToNext: function (cmp, event, helper) {
 //if (cmp.get ('v.clientWrapper.deal.opportunity.Id') != null && cmp.get ('v.clientWrapper.deal.opportunity.Id') != '') {
-        helper.refreshOpportunityAndNavigate(cmp, 'next');
-        var isRiskBased = cmp.get('v.clientWrapper').isRiskBasedPricing;
-        console.log('isRiskBased', isRiskBased);
+    var recordTypeName = cmp.get('v.clientWrapper').recordTypeName;
+
+        helper.refreshIsRiskBased(cmp, function() {
+            console.log('164');
+            // Update showQuoteTab based on the fetched value
+            var isRiskBased = cmp.get('v.clientWrapper').isRiskBasedPricing;
+            cmp.set('v.showQuoteTab', isRiskBased);
+            console.log('168');
+            console.log('169' , recordTypeName);
+
+            //helper.navigate(cmp, navEventData.direction, recordTypeName);
+            console.log('172' , recordTypeName);
+
+        });
+
+       // helper.refreshOpportunityAndNavigate(cmp, 'next');
+        //var isRiskBased = cmp.get('v.clientWrapper').isRiskBasedPricing;
+        //console.log('isRiskBased', isRiskBased);
         var currentStep = cmp.get('v.currentStep');
         var stepIndex = currentStep.split('_')[1];
         stepIndex++;

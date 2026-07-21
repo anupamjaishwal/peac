@@ -1193,6 +1193,250 @@ public class NT_PricingOrchestratorTest {
         System.assertEquals(12.0, ctx.finalResidual, 'Residual adjustment should be added to existing final residual');
     }
 
+    // SAL-7404 — builds a residual-only modifier: residual RateCard (Base_Rate__c = residual %)
+    // behind a Program_Residual__c, linked to the parent card via Residual_Balloon_Table__c.
+    private static Modifier__c buildResidualModifier(Id parentRateCardId, Id entryRuleId, Decimal residualPct) {
+        RateCard__c residualCard = new RateCard__c(
+            Effective_Start_Date__c = Date.today().addDays(-1),
+            Rate_Card_Type__c = 'Residual',
+            Base_Rate__c = residualPct,
+            Entry_Criteria__c = entryRuleId,
+            Quote_Entry_Config__c = entryRuleId
+        );
+        insert residualCard;
+
+        Program_Residual__c progRes = new Program_Residual__c(Residual_Balloon_Table__c = residualCard.Id);
+        insert progRes;
+
+        Modifier__c mod = new Modifier__c(Rate_Card__c = parentRateCardId, Residual_Balloon_Table__c = progRes.Id);
+        insert mod;
+        return [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
+                       Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                       Residual_Balloon_Table__c,
+                       Residual_Balloon_Table__r.Residual_Balloon_Table__c,
+                       Residual_Balloon_Table__r.Residual_Balloon_Table__r.Entry_Criteria__c,
+                       Residual_Balloon_Table__r.Residual_Balloon_Table__r.Quote_Entry_Config__c
+                FROM Modifier__c WHERE Id = :mod.Id];
+    }
+
+    @IsTest
+    static void testModifierService_residualEntryCriteriaFiltersOut() {
+        // SAL-7404 — a residual-only modifier whose residual card's entry criteria fail must
+        // not apply. Before the fix, only Modifier_Rate_Card__r criteria were evaluated, so
+        // residual-only modifiers applied unconditionally and their percentages summed.
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Pricing Opp' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        TCRE__Rule_Config__c residualRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        insert residualRule;
+        Modifier__c mod = buildResidualModifier(rc.Id, residualRule.Id, 15);
+
+        NT_PricingContext ctx = new NT_PricingContext(opp.Id);
+        ctx.selectedRateCard = rc;
+        ctx.baseRate = null;
+        ctx.baseRateFactor = null;
+        ctx.baseResidual = null;
+        ctx.eligibleModifiers = new List<Modifier__c>{ mod };
+        ctx.parentId = opp.Id;
+
+        NT_ModifierService.mockModifierEntryRuleResults = new Map<Id, Map<Id, Boolean>>{
+            opp.Id => new Map<Id, Boolean>{ residualRule.Id => false }
+        };
+        try {
+            Test.startTest();
+            new NT_ModifierService().applyModifiers(ctx);
+            Test.stopTest();
+        } finally {
+            NT_ModifierService.mockModifierEntryRuleResults = null;
+        }
+
+        System.assert(ctx.appliedModifiers.isEmpty(),
+            'Residual modifier must not apply when its residual card entry criteria fail');
+        System.assertEquals(null, ctx.finalResidual,
+            'No residual adjustment should apply when entry criteria fail');
+        System.assert(ctx.modifierErrors.isEmpty(),
+            'Modifier must be filtered by criteria, not dropped by an evaluation error');
+    }
+
+    @IsTest
+    static void testModifierService_quotePathResidualEntryCriteriaFiltersOut() {
+        // SAL-7404 — Quote path reads Quote_Entry_Config__c off the residual card;
+        // a failing criterion must filter the modifier there too.
+        Quote q = [SELECT Id FROM Quote WHERE Name = 'Test Pricing Quote' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        TCRE__Rule_Config__c residualRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        insert residualRule;
+        Modifier__c mod = buildResidualModifier(rc.Id, residualRule.Id, 15);
+
+        NT_PricingContext ctx = new NT_PricingContext(q.Id);
+        ctx.selectedRateCard = rc;
+        ctx.baseRate = null;
+        ctx.baseRateFactor = null;
+        ctx.baseResidual = null;
+        ctx.eligibleModifiers = new List<Modifier__c>{ mod };
+        ctx.parentId = q.Id;
+
+        NT_ModifierService.mockModifierEntryRuleResults = new Map<Id, Map<Id, Boolean>>{
+            q.Id => new Map<Id, Boolean>{ residualRule.Id => false }
+        };
+        try {
+            Test.startTest();
+            new NT_ModifierService().applyModifiers(ctx);
+            Test.stopTest();
+        } finally {
+            NT_ModifierService.mockModifierEntryRuleResults = null;
+        }
+
+        System.assert(ctx.appliedModifiers.isEmpty(),
+            'Quote path must gate residual modifiers on the residual card Quote_Entry_Config__c');
+        System.assert(ctx.modifierErrors.isEmpty(),
+            'Modifier must be filtered by criteria, not dropped by an evaluation error');
+    }
+
+    @IsTest
+    static void testModifierService_combinedModifierRequiresAllCriteria() {
+        // SAL-7404 — a modifier carrying BOTH a rate card and a residual card only
+        // applies when every card's entry criteria pass: rate criteria passing while
+        // the residual criteria fail must suppress the whole modifier (rate side too).
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Pricing Opp' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        TCRE__Rule_Config__c rateRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        TCRE__Rule_Config__c residualRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        insert new List<TCRE__Rule_Config__c>{ rateRule, residualRule };
+
+        RateCard__c modRc = new RateCard__c(
+            Effective_Start_Date__c = Date.today().addDays(-1),
+            Rate_Card_Type__c = 'Rate Factor',
+            Base_Rate__c = 1.5,
+            Entry_Criteria__c = rateRule.Id,
+            Quote_Entry_Config__c = rateRule.Id
+        );
+        insert modRc;
+
+        Modifier__c mod = buildResidualModifier(rc.Id, residualRule.Id, 15);
+        update new Modifier__c(Id = mod.Id, Modifier_Rate_Card__c = modRc.Id);
+        mod = [SELECT Id, Name, Rate_Card__c, Modifier_Rate_Card__c, Modifier_Rate_Card__r.Base_Rate__c,
+                      Modifier_Rate_Card__r.Entry_Criteria__c, Modifier_Rate_Card__r.Quote_Entry_Config__c,
+                      Residual_Balloon_Table__c,
+                      Residual_Balloon_Table__r.Residual_Balloon_Table__c,
+                      Residual_Balloon_Table__r.Residual_Balloon_Table__r.Entry_Criteria__c,
+                      Residual_Balloon_Table__r.Residual_Balloon_Table__r.Quote_Entry_Config__c
+               FROM Modifier__c WHERE Id = :mod.Id];
+
+        NT_PricingContext ctx = new NT_PricingContext(opp.Id);
+        ctx.selectedRateCard = rc;
+        ctx.baseRate = null;
+        ctx.baseRateFactor = null;
+        ctx.baseResidual = null;
+        ctx.eligibleModifiers = new List<Modifier__c>{ mod };
+        ctx.parentId = opp.Id;
+
+        // Rate criteria pass, residual criteria fail → whole modifier suppressed.
+        NT_ModifierService.mockModifierEntryRuleResults = new Map<Id, Map<Id, Boolean>>{
+            opp.Id => new Map<Id, Boolean>{ rateRule.Id => true, residualRule.Id => false }
+        };
+        try {
+            Test.startTest();
+            new NT_ModifierService().applyModifiers(ctx);
+
+            System.assert(ctx.appliedModifiers.isEmpty(),
+                'Combined modifier must not apply when the residual card criteria fail, even if the rate card criteria pass');
+            System.assertEquals(null, ctx.finalRate,
+                'Rate adjustment must be suppressed with the rest of the modifier');
+            System.assertEquals(null, ctx.finalResidual,
+                'Residual adjustment must be suppressed');
+
+            // Both criteria pass → both adjustments apply.
+            NT_ModifierService.mockModifierEntryRuleResults = new Map<Id, Map<Id, Boolean>>{
+                opp.Id => new Map<Id, Boolean>{ rateRule.Id => true, residualRule.Id => true }
+            };
+            NT_PricingContext ctx2 = new NT_PricingContext(opp.Id);
+            ctx2.selectedRateCard = rc;
+            ctx2.baseRate = null;
+            ctx2.baseRateFactor = null;
+            ctx2.baseResidual = null;
+            ctx2.eligibleModifiers = new List<Modifier__c>{ mod };
+            ctx2.parentId = opp.Id;
+            new NT_ModifierService().applyModifiers(ctx2);
+            Test.stopTest();
+
+            System.assertEquals(1, ctx2.appliedModifiers.size(),
+                'Combined modifier must apply when every card criteria pass');
+            System.assertEquals(1.5, ctx2.finalRate,
+                'Rate adjustment from the modifier rate card must apply');
+            System.assertEquals(15, ctx2.finalResidual,
+                'Residual adjustment from the residual card must apply');
+        } finally {
+            NT_ModifierService.mockModifierEntryRuleResults = null;
+        }
+    }
+
+    @IsTest
+    static void testModifierService_residualEntryCriteriaPasses() {
+        // SAL-7404 — the matching residual modifier still applies: criteria pass → the
+        // residual card's Base_Rate__c is picked up as the residual adjustment.
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Pricing Opp' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        TCRE__Rule_Config__c residualRule = new TCRE__Rule_Config__c(TCRE__SObject_Name__c = 'Opportunity');
+        insert residualRule;
+        Modifier__c mod = buildResidualModifier(rc.Id, residualRule.Id, 15);
+
+        NT_PricingContext ctx = new NT_PricingContext(opp.Id);
+        ctx.selectedRateCard = rc;
+        ctx.baseRate = null;
+        ctx.baseRateFactor = null;
+        ctx.baseResidual = null;
+        ctx.eligibleModifiers = new List<Modifier__c>{ mod };
+        ctx.parentId = opp.Id;
+
+        NT_ModifierService.mockModifierEntryRuleResults = new Map<Id, Map<Id, Boolean>>{
+            opp.Id => new Map<Id, Boolean>{ residualRule.Id => true }
+        };
+        try {
+            Test.startTest();
+            new NT_ModifierService().applyModifiers(ctx);
+            Test.stopTest();
+        } finally {
+            NT_ModifierService.mockModifierEntryRuleResults = null;
+        }
+
+        System.assertEquals(1, ctx.appliedModifiers.size(),
+            'Residual modifier must apply when its residual card entry criteria pass');
+        System.assertEquals(15, ctx.modifierResidualAdjustments.get(mod.Id),
+            'Residual adjustment should be the residual card Base_Rate__c');
+        System.assertEquals(15, ctx.finalResidual,
+            'Final residual should be set from the applied residual modifier');
+    }
+
+    @IsTest
+    static void testModifierService_residualNoCriteriaStillApplies() {
+        // SAL-7404 — a residual card with no entry criteria keeps today's behavior: applies.
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Pricing Opp' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        Modifier__c mod = buildResidualModifier(rc.Id, null, 9);
+
+        NT_PricingContext ctx = new NT_PricingContext(opp.Id);
+        ctx.selectedRateCard = rc;
+        ctx.baseRate = null;
+        ctx.baseRateFactor = null;
+        ctx.baseResidual = null;
+        ctx.eligibleModifiers = new List<Modifier__c>{ mod };
+        ctx.parentId = opp.Id;
+
+        Test.startTest();
+        new NT_ModifierService().applyModifiers(ctx);
+        Test.stopTest();
+
+        System.assertEquals(1, ctx.appliedModifiers.size(),
+            'Residual modifier without entry criteria should still apply');
+        System.assertEquals(9, ctx.finalResidual,
+            'Final residual should be the residual card Base_Rate__c');
+    }
+
     @IsTest
     static void testPricingOrchestratorQueueable_multipleRecords() {
         Quote q1 = [SELECT Id FROM Quote WHERE Name = 'Test Pricing Quote' LIMIT 1];
@@ -1413,6 +1657,9 @@ public class NT_PricingOrchestratorTest {
         ctx.baseResidual = 10.0;
         ctx.baseRate = 2.0;
         ctx.financedAmount = 50000;
+        // SAL-7404 — equipment cost intentionally differs from financed amount so the
+        // assertions prove the residual dollar amount uses the equipment-cost basis.
+        ctx.equipmentCost = 60000;
 
         Test.startTest();
         svc.createModifierResults(ctx);
@@ -1430,9 +1677,58 @@ public class NT_PricingOrchestratorTest {
         System.assertEquals(rc.Id, results[0].Rate_Card__c, 'Modifier result should reference the parent rate card');
         System.assertEquals(2.0, results[0].Base_Rate__c, 'Modifier result should store parent rate card base rate');
         System.assertEquals(10.0, results[0].Base_Residual__c, 'Modifier result should store base residual');
-        System.assertEquals(750.0, results[0].Modified_Residual_Amount__c, 'Modifier result should store residual as dollar amount');
-        System.assertEquals(51231.25, results[0].Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
+        // SAL-7404 — Opportunity path: 60000 equipment cost × 1.5% = 900 (not 50000 × 1.5% = 750)
+        System.assertEquals(900.0, results[0].Modified_Residual_Amount__c, 'Modifier result should store residual dollar amount on the equipment-cost basis');
+        System.assertEquals(51227.50, results[0].Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
         System.assertEquals(2.5, results[0].Total_Rate__c, 'Total rate should be ctx.baseRate + modifier rate adjustment');
+    }
+
+    /**
+     * @description  SAL-7404 — when Equipment Cost is unavailable on an Opportunity-originated
+     *               run, the residual dollar amount falls back to the financed-amount basis
+     *               (pre-SAL-7404 behavior) rather than zeroing out.
+     */
+    @IsTest
+    static void testPricingResultService_createModifierResults_oppPathNullEquipmentCost() {
+        NT_PricingResultService svc = new NT_PricingResultService();
+        Opportunity opp = [SELECT Id FROM Opportunity WHERE Name = 'Test Pricing Opp' LIMIT 1];
+        RateCard__c rc = [SELECT Id FROM RateCard__c LIMIT 1];
+
+        RateCard__c modRc = new RateCard__c(
+            Effective_Start_Date__c = Date.today().addDays(-1),
+            Rate_Card_Type__c = 'Rate Factor',
+            Base_Rate__c = 1.5
+        );
+        insert modRc;
+
+        Modifier__c mod = new Modifier__c(
+            Rate_Card__c = rc.Id,
+            Modifier_Rate_Card__c = modRc.Id
+        );
+        insert mod;
+
+        NT_PricingContext ctx = new NT_PricingContext(opp.Id);
+        ctx.appliedModifiers = new List<Modifier__c>{ mod };
+        ctx.modifierRateAdjustments = new Map<Id, Decimal>{ mod.Id => 0.5 };
+        ctx.modifierResidualAdjustments = new Map<Id, Decimal>{ mod.Id => 1.5 };
+        ctx.modifierErrors = new Map<Id, String>();
+        ctx.baseResidual = 10.0;
+        ctx.baseRate = 2.0;
+        ctx.financedAmount = 50000;
+        ctx.equipmentCost = null;
+
+        Test.startTest();
+        svc.createModifierResults(ctx);
+        Test.stopTest();
+
+        List<Pricing_Result__c> results = [
+            SELECT Id, Modified_Residual_Amount__c, Total_Amount__c
+            FROM Pricing_Result__c
+            WHERE Source__c = 'Modifier' AND Opportunity__c = :opp.Id
+        ];
+        System.assert(!results.isEmpty(), 'Modifier Pricing_Result__c should be created');
+        System.assertEquals(750.0, results[0].Modified_Residual_Amount__c, 'Null equipment cost falls back to financed-amount basis: 50000 × 1.5% = 750');
+        System.assertEquals(51231.25, results[0].Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
     }
 
     @IsTest
@@ -1463,6 +1759,8 @@ public class NT_PricingOrchestratorTest {
         ctx.baseResidual = 10.0;
         ctx.baseRate = 2.0;
         ctx.financedAmount = 50000;
+        // SAL-7404 — diverged from financed amount to prove the equipment-cost basis
+        ctx.equipmentCost = 60000;
 
         Test.startTest();
         svc.createModifierResults(ctx);
@@ -1482,8 +1780,9 @@ public class NT_PricingOrchestratorTest {
                 System.assertEquals(rc.Id, r.Rate_Card__c, 'Success result should reference parent rate card');
                 System.assertEquals(2.0, r.Base_Rate__c, 'Success result should store parent rate card base rate');
                 System.assertEquals(10.0, r.Base_Residual__c, 'Success result should store base residual');
-                System.assertEquals(500.0, r.Modified_Residual_Amount__c, 'Modifier result should store residual as dollar amount');
-                System.assertEquals(51237.50, r.Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
+                // SAL-7404 — Opportunity path: 60000 equipment cost × 1.0% = 600 (not 50000 × 1.0% = 500)
+                System.assertEquals(600.0, r.Modified_Residual_Amount__c, 'Modifier result should store residual dollar amount on the equipment-cost basis');
+                System.assertEquals(51235.00, r.Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
                 System.assertEquals(2.5, r.Total_Rate__c, 'Total rate should be ctx.baseRate + modifier rate adjustment');
             }
         }
@@ -1521,6 +1820,9 @@ public class NT_PricingOrchestratorTest {
         ctx.baseResidual = 8.0;
         ctx.baseRate = 3.0;
         ctx.financedAmount = 40000;
+        // SAL-7404 — even with an equipment cost present, Quote-originated runs must keep
+        // the financed-amount basis (equipment-cost behavior is Opportunity-only).
+        ctx.equipmentCost = 99999;
 
         Test.startTest();
         svc.createModifierResults(ctx);
@@ -1537,7 +1839,7 @@ public class NT_PricingOrchestratorTest {
         System.assertEquals(rc.Id, results[0].Rate_Card__c, 'Modifier result should reference the parent rate card');
         System.assertEquals(3.0, results[0].Base_Rate__c, 'Modifier result should store ctx.baseRate');
         System.assertEquals(8.0, results[0].Base_Residual__c, 'Modifier result should store base residual');
-        System.assertEquals(300.0, results[0].Modified_Residual_Amount__c, 'Modifier result should store residual as dollar amount');
+        System.assertEquals(300.0, results[0].Modified_Residual_Amount__c, 'SAL-7404: Quote path keeps the financed-amount basis (40000 × 0.75% = 300), ignoring equipment cost');
         System.assertEquals(41290.25, results[0].Total_Amount__c, 'Total amount should use formula (P-R)*(1+rate/100)+R');
         System.assertEquals(3.25, results[0].Total_Rate__c, 'Total rate should be ctx.baseRate + modifier rate adjustment');
     }

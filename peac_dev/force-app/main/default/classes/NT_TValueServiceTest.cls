@@ -188,7 +188,9 @@ private class NT_TValueServiceTest {
      */
     @IsTest
     static void invokeTValue_opportunity_happyPath() {
-        Opportunity opp = [SELECT Id, Name FROM Opportunity WHERE Name = 'Northteq Test Opp' LIMIT 1];
+        // Query Equipment_Cost__c so computeTValueQuoteAmount can read it, mirroring how
+        // NT_PricingConfigService loads the Opportunity in the real flow.
+        Opportunity opp = [SELECT Id, Name, Equipment_Cost__c FROM Opportunity WHERE Name = 'Northteq Test Opp' LIMIT 1];
         NT_PricingContext ctx = buildValidContext();
         ctx.parentId = opp.Id;
         ctx.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
@@ -331,5 +333,220 @@ private class NT_TValueServiceTest {
             new NT_TValueService().computeNetFinancedAmount(ctx),
             'Net financed amount is floored at 0 when levers exceed the financed amount'
         );
+    }
+
+    // ---------------------------------------------------------------------
+    // SAL-7244 — computeTValueQuoteAmount (amount the engine amortizes)
+    // ---------------------------------------------------------------------
+
+    /**
+     * @description  Opportunity path: the amount fed to the engine as
+     *               tval__Quote_Amount__c (which the engine actually amortizes) has
+     *               Buydown and Subsidy removed, so the solved payment reflects them.
+     *               Equipment Cost stays gross on the Opportunity itself.
+     */
+    @IsTest
+    static void computeTValueQuoteAmount_opportunitySubtractsBuydownSubsidy() {
+        NT_PricingContext ctx = buildValidContext(); // buyDown = 50, subsidy = 25
+        ctx.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        ctx.opportunity = new Opportunity(Equipment_Cost__c = 60000);
+        System.assertEquals(
+            59925,
+            new NT_TValueService().computeTValueQuoteAmount(ctx),
+            'Quote Amount (Opp path) = Equipment Cost − buyDown − subsidy = 60000 − 50 − 25'
+        );
+    }
+
+    /**
+     * @description  Down Payment must NOT reduce the amount fed to the engine on the
+     *               Opportunity path — it is post-MVP (SAL-7417) and must not change the
+     *               payment yet. Only Buydown/Subsidy reduce the amortized amount.
+     */
+    @IsTest
+    static void computeTValueQuoteAmount_opportunityIgnoresDownPayment() {
+        NT_PricingContext ctx = buildValidContext();
+        ctx.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        ctx.buyDown = null;
+        ctx.subsidy = null;
+        ctx.downPayment = 5000;
+        ctx.opportunity = new Opportunity(Equipment_Cost__c = 60000);
+        System.assertEquals(
+            60000,
+            new NT_TValueService().computeTValueQuoteAmount(ctx),
+            'Down Payment does not reduce Quote Amount on the Opportunity path (SAL-7417 post-MVP)'
+        );
+    }
+
+    // ---------------------------------------------------------------------
+    // SAL-7404 — computeModifierBuyOutAmount (equipment-cost-based buyout)
+    // ---------------------------------------------------------------------
+
+    /**
+     * @description  Opportunity-originated run with an applied residual modifier: buyout =
+     *               Equipment Cost × modifier residual % (matches the modifier-level
+     *               Pricing_Result__c.Modified_Residual_Amount__c basis).
+     */
+    @IsTest
+    static void computeModifierBuyOutAmount_opportunityUsesEquipmentCost() {
+        NT_PricingContext ctx = buildValidContext();
+        ctx.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        ctx.equipmentCost = 60000;
+        ctx.modifierResidualAdjustments = new Map<Id, Decimal>{
+            fakeModifierId(1) => 1.5
+        };
+        System.assertEquals(
+            900,
+            new NT_TValueService().computeModifierBuyOutAmount(ctx),
+            'Buyout = equipment cost × residual modifier pct: 60000 × 1.5% = 900'
+        );
+    }
+
+    /**
+     * @description  Multiple residual modifiers sum: the buyout equals equipment cost × the
+     *               summed percentage, i.e. the sum of the per-modifier dollar amounts.
+     */
+    @IsTest
+    static void computeModifierBuyOutAmount_sumsResidualModifiers() {
+        NT_PricingContext ctx = buildValidContext();
+        ctx.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        ctx.equipmentCost = 60000;
+        ctx.modifierResidualAdjustments = new Map<Id, Decimal>{
+            fakeModifierId(1) => 1.5,
+            fakeModifierId(2) => 0.5,
+            fakeModifierId(3) => null
+        };
+        System.assertEquals(
+            1200,
+            new NT_TValueService().computeModifierBuyOutAmount(ctx),
+            'Buyout sums residual modifier pcts (null-safe): 60000 × 2.0% = 1200'
+        );
+    }
+
+    /**
+     * @description  Quote-originated runs are out of scope: null even with equipment cost
+     *               and residual modifiers present.
+     */
+    @IsTest
+    static void computeModifierBuyOutAmount_nullForQuoteOrigin() {
+        NT_PricingContext ctx = buildValidContext();
+        ctx.parentType = NT_PricingContext.PARENT_TYPE_QUOTE;
+        ctx.equipmentCost = 60000;
+        ctx.modifierResidualAdjustments = new Map<Id, Decimal>{
+            fakeModifierId(1) => 1.5
+        };
+        System.assertEquals(
+            null,
+            new NT_TValueService().computeModifierBuyOutAmount(ctx),
+            'Quote-originated runs must not produce a buyout amount (SAL-7404 scope)'
+        );
+    }
+
+    /**
+     * @description  No applied residual modifier (empty map or zero adjustments) or missing
+     *               equipment cost: null, so the TValue buyout/balloon behavior is unchanged.
+     */
+    @IsTest
+    static void computeModifierBuyOutAmount_nullWhenNoResidualModifierOrEquipmentCost() {
+        NT_TValueService svc = new NT_TValueService();
+
+        NT_PricingContext noModifiers = buildValidContext();
+        noModifiers.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        noModifiers.equipmentCost = 60000;
+        System.assertEquals(null, svc.computeModifierBuyOutAmount(noModifiers),
+            'No residual modifier applied → no buyout amount');
+
+        NT_PricingContext zeroAdjustment = buildValidContext();
+        zeroAdjustment.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        zeroAdjustment.equipmentCost = 60000;
+        zeroAdjustment.modifierResidualAdjustments = new Map<Id, Decimal>{ fakeModifierId(1) => 0 };
+        System.assertEquals(null, svc.computeModifierBuyOutAmount(zeroAdjustment),
+            'Zero residual adjustment → no buyout amount');
+
+        NT_PricingContext noEquipmentCost = buildValidContext();
+        noEquipmentCost.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        noEquipmentCost.modifierResidualAdjustments = new Map<Id, Decimal>{ fakeModifierId(1) => 1.5 };
+        System.assertEquals(null, svc.computeModifierBuyOutAmount(noEquipmentCost),
+            'Null equipment cost → no buyout amount');
+    }
+
+    // ---------------------------------------------------------------------
+    // SAL-7404 — invokeTValue wiring: the computed buyout must reach the queueable
+    // ---------------------------------------------------------------------
+
+    /**
+     * @description  Opportunity-only overload: invokeTValue must push the computed
+     *               equipment-cost buyout onto the queueable it enqueues (the seam between
+     *               computeModifierBuyOutAmount and buildTValueQuote's stamp).
+     */
+    @IsTest
+    static void invokeTValue_opportunity_wiresBuyOutOntoQueueable() {
+        Opportunity opp = [SELECT Id, Name, Equipment_Cost__c FROM Opportunity WHERE Name = 'Northteq Test Opp' LIMIT 1];
+        NT_PricingContext ctx = buildValidContext();
+        ctx.parentId = opp.Id;
+        ctx.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        ctx.opportunity = opp;
+        ctx.equipmentCost = 60000;
+        ctx.modifierResidualAdjustments = new Map<Id, Decimal>{ fakeModifierId(1) => 1.5 };
+        NT_TValueQueueable.mockCalculateQuoteResult = new List<tval__TValue_Quote__c>();
+
+        Test.startTest();
+        new NT_TValueService().invokeTValue(ctx);
+        Test.stopTest();
+
+        System.assertNotEquals(null, NT_TValueService.lastQueueable, 'A queueable must be built');
+        System.assertEquals(900, NT_TValueService.lastQueueable.endOfTermBuyOut,
+            'invokeTValue must set the equipment-cost buyout on the queueable: 60000 × 1.5% = 900');
+    }
+
+    /**
+     * @description  Quote-parented overload with an Opportunity-originated context (real
+     *               Calculate Pricing runs that carry a parent Quote) must also wire the buyout.
+     */
+    @IsTest
+    static void invokeTValue_quoteParented_opportunityCtxWiresBuyOut() {
+        Quote q = [SELECT Id, Name, OpportunityId FROM Quote WHERE Name = 'Northteq Test Quote' LIMIT 1];
+        NT_PricingContext ctx = buildValidContext();
+        ctx.parentId = q.OpportunityId;
+        ctx.parentType = NT_PricingContext.PARENT_TYPE_OPPORTUNITY;
+        ctx.equipmentCost = 60000;
+        ctx.modifierResidualAdjustments = new Map<Id, Decimal>{ fakeModifierId(1) => 1.5 };
+        NT_TValueQueueable.mockCalculateQuoteResult = new List<tval__TValue_Quote__c>();
+
+        Test.startTest();
+        new NT_TValueService().invokeTValue(ctx, q);
+        Test.stopTest();
+
+        System.assertNotEquals(null, NT_TValueService.lastQueueable, 'A queueable must be built');
+        System.assertEquals(900, NT_TValueService.lastQueueable.endOfTermBuyOut,
+            'Opportunity-originated runs through the Quote-parented overload must carry the buyout');
+    }
+
+    /**
+     * @description  Quote-originated context through the Quote-parented overload leaves the
+     *               buyout null on the queueable (SAL-7404 scope guard at the wiring level).
+     */
+    @IsTest
+    static void invokeTValue_quote_ctxLeavesBuyOutNull() {
+        Quote q = [SELECT Id, Name, OpportunityId FROM Quote WHERE Name = 'Northteq Test Quote' LIMIT 1];
+        NT_PricingContext ctx = buildValidContext();
+        ctx.parentId = q.Id;
+        ctx.parentType = NT_PricingContext.PARENT_TYPE_QUOTE;
+        ctx.equipmentCost = 60000;
+        ctx.modifierResidualAdjustments = new Map<Id, Decimal>{ fakeModifierId(1) => 1.5 };
+        NT_TValueQueueable.mockCalculateQuoteResult = new List<tval__TValue_Quote__c>();
+
+        Test.startTest();
+        new NT_TValueService().invokeTValue(ctx, q);
+        Test.stopTest();
+
+        System.assertNotEquals(null, NT_TValueService.lastQueueable, 'A queueable must be built');
+        System.assertEquals(null, NT_TValueService.lastQueueable.endOfTermBuyOut,
+            'Quote-originated runs must not carry a buyout even with equipment cost + residual modifiers present');
+    }
+
+    // SAL-7404 — deterministic fake Modifier__c Ids for the adjustment maps (no DML needed)
+    private static Id fakeModifierId(Integer seq) {
+        return Id.valueOf(Modifier__c.SObjectType.getDescribe().getKeyPrefix()
+            + String.valueOf(seq).leftPad(12, '0'));
     }
 }

@@ -2662,7 +2662,8 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         if (tvalueQuoteId == null) return;
 
         List<tval__TValue_Quote__c> chosen = [
-            SELECT Id, Quote__c, tval__Payment_Amount__c, tval__Nominal_Annual_Rate__c
+            SELECT Id, Quote__c, tval__Payment_Amount__c, tval__Nominal_Annual_Rate__c,
+                   Quote__r.Total_Financed_Amount__c
             FROM tval__TValue_Quote__c
             WHERE Id = :tvalueQuoteId
             LIMIT 1
@@ -2670,6 +2671,11 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
         if (chosen.isEmpty()) return;
 
         Id parentQuoteId = chosen[0].Quote__c;
+
+        // SAL-7385 — tval's Outbound template-field sync overwrites Total_Financed_Amount__c
+        // with the net quoteAmount when tval__Selected__c is set below. Snapshot the gross
+        // value first and restore it after.
+        Decimal grossFinancedAmount = chosen[0].Quote__r?.Total_Financed_Amount__c;
 
         List<tval__TValue_Quote__c> toUpdate = new List<tval__TValue_Quote__c>();
         toUpdate.add(new tval__TValue_Quote__c(Id = tvalueQuoteId, tval__Selected__c = true));
@@ -2695,6 +2701,11 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
             Quote parentQuote = new Quote(Id = parentQuoteId);
             parentQuote.Payment__c = chosen[0].tval__Payment_Amount__c;
             parentQuote.Rate__c = chosen[0].tval__Nominal_Annual_Rate__c;
+
+            // SAL-7385 — restore the gross amount tval's sync overwrote above.
+            if (grossFinancedAmount != null) {
+                parentQuote.Total_Financed_Amount__c = grossFinancedAmount;
+            }
 
             // Residual lives on the Pricing_Result__c, not the TValue Quote.
             // Take the most recent successful run for this Quote; leave
@@ -2753,8 +2764,13 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
             if (quoteIds.isEmpty()) return;
 
             List<Quote> toUpdate = new List<Quote>();
+            // SAL-7300 — collect Advance Payments/Down Payment/Buy Down off the
+            // Quote(s) being linked so they can be stamped onto the Opportunity below.
+            Decimal advancePayments;
+            Decimal downPayment;
+            Decimal buyDown;
             for (Quote q : [
-                SELECT Id, OpportunityId
+                SELECT Id, OpportunityId, Advance_Payments__c, Down_Payment__c, Buy_Down__c
                 FROM Quote
                 WHERE Id IN :quoteIds AND OpportunityId = null
             ]) {
@@ -2767,8 +2783,24 @@ public /*without sharing*/ class TC_LoanApplicationCtrl {
                     OpportunityId = opportunityId,
                     Converted_Opportunity__c = opportunityId
                 ));
+                if (q.Advance_Payments__c != null) advancePayments = q.Advance_Payments__c;
+                if (q.Down_Payment__c != null) downPayment = q.Down_Payment__c;
+                if (q.Buy_Down__c != null) buyDown = q.Buy_Down__c;
             }
             if (!toUpdate.isEmpty()) update toUpdate;
+
+            // SAL-7300 — stamp Advance Payments/Down Payment/Buy Down from the Quote
+            // onto the newly linked Opportunity. Safe to overwrite: this only runs on
+            // the Opportunity's first-ever link (query above is scoped to
+            // OpportunityId = null), so these fields are still at their just-created
+            // defaults.
+            if (advancePayments != null || downPayment != null || buyDown != null) {
+                Opportunity oppUpdate = new Opportunity(Id = opportunityId);
+                if (advancePayments != null) oppUpdate.Required_Adv_Payments__c = advancePayments;
+                if (downPayment != null) oppUpdate.Down_Payment__c = downPayment;
+                if (buyDown != null) oppUpdate.Buydown__c = buyDown;
+                update oppUpdate;
+            }
         } catch (Exception ex) {
             Database.rollback(sp);
             System.debug('SAL-7168 linkSourceQuoteToOpportunity skipped: ' + ex.getMessage());

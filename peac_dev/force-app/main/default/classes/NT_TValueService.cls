@@ -14,6 +14,11 @@ public without sharing class NT_TValueService {
     @TestVisible
     private static final Integer MAX_QUOTE_COMBINATIONS = 12;
 
+    // SAL-7404 — captures the queueable each invokeTValue overload enqueues so tests can
+    // assert the wiring (e.g. that setEndOfTermBuyOut was actually called on it).
+    @TestVisible
+    private static NT_TValueQueueable lastQueueable;
+    
     /**
      * @description Enqueues TValue calculation asynchronously.
      *              Creates all frequency × term combinations and processes via queueable chain.
@@ -40,12 +45,12 @@ public without sharing class NT_TValueService {
             
             // Build all frequency × term combinations
             List<NT_TValueQueueable.TValueCombination> combinations = buildCombinations(ctx);
-
+            
             if (combinations.isEmpty()) {
                 System.debug('No frequency/term combinations to process for TValue');
                 return;
             }
-
+            
             System.debug('Enqueueing TValue for ' + combinations.size() + ' combinations');
             for (NT_TValueQueueable.TValueCombination combo : combinations) {
                 System.debug('  - ' + combo.paymentFrequency + ' / ' + combo.term + ' mo');
@@ -53,7 +58,9 @@ public without sharing class NT_TValueService {
 
             // SAL-7244 — net financed amount = financed − down − buydown − subsidy
             Decimal netFinancedAmount = computeNetFinancedAmount(ctx);
-
+            Decimal tvalueQuoteAmount = computeTValueQuoteAmount(ctx);
+            Decimal pointsAmount = computePointsAmount(tvalueQuoteAmount, ctx.points);
+            
             // AC Scenario 3: ctx.transactionId is passed to the queueable so EF offer creation is scoped to this pricing run
             NT_TValueQueueable queueable = new NT_TValueQueueable(
                 parentQuote.Id,
@@ -70,9 +77,15 @@ public without sharing class NT_TValueService {
                 new List<String>(),
                 ctx.transactionId,
                 ctx.points,
+                tvalueQuoteAmount,
+                pointsAmount,
                 ctx.monthlyPayment
             );
-            
+            // SAL-7404 — equipment-cost-based buyout (null unless Opportunity-originated
+            // with an applied residual modifier)
+            queueable.setEndOfTermBuyOut(computeModifierBuyOutAmount(ctx));
+            lastQueueable = queueable;
+
             if (!Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
                 System.enqueueJob(queueable);
             } else if (Test.isRunningTest()) {
@@ -103,17 +116,19 @@ public without sharing class NT_TValueService {
         try {
             Id opportunityId = ctx.parentId;
             List<NT_TValueQueueable.TValueCombination> combinations = buildCombinations(ctx);
-
+            
             if (combinations.isEmpty()) {
                 System.debug('No frequency/term combinations to process for TValue');
                 return;
             }
-
+            
             System.debug('Enqueueing TValue (Opportunity context) for ' + combinations.size() + ' combinations');
 
             // SAL-7244 — net financed amount = financed − down − buydown − subsidy
             Decimal netFinancedAmount = computeNetFinancedAmount(ctx);
-
+            Decimal tvalueQuoteAmount = computeTValueQuoteAmount(ctx);
+            Decimal pointsAmount = computePointsAmount(tvalueQuoteAmount, ctx.points);
+            
             // AC Scenario 3: ctx.transactionId is passed to the queueable so EF offer creation is scoped to this pricing run
             NT_TValueQueueable queueable = new NT_TValueQueueable(
                 null,
@@ -130,9 +145,14 @@ public without sharing class NT_TValueService {
                 new List<String>(),
                 ctx.transactionId,
                 ctx.points,
+                tvalueQuoteAmount,
+                pointsAmount,
                 ctx.monthlyPayment
             );
-            
+            // SAL-7404 — equipment-cost-based buyout for the applied residual modifier
+            queueable.setEndOfTermBuyOut(computeModifierBuyOutAmount(ctx));
+            lastQueueable = queueable;
+
             if (!Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
                 System.enqueueJob(queueable);
             } else if (Test.isRunningTest()) {
@@ -174,7 +194,79 @@ public without sharing class NT_TValueService {
         if (ctx.subsidy != null && ctx.subsidy > 0) {
             net -= ctx.subsidy;
         }
+        if(ctx.points != null && ctx.points > 0){// SAL-7381 
+            net += (ctx.financedAmount * (ctx.points / 100));
+        }
         return net < 0 ? 0 : net;
+    }
+    
+    /**
+     * @description  SAL-7404 — computes the end-of-term buyout dollar amount stamped on
+     *               tval__End_of_Term_Buy_Out__c: total Equipment Cost × the applied residual
+     *               modifier percentage (summed across residual modifiers). Uses the same
+     *               equipment-cost basis as the modifier-level
+     *               Pricing_Result__c.Modified_Residual_Amount__c records, so the buyout
+     *               equals the SUM of those audit rows — identical to the single row's value
+     *               in the typical one-residual-modifier case. Returns null for
+     *               Quote-originated runs (explicitly out of scope) and when no residual
+     *               modifier applied, leaving the TValue Quote's buyout/balloon behavior
+     *               unchanged from today.
+     * @param        ctx  The pricing context.
+     * @return       The buyout dollar amount, or null when not applicable.
+     */
+    @TestVisible
+    private Decimal computeModifierBuyOutAmount(NT_PricingContext ctx) {
+        if (!ctx.isOpportunity() || ctx.equipmentCost == null) {
+            return null;
+        }
+        Decimal totalResidualPct = 0;
+        for (Decimal adj : ctx.modifierResidualAdjustments.values()) {
+            if (adj != null) {
+                totalResidualPct += adj;
+            }
+        }
+        if (totalResidualPct == 0) {
+            return null;
+        }
+        return ctx.equipmentCost * totalResidualPct / 100;
+    }
+
+    /**
+     * @description  SAL-7244 — the amount the TValue engine actually amortizes is
+     *               tval__Quote_Amount__c (this value), NOT tval__Amount_Financed__c.
+     *               So Buydown/Subsidy must be subtracted here, or the solved payment
+     *               ignores them (the reported defect: adding/removing Buydown on the
+     *               Opportunity path left the payment unchanged). Equipment Cost stays
+     *               gross on the Opportunity for display — only the amount fed to the
+     *               engine is reduced, matching the design note "Buydown reduces the
+     *               financed amount, not the equipment cost." Down Payment is
+     *               deliberately NOT subtracted here (post-MVP, SAL-7417); it must not
+     *               change the payment yet, so it stays out of the amortized amount.
+     * @param        ctx  The pricing context.
+     * @return       The amount fed to the engine as tval__Quote_Amount__c: on the
+     *               Opportunity path, Equipment Cost less Buydown and Subsidy (min 0);
+     *               otherwise the context financed amount unchanged.
+     */
+    @TestVisible
+    private Decimal computeTValueQuoteAmount(NT_PricingContext ctx) {
+        if (ctx.isOpportunity() && ctx.opportunity != null && ctx.opportunity.Equipment_Cost__c != null) {
+            Decimal amt = ctx.opportunity.Equipment_Cost__c;
+            if (ctx.buyDown != null && ctx.buyDown > 0) {
+                amt -= ctx.buyDown;
+            }
+            if (ctx.subsidy != null && ctx.subsidy > 0) {
+                amt -= ctx.subsidy;
+            }
+            return amt < 0 ? 0 : amt;
+        }
+        return ctx.financedAmount;
+    }
+    @TestVisible
+    private Decimal computePointsAmount(Decimal quoteAmount, Decimal points) {
+        if (quoteAmount != null && points != null && points > 0) {
+            return quoteAmount * (points / 100);
+        }
+        return 0;
     }
 
     /**
@@ -206,6 +298,9 @@ public without sharing class NT_TValueService {
                     if (tpr != null) {
                         combo.rate = tpr.finalRate;
                         combo.residual = tpr.finalResidual;
+                        // SAL-6441 — carry the per-term amount solved from the Requested Payment
+                        // Amount so each combination feeds TValue its own Amount Financed.
+                        combo.financedAmount = tpr.financedAmount;
                     }
                 }
                 combinations.add(combo);
@@ -223,7 +318,7 @@ public without sharing class NT_TValueService {
             }
             combinations = capped;
         }
-
+        
         return combinations;
     }
     

@@ -124,7 +124,7 @@
 									<c:tc_dealDetails aura:id="dealDetailsComp" deal="{!v.deal}" clientWrapper="{!v.clientWrapper}"  isLoan="true"/>
 								</lightning:tab>
 
-								<lightning:tab label="Partners" id="step_4">
+								<lightning:tab label="Partners" id="step_4" onactive="{!c.refreshDealerTable}">
 									<c:tc_dealDealerTable  clientWrapper="{!v.clientWrapper}" aura:id="dealDocs" />
 								</lightning:tab>
 								<lightning:tab label="Bank Statements" id="step_5">
@@ -264,7 +264,7 @@
 												<c:tc_dealEquipment aura:id="dealEquipmentComp" clientWrapper="{!v.clientWrapper}" />
 											</lightning:tab>
 
-											<lightning:tab label="Partners" id="step_4">
+											<lightning:tab label="Partners" id="step_4" onactive="{!c.refreshDealerTable}">
 												<c:tc_dealDealerTable  clientWrapper="{!v.clientWrapper}" aura:id="dealDocs" />
 											</lightning:tab>
 

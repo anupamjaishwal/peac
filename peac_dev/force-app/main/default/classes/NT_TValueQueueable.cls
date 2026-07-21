@@ -17,6 +17,9 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         public Decimal term;
         public Decimal rate;
         public Decimal residual;
+        // SAL-6441 — per-combination financed amount solved from the Requested Payment Amount
+        // (each term/frequency can resolve a different amount since the rate is amount-tiered).
+        public Decimal financedAmount;
         
         public TValueCombination(String paymentFrequency, Decimal term) {
             this.paymentFrequency = paymentFrequency;
@@ -39,7 +42,14 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
     // AC Scenario 3: transactionId scopes which Pricing_Result__c records are used to create EF offers
     private String transactionId;
     private Decimal points;
+    private Decimal tvalueQuoteAmount;
+    private Decimal pointsAmount;
     private Decimal monthlyPayment;
+    // SAL-7404 — equipment-cost-based residual buyout dollar amount (Opportunity-originated
+    // runs with an applied residual modifier only; null otherwise). Set via setter rather
+    // than growing the 17-arg constructor again — see the transposition warning in execute().
+    @TestVisible
+    private Decimal endOfTermBuyOut;
 
     /**
      * @description Constructor with all pricing parameters (Payment Amount-only callers should
@@ -60,6 +70,12 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
      * @param transactionId The pricing transaction Id to scope Pricing_Result__c queries
      */
     // AC Scenario 3: Constructor accepts transactionId so each queueable instance carries the originating pricing transaction
+    /**
+     * @description  Backward-compatible constructor (pre-SAL-6441/SAL-7381 14-arg shape) still used
+     *               by existing tests and call sites. Delegates with no tvalueQuoteAmount /
+     *               pointsAmount / monthlyPayment — buildTValueQuote falls back to financedAmount
+     *               for the TValue Quote Amount in that case.
+     */
     public NT_TValueQueueable(
         Id quoteId,
         Id opportunityId,
@@ -79,7 +95,35 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         this(
             quoteId, opportunityId, templateId, pricingResultId, finalRate, financedAmount,
             combinations, advancePayments, finalResidual, endOfTermOption, quoteName,
-            tvalueQuoteIds, transactionId, points, null
+            tvalueQuoteIds, transactionId, points, null, null, null
+        );
+    }
+
+    public NT_TValueQueueable(
+        Id quoteId,
+        Id opportunityId,
+        Id templateId,
+        Id pricingResultId,
+        Decimal finalRate,
+        Decimal financedAmount,
+        List<TValueCombination> combinations,
+        Decimal advancePayments,
+        Decimal finalResidual,
+        String endOfTermOption,
+        String quoteName,
+        List<String> tvalueQuoteIds,
+        String transactionId,
+        Decimal points,
+        Decimal tvalueQuoteAmount,
+        Decimal pointsAmount
+    ) {
+        // Delegate to the full 17-arg constructor with no monthlyPayment (financed-amount path).
+        // Must pass the trailing null explicitly — omitting it made this a 16-arg self-call
+        // (infinite recursion).
+        this(
+            quoteId, opportunityId, templateId, pricingResultId, finalRate, financedAmount,
+            combinations, advancePayments, finalResidual, endOfTermOption, quoteName,
+            tvalueQuoteIds, transactionId, points, tvalueQuoteAmount, pointsAmount, null
         );
     }
 
@@ -105,6 +149,8 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         List<String> tvalueQuoteIds,
         String transactionId,
         Decimal points,
+        Decimal tvalueQuoteAmount,
+        Decimal pointsAmount,
         Decimal monthlyPayment
     ) {
         this.tvalueQuoteIds = new List<String>();
@@ -124,9 +170,21 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         this.quoteName = quoteName;
         this.transactionId = transactionId;
         this.points = points;
+        this.tvalueQuoteAmount = tvalueQuoteAmount;
+        this.pointsAmount = pointsAmount;
         this.monthlyPayment = monthlyPayment;
     }
-    
+
+    /**
+     * @description  SAL-7404 — sets the equipment-cost-based residual buyout amount stamped on
+     *               tval__End_of_Term_Buy_Out__c by buildTValueQuote. Null (Quote-originated
+     *               runs / no residual modifier) leaves the field unset.
+     * @param        endOfTermBuyOut  The buyout dollar amount (Equipment Cost × residual modifier %).
+     */
+    public void setEndOfTermBuyOut(Decimal endOfTermBuyOut) {
+        this.endOfTermBuyOut = endOfTermBuyOut;
+    }
+
     /**
      * @description Executes TValue calculation for ONE frequency+term combination, then chains to next
      */
@@ -184,14 +242,32 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         
         // AC Scenario 3: transactionId is forwarded to the next chained queueable so every instance shares the same pricing run scope
         if (!combinations.isEmpty() && !Test.isRunningTest() && Limits.getQueueableJobs() < Limits.getLimitQueueableJobs()) {
-            System.enqueueJob(new NT_TValueQueueable(
-                quoteId, opportunityId, templateId,
-                pricingResultId, finalRate, financedAmount,
-                combinations, advancePayments, finalResidual,
-                endOfTermOption, quoteName, tvalueQuoteIds,
-                transactionId, points, monthlyPayment
-            ));
+            System.enqueueJob(buildNextInChain());
         }
+    }
+
+    /**
+     * @description  Builds the next queueable in the combination chain, carrying every piece
+     *               of pricing state — factored out of execute() (whose chain branch is
+     *               unreachable under test) so the carry-over itself is testable.
+     * @return       The configured next-in-chain queueable.
+     */
+    @TestVisible
+    private NT_TValueQueueable buildNextInChain() {
+        // Argument order must match the 17-arg constructor tail:
+        // (..., points, tvalueQuoteAmount, pointsAmount, monthlyPayment). A prior transposition
+        // here (monthlyPayment passed third-from-last) corrupted every chained combination —
+        // combo #2+ received the payment as its Quote Amount.
+        NT_TValueQueueable next = new NT_TValueQueueable(
+            quoteId, opportunityId, templateId,
+            pricingResultId, finalRate, financedAmount,
+            combinations, advancePayments, finalResidual,
+            endOfTermOption, quoteName, tvalueQuoteIds,
+            transactionId, points, tvalueQuoteAmount, pointsAmount, monthlyPayment
+        );
+        // SAL-7404 — carry the buyout amount across the chained combinations.
+        next.endOfTermBuyOut = endOfTermBuyOut;
+        return next;
     }
 
     /**
@@ -232,7 +308,14 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         
         // Set quote name with frequency and term suffix: "Quote Name - M onthly - 24 mo"
         String mappedFrequency = mapPaymentFrequency(combination.paymentFrequency);
-        tvq.tval__Quote_Name__c = quoteName + ' - ' + mappedFrequency + ' - ' + combination.term.intValue() + ' mo';
+        // SAL-7432 — the name flows into the TValue engine document's Label, which the
+        // managed tval package concatenates into an x-www-form-urlencoded callout body
+        // WITHOUT URL-encoding it (TValueJsonCalculator/JsonSubmissionUtility). Any '&',
+        // '%', or '+' in the name therefore corrupts the form body and the engine rejects
+        // the whole document with "tvDocument.Import failed ... [Import 460}". The
+        // Opportunity path names quotes off the account name ("Joseph Jingoli & Son, Inc"),
+        // so ampersands are common. Sanitize those form-reserved characters here.
+        tvq.tval__Quote_Name__c = sanitizeQuoteName(quoteName) + ' - ' + mappedFrequency + ' - ' + combination.term.intValue() + ' mo';
         tvq.tval__Quote_Date__c = Date.today();
         
         // Set financial amounts. When Financed Amount is known, feed it to TValue and let it
@@ -240,9 +323,19 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         // feed the payment and let TValue solve for the financed amount — previously this
         // branch was missing entirely, so a payment-only quote always sent Amount Financed
         // of 0/null and dropped the payment amount, which pricing could never resolve.
-        if (financedAmount != null && financedAmount > 0) {
-            tvq.tval__Quote_Amount__c = financedAmount;
-            tvq.tval__Amount_Financed__c = financedAmount;
+        // Set financial amounts with points. On the payment-solve path the combination carries a
+        // financed amount solved in Apex from the Requested Payment Amount (NT_PaymentSolveService);
+        // prefer it so TValue receives a known Amount Financed and solves for the payment (the only
+        // direction TValue's templates support). Falls back to the queueable-level financedAmount
+        // for the normal calculate-payment path.
+        Decimal effectiveFinanced = combination.financedAmount != null ? combination.financedAmount : financedAmount;
+        if (effectiveFinanced != null && effectiveFinanced > 0) {
+            tvq.tval__Quote_Amount__c = tvalueQuoteAmount != null ? tvalueQuoteAmount : effectiveFinanced;
+            tvq.tval__Amount_Financed__c = effectiveFinanced;
+            tvq.tval__Commission_Amount__c = pointsAmount;
+            // if(finalResidual != null && finalResidual > 0){// SAL-7382 POC
+            //     tvq.FMV_Residual__c = effectiveFinanced * (finalResidual / 100);
+            // }
         } else if (monthlyPayment != null && monthlyPayment > 0) {
             tvq.tval__Payment_Amount__c = monthlyPayment;
         }
@@ -253,14 +346,21 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         // Set rate: prefer per-term rate from combination, fall back to flat finalRate.
         // Add dealer points (percentage point markup) on top of the base rate.
         Decimal effectiveRate = combination.rate != null ? combination.rate : finalRate;
-        if (points != null && points != 0) {
-            effectiveRate = (effectiveRate != null ? effectiveRate : 0) + points;
-        }
+        // SAL-7381 do not add points to rate which is wrong
+        // if (points != null && points != 0) {
+        //     effectiveRate = (effectiveRate != null ? effectiveRate : 0) + points;
+        // }
         if (effectiveRate != null) {
             tvq.tval__Rate__c = effectiveRate;
         }
         
         // Set advance payments
+        // SAL-7384 — the TValue engine takes payment timing from the
+        // tval__Advance_Arrears__c picklist (default Arrears); the
+        // tval__Payment_In_Advance__c checkbox does not drive it. ≥1 required
+        // advance payment means the quote calculates in Advance (N payments on
+        // the quote date), otherwise Arrears.
+        tvq.tval__Advance_Arrears__c = (advancePayments != null && advancePayments > 0) ? 'Advance' : 'Arrears';
         if (advancePayments != null) {
             tvq.tval__Number_of_Advanced_Payments__c = advancePayments;
             tvq.tval__Payment_In_Advance__c = advancePayments > 0;
@@ -270,6 +370,16 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         Decimal effectiveResidual = combination.residual != null ? combination.residual : finalResidual;
         if (effectiveResidual != null) {
             tvq.tval__Balloon_Payment_Amount__c = effectiveResidual;
+        }
+
+        // SAL-7404 — Opportunity-originated runs with an applied residual modifier carry the
+        // equipment-cost-based buyout dollar amount (the sum of the modifier-level
+        // Pricing_Result__c.Modified_Residual_Amount__c values — one row's value in the
+        // typical single-modifier case) so the TValue engine amortizes to that end-of-term
+        // buyout. Null (Quote runs / no residual modifier) leaves the field
+        // unset — existing balloon behavior is unchanged.
+        if (endOfTermBuyOut != null) {
+            tvq.tval__End_of_Term_Buy_Out__c = endOfTermBuyOut;
         }
         
         // Set payment period based on frequency from the combination
@@ -301,6 +411,27 @@ public without sharing class NT_TValueQueueable implements Queueable, Database.A
         if (String.isBlank(userValue)) return userValue;
         if ('1.00 Out'.equalsIgnoreCase(userValue)) return '$1.00 Buyout';
         return userValue;
+    }
+
+    /**
+     * @description  SAL-7432 — strips the x-www-form-urlencoded reserved characters
+     *               ('&', '%', '+') from the TValue quote name. The managed tval package
+     *               drops the name into its engine callout body via raw string
+     *               concatenation with no URL-encoding, so any of these characters splits
+     *               or misreads the form body and the engine fails the whole document with
+     *               "tvDocument.Import failed ... [Import 460}". '&' is replaced with 'and'
+     *               to keep the name readable (account names like "A & B, Inc"); '%' and
+     *               '+' are dropped. All other characters pass through unchanged. Null/blank
+     *               names pass through so downstream naming behaves exactly as before.
+     * @param        name  The raw quote name (typically the Quote or Opportunity name).
+     * @return       The name with form-reserved characters neutralized.
+     */
+    @TestVisible
+    private static String sanitizeQuoteName(String name) {
+        if (String.isBlank(name)) {
+            return name;
+        }
+        return name.replace('&', 'and').replace('%', '').replace('+', '');
     }
     
     /**
